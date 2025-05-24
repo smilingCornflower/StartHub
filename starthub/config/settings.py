@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from loguru import logger
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-ENV_FILE = "../.env.dev"
+ENV_FILE = "../.env"
 
 load_dotenv(BASE_DIR / ENV_FILE)
 
