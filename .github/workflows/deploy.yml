@@ -21,10 +21,10 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Remove old image (if exists)
-        run: docker rmi starthub-api:old || true
+        run: docker rmi smilekundev/starthub-api:old || true
 
       - name: Tag latest as old
-        run: docker tag starthub-api:latest starthub-api:old
+        run: docker tag smilekundev/starthub-api:latest smilekundev/starthub-api:old
 
       - name: Build and push
         uses: docker/build-push-action@v4
@@ -32,3 +32,6 @@ jobs:
           context: .
           push: true
           tags: smilekundev/starthub-api:latest
+
+      - name: Run docker-compose up
+      - run: docker compose up -d
