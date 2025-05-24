@@ -15,6 +15,7 @@ services:
       - postgresql-data-1:/var/lib/postgresql/data
   starthub-api:
     image: smilekundev/starthub-api
+    restart: always
     container_name: starthub-api
     depends_on:
       - db
@@ -24,6 +25,7 @@ services:
       - .env.prod
   proxy:
     image: nginx:latest
+    restart: always
     ports:
       - "8001:80"
     volumes:
