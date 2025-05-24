@@ -21,22 +21,19 @@ jobs:
         run: |
           pip install uv
           uv sync --dev
-        working-directory: back
-
-      - name: Load env file
 
       - name: Run mypy
         run: uv run mypy .
-        working-directory: back/starthub
+        working-directory: starthub
 
       - name: Run flake8
         run: uv run flake8 .
-        working-directory: back/starthub
+        working-directory: starthub
 
       - name: Run isort
         run: uv run isort . --check-only
-        working-directory: back/starthub
+        working-directory: starthub
 
       - name: Run black
         run: uv run black . --check
-        working-directory: back/starthub
+        working-directory: starthub
