@@ -1,0 +1,90 @@
+[project]
+name = "StartHubc"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12.10"
+dependencies = [
+    "django>=5.2.1",
+    "djangorestframework>=3.16.0",
+    "gunicorn>=23.0.0",
+    "loguru>=0.7.3",
+    "psycopg[binary]>=3.2.9",
+    "pyjwt>=2.10.1",
+    "python-dotenv>=1.1.0",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "django-stubs>=5.2.0",
+    "djangorestframework-stubs>=3.16.0",
+    "flake8>=7.2.0",
+    "isort>=6.0.1",
+    "mypy>=1.15.0",
+    "ruff>=0.11.11",
+]
+
+[tool.mypy]
+plugins = [
+    "mypy_django_plugin.main",
+    "mypy_drf_plugin.main",
+]
+explicit_package_bases = true
+warn_unused_ignores = true
+follow_imports_for_stubs = true
+ignore_missing_imports = true
+show_absolute_path = true
+hide_error_codes = false
+show_error_context = true
+strict = true
+warn_unreachable = true
+warn_no_return = true
+cache_dir = ".mypy_cache"
+exclude = "^migrations/.*"
+
+[tool.django-stubs]
+django_settings_module = "config.settings"
+
+[tool.black]
+line-length = 120
+target-version = ["py312"]
+skip-string-normalization = false
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.flake8]
+max-line-length = 120
+ignore = [
+    "E203",  # Whitespace before ':' (conflicts with Black's formatting)
+    "E266",  # Too many leading '#' in a comment (e.g., `### Bad`)
+    "W503",  # Line break before binary operator (conflicts with Black's style)
+    "E501",  # Line too long (controlled by `max-line-length` instead)
+]
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "env",
+    "migrations",
+    "docs",
+    "tests",
+    "*.egg-info",
+]
+break-before-binary = true
+
+[tool.isort]
+line_length = 120
+multi_line_output = 3
+force_grid_wrap = 0
+include_trailing_comma = true
+use_parentheses = true

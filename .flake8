@@ -1,0 +1,5 @@
+[flake8]
+max-line-length = 120
+ignore = E203,E266,W503,E501
+exclude = .git,__pycache__,.venv,venv,env,migrations,docs,tests,*.egg-info
+break-before-binary = true
