@@ -16,16 +16,16 @@ jobs:
 
       - name: Create .env.prod file
         run: |
-          touch .env.prod
+          touch .env
           DEBUG=False
-          echo "DB_USER=${{ secrets.DB_USER }}" >> .env.prod
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env.prod
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env.prod
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env.prod
-          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env.prod
-          echo "LOGURU_LOG_LEVEL=${{ secrets.LOGURU_LOG_LEVEL }}" >> .env.prod
-          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env.prod
-          echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env.prod
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "LOGURU_LOG_LEVEL=${{ secrets.LOGURU_LOG_LEVEL }}" >> .env
+          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+          echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env
 
       - name: login to hub
         uses: docker/login-action@v2
