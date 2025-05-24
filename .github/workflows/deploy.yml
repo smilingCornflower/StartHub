@@ -24,7 +24,7 @@ jobs:
         run: docker rmi starthub-api:old || true
 
       - name: Tag latest as old
-        run: docker tag starthub-api:latest starthub-api:old || true
+        run: docker tag starthub-api:latest starthub-api:old
 
       - name: Build and push
         uses: docker/build-push-action@v4
