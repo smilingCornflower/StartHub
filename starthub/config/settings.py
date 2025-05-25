@@ -11,15 +11,75 @@ ENV_FILE = "../.env"
 
 load_dotenv(BASE_DIR / ENV_FILE)
 
-SECRET_KEY: str | None = os.getenv("DJANGO_SECRET_KEY")
+# =====================================================================================================================
+LOGURU_LOG_LEVEL: str | None = os.getenv("LOGURU_LOG_LEVEL")
+if LOGURU_LOG_LEVEL is None:
+    raise RuntimeError("LOGURU_LOG_LEVEL env var is not set")
 
-if SECRET_KEY is None:
-    raise ValueError("SECRET_KEY variable is not set.")
 
-DEBUG = bool(os.getenv("DEBUG"))
+def format_record(record: Mapping[str, Any]) -> str:
+    record["extra"]["rel_path"] = Path(record["file"].path).relative_to(BASE_DIR)
+    result = (
+        "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
+        "<level>{level:<8}</level> | "
+        "<cyan>{extra[rel_path]}</cyan>[<cyan>{line}</cyan>] "
+        "(<cyan>{function}</cyan>) ----> <level>{message}</level>\n"
+    )
+    return result
 
-ALLOWED_HOSTS: list[str] = os.getenv("ALLOWED_HOSTS").split(',')
-CSRF_TRUSTED_ORIGINS: list[str] = os.getenv("CSRF_TRUSTED_ORIGINS").split(',')
+
+logger.remove()
+logger.add(
+    sys.stdout,
+    format=format_record,
+    level=LOGURU_LOG_LEVEL,
+    backtrace=True,
+    diagnose=True,
+    enqueue=True,
+)
+# =====================================================================================================================
+_secret_key = os.getenv("DJANGO_SECRET_KEY")
+_debug = os.getenv("DEBUG")
+_db_name = os.getenv("DB_NAME")
+_db_user = os.getenv("DB_USER")
+_db_password = os.getenv("DB_PASSWORD")
+_db_host = os.getenv("DB_HOST")
+_db_port = os.getenv("DB_PORT")
+_allowed_hosts = os.getenv("ALLOWED_HOSTS")
+_csrf_trusted_origins = os.getenv("CSRF_TRUSTED_ORIGINS")
+
+if not (
+    _secret_key
+    and _debug
+    and _db_name
+    and _db_user
+    and _db_password
+    and _db_host
+    and _db_port
+    and _allowed_hosts
+    and _csrf_trusted_origins
+):
+    logger.warning(f"{bool(_secret_key)=}")
+    logger.warning(f"{bool(_debug)=}")
+    logger.warning(f"{bool(_db_name)=}")
+    logger.warning(f"{bool(_db_user)=}")
+    logger.warning(f"{bool(_db_password)=}")
+    logger.warning(f"{bool(_db_host)=}")
+    logger.warning(f"{bool(_db_port)=}")
+    logger.warning(f"{bool(_allowed_hosts)=}")
+    logger.warning(f"{bool(_csrf_trusted_origins)=}")
+    raise ValueError("Missing database required environment variables.")
+else:
+    SECRET_KEY: str = _secret_key
+    DEBUG: bool = _debug.lower() == "true"
+    DB_NAME: str = _db_name
+    DB_USER: str = _db_user
+    DB_PASSWORD: str = _db_password
+    DB_HOST: str = _db_host
+    DB_PORT: str = _db_port
+    ALLOWED_HOSTS: list[str] = _allowed_hosts.split(",")
+    CSRF_TRUSTED_ORIGINS: list[str] = _csrf_trusted_origins.split(",")
+# =====================================================================================================================
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -61,18 +121,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
-DB_NAME: str | None = os.getenv("DB_NAME")
-DB_USER: str | None = os.getenv("DB_USER")
-DB_PASSWORD: str | None = os.getenv("DB_PASSWORD")
-DB_HOST: str | None = os.getenv("DB_HOST")
-DB_PORT: str | None = os.getenv("DB_PORT")
-
-if not (DB_USER and DB_NAME and DB_PASSWORD and DB_HOST and DB_PORT):
-    raise ValueError("Missing required environment variables.")
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -86,10 +134,6 @@ DATABASES = {
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-CSRF_TRUSTED_ORIGINS = os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",")
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
@@ -104,59 +148,10 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
 LANGUAGE_CODE = "en-us"
-
 TIME_ZONE = "UTC"
-
 USE_I18N = True
-
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.2/howto/static-files/
-
-STATIC_URL = "static/"
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# =================================================================================================
 AUTH_USER_MODEL = "domain.User"
-
-# Logger
-########################
-# LOGURU CONFIGURATION #
-########################
-LOGURU_LOG_LEVEL: str | None = os.getenv("LOGURU_LOG_LEVEL")
-
-if LOGURU_LOG_LEVEL is None:
-    raise RuntimeError("LOGURU_LOG_LEVEL env var is not set")
-
-
-def format_record(record: Mapping[str, Any]) -> str:
-    record["extra"]["rel_path"] = Path(record["file"].path).relative_to(BASE_DIR)
-    result = (
-        "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
-        "<level>{level:<8}</level> | "
-        "<cyan>{extra[rel_path]}</cyan>[<cyan>{line}</cyan>] "
-        "(<cyan>{function}</cyan>) ----> <level>{message}</level>\n"
-    )
-    return result
-
-
-logger.remove()
-
-logger.add(
-    sys.stdout,
-    format=format_record,
-    level=LOGURU_LOG_LEVEL,
-    backtrace=True,
-    diagnose=True,
-    enqueue=True,
-)

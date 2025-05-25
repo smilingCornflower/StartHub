@@ -1,5 +1,3 @@
-from typing import cast
-
 from application.ports.service_factory import AbstractServiceFactory
 from application.services.auth import AuthAppService, RegistrationAppService
 from config import settings
@@ -12,11 +10,11 @@ class AuthServiceFactory(AbstractServiceFactory[AuthAppService]):
     @staticmethod
     def create_service() -> AuthAppService:
         auth_service = AuthService(
-            token_service=TokenService(secret_key=cast(str, settings.SECRET_KEY)),
+            token_service=TokenService(secret_key=settings.SECRET_KEY),
             user_read_repository=DjUserReadRepository(),
         )
         return AuthAppService(
-            token_service=TokenService(secret_key=cast(str, settings.SECRET_KEY)),
+            token_service=TokenService(secret_key=settings.SECRET_KEY),
             auth_service=auth_service,
         )
 
