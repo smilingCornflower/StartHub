@@ -16,10 +16,10 @@ SECRET_KEY: str | None = os.getenv("DJANGO_SECRET_KEY")
 if SECRET_KEY is None:
     raise ValueError("SECRET_KEY variable is not set.")
 
-DEBUG = bool(os.getenv("DEBUG", default=0))
+DEBUG = bool(os.getenv("DEBUG"))
 
-ALLOWED_HOSTS: list[str] = []
-CSRF_TRUSTED_ORIGINS = []
+ALLOWED_HOSTS: list[str] = os.getenv("ALLOWED_HOSTS").split(',')
+CSRF_TRUSTED_ORIGINS: list[str] = os.getenv("CSRF_TRUSTED_ORIGINS").split(',')
 
 INSTALLED_APPS = [
     "django.contrib.admin",
