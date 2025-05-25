@@ -49,15 +49,15 @@ _allowed_hosts = os.getenv("ALLOWED_HOSTS")
 _csrf_trusted_origins = os.getenv("CSRF_TRUSTED_ORIGINS")
 
 if not (
-    _secret_key
-    and _debug
-    and _db_name
-    and _db_user
-    and _db_password
-    and _db_host
-    and _db_port
-    and _allowed_hosts
-    and _csrf_trusted_origins
+        _secret_key
+        and _debug
+        and _db_name
+        and _db_user
+        and _db_password
+        and _db_host
+        and _db_port
+        and _allowed_hosts
+        and _csrf_trusted_origins
 ):
     logger.warning(f"{bool(_secret_key)=}")
     logger.warning(f"{bool(_debug)=}")
@@ -79,6 +79,8 @@ else:
     DB_PORT: str = _db_port
     ALLOWED_HOSTS: list[str] = _allowed_hosts.split(",")
     CSRF_TRUSTED_ORIGINS: list[str] = _csrf_trusted_origins.split(",")
+
+logger.warning(f"{DEBUG=}")
 # =====================================================================================================================
 
 INSTALLED_APPS = [
