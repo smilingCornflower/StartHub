@@ -68,7 +68,7 @@ if not (
     logger.warning(f"{bool(_db_port)=}")
     logger.warning(f"{bool(_allowed_hosts)=}")
     logger.warning(f"{bool(_csrf_trusted_origins)=}")
-    raise ValueError("Missing database required environment variables.")
+    raise ValueError("Missing required environment variables.")
 else:
     SECRET_KEY: str = _secret_key
     DEBUG: bool = _debug.lower() == "true"
