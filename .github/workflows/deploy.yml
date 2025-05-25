@@ -26,7 +26,7 @@ jobs:
           echo "LOGURU_LOG_LEVEL=${{ secrets.LOGURU_LOG_LEVEL }}" >> .env
           echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
           echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env
-
+          echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
       - name: login to hub
         uses: docker/login-action@v2
         with:
