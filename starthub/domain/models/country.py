@@ -1,6 +1,6 @@
-from domain.models.base import BaseModel
 from django.db import models
 from domain.constants import CHAR_FIELD_MEDIUM_LENGTH, COUNTRY_CODE_LENGTH
+from domain.models.base import BaseModel
 
 
 class Country(BaseModel):

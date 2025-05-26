@@ -1,6 +1,5 @@
 from autoslug import AutoSlugField
 from django.db import models
-
 from domain.constants import CHAR_FIELD_SHORT_LENGTH
 from domain.models.base import BaseModel
 

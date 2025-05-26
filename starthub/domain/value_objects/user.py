@@ -12,6 +12,8 @@ from domain.constants import (
     USERNAME_PATTERN,
 )
 from domain.exceptions.validation import ValidationException
+from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
+from domain.value_objects.common import Id
 
 
 @dataclass(frozen=True)
@@ -54,3 +56,18 @@ class Email:
             email_validator(self.value)
         except ValidationError:
             raise ValidationException(f"Invalid email address: {self.value}.")
+
+
+@dataclass(frozen=True)
+class UserCreatePayload(AbstractCreatePayload):
+    username: Username
+    email: Email
+    password: RawPassword
+
+
+@dataclass(frozen=True)
+class UserUpdatePayload(AbstractUpdatePayload):
+    id_: Id
+    username: Username | None = None
+    email: Email | None = None
+    password: RawPassword | None = None
