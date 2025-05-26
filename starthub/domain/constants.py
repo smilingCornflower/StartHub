@@ -1,6 +1,8 @@
 import re
 
 CHAR_FIELD_MAX_LENGTH = 255
+CHAR_FIELD_MEDIUM_LENGTH = 100
+CHAR_FIELD_SHORT_LENGTH = 50
 
 # String consists only of letters (uppercase and lowercase), numbers, hyphens, and underscores.
 USERNAME_PATTERN = re.compile(r"^[\w_-]+$", flags=re.UNICODE)
@@ -24,3 +26,7 @@ REFRESH_DECODE_OPTIONS = {
     "verify_signature": True,
     "require": ["sub", "iat", "exp", "type"],
 }
+
+COUNTRY_CODE_LENGTH = 2
+FUNDING_GOAL_MAX_DIGITS = 12
+KZ_BIN_LENGTH = 12
