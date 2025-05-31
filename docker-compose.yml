@@ -12,7 +12,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgresql-data-1:/var/lib/postgresql/data
+      - postgresql-data:/var/lib/postgresql/data
+
   starthub-api:
     image: smilekundev/starthub-api
     restart: always

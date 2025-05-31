@@ -7,10 +7,13 @@ requires-python = ">=3.12.10"
 dependencies = [
     "django>=5.2.1",
     "django-autoslug>=1.9.9",
+    "django-countries>=7.6.1",
     "djangorestframework>=3.16.0",
     "gunicorn>=23.0.0",
     "loguru>=0.7.3",
+    "phonenumbers>=9.0.6",
     "psycopg[binary]>=3.2.9",
+    "pydantic>=2.11.5",
     "pyjwt>=2.10.1",
     "python-dotenv>=1.1.0",
     "python-slugify>=8.0.4",
@@ -43,7 +46,7 @@ strict = true
 warn_unreachable = true
 warn_no_return = true
 cache_dir = ".mypy_cache"
-exclude = "^migrations/.*"
+exclude = ["^migrations/.*"]
 
 [tool.django-stubs]
 django_settings_module = "config.settings"

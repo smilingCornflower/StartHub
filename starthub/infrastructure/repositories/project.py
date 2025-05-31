@@ -7,7 +7,7 @@ from domain.value_objects.project import ProjectCreatePayload, ProjectUpdatePayl
 from loguru import logger
 
 
-class DjReadRepository(ProjectReadRepository):
+class DjProjectReadRepository(ProjectReadRepository):
     def get_by_id(self, id_: Id) -> Project:
         """:raises ProjectNotFoundException:"""
         project: Project | None = Project.objects.filter(id=id_.value).first()
@@ -34,18 +34,18 @@ class DjReadRepository(ProjectReadRepository):
         return project
 
 
-class DjWriteRepository(ProjectWriteRepository):
+class DjProjectWriteRepository(ProjectWriteRepository):
     def create(self, data: ProjectCreatePayload) -> Project:
         project = Project.objects.create(
             name=data.name,
             description=data.description,
             category_id=data.category_id.value,
             creator_id=data.creator_id.value,
+            company_id=data.company_id.value,
             funding_model_id=data.funding_model_id.value,
             goal_sum=data.goal_sum,
             deadline=data.deadline,
         )
-        project.team.set([id_.value for id_ in data.team_ids])
         return project
 
     def update(self, data: ProjectUpdatePayload) -> Project:
@@ -64,10 +64,8 @@ class DjWriteRepository(ProjectWriteRepository):
             project.deadline = data.deadline
         if data.category_id is not None:
             project.category_id = data.category_id.value
-        if data.add_team_ids:
-            project.team.add(*[i.value for i in data.add_team_ids])
-        if data.remove_team_ids:
-            project.team.remove(*[i.value for i in data.remove_team_ids])
+        if data.funding_model_id is not None:
+            project.funding_model_id = data.funding_model_id.value
 
         project.save()
         return project

@@ -9,6 +9,7 @@ class FundingModel(BaseModel):
     slug = AutoSlugField(populate_from="name", unique=True, max_length=CHAR_FIELD_SHORT_LENGTH)
 
     class Meta:
+        db_table = "funding_models"
         verbose_name = "Funding Model"
         verbose_name_plural = "Funding Models"
 

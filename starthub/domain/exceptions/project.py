@@ -1,13 +1,28 @@
 from domain.exceptions import DomainException
+from domain.exceptions.repository import AlreadyExistsException, NotFoundException
+from domain.exceptions.validation import ValidationException
 
 
 class ProjectException(DomainException):
     pass
 
 
-class ProjectNotFoundException(ProjectException):
+class ProjectNameIsTooLongValidationException(ValidationException, ProjectException):
     pass
 
 
-class ProjectDeletionForbiddenException(ProjectException):
+class NegativeProjectGoalSumValidationException(ValidationException, ProjectException):
+    pass
+
+
+class ProjectDeadlineInPastValidationException(ValidationException, ProjectException):
+    pass
+
+
+# Repository Exceptions
+class ProjectNotFoundException(NotFoundException, ProjectException):
+    pass
+
+
+class ProjectNameAlreadyExistsException(AlreadyExistsException, ProjectException):
     pass

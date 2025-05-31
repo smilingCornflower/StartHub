@@ -9,6 +9,7 @@ class ProjectCategory(BaseModel):
     slug = AutoSlugField(populate_from="name", unique=True, max_length=CHAR_FIELD_MAX_LENGTH)
 
     class Meta:
+        db_table = "project_categories"
         verbose_name = "Category"
         verbose_name_plural = "Categories"
 

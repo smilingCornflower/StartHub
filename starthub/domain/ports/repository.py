@@ -15,6 +15,7 @@ U = TypeVar("U", bound=AbstractUpdatePayload)
 class AbstractReadRepository(ABC, Generic[T, F]):
     @abstractmethod
     def get_by_id(self, id_: Id) -> T:
+        """:raises domain.exception.NotFoundException:"""
         pass
 
     @abstractmethod
@@ -29,8 +30,10 @@ class AbstractWriteRepository(ABC, Generic[T, C, U]):
 
     @abstractmethod
     def update(self, data: U) -> T:
+        """:raises domain.exception.NotFoundException:"""
         pass
 
     @abstractmethod
     def delete(self, id_: Id) -> None:
+        """:raises domain.exception.NotFoundException:"""
         pass
