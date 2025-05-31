@@ -3,8 +3,7 @@ from domain.models.user import User
 from domain.repositories.user import UserReadRepository, UserWriteRepository
 from domain.value_objects.common import Id
 from domain.value_objects.filter import UserFilter
-from domain.value_objects.payload import UserCreatePayload, UserUpdatePayload
-from domain.value_objects.user import Email, Username
+from domain.value_objects.user import Email, UserCreatePayload, Username, UserUpdatePayload
 
 
 class DjUserReadRepository(UserReadRepository):

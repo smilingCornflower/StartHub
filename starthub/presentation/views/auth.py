@@ -83,7 +83,15 @@ class ReissueAccessTokenView(APIView):
         except (ValidationException, InvalidTokenException) as e:
             return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(asdict(access_token_dto), status=status.HTTP_200_OK)
+        response = Response(data={"detail": "success"}, status=200)
+        response.set_cookie(
+            "access_token",
+            access_token_dto.access_token,
+            httponly=False,
+            samesite="None",
+            secure=True,
+        )
+        return response
 
 
 class AccessVerifyView(APIView):

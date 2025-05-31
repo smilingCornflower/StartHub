@@ -16,8 +16,8 @@ from domain.models.user import User
 from domain.services.auth import AuthService, RegistrationService
 from domain.services.token import TokenService
 from domain.value_objects.auth import LoginCredentials
-from domain.value_objects.payload import UserCreatePayload
 from domain.value_objects.token import AccessPayload, AccessTokenVo, RefreshTokenVo, TokenPairVo
+from domain.value_objects.user import UserCreatePayload
 from loguru import logger
 
 

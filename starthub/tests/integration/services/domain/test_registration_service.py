@@ -2,10 +2,8 @@ from django.test import TestCase
 from domain.exceptions.user import EmailAlreadyExistsException, UsernameAlreadyExistsException
 from domain.models.user import User
 from domain.services.auth import RegistrationService
-from domain.value_objects.payload import UserCreatePayload
-from domain.value_objects.user import Email, RawPassword, Username
+from domain.value_objects.user import Email, RawPassword, UserCreatePayload, Username
 from infrastructure.repositories.user import DjUserReadRepository, DjUserWriteRepository
-from loguru import logger
 
 
 class TestRegistrationService(TestCase):

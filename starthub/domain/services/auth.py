@@ -6,9 +6,8 @@ from domain.services.token import TokenService
 from domain.value_objects.auth import LoginCredentials
 from domain.value_objects.common import Id
 from domain.value_objects.filter import UserFilter
-from domain.value_objects.payload import UserCreatePayload
 from domain.value_objects.token import AccessTokenVo, RefreshPayload, RefreshTokenVo, TokenPairVo
-from domain.value_objects.user import Email, Username
+from domain.value_objects.user import Email, UserCreatePayload, Username
 from loguru import logger
 
 
@@ -36,7 +35,7 @@ class AuthService:
         """
         payload: RefreshPayload = self._token_service.verify_refresh(token=refresh_token)
         try:
-            user: User = self._user_read_repository.get_by_id(Id(int(payload.sub)))
+            user: User = self._user_read_repository.get_by_id(Id(value=int(payload.sub)))
         except UserNotFoundException:
             logger.error(f"Failed to find a user with id: {payload.sub}.")
             raise InvalidTokenException("Invalid access token.")
@@ -50,7 +49,7 @@ class AuthService:
         """
         payload: RefreshPayload = self._token_service.verify_refresh(token=refresh_token)
         try:
-            user: User = self._user_read_repository.get_by_id(Id(int(payload.sub)))
+            user: User = self._user_read_repository.get_by_id(Id(value=int(payload.sub)))
         except UserNotFoundException:
             logger.error(f"Failed to find a user with id: {payload.sub}.")
             raise InvalidTokenException("Invalid refresh token.")

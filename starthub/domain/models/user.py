@@ -94,5 +94,6 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
         return self.username
 
     class Meta:
+        db_table = "users"
         verbose_name = "user"
         verbose_name_plural = "users"

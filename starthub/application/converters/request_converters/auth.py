@@ -1,9 +1,8 @@
 from django.http import QueryDict
 from domain.exceptions.validation import ValidationException
 from domain.value_objects.auth import LoginCredentials
-from domain.value_objects.payload import UserCreatePayload
 from domain.value_objects.token import AccessTokenVo, RefreshTokenVo
-from domain.value_objects.user import Email, RawPassword, Username
+from domain.value_objects.user import Email, RawPassword, UserCreatePayload, Username
 from loguru import logger
 
 

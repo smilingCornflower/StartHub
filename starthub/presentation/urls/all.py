@@ -2,5 +2,6 @@ from django.urls import include, path
 
 urlpatterns = [
     path("auth/", include("presentation.urls.auth")),
-    path("foo/", include("presentation.urls.foo")),
+    path("project/", include("presentation.urls.project")),
+    path("company/", include("presentation.urls.company")),
 ]
