@@ -2,8 +2,8 @@ from typing import Any
 
 from application.draft.company import CompanyCreateDraft
 from domain.value_objects.common import Id
+from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode
-from domain.value_objects.project import BusinessNumber
 from loguru import logger
 
 

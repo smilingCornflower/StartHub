@@ -1,19 +1,24 @@
 from application.ports.service_factory import AbstractServiceFactory
 from application.services.project import ProjectAppService
-from domain.services.project import ProjectService
-from domain.services.project_phone import ProjectPhoneService
-from domain.services.project_social_link import ProjectSocialLinkService
-from domain.services.team_member import TamMemberService
+from domain.services.project_management import (
+    ProjectPhoneService,
+    ProjectService,
+    ProjectSocialLinkService,
+    TamMemberService,
+)
 from infrastructure.repositories.company import DjCompanyReadRepository
-from infrastructure.repositories.funding_model import DjFundingModelReadRepository
-from infrastructure.repositories.project import DjProjectReadRepository, DjProjectWriteRepository
-from infrastructure.repositories.project_category import DjProjectCategoryReadRepository
-from infrastructure.repositories.project_phone import DjProjectPhoneReadRepository, DjProjectPhoneWriteRepository
-from infrastructure.repositories.social_link import (
+from infrastructure.repositories.project_management import (
+    DjFundingModelReadRepository,
+    DjProjectCategoryReadRepository,
+    DjProjectPhoneReadRepository,
+    DjProjectPhoneWriteRepository,
+    DjProjectReadRepository,
     DjProjectSocialLinkReadRepository,
     DjProjectSocialLinkWriteRepository,
+    DjProjectWriteRepository,
+    DjTeamMemberReadRepository,
+    DjTeamMemberWriteRepository,
 )
-from infrastructure.repositories.team_member import DjTeamMemberReadRepository, DjTeamMemberWriteRepository
 from infrastructure.repositories.user import DjUserReadRepository
 
 

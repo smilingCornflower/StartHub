@@ -11,15 +11,20 @@ from application.ports.service import AbstractAppService
 from django.db import transaction
 from django.http import QueryDict
 from domain.models.project import Project, ProjectPhone, TeamMember
-from domain.services.project import ProjectService
-from domain.services.project_phone import ProjectPhoneService
-from domain.services.project_social_link import ProjectSocialLinkService
-from domain.services.team_member import TamMemberService
+from domain.services.project_management import (
+    ProjectPhoneService,
+    ProjectService,
+    ProjectSocialLinkService,
+    TamMemberService,
+)
 from domain.value_objects.common import Id
-from domain.value_objects.project import ProjectCreatePayload, ProjectUpdatePayload
-from domain.value_objects.project_phone import ProjectPhoneCreatePayload
-from domain.value_objects.project_social_link import ProjectSocialLinkCreatePayload
-from domain.value_objects.team_member import TeamMemberCreatePayload
+from domain.value_objects.project_management import (
+    ProjectCreatePayload,
+    ProjectPhoneCreatePayload,
+    ProjectSocialLinkCreatePayload,
+    ProjectUpdatePayload,
+    TeamMemberCreatePayload,
+)
 from loguru import logger
 
 

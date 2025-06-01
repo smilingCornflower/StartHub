@@ -6,8 +6,11 @@ from django.http import QueryDict
 from domain.exceptions.validation import DateIsNotIsoFormatException, ValidationException
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
 from domain.value_objects.filter import ProjectFilter
-from domain.value_objects.project import ProjectCreatePayload, ProjectUpdatePayload
-from domain.value_objects.team_member import TeamMemberInProjectCreatePayload
+from domain.value_objects.project_management import (
+    ProjectCreatePayload,
+    ProjectUpdatePayload,
+    TeamMemberInProjectCreatePayload,
+)
 from loguru import logger
 
 

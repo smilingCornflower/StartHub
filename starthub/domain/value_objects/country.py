@@ -1,4 +1,4 @@
-from domain.value_objects.base import BaseVo
+from domain.value_objects import BaseVo
 from pydantic import field_validator
 
 

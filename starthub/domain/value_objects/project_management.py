@@ -1,32 +1,61 @@
 from datetime import date
 
 from domain.constants import CHAR_FIELD_MAX_LENGTH
-from domain.exceptions.project import (
+from domain.exceptions.project_management import (
     NegativeProjectGoalSumValidationException,
     ProjectDeadlineInPastValidationException,
     ProjectNameIsTooLongValidationException,
 )
 from domain.exceptions.validation import EmptyStringException
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
-from domain.validators.business_number import KZBusinessNumberValidator
-from domain.value_objects.base import BaseVo
-from domain.value_objects.common import Id, PhoneNumber, SocialLink
-from domain.value_objects.country import CountryCode
-from domain.value_objects.team_member import TeamMemberInProjectCreatePayload
-from pydantic import ValidationInfo, field_validator
+from domain.value_objects import BaseVo
+from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, SocialLink
+from pydantic import field_validator
 
 
-class BusinessNumber(BaseVo):
-    country_code: CountryCode
-    value: str
+class ProjectPhoneCreatePayload(AbstractCreatePayload, BaseVo):
+    project_id: Id
+    number: PhoneNumber
 
-    @field_validator("value", mode="after")
-    @classmethod
-    def is_correct_business_number(cls, value: str, info: ValidationInfo) -> str:
-        """:raises ValidationException:"""
-        if info.data.get("country_code") and info.data["country_code"].value == "KZ":
-            KZBusinessNumberValidator.validate(value)
-        return value
+
+class ProjectPhoneUpdatePayload(AbstractUpdatePayload, BaseVo):
+    phone_id: Id
+    number: PhoneNumber
+
+
+class ProjectSocialLinkCreatePayload(AbstractCreatePayload, BaseVo):
+    project_id: Id
+    social_link: SocialLink
+
+
+class ProjectSocialLinkUpdatePayload(AbstractUpdatePayload, BaseVo):
+    project_id: Id
+    social_link: SocialLink
+
+
+class TeamMemberCreatePayload(AbstractCreatePayload, BaseVo):
+    project_id: Id
+    first_name: FirstName
+    last_name: LastName
+    description: str
+
+
+class TeamMemberInProjectCreatePayload(BaseVo):
+    first_name: FirstName
+    last_name: LastName
+    description: str
+
+
+class TeamMemberUpdatePayload(AbstractUpdatePayload, BaseVo):
+    pass
+
+
+class ProjectCategoryCreatePayload(AbstractCreatePayload, BaseVo):
+    pass
+
+
+class ProjectCategoryUpdatePayload(AbstractUpdatePayload, BaseVo):
+    pass
 
 
 class ProjectCreatePayload(AbstractCreatePayload, BaseVo):

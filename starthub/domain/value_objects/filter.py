@@ -1,5 +1,5 @@
 from domain.ports.filter import AbstractFilter
-from domain.value_objects.base import BaseVo
+from domain.value_objects import BaseVo
 from domain.value_objects.common import Id, PhoneNumber, Slug, SocialLink
 from domain.value_objects.country import CountryCode
 from domain.value_objects.user import Email, Username

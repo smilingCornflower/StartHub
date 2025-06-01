@@ -5,7 +5,7 @@ from application.service_factories.project import ProjectServiceFactory
 from application.services.project import ProjectAppService
 from application.utils.get_access_payload_dto import get_access_payload_dto
 from domain.exceptions.auth import InvalidTokenException
-from domain.exceptions.project import ProjectNotFoundException
+from domain.exceptions.project_management import ProjectNotFoundException
 from domain.exceptions.validation import ValidationException
 from domain.models.project import Project
 from loguru import logger

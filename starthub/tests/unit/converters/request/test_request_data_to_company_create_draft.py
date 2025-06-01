@@ -1,11 +1,12 @@
 from datetime import date, timedelta
 
+import pydantic
 from application.converters.request_converters.company import request_data_to_company_create_draft
 from django.test import TestCase
 from domain.exceptions.validation import ValidationException
 from domain.value_objects.common import Id
+from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode
-from domain.value_objects.project import BusinessNumber
 
 
 class ConvertRequestDataToCompanyDraftTests(TestCase):
@@ -47,12 +48,11 @@ class ConvertRequestDataToCompanyDraftTests(TestCase):
         result = request_data_to_company_create_draft(test_data, self.user_id)
         self.assertEqual(result.description, "")
 
-    def test_none_description_handling(self) -> None:
-        test_data = self.valid_payload.copy()
-        test_data["description"] = None  # type: ignore
+    def test_none_description(self) -> None:
+        self.valid_payload["description"] = None  # type: ignore
 
-        result = request_data_to_company_create_draft(test_data, self.user_id)
-        self.assertIsNone(result.description)
+        with self.assertRaises(pydantic.ValidationError):
+            request_data_to_company_create_draft(self.valid_payload, self.user_id)
 
     def test_rejects_invalid_date_formats(self) -> None:
         invalid_formats = [

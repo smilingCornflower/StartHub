@@ -1,16 +1,92 @@
 from domain.exceptions.company import CompanyOwnershipRequiredException
 from domain.exceptions.permissions import DeletePermissionDenied
+from domain.exceptions.project_management import (
+    ProjectPhoneAlreadyExistsException,
+    ProjectSocialLinkAlreadyExistsException,
+)
 from domain.models.company import Company
-from domain.models.project import Project
+from domain.models.project import Project, ProjectPhone, ProjectSocialLink, TeamMember
 from domain.repositories.company import CompanyReadRepository
-from domain.repositories.funding_model import FundingModelReadRepository
-from domain.repositories.project import ProjectReadRepository, ProjectWriteRepository
-from domain.repositories.project_category import ProjectCategoryReadRepository
+from domain.repositories.project_management import (
+    FundingModelReadRepository,
+    ProjectCategoryReadRepository,
+    ProjectPhoneReadRepository,
+    ProjectPhoneWriteRepository,
+    ProjectReadRepository,
+    ProjectSocialLinkReadRepository,
+    ProjectSocialLinkWriteRepository,
+    ProjectWriteRepository,
+    TeamMemberReadRepository,
+    TeamMemberWriteRepository,
+)
 from domain.repositories.user import UserReadRepository
 from domain.value_objects.common import Id
-from domain.value_objects.filter import ProjectFilter
-from domain.value_objects.project import ProjectCreatePayload, ProjectUpdatePayload
+from domain.value_objects.filter import ProjectFilter, ProjectPhoneFilter, ProjectSocialLinkFilter
+from domain.value_objects.project_management import (
+    ProjectCreatePayload,
+    ProjectPhoneCreatePayload,
+    ProjectSocialLinkCreatePayload,
+    ProjectUpdatePayload,
+    TeamMemberCreatePayload,
+)
 from loguru import logger
+
+
+class ProjectPhoneService:
+    def __init__(
+        self,
+        project_phone_read_repository: ProjectPhoneReadRepository,
+        project_phone_write_repository: ProjectPhoneWriteRepository,
+    ):
+        self._read_repository = project_phone_read_repository
+        self._write_repository = project_phone_write_repository
+
+    def create(self, payload: ProjectPhoneCreatePayload) -> ProjectPhone:
+        """:raises ProjectPhoneAlreadyExistsException:"""
+
+        filter_result: list[ProjectPhone] = self._read_repository.get_all(
+            ProjectPhoneFilter(project_id=payload.project_id, number=payload.number)
+        )
+        if filter_result:
+            raise ProjectPhoneAlreadyExistsException(
+                f"This phone number is already assigned to the project with id = {payload.project_id}"
+            )
+        return self._write_repository.create(payload)
+
+
+class ProjectSocialLinkService:
+    def __init__(
+        self,
+        read_repository: ProjectSocialLinkReadRepository,
+        write_repository: ProjectSocialLinkWriteRepository,
+    ):
+        self._read_repository = read_repository
+        self._write_repository = write_repository
+
+    def create(self, payload: ProjectSocialLinkCreatePayload) -> ProjectSocialLink:
+        """:raises ProjectSocialLinkAlreadyExistsException:"""
+
+        filter_result: list[ProjectSocialLink] = self._read_repository.get_all(
+            ProjectSocialLinkFilter(project_id=payload.project_id, social_link=payload.social_link)
+        )
+        if filter_result:
+            raise ProjectSocialLinkAlreadyExistsException(
+                f"social_link: {payload.social_link} already exists for the project with id = {payload.project_id.value}."
+            )
+        return self._write_repository.create(payload)
+
+
+class TamMemberService:
+    def __init__(
+        self,
+        team_member_read_repository: TeamMemberReadRepository,
+        team_member_write_repository: TeamMemberWriteRepository,
+    ):
+        self._team_member_read_repository = team_member_read_repository
+        self._team_member_write_repository = team_member_write_repository
+
+    def create(self, payload: TeamMemberCreatePayload) -> TeamMember:
+        return self._team_member_write_repository.create(payload)
 
 
 class ProjectService:

@@ -1,13 +1,13 @@
 from domain.exceptions.auth import InvalidCredentialsException, InvalidTokenException, TokenExpiredException
 from domain.exceptions.company import CompanyNotFoundException, CompanyOwnershipRequiredException
-from domain.exceptions.funding_model import FundingModelNotFoundException
 from domain.exceptions.permissions import DeletePermissionDenied
-from domain.exceptions.project import (
+from domain.exceptions.project_management import (
+    FundingModelNotFoundException,
     NegativeProjectGoalSumValidationException,
+    ProjectCategoryNotFoundException,
     ProjectDeadlineInPastValidationException,
     ProjectNameIsTooLongValidationException,
 )
-from domain.exceptions.project_category import ProjectCategoryNotFoundException
 from domain.exceptions.user import UserNotFoundException
 from domain.exceptions.validation import (
     DateIsNotIsoFormatException,

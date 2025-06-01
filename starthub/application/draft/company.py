@@ -2,10 +2,10 @@ from datetime import date
 from typing import Any
 
 from domain.exceptions.validation import ValidationException
-from domain.value_objects.base import BaseVo
+from domain.value_objects import BaseVo
 from domain.value_objects.common import Id
+from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode
-from domain.value_objects.project import BusinessNumber
 from pydantic import field_validator
 
 

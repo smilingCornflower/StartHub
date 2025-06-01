@@ -11,7 +11,7 @@ from domain.exceptions.validation import (
     InvalidSocialLinkException,
     LastNameIsTooLongException,
 )
-from domain.value_objects.base import BaseVo
+from domain.value_objects import BaseVo
 from pydantic import ValidationInfo, field_validator
 
 

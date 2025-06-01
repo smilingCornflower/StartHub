@@ -3,7 +3,7 @@ from typing import Any
 
 from application.converters.request_converters.project import request_data_to_project_create_payload
 from django.test import TestCase
-from domain.exceptions.project import ProjectDeadlineInPastValidationException
+from domain.exceptions.project_management import ProjectDeadlineInPastValidationException
 from domain.exceptions.validation import (
     DateIsNotIsoFormatException,
     DisallowedSocialLinkException,
@@ -14,7 +14,7 @@ from domain.exceptions.validation import (
     LastNameIsTooLongException,
     ValidationException,
 )
-from domain.value_objects.project import ProjectCreatePayload
+from domain.value_objects.project_management import ProjectCreatePayload
 
 
 class TestProjectCreatePayloadConversion(TestCase):

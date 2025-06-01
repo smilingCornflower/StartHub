@@ -3,8 +3,8 @@ from unittest.mock import patch
 from django.test import TestCase
 from domain.exceptions.validation import ValidationException
 from domain.validators.business_number import KZBusinessNumberValidator
+from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode
-from domain.value_objects.project import BusinessNumber
 from pydantic import ValidationError
 
 
@@ -15,7 +15,6 @@ class BusinessNumberValidationTest(TestCase):
         self.assertEqual(business_number.country_code.value, "KZ")
         self.assertEqual(business_number.value, "123456789012")
 
-    @patch.object(KZBusinessNumberValidator, "validate", side_effect=ValidationException("Invalid"))
     def test_invalid_kz_business_number(self) -> None:
         with self.assertRaises(ValidationException):
             BusinessNumber(country_code=CountryCode(value="KZ"), value="invalid")
