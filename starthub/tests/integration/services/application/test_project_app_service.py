@@ -1,6 +1,6 @@
 from copy import deepcopy
 from datetime import date
-from typing import Any, cast
+from typing import Any
 
 from application.service_factories.project import ProjectServiceFactory
 from application.services.project import ProjectAppService

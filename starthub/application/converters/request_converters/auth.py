@@ -1,4 +1,3 @@
-from django.http import QueryDict
 from domain.exceptions.validation import ValidationException
 from domain.value_objects.auth import LoginCredentials
 from domain.value_objects.token import AccessTokenVo, RefreshTokenVo
@@ -6,7 +5,7 @@ from domain.value_objects.user import Email, RawPassword, UserCreatePayload, Use
 from loguru import logger
 
 
-def request_data_to_user_create_payload(data: QueryDict) -> UserCreatePayload:
+def request_data_to_user_create_payload(data: dict[str, str]) -> UserCreatePayload:
     """
     :raises ValidationException: If required fields missing or Email / Username / RawPassword validation fails.
     """
@@ -25,7 +24,7 @@ def request_data_to_user_create_payload(data: QueryDict) -> UserCreatePayload:
     return UserCreatePayload(username=Username(username), email=Email(email), password=RawPassword(password))
 
 
-def request_data_to_login_credentials(data: QueryDict) -> LoginCredentials:
+def request_data_to_login_credentials(data: dict[str, str]) -> LoginCredentials:
     """
     Convert request data to LoginCredentials.
 

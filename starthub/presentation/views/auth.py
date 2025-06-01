@@ -1,27 +1,25 @@
 from dataclasses import asdict
-from typing import cast
 
 from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
 from application.service_factories.auth import AuthServiceFactory, RegistrationServiceFactory
 from application.services.auth import AuthAppService, RegistrationAppService
-from django.http import QueryDict
 from domain.exceptions.auth import InvalidCredentialsException, InvalidTokenException
 from domain.exceptions.user import EmailAlreadyExistsException, UsernameAlreadyExistsException
 from domain.exceptions.validation import ValidationException
 from loguru import logger
 from rest_framework import status
-from rest_framework.parsers import FormParser
+from rest_framework.parsers import JSONParser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
 class LoginView(APIView):
-    parser_classes = [FormParser]
+    parser_classes = [JSONParser]
 
     @staticmethod
     def post(request: Request) -> Response:
-        form_data: QueryDict = cast(QueryDict, request.data)
+        form_data: dict[str, str] = request.data
         logger.debug(f"request data = {form_data}")
 
         auth_service: AuthAppService = AuthServiceFactory.create_service()
@@ -52,11 +50,11 @@ class LoginView(APIView):
 
 
 class RegistrationView(APIView):
-    parser_classes = [FormParser]
+    parser_classes = [JSONParser]
 
     @staticmethod
     def post(request: Request) -> Response:
-        form_data: QueryDict = cast(QueryDict, request.data)
+        form_data: dict[str, str] = request.data
         registration_service: RegistrationAppService = RegistrationServiceFactory.create_service()
         try:
             registration_service.register(form_data)
@@ -72,7 +70,7 @@ class RegistrationView(APIView):
 
 
 class ReissueAccessTokenView(APIView):
-    parser_classes = [FormParser]
+    parser_classes = [JSONParser]
 
     @staticmethod
     def post(request: Request) -> Response:

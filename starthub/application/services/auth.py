@@ -11,7 +11,6 @@ from application.converters.resposne_converters.auth import (
 )
 from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
 from application.ports.service import AbstractAppService
-from django.http import QueryDict
 from domain.models.user import User
 from domain.services.auth import AuthService, RegistrationService
 from domain.services.token import TokenService
@@ -25,7 +24,7 @@ class RegistrationAppService(AbstractAppService):
     def __init__(self, registration_service: RegistrationService):
         self._registration_service = registration_service
 
-    def register(self, request_data: QueryDict) -> User:
+    def register(self, request_data: dict[str, str]) -> User:
         """
         :raises ValidationException:
         :raises UsernameAlreadyExistsException:
@@ -43,7 +42,7 @@ class AuthAppService(AbstractAppService):
         self._auth_service = auth_service
         self._token_service = token_service
 
-    def login(self, credentials_raw: QueryDict) -> TokenPairDto:
+    def login(self, credentials_raw: dict[str, str]) -> TokenPairDto:
         """
         :raises InvalidCredentialsException:
         :raises ValidationException:

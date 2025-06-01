@@ -1,4 +1,4 @@
-from typing import Any, cast
+from typing import Any
 
 from django.test import TestCase
 from domain.value_objects.common import FirstName, Id, LastName
