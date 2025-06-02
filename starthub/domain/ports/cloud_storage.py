@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import BinaryIO
 
 
-class CloudStorageInterface(ABC):
+class AbstractCloudStorage(ABC):
     @abstractmethod
     def upload_file(self, file_obj: BinaryIO, file_name: str) -> str:
         """
@@ -16,8 +16,19 @@ class CloudStorageInterface(ABC):
 
     @abstractmethod
     def delete_file(self, file_name: str) -> None:
+        """
+        Deletes a file from cloud storage.
+
+        :param file_name: Path to the file in storage to delete.
+        """
         pass
 
     @abstractmethod
-    def create_url(self, file_name) -> str:
+    def create_url(self, file_name: str) -> str:
+        """
+        Generates a public or signed URL for accessing the file.
+
+        :param file_name: Path to the file in storage.
+        :return: URL to access the file.
+        """
         pass

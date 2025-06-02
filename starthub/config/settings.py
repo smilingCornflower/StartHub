@@ -10,6 +10,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_FILE = "../.env"
 
 load_dotenv(BASE_DIR / ENV_FILE)
+google_cloud_credentials_path =  BASE_DIR / "../starthub-bucket-credentials.json"
+
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(google_cloud_credentials_path)
 
 # =====================================================================================================================
 LOGURU_LOG_LEVEL: str | None = os.getenv("LOGURU_LOG_LEVEL")
