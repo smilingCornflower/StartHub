@@ -1,19 +1,20 @@
 from dataclasses import asdict
 
+from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
+from application.service_factories.auth import AuthServiceFactory, RegistrationServiceFactory
+from application.services.auth import AuthAppService, RegistrationAppService
 from loguru import logger
+from presentation.constants import SUCCESS
+from presentation.response_factories.common import (
+    CommonErrorResponseFactory,
+    LoginErrorResponseFactory,
+    RegistrationErrorResponseFactory,
+)
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
-from application.service_factories.auth import AuthServiceFactory, RegistrationServiceFactory
-from application.services.auth import AuthAppService, RegistrationAppService
-from domain.exceptions.auth import InvalidTokenException
-from domain.exceptions.validation import ValidationException
-from presentation.constants import SUCCESS
-from presentation.response_factories.common import RegistrationErrorResponseFactory, LoginErrorResponseFactory
 
 
 class LoginView(APIView):
@@ -68,18 +69,17 @@ class RegistrationView(APIView):
 
 
 class ReissueAccessTokenView(APIView):
-    parser_classes = [JSONParser]
+    error_classes: tuple[type[Exception], ...] = tuple(CommonErrorResponseFactory.error_codes.keys())
 
-    @staticmethod
-    def post(request: Request) -> Response:
+    def post(self, request: Request) -> Response:
         auth_service: AuthAppService = AuthServiceFactory.create_service()
 
         try:
             access_token_dto: AccessTokenDto = auth_service.reissue_access(request.COOKIES)
-        except (ValidationException, InvalidTokenException) as e:
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except self.error_classes as e:
+            return CommonErrorResponseFactory.create_response(e)
 
-        response = Response(data={"detail": "success"}, status=200)
+        response = Response(data={"detail": "success", "code": SUCCESS}, status=200)
         response.set_cookie(
             "access_token",
             access_token_dto.access_token,
@@ -91,14 +91,17 @@ class ReissueAccessTokenView(APIView):
 
 
 class AccessVerifyView(APIView):
+    error_classes: tuple[type[Exception], ...] = tuple(CommonErrorResponseFactory.error_codes.keys())
 
-    @staticmethod
-    def post(request: Request) -> Response:
+    def post(self, request: Request) -> Response:
         auth_service: AuthAppService = AuthServiceFactory.create_service()
 
         try:
             access_payload_dto: AccessPayloadDto = auth_service.verify_access(request.COOKIES)
-        except (ValidationException, InvalidTokenException) as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        except self.error_classes as e:
+            return CommonErrorResponseFactory.create_response(e)
 
         return Response(asdict(access_payload_dto), status=status.HTTP_200_OK)
+
+
+# TODO: Add logout

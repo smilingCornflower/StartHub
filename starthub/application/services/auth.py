@@ -1,8 +1,9 @@
 from application.converters.request_converters.auth import (
     request_cookies_to_access_token,
     request_cookies_to_refresh_token,
+    request_data_to_email,
     request_data_to_login_credentials,
-    request_data_to_user_create_payload, request_data_to_email,
+    request_data_to_user_create_payload,
 )
 from application.converters.resposne_converters.auth import (
     access_payload_to_dto,
@@ -16,7 +17,7 @@ from domain.services.auth import AuthService, RegistrationService
 from domain.services.token import TokenService
 from domain.value_objects.auth import LoginCredentials
 from domain.value_objects.token import AccessPayload, AccessTokenVo, RefreshTokenVo, TokenPairVo
-from domain.value_objects.user import UserCreatePayload, Email
+from domain.value_objects.user import Email, UserCreatePayload
 from loguru import logger
 
 
