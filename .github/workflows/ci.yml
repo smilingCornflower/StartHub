@@ -10,7 +10,7 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
-    steps:
+    lint:
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -25,7 +25,7 @@ jobs:
           uv sync --dev
 
       - name: Create .env file
-        run: | 
+        run: |
           touch .env
           echo "DEBUG=${{ secrets.DEBUG }}" >> .env
           echo "DB_USER=${{ secrets.DB_USER }}" >> .env
@@ -52,6 +52,35 @@ jobs:
       - name: Run black
         run: uv run black . --check
         working-directory: starthub
+
+    tests:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set Up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install Dependencies
+        run: |
+          pip install uv
+          uv sync --dev
+      - name: Create .env file
+        run: |
+          touch .env
+          echo "DEBUG=${{ secrets.DEBUG }}" >> .env
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "LOGURU_LOG_LEVEL=${{ secrets.LOGURU_LOG_LEVEL }}" >> .env
+          echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+          echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env
+          echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
+
+      - name: Run postgresql
+        run: docker compose up -d db
 
       - name: Run tests
         run: uv run manage.py test
