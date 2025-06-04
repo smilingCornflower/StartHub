@@ -1,36 +1,37 @@
 from dataclasses import asdict
 
-from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
-from application.service_factories.auth import AuthServiceFactory, RegistrationServiceFactory
-from application.services.auth import AuthAppService, RegistrationAppService
-from domain.exceptions.auth import InvalidCredentialsException, InvalidTokenException
-from domain.exceptions.validation import ValidationException
 from loguru import logger
-from presentation.constants import SUCCESS
-from presentation.response_factories.common import RegistrationErrorResponseFactory
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
+from application.service_factories.auth import AuthServiceFactory, RegistrationServiceFactory
+from application.services.auth import AuthAppService, RegistrationAppService
+from domain.exceptions.auth import InvalidTokenException
+from domain.exceptions.validation import ValidationException
+from presentation.constants import SUCCESS
+from presentation.response_factories.common import RegistrationErrorResponseFactory, LoginErrorResponseFactory
+
 
 class LoginView(APIView):
     parser_classes = [JSONParser]
+    error_classes: tuple[type[Exception], ...] = tuple(LoginErrorResponseFactory.error_codes.keys())
 
-    @staticmethod
-    def post(request: Request) -> Response:
+    def post(self, request: Request) -> Response:
         form_data: dict[str, str] = request.data
         logger.debug(f"request data = {form_data}")
 
         auth_service: AuthAppService = AuthServiceFactory.create_service()
         try:
             tokens_pair_dto: TokenPairDto = auth_service.login(form_data)
-        except (InvalidCredentialsException, ValidationException) as e:
+        except self.error_classes as e:
             logger.error(e)
-            return Response({"detail": str(e)}, status.HTTP_400_BAD_REQUEST)
+            return LoginErrorResponseFactory.create_response(e)
 
-        response = Response(data={"detail": "success"}, status=200)
+        response = Response(data={"detail": "success", "code": SUCCESS}, status=200)
         response.set_cookie(
             "access_token",
             tokens_pair_dto.access_token,

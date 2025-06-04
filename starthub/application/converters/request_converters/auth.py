@@ -1,9 +1,10 @@
+from loguru import logger
+
 from domain.exceptions.validation import ValidationException
 from domain.value_objects.auth import LoginCredentials
 from domain.value_objects.common import FirstName, LastName
 from domain.value_objects.token import AccessTokenVo, RefreshTokenVo
 from domain.value_objects.user import Email, RawPassword, UserCreatePayload
-from loguru import logger
 
 
 def request_data_to_user_create_payload(data: dict[str, str]) -> UserCreatePayload:
@@ -13,7 +14,7 @@ def request_data_to_user_create_payload(data: dict[str, str]) -> UserCreatePaylo
     :LastNameIsTooLongException:
     :EmptyStringException:
     :InvalidEmailException:
-    :WeakPasswordException:
+    :PasswordValidationException:
     :pydantic.ValidationError: If fields has incorrect types
     """
     first_name: str | None = data.get("first_name")
@@ -40,9 +41,11 @@ def request_data_to_user_create_payload(data: dict[str, str]) -> UserCreatePaylo
 
 def request_data_to_login_credentials(data: dict[str, str]) -> LoginCredentials:
     """
-    Convert request data to LoginCredentials.
-
-    :raises ValidationException: If required fields missing or Email / RawPassword validation fails.
+    :raises KeyError: If required fields missing.
+    :raises EmptyStringException:
+    :raises InvalidEmailException:
+    :raises PasswordValidationException:
+    :raises pydantic.ValidationError: If fields has incorrect types
     """
     email: str | None = data.get("email")
     password: str | None = data.get("password")
@@ -50,9 +53,9 @@ def request_data_to_login_credentials(data: dict[str, str]) -> LoginCredentials:
     logger.debug(f"email = {email}")
     logger.debug(f"Is password provided = {bool(password)}")
 
-    if not (email and password):
+    if email is None or password is None:
         logger.error("Missing required fields.")
-        raise ValidationException("Missing required fields: email or password.")
+        raise KeyError("Missing required fields: email or password.")
 
     return LoginCredentials(email=Email(value=email), password=RawPassword(value=password))
 
@@ -74,3 +77,11 @@ def request_cookies_to_access_token(cookies: dict[str, str]) -> AccessTokenVo:
         logger.error("Missing access_token field.")
         raise ValidationException("Missing required field: access_token.")
     return AccessTokenVo(value=token)
+
+
+def request_data_to_email(data: dict[str, str]) -> Email:
+    """:raises KeyError: If missing required fields."""
+    try:
+        return Email(value=data["email"])
+    except KeyError:
+        raise KeyError("Missing required fields: email must be provided.")

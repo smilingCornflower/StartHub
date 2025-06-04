@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from domain.exceptions.auth import WeakPasswordException
+from domain.exceptions.auth import PasswordValidationException
 from domain.exceptions.user import EmailAlreadyExistsException
 from domain.exceptions.validation import (
     EmptyStringException,
@@ -16,7 +16,7 @@ from pydantic import ValidationError
 from rest_framework.test import APIClient
 
 
-class RegisterTest(TestCase):
+class TestRegister(TestCase):
     def setUp(self) -> None:
         self.client = APIClient()
         self.register_url = reverse("register")
@@ -58,7 +58,7 @@ class RegisterTest(TestCase):
                 valid_data_copy = self.valid_data
                 valid_data_copy["password"] = password
                 response = self.client.post(self.register_url, data=valid_data_copy, content_type=self.content_type)
-                app_code, http_code = RegistrationErrorResponseFactory.error_codes[WeakPasswordException]
+                app_code, http_code = RegistrationErrorResponseFactory.error_codes[PasswordValidationException]
                 logger.info(f"Expecting app_code: {app_code} and http_code: {http_code}")
 
                 self.assertEqual(response.status_code, http_code)

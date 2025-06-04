@@ -2,7 +2,7 @@ from application.converters.request_converters.auth import (
     request_cookies_to_access_token,
     request_cookies_to_refresh_token,
     request_data_to_login_credentials,
-    request_data_to_user_create_payload,
+    request_data_to_user_create_payload, request_data_to_email,
 )
 from application.converters.resposne_converters.auth import (
     access_payload_to_dto,
@@ -16,7 +16,7 @@ from domain.services.auth import AuthService, RegistrationService
 from domain.services.token import TokenService
 from domain.value_objects.auth import LoginCredentials
 from domain.value_objects.token import AccessPayload, AccessTokenVo, RefreshTokenVo, TokenPairVo
-from domain.value_objects.user import UserCreatePayload
+from domain.value_objects.user import UserCreatePayload, Email
 from loguru import logger
 
 
@@ -31,7 +31,7 @@ class RegistrationAppService(AbstractAppService):
         :LastNameIsTooLongException:
         :EmptyStringException:
         :InvalidEmailException:
-        :WeakPasswordException:
+        :PasswordValidationException:
         :pydantic.ValidationError: If fields has incorrect types
         :raises EmailAlreadyExistsException:
         """
@@ -46,11 +46,26 @@ class AuthAppService(AbstractAppService):
         self._auth_service = auth_service
         self._token_service = token_service
 
+    def _check_user_existence(self, credentials_raw: dict[str, str]) -> None:
+        """
+        :raises KeyError: If missing email field.
+        :raises UserNotFoundException:
+        """
+        email: Email = request_data_to_email(credentials_raw)
+        self._auth_service.check_user_existence(email)
+
     def login(self, credentials_raw: dict[str, str]) -> TokenPairDto:
         """
+        :raises KeyError: If required fields missing.
+        :raises UserNotFoundException:
+        :raises EmptyStringException:
+        :raises InvalidEmailException:
+        :raises PasswordValidationException:
+        :raises pydantic.ValidationError: If fields has incorrect types
         :raises InvalidCredentialsException:
-        :raises ValidationException:
         """
+        self._check_user_existence(credentials_raw=credentials_raw)
+
         credentials: LoginCredentials = request_data_to_login_credentials(data=credentials_raw)
         logger.info("Credentials parsed successfully")
 
