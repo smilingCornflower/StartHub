@@ -24,7 +24,8 @@ class CompanyAppServiceTests(TestCase):
         Country.objects.create(code="KZ")
         self.user = User.objects.create_user(
             email="test.email@example.com",
-            username="test",
+            first_name="first_name",
+            last_name="last_name",
             password="TestPass1234",
         )
         self.service: CompanyAppService = CompanyServiceFactory().create_service()

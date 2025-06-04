@@ -1,10 +1,10 @@
 from datetime import timedelta
-from typing import BinaryIO
+from typing import BinaryIO, cast
 
-from google.cloud.exceptions import GoogleCloudError, NotFound
-from google.cloud.storage import Client, Bucket
-from google.cloud.storage.blob import Blob
 from domain.ports.cloud_storage import AbstractCloudStorage
+from google.cloud.exceptions import GoogleCloudError, NotFound
+from google.cloud.storage import Bucket, Client
+from google.cloud.storage.blob import Blob
 from loguru import logger
 
 
@@ -35,7 +35,7 @@ class GoogleCloudStorage(AbstractCloudStorage):
         try:
             blob.upload_from_file(file_obj=file_obj, rewind=True)
             logger.info("File uploaded into the bucket.")
-            return blob.name
+            return cast(str, blob.name)
         except GoogleCloudError as e:
             logger.error(f"Cloud error during uploading: {e}")
             raise e
@@ -53,7 +53,7 @@ class GoogleCloudStorage(AbstractCloudStorage):
         blob: Blob = self._bucket.blob(blob_name=file_name)
         try:
             blob.delete()
-            logger.info(f"Finished deleting blob")
+            logger.info("Finished deleting blob")
         except NotFound:
             logger.error(f"Blob {file_name} not found in bucket.")
         except GoogleCloudError as e:
@@ -70,7 +70,7 @@ class GoogleCloudStorage(AbstractCloudStorage):
         """
         blob: Blob = self._bucket.blob(blob_name=file_name)
         try:
-            return blob.generate_signed_url(version="v4", expiration=timedelta(minutes=15))
+            return cast(str, blob.generate_signed_url(version="v4", expiration=timedelta(minutes=15)))
         except GoogleCloudError as e:
             logger.error(f"Google Cloud error during generating url for {file_name}: {e}")
             raise e

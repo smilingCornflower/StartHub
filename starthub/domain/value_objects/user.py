@@ -1,66 +1,51 @@
 import re
 from dataclasses import dataclass
 
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError as DjValidationError
 from django.core.validators import EmailValidator
-from domain.constants import (
-    PASSWORD_MAX_LENGTH,
-    PASSWORD_MIN_LENGTH,
-    PASSWORD_PATTERN,
-    USERNAME_MAX_LENGTH,
-    USERNAME_MIN_LENGTH,
-    USERNAME_PATTERN,
-)
-from domain.exceptions.validation import ValidationException
+from domain.constants import PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_PATTERN
+from domain.exceptions.auth import WeakPasswordException
+from domain.exceptions.validation import InvalidEmailException
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
-from domain.value_objects.common import Id
+from domain.value_objects import BaseVo
+from domain.value_objects.common import FirstName, Id, LastName
+from pydantic import field_validator
 
 
-@dataclass(frozen=True)
-class Username:
+class RawPassword(BaseVo):
     value: str
 
-    def __post_init__(self) -> None:
-        if not isinstance(self.value, str):
-            raise TypeError("Username value must be str.")
-        if not (USERNAME_MIN_LENGTH <= len(self.value) <= USERNAME_MAX_LENGTH):
-            raise ValidationException(f"Username must be {USERNAME_MIN_LENGTH}-{USERNAME_MAX_LENGTH} chars.")
-        if not re.match(USERNAME_PATTERN, self.value):
-            raise ValidationException("Username contains invalid characters.")
+    @field_validator("value", mode="after")
+    @classmethod
+    def is_strong_password(cls, value: str) -> str:
+        if not (PASSWORD_MIN_LENGTH <= len(value) <= PASSWORD_MAX_LENGTH):
+            raise WeakPasswordException(f"Password must be {PASSWORD_MIN_LENGTH}-{PASSWORD_MAX_LENGTH} chars.")
 
-
-@dataclass(frozen=True)
-class RawPassword:
-    value: str
-
-    def __post_init__(self) -> None:
-        if not isinstance(self.value, str):
-            raise TypeError("RawPassword value must be str.")
-        if not (PASSWORD_MIN_LENGTH <= len(self.value) <= PASSWORD_MAX_LENGTH):
-            raise ValidationException(f"Password must be {PASSWORD_MIN_LENGTH}-{PASSWORD_MAX_LENGTH} chars.")
-        if not re.match(PASSWORD_PATTERN, self.value):
-            raise ValidationException(
+        if not re.match(PASSWORD_PATTERN, value):
+            raise WeakPasswordException(
                 "Password must contain at least one digit, one uppercase letter and one lowercase letter."
             )
+        return value
 
 
-@dataclass(frozen=True)
-class Email:
+class Email(BaseVo):
     value: str
 
-    def __post_init__(self) -> None:
-        if not isinstance(self.value, str):
-            raise TypeError("Email value must be str.")
+    @field_validator("value", mode="after")
+    @classmethod
+    def is_valid_email(cls, value: str) -> str:
         email_validator = EmailValidator()
         try:
-            email_validator(self.value)
-        except ValidationError:
-            raise ValidationException(f"Invalid email address: {self.value}.")
+            email_validator(value)
+        except DjValidationError:
+            raise InvalidEmailException(f"Invalid email address: {value}.")
+        return value
 
 
 @dataclass(frozen=True)
 class UserCreatePayload(AbstractCreatePayload):
-    username: Username
+    first_name: FirstName
+    last_name: LastName
     email: Email
     password: RawPassword
 
@@ -68,6 +53,7 @@ class UserCreatePayload(AbstractCreatePayload):
 @dataclass(frozen=True)
 class UserUpdatePayload(AbstractUpdatePayload):
     id_: Id
-    username: Username | None = None
+    first_name: FirstName | None = None
+    last_name: LastName | None = None
     email: Email | None = None
     password: RawPassword | None = None

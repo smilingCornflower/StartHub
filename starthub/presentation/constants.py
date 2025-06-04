@@ -44,3 +44,4 @@ APPLICATION_ERROR_CODES: dict[type, tuple[str, int]] = {
     InvalidTokenException: ("INVALID_TOKEN", 401),
     TokenExpiredException: ("TOKEN_EXPIRED", 401),
 }
+SUCCESS = "SUCCESS"

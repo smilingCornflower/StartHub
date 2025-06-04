@@ -1,5 +1,5 @@
 from domain.exceptions.auth import InvalidCredentialsException, InvalidTokenException
-from domain.exceptions.user import EmailAlreadyExistsException, UsernameAlreadyExistsException, UserNotFoundException
+from domain.exceptions.user import EmailAlreadyExistsException, UserNotFoundException
 from domain.models.user import User
 from domain.repositories.user import UserReadRepository, UserWriteRepository
 from domain.services.token import TokenService
@@ -7,7 +7,7 @@ from domain.value_objects.auth import LoginCredentials
 from domain.value_objects.common import Id
 from domain.value_objects.filter import UserFilter
 from domain.value_objects.token import AccessTokenVo, RefreshPayload, RefreshTokenVo, TokenPairVo
-from domain.value_objects.user import Email, UserCreatePayload, Username
+from domain.value_objects.user import Email, UserCreatePayload
 from loguru import logger
 
 
@@ -84,25 +84,15 @@ class RegistrationService:
 
     def register(self, data: UserCreatePayload) -> User:
         """
-        :raises UsernameAlreadyExistsException:
         :raises EmailAlreadyExistsException:
         """
         logger.warning(f"Starting to register a user '{data.email.value}'.")
-        self._check_username_already_exists(data.username)
         self._check_email_already_exists(data.email)
 
         user: User = self.write_repository.create(data)
         logger.info(f"User {user.email} is registered successfully.")
 
         return user
-
-    def _check_username_already_exists(self, username: Username) -> None:
-        """:raises UsernameAlreadyExistsException:"""
-        result: list[User] = self.read_repository.get_all(UserFilter(username=username))
-        if result:
-            logger.error(f"The username '{username.value}' already in use.")
-            raise UsernameAlreadyExistsException(username.value)
-        logger.debug(f"The username '{username.value}' is free to use.")
 
     def _check_email_already_exists(self, email: Email) -> None:
         """:raises EmailAlreadyExistsException:"""

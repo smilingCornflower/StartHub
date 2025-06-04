@@ -3,7 +3,7 @@ from domain.models.user import User
 from domain.repositories.user import UserReadRepository, UserWriteRepository
 from domain.value_objects.common import Id
 from domain.value_objects.filter import UserFilter
-from domain.value_objects.user import Email, UserCreatePayload, Username, UserUpdatePayload
+from domain.value_objects.user import Email, UserCreatePayload, UserUpdatePayload
 
 
 class DjUserReadRepository(UserReadRepository):
@@ -20,8 +20,10 @@ class DjUserReadRepository(UserReadRepository):
             return list(User.objects.filter(id=filter_.id_.value))
         if filter_.email:
             return list(User.objects.filter(email=filter_.email.value))
-        if filter_.username:
-            return list(User.objects.filter(username=filter_.username.value))
+        if filter_.first_name:
+            return list(User.objects.filter(username=filter_.first_name.value))
+        if filter_.last_name:
+            return list(User.objects.filter(username=filter_.last_name.value))
         return list(User.objects.all())
 
     def get_by_email(self, email: Email) -> User:
@@ -31,19 +33,13 @@ class DjUserReadRepository(UserReadRepository):
             raise UserNotFoundException(f"An user with email = {email.value} not found.")
         return user
 
-    def get_by_username(self, username: Username) -> User:
-        """:raises UserNotFoundException:"""
-        user: User | None = User.objects.filter(username=username.value).first()
-        if user is None:
-            raise UserNotFoundException(f"An user with username = {username.value} not found.")
-        return user
-
 
 class DjUserWriteRepository(UserWriteRepository):
     def create(self, data: UserCreatePayload) -> User:
         return User.objects.create_user(
             email=data.email.value,
-            username=data.username.value,
+            first_name=data.first_name.value,
+            last_name=data.last_name.value,
             password=data.password.value,
         )
 
@@ -56,8 +52,10 @@ class DjUserWriteRepository(UserWriteRepository):
 
         if data.email:
             user.email = data.email.value
-        if data.username:
-            user.username = data.username.value
+        if data.first_name:
+            user.first_name = data.first_name.value
+        if data.last_name:
+            user.last_name = data.last_name.value
         if data.password:
             user.set_password(data.password.value)
         user.save()

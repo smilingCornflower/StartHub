@@ -43,7 +43,8 @@ class TestProjectAppService(TestCase):
     def setUpTestData(cls) -> None:
         cls.user = User.objects.create_user(
             email="test@example.com",
-            username="testuser",
+            first_name="first_name",
+            last_name="last_name",
             password="Password123!",
         )
         cls.country = Country.objects.create(code="KZ")
@@ -219,7 +220,8 @@ class TestProjectAppService(TestCase):
     def test_user_is_not_company_representative(self) -> None:
         another_user = User.objects.create_user(
             email="another@example.com",
-            username="another",
+            first_name="another_first_name",
+            last_name="another_last_name",
             password="Password123!",
         )
         with self.assertRaises(CompanyOwnershipRequiredException):

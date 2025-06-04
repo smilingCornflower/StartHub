@@ -1,8 +1,9 @@
 from django.test import TestCase
-from domain.exceptions.user import EmailAlreadyExistsException, UsernameAlreadyExistsException
+from domain.exceptions.user import EmailAlreadyExistsException
 from domain.models.user import User
 from domain.services.auth import RegistrationService
-from domain.value_objects.user import Email, RawPassword, UserCreatePayload, Username
+from domain.value_objects.common import FirstName, LastName
+from domain.value_objects.user import Email, RawPassword, UserCreatePayload
 from infrastructure.repositories.user import DjUserReadRepository, DjUserWriteRepository
 
 
@@ -15,29 +16,23 @@ class TestRegistrationService(TestCase):
 
     def test_success_registration(self) -> None:
         payload = UserCreatePayload(
-            username=Username("test"),
-            email=Email("test@example.com"),
-            password=RawPassword("Pass1234"),
+            first_name=FirstName(value="first_name"),
+            last_name=LastName(value="last_name"),
+            email=Email(value="test@example.com"),
+            password=RawPassword(value="Pass1234"),
         )
         self.service.register(payload)
-        self.assertTrue(User.objects.filter(username="test").exists())
-
-    def test_username_already_exists_register(self) -> None:
-        User.objects.create_user(username="test", email="another.email@example.com", password="Pass1234")
-        payload = UserCreatePayload(
-            username=Username("test"),
-            email=Email("test@example.com"),
-            password=RawPassword("Pass1234"),
-        )
-        with self.assertRaises(UsernameAlreadyExistsException):
-            self.service.register(payload)
+        self.assertTrue(User.objects.filter(email="test@example.com").exists())
 
     def test_email_already_exists_register(self) -> None:
-        User.objects.create_user(username="another_username", email="test@example.com", password="Pass1234")
+        User.objects.create_user(
+            first_name="first_name", last_name="last_name", email="test@example.com", password="Pass1234"
+        )
         payload = UserCreatePayload(
-            username=Username("test"),
-            email=Email("test@example.com"),
-            password=RawPassword("Pass1234"),
+            first_name=FirstName(value="first_name"),
+            last_name=LastName(value="last_name"),
+            email=Email(value="test@example.com"),
+            password=RawPassword(value="Pass1234"),
         )
         with self.assertRaises(EmailAlreadyExistsException):
             self.service.register(payload)

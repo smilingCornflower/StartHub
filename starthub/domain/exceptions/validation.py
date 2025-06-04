@@ -31,3 +31,7 @@ class EmptyStringException(ValidationException):
 
 class DateIsNotIsoFormatException(ValidationException):
     pass
+
+
+class InvalidEmailException(ValidationException):
+    pass

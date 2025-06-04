@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 from typing import cast
+from unittest.mock import MagicMock
 
 import jwt
 from django.test import TestCase
@@ -38,8 +39,13 @@ class TokenServiceTestCase(TestCase):
             access_token_lifetime=cls.access_token_lifetime,
             refresh_token_lifetime=cls.refresh_token_lifetime,
         )
+        mock_user = MagicMock(spec=User)
+        mock_user.id = 1
+        mock_user.email = "test@example.com"
+        mock_user.first_name = "first_name"
+        mock_user.last_name = "last_name"
 
-        cls.user = User.objects.create_user(email="test@example.com", username="test_user", password="password")
+        cls.user = mock_user
 
     def test_generate_access_token(self) -> None:
         access_token: AccessTokenVo = self.token_service.generate_access(user=self.user)

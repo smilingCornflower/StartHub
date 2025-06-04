@@ -4,9 +4,10 @@ from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
 from application.service_factories.auth import AuthServiceFactory, RegistrationServiceFactory
 from application.services.auth import AuthAppService, RegistrationAppService
 from domain.exceptions.auth import InvalidCredentialsException, InvalidTokenException
-from domain.exceptions.user import EmailAlreadyExistsException, UsernameAlreadyExistsException
 from domain.exceptions.validation import ValidationException
 from loguru import logger
+from presentation.constants import SUCCESS
+from presentation.response_factories.common import RegistrationErrorResponseFactory
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.request import Request
@@ -51,22 +52,18 @@ class LoginView(APIView):
 
 class RegistrationView(APIView):
     parser_classes = [JSONParser]
+    error_classes: tuple[type[Exception], ...] = tuple(RegistrationErrorResponseFactory.error_codes.keys())
 
-    @staticmethod
-    def post(request: Request) -> Response:
+    def post(self, request: Request) -> Response:
         form_data: dict[str, str] = request.data
         registration_service: RegistrationAppService = RegistrationServiceFactory.create_service()
         try:
             registration_service.register(form_data)
-        except (
-            ValidationException,
-            UsernameAlreadyExistsException,
-            EmailAlreadyExistsException,
-        ) as e:
+        except self.error_classes as e:
             logger.error(e)
-            return Response({"detail": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return RegistrationErrorResponseFactory.create_response(e)
 
-        return Response({"detail": "User has registered successfully."}, status.HTTP_201_CREATED)
+        return Response({"detail": "User has registered successfully.", "code": SUCCESS}, status.HTTP_201_CREATED)
 
 
 class ReissueAccessTokenView(APIView):

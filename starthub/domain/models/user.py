@@ -6,12 +6,11 @@ from django.db import models
 from django.utils import timezone
 from domain.constants import (
     CHAR_FIELD_MAX_LENGTH,
+    CHAR_FIELD_SHORT_LENGTH,
+    NAME_PATTERN,
     PASSWORD_MAX_LENGTH,
     PASSWORD_MIN_LENGTH,
     PASSWORD_PATTERN,
-    USERNAME_MAX_LENGTH,
-    USERNAME_MIN_LENGTH,
-    USERNAME_PATTERN,
 )
 from domain.models.base import BaseModel
 
@@ -20,18 +19,22 @@ class UserManager(BaseUserManager["User"]):
     def create_user(
         self,
         email: str,
-        username: str,
+        first_name: str,
+        last_name: str,
         password: str | None = None,
         **extra_fields: dict[str, Any],
     ) -> "User":
         if not email:
-            raise ValueError("The Email must be set")
-        if not username:
-            raise ValueError("The Username must be set")
+            raise ValueError("Email must be set.")
+        if not first_name:
+            raise ValueError("First name must be set.")
+        if not last_name:
+            raise ValueError("Last name must be set.")
         normalized_email: str = self.normalize_email(email)
         user: "User" = self.model(
             email=normalized_email,
-            username=username,
+            first_name=first_name,
+            last_name=first_name,
             **extra_fields,
         )
         user.set_password(password)
@@ -41,7 +44,8 @@ class UserManager(BaseUserManager["User"]):
     def create_superuser(
         self,
         email: str,
-        username: str,
+        first_name: str,
+        last_name: str,
         password: str | None = None,
         **extra_fields: Any,
     ) -> "User":
@@ -53,19 +57,20 @@ class UserManager(BaseUserManager["User"]):
             raise ValueError("Superuser must have is_staff=True.")
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
-        return self.create_user(email, username, password, **extra_fields)
+        return self.create_user(
+            email=email, first_name=first_name, last_name=last_name, password=password, **extra_fields
+        )
 
 
 class User(AbstractBaseUser, BaseModel, PermissionsMixin):
     email = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH, unique=True, validators=[EmailValidator()])
-    username = models.CharField(
-        max_length=CHAR_FIELD_MAX_LENGTH,
-        unique=True,
-        validators=[
-            RegexValidator(USERNAME_PATTERN),
-            MinLengthValidator(USERNAME_MIN_LENGTH),
-            MaxLengthValidator(USERNAME_MAX_LENGTH),
-        ],
+    first_name = models.CharField(
+        max_length=CHAR_FIELD_SHORT_LENGTH,
+        validators=[RegexValidator(NAME_PATTERN)],
+    )
+    last_name = models.CharField(
+        max_length=CHAR_FIELD_SHORT_LENGTH,
+        validators=[RegexValidator(NAME_PATTERN)],
     )
     password = models.CharField(
         max_length=128,
@@ -82,16 +87,16 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username"]
+    REQUIRED_FIELDS = ["first_name", "last_name"]
 
     def __str__(self) -> str:
-        return self.username
+        return self.first_name
 
     def get_short_name(self) -> str:
-        return self.username
+        return self.first_name
 
     def get_full_name(self) -> str:
-        return self.username
+        return self.first_name + " " + self.last_name
 
     class Meta:
         db_table = "users"

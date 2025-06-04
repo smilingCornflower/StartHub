@@ -5,12 +5,12 @@ CHAR_FIELD_MEDIUM_LENGTH = 100
 CHAR_FIELD_SHORT_LENGTH = 50
 
 # String consists only of letters (uppercase and lowercase), numbers, hyphens, and underscores.
-USERNAME_PATTERN = re.compile(r"^[\w_-]+$", flags=re.UNICODE)
-USERNAME_MIN_LENGTH = 3
-USERNAME_MAX_LENGTH = 25
+FIRST_NAME_MAX_LENGTH = CHAR_FIELD_SHORT_LENGTH
+LAST_NAME_MAX_LENGTH = CHAR_FIELD_SHORT_LENGTH
+NAME_PATTERN = re.compile(r"^[\w_-]+$", flags=re.UNICODE)
 
 PASSWORD_MIN_LENGTH = 6
-PASSWORD_MAX_LENGTH = 128
+PASSWORD_MAX_LENGTH = 64
 
 # Passwords contains at least one: lowercase letter, uppercase letter and digit
 PASSWORD_PATTERN = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$")

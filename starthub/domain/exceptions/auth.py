@@ -1,4 +1,5 @@
 from domain.exceptions import DomainException
+from domain.exceptions.validation import ValidationException
 
 
 class AuthException(DomainException):
@@ -14,4 +15,8 @@ class InvalidTokenException(AuthException):
 
 
 class TokenExpiredException(InvalidTokenException):
+    pass
+
+
+class WeakPasswordException(ValidationException, AuthException):
     pass

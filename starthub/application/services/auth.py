@@ -26,14 +26,18 @@ class RegistrationAppService(AbstractAppService):
 
     def register(self, request_data: dict[str, str]) -> User:
         """
-        :raises ValidationException:
-        :raises UsernameAlreadyExistsException:
+        :KeyError: Missing required fields.
+        :FirstNameIsTooLongException:
+        :LastNameIsTooLongException:
+        :EmptyStringException:
+        :InvalidEmailException:
+        :WeakPasswordException:
+        :pydantic.ValidationError: If fields has incorrect types
         :raises EmailAlreadyExistsException:
         """
         user_data: UserCreatePayload = request_data_to_user_create_payload(data=request_data)
         user: User = self._registration_service.register(data=user_data)
 
-        # TODO: Think about UserDto
         return user
 
 

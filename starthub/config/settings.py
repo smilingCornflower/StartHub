@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_FILE = "../.env"
 
 load_dotenv(BASE_DIR / ENV_FILE)
-google_cloud_credentials_path =  BASE_DIR / "../starthub-bucket-credentials.json"
+google_cloud_credentials_path = BASE_DIR / "../starthub-bucket-credentials.json"
 
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(google_cloud_credentials_path)
 

@@ -1,13 +1,14 @@
 from domain.ports.filter import AbstractFilter
 from domain.value_objects import BaseVo
-from domain.value_objects.common import Id, PhoneNumber, Slug, SocialLink
+from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
 from domain.value_objects.country import CountryCode
-from domain.value_objects.user import Email, Username
+from domain.value_objects.user import Email
 
 
 class UserFilter(AbstractFilter, BaseVo):
     id_: Id | None = None
-    username: Username | None = None
+    first_name: FirstName | None = None
+    last_name: LastName | None = None
     email: Email | None = None
 
 
