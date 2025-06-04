@@ -1,11 +1,13 @@
-name: Lint
+name: CI
+
 on:
   push:
     branches:
       - master
       - dev
+
 jobs:
-  lint:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
@@ -50,3 +52,6 @@ jobs:
       - name: Run black
         run: uv run black . --check
         working-directory: starthub
+
+      - name: Run tests
+        run: uv run manage.py test
