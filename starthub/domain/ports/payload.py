@@ -1,9 +1,17 @@
 from abc import ABC
 
 
-class AbstractCreatePayload(ABC):
+class AbstractPayload(ABC):
     pass
 
 
-class AbstractUpdatePayload(ABC):
+class AbstractCreatePayload(AbstractPayload):
+    pass
+
+
+class AbstractUpdatePayload(AbstractPayload):
+    pass
+
+
+class AbstractDeletePayload(AbstractPayload):
     pass
