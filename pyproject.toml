@@ -9,16 +9,17 @@ dependencies = [
     "django-autoslug>=1.9.9",
     "django-countries>=7.6.1",
     "djangorestframework>=3.16.0",
+    "filetype>=1.2.0",
     "google-cloud-storage>=3.1.0",
     "gunicorn>=23.0.0",
     "loguru>=0.7.3",
     "phonenumbers>=9.0.6",
-    "pillow>=11.2.1",
     "psycopg[binary]>=3.2.9",
     "pydantic>=2.11.5",
     "pyjwt>=2.10.1",
     "python-dotenv>=1.1.0",
     "python-slugify>=8.0.4",
+    "wand>=0.6.13",
 ]
 
 [dependency-groups]

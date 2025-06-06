@@ -1,36 +1,46 @@
 import io
+from io import BytesIO
 from typing import BinaryIO
 
-from PIL import Image, UnidentifiedImageError
+import filetype
 from loguru import logger
+from wand.image import Image
+
+from domain.exceptions.image import NotSupportedImageFormatException
 
 
 class ImageService:
-    def convert_to_jpg(self, file_obj: BinaryIO) -> BinaryIO:
-        """:raises ValueError:"""
-        try:
-            return self._convert_to_jpg(file_obj)
-        except UnidentifiedImageError as e:
-            logger.critical(f"Error during converting an image: {e}")
-            raise ValueError("Invalid image format.")
+    IMAGE_FORMATS = ("image/jpeg", "image/png", "image/gif", "image/webp", "image/avif")
 
-    @staticmethod
-    def _convert_to_jpg(file_obj: BinaryIO) -> BinaryIO:
-        """:raises UnidentifiedImageError:"""
+    def _check_image_format(self, file_obj: BinaryIO) -> None:
+        """
+        :raises  NotSupportedImageFormatException:
+        """
+        kind = filetype.guess(file_obj)
 
-        output_buffer = io.BytesIO()
-        with Image.open(file_obj) as img:
-            if img.mode in ('RGBA', 'LA', 'P'):
-                background = Image.new('RGB', img.size, (255, 255, 255))
+        if kind is None:
+            logger.debug(f"Failed to identify file type.")
+            raise NotSupportedImageFormatException(
+                f"Unrecognized file type. Expected: {', '.join(self.IMAGE_FORMATS)}"
+            )
 
-                if img.mode == 'P':
-                    img = img.convert('RGBA')
+        logger.debug(f"king.mime = {kind.mime}")
+        if kind.mime not in self.IMAGE_FORMATS:
+            raise NotSupportedImageFormatException(
+                f"The image format {kind.mime} is not supported. "
+                f"Supported image formats: {', '.join(self.IMAGE_FORMATS)}"
+            )
 
-                background.paste(img, mask=img.split()[-1] if img.mode == 'RGBA' else None)
-                img = background
+    def convert_to_jpg(self, file_obj: BinaryIO) -> BytesIO:
+        """
+        :raises NotSupportedImageFormatException:
+        """
+        self._check_image_format(file_obj)
+        result = io.BytesIO()
 
-            elif img.mode != 'RGB':
-                img = img.convert('RGB')
+        with Image(file=file_obj) as img:
+            with img.convert("jpg") as converted:
+                converted.save(file=result)
 
-            img.save(output_buffer, format='JPEG', quality=100)
-        return output_buffer
+        logger.debug(f"Image converted to jpg.")
+        return result
