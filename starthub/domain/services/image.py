@@ -3,10 +3,9 @@ from io import BytesIO
 from typing import BinaryIO
 
 import filetype
+from domain.exceptions.image import NotSupportedImageFormatException
 from loguru import logger
 from wand.image import Image
-
-from domain.exceptions.image import NotSupportedImageFormatException
 
 
 class ImageService:
@@ -19,10 +18,8 @@ class ImageService:
         kind = filetype.guess(file_obj)
 
         if kind is None:
-            logger.debug(f"Failed to identify file type.")
-            raise NotSupportedImageFormatException(
-                f"Unrecognized file type. Expected: {', '.join(self.IMAGE_FORMATS)}"
-            )
+            logger.debug("Failed to identify file type.")
+            raise NotSupportedImageFormatException(f"Unrecognized file type. Expected: {', '.join(self.IMAGE_FORMATS)}")
 
         logger.debug(f"king.mime = {kind.mime}")
         if kind.mime not in self.IMAGE_FORMATS:
@@ -41,6 +38,4 @@ class ImageService:
         with Image(file=file_obj) as img:
             with img.convert("jpg") as converted:
                 converted.save(file=result)
-
-        logger.debug(f"Image converted to jpg.")
         return result

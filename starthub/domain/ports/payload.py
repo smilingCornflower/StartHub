@@ -1,7 +1,9 @@
 from abc import ABC
 
+from domain.value_objects import BaseVo
 
-class AbstractPayload(ABC):
+
+class AbstractPayload(ABC, BaseVo):
     pass
 
 

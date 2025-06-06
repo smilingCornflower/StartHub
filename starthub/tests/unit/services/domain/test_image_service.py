@@ -1,18 +1,19 @@
-import os
 from io import BytesIO
+from pathlib import Path
 
+import filetype
+from config.settings import BASE_DIR
 from django.test import SimpleTestCase
+from domain.exceptions.image import NotSupportedImageFormatException
+from domain.services.image import ImageService
 from loguru import logger
 
-from config.settings import BASE_DIR
-from wand.image import Image
-from wand.exceptions import WandException
-
-from domain.exceptions.image import InvalidImageException, NotSupportedImageFormatException
-from domain.services.image import ImageService
-import filetype
 
 class TestImageService(SimpleTestCase):
+    supported_image_files: list[Path]
+    not_image_files: list[Path]
+    unsupported_images: list[Path]
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.supported_image_files = [
@@ -37,20 +38,20 @@ class TestImageService(SimpleTestCase):
     def test_correct_image_formats(self) -> None:
         for i in self.supported_image_files:
             with self.subTest(file=i.suffix):
-                with open(i, mode='rb') as img_file:
+                with open(i, mode="rb") as img_file:
                     ImageService()._check_image_format(img_file)
 
     def test_invalid_image_files(self) -> None:
         for i in self.not_image_files:
             with self.assertRaises(NotSupportedImageFormatException):
                 logger.info(i)
-                with open(i, mode='rb') as f:
+                with open(i, mode="rb") as f:
                     ImageService()._check_image_format(f)
 
     def test_convert_to_jpg(self) -> None:
         for i in self.supported_image_files:
             with self.subTest(file=i.name):
-                with open(i, mode='rb') as img_file:
+                with open(i, mode="rb") as img_file:
                     converted: BytesIO = ImageService().convert_to_jpg(img_file)
                 kind = filetype.guess(converted)
-                self.assertEqual(kind.mime, 'image/jpeg')
+                self.assertEqual(kind.mime, "image/jpeg")

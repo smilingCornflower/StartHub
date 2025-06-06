@@ -10,8 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_FILE = "../.env"
 
 load_dotenv(BASE_DIR / ENV_FILE)
-google_cloud_credentials_path = BASE_DIR / "../starthub-bucket-credentials.json"
 
+google_cloud_credentials_path = BASE_DIR / "../starthub-bucket-credentials.json"
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(google_cloud_credentials_path)
 
 # =====================================================================================================================
@@ -41,6 +41,7 @@ logger.add(
     enqueue=True,
 )
 # =====================================================================================================================
+_mode = os.getenv("MODE")
 _secret_key = os.getenv("DJANGO_SECRET_KEY")
 _debug = os.getenv("DEBUG")
 _db_name = os.getenv("DB_NAME")
@@ -50,9 +51,11 @@ _db_host = os.getenv("DB_HOST")
 _db_port = os.getenv("DB_PORT")
 _allowed_hosts = os.getenv("ALLOWED_HOSTS")
 _csrf_trusted_origins = os.getenv("CSRF_TRUSTED_ORIGINS")
+_google_cloud_bucket_name = os.getenv("GOOGLE_CLOUD_BUCKET_NAME")
 
 if not (
-    _secret_key
+    _mode
+    and _secret_key
     and _debug
     and _db_name
     and _db_user
@@ -61,7 +64,9 @@ if not (
     and _db_port
     and _allowed_hosts
     and _csrf_trusted_origins
+    and _google_cloud_bucket_name
 ):
+    logger.warning(f"{bool(_mode)=}")
     logger.warning(f"{bool(_secret_key)=}")
     logger.warning(f"{bool(_debug)=}")
     logger.warning(f"{bool(_db_name)=}")
@@ -71,8 +76,11 @@ if not (
     logger.warning(f"{bool(_db_port)=}")
     logger.warning(f"{bool(_allowed_hosts)=}")
     logger.warning(f"{bool(_csrf_trusted_origins)=}")
+    logger.warning(f"{bool(_google_cloud_bucket_name)=}")
+
     raise ValueError("Missing required environment variables.")
 else:
+    MODE: str = _mode.lower()
     SECRET_KEY: str = _secret_key
     DEBUG: bool = _debug.lower() == "true"
     DB_NAME: str = _db_name
@@ -82,7 +90,7 @@ else:
     DB_PORT: str = _db_port
     ALLOWED_HOSTS: list[str] = _allowed_hosts.split(",")
     CSRF_TRUSTED_ORIGINS: list[str] = _csrf_trusted_origins.split(",")
-
+    GOOGLE_CLOUD_BUCKET_NAME: str = _google_cloud_bucket_name
 logger.warning(f"{DEBUG=}")
 # =====================================================================================================================
 

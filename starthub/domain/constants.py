@@ -1,5 +1,7 @@
 import re
 
+from config.settings import MODE
+
 CHAR_FIELD_MAX_LENGTH = 255
 CHAR_FIELD_MEDIUM_LENGTH = 100
 CHAR_FIELD_SHORT_LENGTH = 50
@@ -11,9 +13,10 @@ NAME_PATTERN = re.compile(r"^[\w_-]+$", flags=re.UNICODE)
 
 PASSWORD_MIN_LENGTH = 6
 PASSWORD_MAX_LENGTH = 64
-
 # Passwords contains at least one: lowercase letter, uppercase letter and digit
 PASSWORD_PATTERN = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$")
+
+PROFILE_PICTURE_PATH = MODE + "/profile_pictures"
 
 ACCESS_TOKEN_LIFETIME = 15 * 60  # 15 minutes
 REFRESH_TOKEN_LIFETIME = 15 * 24 * 3600  # 15 days

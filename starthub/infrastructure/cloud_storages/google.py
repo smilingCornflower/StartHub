@@ -1,6 +1,8 @@
 from datetime import timedelta
+from io import BytesIO
 from typing import cast
 
+from config import settings
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.value_objects.cloud_storage import (
     CloudStorageCreateUrlPayload,
@@ -15,19 +17,27 @@ from loguru import logger
 
 class GoogleCloudStorage(AbstractCloudStorage):
     def __init__(self, bucket_name: str):
-        """Initialize Google Cloud Storage client and connect to bucket.
+        self._bucket_name = bucket_name
+        self._client: Client | None = None
+        self._bucket: Bucket | None = None
 
-        :param bucket_name: Name of the GCS bucket to connect to
-        :raises GoogleCloudError: If connection to bucket fails
-        """
-        self._client = Client()
-        logger.info("Google cloud storage client initialized.")
-        try:
-            self._bucket: Bucket = self._client.get_bucket(bucket_or_name=bucket_name)
-            logger.info("Bucket initialized.")
-        except GoogleCloudError as err:
-            logger.critical(f"Error during connection to bucket. Error: {err}")
-            raise err
+    @property
+    def client(self) -> Client:
+        if self._client is None:
+            self._client = Client()
+            logger.info("Google cloud storage client initialized.")
+        return self._client
+
+    @property
+    def bucket(self) -> Bucket:
+        if self._bucket is None:
+            try:
+                self._bucket = self.client.get_bucket(self._bucket_name)
+                logger.info("Bucket initialized.")
+            except GoogleCloudError as err:
+                logger.critical(f"Error during connection to bucket. Error: {err}")
+                raise err
+        return self._bucket
 
     def upload_file(self, payload: CloudStorageUploadPayload) -> str:
         """Upload a file to Google Cloud Storage bucket.
@@ -38,10 +48,10 @@ class GoogleCloudStorage(AbstractCloudStorage):
         """
         logger.warning("Started uploading a file into the bucket.")
 
-        blob: Blob = self._bucket.blob(blob_name=payload.file_path)
+        blob: Blob = self.bucket.blob(blob_name=payload.file_path)
         logger.debug(f"Blob: {blob}")
         try:
-            blob.upload_from_file(file_obj=payload.file_obj, rewind=True)
+            blob.upload_from_file(file_obj=BytesIO(payload.file_data), rewind=True)
             logger.info("File uploaded into the bucket.")
             return cast(str, blob.name)
         except GoogleCloudError as e:
@@ -57,7 +67,7 @@ class GoogleCloudStorage(AbstractCloudStorage):
         """
         logger.warning(f"Started deleting blob: {payload.file_path}.")
 
-        blob: Blob = self._bucket.blob(blob_name=payload.file_path)
+        blob: Blob = self.bucket.blob(blob_name=payload.file_path)
         try:
             blob.delete()
             logger.info("Finished deleting blob")
@@ -75,9 +85,12 @@ class GoogleCloudStorage(AbstractCloudStorage):
         :return: Signed URL for temporary access to the file
         :raises GoogleCloudError: If URL generation fails
         """
-        blob: Blob = self._bucket.blob(blob_name=payload.file_path)
+        blob: Blob = self.bucket.blob(blob_name=payload.file_path)
         try:
             return cast(str, blob.generate_signed_url(version="v4", expiration=timedelta(minutes=15)))
         except GoogleCloudError as e:
             logger.error(f"Google Cloud error during generating url for {payload.file_path}: {e}")
             raise e
+
+
+google_cloud_storage = GoogleCloudStorage(bucket_name=settings.GOOGLE_CLOUD_BUCKET_NAME)

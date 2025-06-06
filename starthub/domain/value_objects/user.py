@@ -1,5 +1,4 @@
 import re
-from dataclasses import dataclass
 
 from django.core.exceptions import ValidationError as DjValidationError
 from django.core.validators import EmailValidator
@@ -47,7 +46,6 @@ class Email(BaseVo):
         return value
 
 
-@dataclass(frozen=True)
 class UserCreatePayload(AbstractCreatePayload):
     first_name: FirstName
     last_name: LastName
@@ -55,10 +53,15 @@ class UserCreatePayload(AbstractCreatePayload):
     password: RawPassword
 
 
-@dataclass(frozen=True)
 class UserUpdatePayload(AbstractUpdatePayload):
     id_: Id
     first_name: FirstName | None = None
     last_name: LastName | None = None
     email: Email | None = None
     password: RawPassword | None = None
+    picture: str | None = None
+
+
+class ProfilePictureUploadPayload(AbstractCreatePayload):
+    user_id: Id
+    file_data: bytes
