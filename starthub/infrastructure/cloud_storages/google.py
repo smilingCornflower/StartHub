@@ -1,7 +1,14 @@
 from datetime import timedelta
-from typing import BinaryIO, cast
+from io import BytesIO
+from typing import cast
 
+from config import settings
 from domain.ports.cloud_storage import AbstractCloudStorage
+from domain.value_objects.cloud_storage import (
+    CloudStorageCreateUrlPayload,
+    CloudStorageDeletePayload,
+    CloudStorageUploadPayload,
+)
 from google.cloud.exceptions import GoogleCloudError, NotFound
 from google.cloud.storage import Bucket, Client
 from google.cloud.storage.blob import Blob
@@ -10,67 +17,81 @@ from loguru import logger
 
 class GoogleCloudStorage(AbstractCloudStorage):
     def __init__(self, bucket_name: str):
-        self._client = Client()
-        logger.info("Google cloud storage client initialized.")
-        try:
-            self._bucket: Bucket = self._client.get_bucket(bucket_or_name=bucket_name)
-            logger.info("Bucket initialized.")
-        except GoogleCloudError as err:
-            logger.critical(f"Error during connection to bucket. Error: {err}")
-            raise err
+        self._bucket_name = bucket_name
+        self._client: Client | None = None
+        self._bucket: Bucket | None = None
 
-    def upload_file(self, file_obj: BinaryIO, file_name: str) -> str:
-        """
-        Upload a file to bucket and return the blob's name.
+    @property
+    def client(self) -> Client:
+        if self._client is None:
+            self._client = Client()
+            logger.info("Google cloud storage client initialized.")
+        return self._client
 
-        :param file_obj: File object opened in binary mode.
-        :param file_name: Name of the blob in bucket.
-        :return: Name of the uploaded blob.
-        :raises GoogleCloudError:
+    @property
+    def bucket(self) -> Bucket:
+        """:raises GoogleCloudError:"""
+        if self._bucket is None:
+            try:
+                self._bucket = self.client.get_bucket(self._bucket_name)
+                logger.info("Bucket initialized.")
+            except GoogleCloudError as err:
+                logger.critical(f"Error during connection to bucket. Error: {err}")
+                raise err
+        return self._bucket
+
+    def upload_file(self, payload: CloudStorageUploadPayload) -> str:
+        """Upload a file to Google Cloud Storage bucket.
+
+        :param payload: Upload payload containing file data and destination path
+        :return: Full path to the uploaded file in GCS
+        :raises GoogleCloudError: If upload operation fails
         """
         logger.warning("Started uploading a file into the bucket.")
 
-        blob: Blob = self._bucket.blob(blob_name=file_name)
+        blob: Blob = self.bucket.blob(blob_name=payload.file_path)
         logger.debug(f"Blob: {blob}")
         try:
-            blob.upload_from_file(file_obj=file_obj, rewind=True)
+            blob.upload_from_file(file_obj=BytesIO(payload.file_data), rewind=True)
             logger.info("File uploaded into the bucket.")
             return cast(str, blob.name)
         except GoogleCloudError as e:
             logger.error(f"Cloud error during uploading: {e}")
             raise e
 
-    def delete_file(self, file_name: str) -> None:
-        """
-        Delete a file from bucket by its blob name.
+    def delete_file(self, payload: CloudStorageDeletePayload) -> None:
+        """Delete a file from Google Cloud Storage bucket.
 
-        :param file_name: Name of the blob in bucket to delete.
-        :raises: google.cloud.exceptions.NotFound:
-        :raises: GoogleCloudError:
+        :param payload: Delete payload containing file path to delete
+        :raises NotFound: If specified file doesn't exist in bucket
+        :raises GoogleCloudError: If delete operation fails
         """
-        logger.warning(f"Started deleting blob: {file_name}.")
+        logger.warning(f"Started deleting blob: {payload.file_path}.")
 
-        blob: Blob = self._bucket.blob(blob_name=file_name)
+        blob: Blob = self.bucket.blob(blob_name=payload.file_path)
         try:
             blob.delete()
             logger.info("Finished deleting blob")
         except NotFound:
-            logger.error(f"Blob {file_name} not found in bucket.")
+            logger.error(f"Blob {payload.file_path} not found in bucket.")
+            raise
         except GoogleCloudError as e:
-            logger.error(f"Google Cloud error during deleting blob {file_name}: {e}")
+            logger.error(f"Google Cloud error during deleting blob {payload.file_path}: {e}")
             raise e
 
-    def create_url(self, file_name: str) -> str:
-        """
-        Generate a signed URL for a Google Cloud Storage blob.
+    def create_url(self, payload: CloudStorageCreateUrlPayload) -> str:
+        """Generate a signed URL for accessing a file in Google Cloud Storage.
 
-        :param file_name: the name of the blob for which to generate the URL.
-        :return: the signed URL for accessing the blob.
-        :raises GoogleCloudError:
+        :param payload: URL creation payload containing file path
+        :return: Signed URL for temporary access to the file
+        :raises GoogleCloudError: If URL generation fails
         """
-        blob: Blob = self._bucket.blob(blob_name=file_name)
+        blob: Blob = self.bucket.blob(blob_name=payload.file_path)
         try:
             return cast(str, blob.generate_signed_url(version="v4", expiration=timedelta(minutes=15)))
         except GoogleCloudError as e:
-            logger.error(f"Google Cloud error during generating url for {file_name}: {e}")
+            logger.error(f"Google Cloud error during generating url for {payload.file_path}: {e}")
             raise e
+
+
+google_cloud_storage = GoogleCloudStorage(bucket_name=settings.GOOGLE_CLOUD_BUCKET_NAME)

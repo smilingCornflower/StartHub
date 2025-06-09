@@ -44,6 +44,10 @@ class LastName(BaseVo):
     @field_validator("value", mode="after")
     @classmethod
     def validate_length(cls, value: str) -> str:
+        """
+        :raises EmptyStringException:
+        :raises LastNameIsTooLongException:
+        """
         if not value.strip():
             raise EmptyStringException("Last name cannot be empty.")
         if len(value) > CHAR_FIELD_SHORT_LENGTH:
@@ -57,7 +61,7 @@ class PhoneNumber(BaseVo):
     @field_validator("value", mode="after")
     @classmethod
     def is_correct_phone_number(cls, value: str) -> str:
-        """:raises InvalidPhoneNumberValidationException:"""
+        """:raises InvalidPhoneNumberException:"""
         try:
             parsed: phonenumbers.PhoneNumber = phonenumbers.parse(value)
         except phonenumbers.NumberParseException:
@@ -76,6 +80,10 @@ class SocialLink(BaseVo):
     @field_validator("link", mode="after")
     @classmethod
     def validate_social_link(cls, value: str, info: ValidationInfo) -> str:
+        """
+        :raises DisallowedSocialLinkException:
+        :raises InvalidSocialLinkException:
+        """
         try:
             platform = SocialPlatform(info.data["platform"])
         except ValueError:

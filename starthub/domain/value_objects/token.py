@@ -28,6 +28,7 @@ class AccessPayload:
     type: str = TokenTypeEnum.ACCESS
 
     def __post_init__(self) -> None:
+        """:raises ValueError:"""
         if self.type != TokenTypeEnum.ACCESS:
             raise ValueError("Token type must be access.")
 
@@ -40,5 +41,6 @@ class RefreshPayload:
     type: str = TokenTypeEnum.REFRESH
 
     def __post_init__(self) -> None:
+        """:raises ValueError:"""
         if self.type != TokenTypeEnum.REFRESH:
             raise ValueError("Token type must be refresh.")

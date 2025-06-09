@@ -5,8 +5,9 @@ from application.services.auth import AuthAppService
 
 def get_access_payload_dto(cookies: dict[str, str]) -> AccessPayloadDto:
     """
-    :raises ValidationException:
+    :raises MissingAccessTokenException:
     :raises InvalidTokenException:
+    :raises TokenExpiredException:
     """
     auth_service: AuthAppService = AuthServiceFactory.create_service()
     return auth_service.verify_access(cookies)

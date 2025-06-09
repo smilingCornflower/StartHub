@@ -5,6 +5,8 @@ import sys
 
 
 def main() -> None:
+    """:raises ImportError:"""
+
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
     try:

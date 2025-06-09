@@ -1,4 +1,9 @@
-from domain.exceptions.auth import InvalidCredentialsException, InvalidTokenException, TokenExpiredException
+from domain.exceptions.auth import (
+    InvalidCredentialsException,
+    InvalidTokenException,
+    MissingAccessTokenException,
+    TokenExpiredException,
+)
 from domain.exceptions.company import CompanyNotFoundException, CompanyOwnershipRequiredException
 from domain.exceptions.permissions import DeletePermissionDenied
 from domain.exceptions.project_management import (
@@ -17,6 +22,7 @@ from domain.exceptions.validation import (
     InvalidPhoneNumberException,
     InvalidSocialLinkException,
     LastNameIsTooLongException,
+    MissingRequiredFieldException,
 )
 
 APPLICATION_ERROR_CODES: dict[type, tuple[str, int]] = {
@@ -43,5 +49,8 @@ APPLICATION_ERROR_CODES: dict[type, tuple[str, int]] = {
     InvalidCredentialsException: ("INVALID_CREDENTIALS", 401),
     InvalidTokenException: ("INVALID_TOKEN", 401),
     TokenExpiredException: ("TOKEN_EXPIRED", 401),
+    MissingAccessTokenException: ("MISSING_ACCESS_TOKEN", 401),
+    # Bad Request
+    MissingRequiredFieldException: ("MISSING_REQUIRED_FIELD", 400),
 }
 SUCCESS = "SUCCESS"
