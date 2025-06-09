@@ -1,4 +1,6 @@
 import pydantic
+
+from application.dto.user import UserProfileDto
 from application.services.gateway import Gateway
 from application.services.user import UserAppService
 from config.settings import BASE_DIR
@@ -25,7 +27,6 @@ class TestUserAppService(TestCase):
             password="Pass1234",
         )
         cls.user_id = user.id
-
         cls.service = Gateway.user_app_service
 
     def test_success_update_first_name(self) -> None:
@@ -128,3 +129,21 @@ class TestUserAppService(TestCase):
             self.service.update_user(
                 request_data=dict(), request_files={"profile_picture": img_file}, user_id=self.user_id
             )
+
+    def test_success_get_user_profile(self) -> None:
+        profile: UserProfileDto = self.service.get_user_profile(self.user_id)
+
+        logger.debug(f"{profile=}")
+        self.assertEqual(profile.first_name, "test-name")
+        self.assertEqual(profile.last_name, 'test-surname')
+        self.assertEqual(profile.email, 'test.email@example.com')
+        self.assertEqual(profile.picture, None)
+
+    def test_success_get_user_own_profile(self) -> None:
+        profile: UserProfileDto = self.service.get_user_own_profile(self.user_id)
+
+        logger.debug(f"{profile=}")
+        self.assertEqual(profile.first_name, "test-name")
+        self.assertEqual(profile.last_name, 'test-surname')
+        self.assertEqual(profile.email, 'test.email@example.com')
+        self.assertEqual(profile.picture, None)
