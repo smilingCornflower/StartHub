@@ -7,6 +7,7 @@ from domain.exceptions.validation import (
     FirstNameIsTooLongException,
     InvalidEmailException,
     LastNameIsTooLongException,
+    MissingRequiredFieldException,
 )
 from domain.models.user import User
 from loguru import logger
@@ -46,7 +47,7 @@ class TestRegister(TestCase):
                 valid_data_copy = self.valid_data
                 valid_data_copy.pop(field)
                 response = self.client.post(self.register_url, data=valid_data_copy, content_type=self.content_type)
-                app_code, http_code = RegistrationErrorResponseFactory.error_codes[KeyError]
+                app_code, http_code = RegistrationErrorResponseFactory.error_codes[MissingRequiredFieldException]
                 logger.info(f"Expecting app_code: {app_code} and http_code: {http_code}")
 
                 self.assertEqual(response.status_code, http_code)

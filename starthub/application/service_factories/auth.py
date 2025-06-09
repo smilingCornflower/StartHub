@@ -28,3 +28,7 @@ class RegistrationServiceFactory(AbstractServiceFactory[RegistrationAppService])
                 write_repository=DjUserWriteRepository(),
             )
         )
+
+
+auth_app_service: AuthAppService = AuthServiceFactory.create_service()
+registration_app_service: RegistrationAppService = RegistrationServiceFactory.create_service()

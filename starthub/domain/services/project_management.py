@@ -135,6 +135,7 @@ class ProjectService:
         """
         :raises ProjectCategoryNotFoundException:
         :raises FundingModelNotFoundException:
+        :raises DeletePermissionDenied:
         """
 
         project: Project = self._project_read_repository.get_by_id(id_=payload.id_)

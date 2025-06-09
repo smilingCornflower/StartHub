@@ -47,3 +47,6 @@ class ProjectServiceFactory(AbstractServiceFactory[ProjectAppService]):
                 write_repository=DjProjectSocialLinkWriteRepository(),
             ),
         )
+
+
+project_app_service: ProjectAppService = ProjectServiceFactory.create_service()

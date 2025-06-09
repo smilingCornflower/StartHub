@@ -1,0 +1,7 @@
+Naming of data classes:
+
+- Dto: output to client.
+- Command: business action for DomainService (aka Action, Request).
+- Payload: data for repository or external services.
+
+Use one class (Payload) if all equal. Split only if needed.

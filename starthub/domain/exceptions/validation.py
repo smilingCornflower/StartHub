@@ -35,3 +35,7 @@ class DateIsNotIsoFormatException(ValidationException):
 
 class InvalidEmailException(ValidationException):
     pass
+
+
+class MissingRequiredFieldException(ValidationException):
+    pass

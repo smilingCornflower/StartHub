@@ -19,3 +19,6 @@ class CompanyServiceFactory(AbstractServiceFactory[CompanyAppService]):
                 country_read_repository=DjCountryReadRepository(),
             ),
         )
+
+
+company_app_service: CompanyAppService = CompanyServiceFactory.create_service()

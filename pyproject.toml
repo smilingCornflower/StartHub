@@ -9,6 +9,7 @@ dependencies = [
     "django-autoslug>=1.9.9",
     "django-countries>=7.6.1",
     "djangorestframework>=3.16.0",
+    "filetype>=1.2.0",
     "google-cloud-storage>=3.1.0",
     "gunicorn>=23.0.0",
     "loguru>=0.7.3",
@@ -18,11 +19,13 @@ dependencies = [
     "pyjwt>=2.10.1",
     "python-dotenv>=1.1.0",
     "python-slugify>=8.0.4",
+    "wand>=0.6.13",
 ]
 
 [dependency-groups]
 dev = [
     "black>=25.1.0",
+    "coverage>=7.8.2",
     "django-stubs>=5.2.0",
     "djangorestframework-stubs>=3.16.0",
     "flake8>=7.2.0",
@@ -47,7 +50,7 @@ strict = true
 warn_unreachable = true
 warn_no_return = true
 cache_dir = ".mypy_cache"
-exclude = ["^migrations/.*"]
+exclude = ["^migrations/.*", "bar.py", 'foo.py']
 
 [tool.django-stubs]
 django_settings_module = "config.settings"
@@ -70,10 +73,10 @@ exclude = '''
 [tool.flake8]
 max-line-length = 120
 ignore = [
-    "E203",  # Whitespace before ':' (conflicts with Black's formatting)
-    "E266",  # Too many leading '#' in a comment (e.g., `### Bad`)
-    "W503",  # Line break before binary operator (conflicts with Black's style)
-    "E501",  # Line too long (controlled by `max-line-length` instead)
+    "E203", # Whitespace before ':' (conflicts with Black's formatting)
+    "E266", # Too many leading '#' in a comment (e.g., `### Bad`)
+    "W503", # Line break before binary operator (conflicts with Black's style)
+    "E501", # Line too long (controlled by `max-line-length` instead)
 ]
 exclude = [
     ".git",

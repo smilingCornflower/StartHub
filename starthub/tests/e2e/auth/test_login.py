@@ -5,7 +5,7 @@ from domain.constants import JWT_ALGORITHM
 from domain.enums.token import TokenTypeEnum
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
 from domain.exceptions.user import UserNotFoundException
-from domain.exceptions.validation import EmptyStringException, InvalidEmailException
+from domain.exceptions.validation import EmptyStringException, InvalidEmailException, MissingRequiredFieldException
 from domain.models.user import User
 from loguru import logger
 from presentation.constants import SUCCESS
@@ -114,7 +114,7 @@ class TestLogin(TestCase):
                 valid_data_copy = self.valid_credentials.copy()
                 valid_data_copy.pop(field)
                 response = self.client.post(self.login_url, data=valid_data_copy, content_type=self.content_type)
-                app_code, http_code = LoginErrorResponseFactory.error_codes[KeyError]
+                app_code, http_code = LoginErrorResponseFactory.error_codes[MissingRequiredFieldException]
                 logger.info(f"Expecting app_code: {app_code} and http_code: {http_code}")
                 self.assertEqual(response.status_code, http_code)
                 self.assertEqual(response.json()["code"], app_code)

@@ -17,3 +17,7 @@ class EmailAlreadyExistsException(UserException):
 
 class PermissionException(UserException):
     pass
+
+
+class ProfilePictureNotFoundException(NotFoundException, UserException):
+    pass

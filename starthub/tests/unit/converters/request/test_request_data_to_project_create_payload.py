@@ -12,6 +12,7 @@ from domain.exceptions.validation import (
     InvalidPhoneNumberException,
     InvalidSocialLinkException,
     LastNameIsTooLongException,
+    MissingRequiredFieldException,
     ValidationException,
 )
 from domain.value_objects.project_management import ProjectCreatePayload
@@ -79,7 +80,7 @@ class TestProjectCreatePayloadConversion(TestCase):
             with self.subTest(field=field):
                 invalid_data = self.valid_data.copy()
                 invalid_data.pop(field)
-                with self.assertRaises(KeyError):
+                with self.assertRaises(MissingRequiredFieldException):
                     request_data_to_project_create_payload(invalid_data, self.user_id)
 
     def test_invalid_goal_sum(self) -> None:

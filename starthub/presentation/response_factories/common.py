@@ -2,6 +2,7 @@ from typing import cast
 
 import pydantic
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
+from domain.exceptions.image import NotSupportedImageFormatException
 from domain.exceptions.user import EmailAlreadyExistsException
 from domain.exceptions.validation import InvalidEmailException, ValidationException
 from presentation.constants import APPLICATION_ERROR_CODES
@@ -35,7 +36,6 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
 
 class AuthErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
-        KeyError: ("MISSING_REQUIRED_FIELDS", 400),
         InvalidEmailException: ("INVALID_EMAIL", 422),
         ValidationException: ("VALIDATION_EXCEPTION", 422),
         pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
@@ -54,4 +54,12 @@ class LoginErrorResponseFactory(AuthErrorResponseFactory):
         PasswordValidationException: ("INVALID_PASSWORD_FORMAT", 422),
         ValidationException: ("UNAUTHORIZED", 401),
         InvalidCredentialsException: ("UNAUTHORIZED", 401),
+    }
+
+
+class UserErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        NotSupportedImageFormatException: ("UNSUPPORTED_IMAGE_FORMAT", 400),
+        pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
+        PasswordValidationException: ("WEAK_PASSWORD", 422),
     }

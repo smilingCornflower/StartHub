@@ -1,4 +1,3 @@
-# Project, ProjectCategory, ProjectPhone, TeamMember
 from django.db.models import Q, QuerySet
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
@@ -119,6 +118,7 @@ class DjProjectWriteRepository(ProjectWriteRepository):
 
     @staticmethod
     def deactivate(id_: Id) -> None:
+        """:raises ProjectNotFoundException:"""
         try:
             project: Project = Project.objects.get(id=id_.value)
             project.is_active = False
@@ -237,9 +237,11 @@ class DjTeamMemberWriteRepository(TeamMemberWriteRepository):
         )
 
     def update(self, data: TeamMemberUpdatePayload) -> TeamMember:
+        """:raises NotImplementedError:"""
         raise NotImplementedError("Method update is not implemented yet.")
 
     def delete(self, id_: Id) -> None:
+        """:raises NotImplementedError:"""
         raise NotImplementedError("Method delete is not implemented yet.")
 
 
