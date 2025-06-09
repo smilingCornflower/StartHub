@@ -1,25 +1,50 @@
+from dataclasses import asdict
+
 from application.dto.auth import AccessPayloadDto
+from application.dto.user import UserProfileDto
 from application.services.gateway import Gateway
 from application.utils.get_access_payload_dto import get_access_payload_dto
 from loguru import logger
-from presentation.response_factories.common import CommonErrorResponseFactory
+from presentation.constants import SUCCESS
+from presentation.response_factories.common import UserErrorResponseFactory
+from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
-class UserProfile(APIView):
-    parser_classes = [MultiPartParser]
-    error_classes: tuple[type[Exception], ...] = tuple(CommonErrorResponseFactory.error_codes.keys())
+class UserView(APIView):
+    error_classes: tuple[type[Exception], ...] = tuple(UserErrorResponseFactory.error_codes.keys())
 
-    def post(self, request: Request) -> Response:
+    def get(self, request: Request, user_id: int) -> Response:
+        try:
+            return Response(asdict(Gateway.user_app_service.get_user_profile(user_id)), status=status.HTTP_200_OK)
+        except self.error_classes as e:
+            logger.exception(f"Exception: {repr(e)}")
+            return UserErrorResponseFactory.create_response(e)
+
+
+class MeView(APIView):
+    parser_classes = [MultiPartParser]
+    error_classes: tuple[type[Exception], ...] = tuple(UserErrorResponseFactory.error_codes.keys())
+
+    def patch(self, request: Request) -> Response:
         try:
             access_dto: AccessPayloadDto = get_access_payload_dto(request.COOKIES)
+            Gateway.user_app_service.update_user(request.data, request.FILES, int(access_dto.sub))
+            return Response({"detail": "success", "code": SUCCESS}, status=status.HTTP_200_OK)
         except self.error_classes as e:
-            logger.error(f"Exception: {e}")
-            return CommonErrorResponseFactory.create_response(e)
+            logger.error(f"Exception: {repr(e)}")
+            return UserErrorResponseFactory.create_response(e)
 
-        Gateway.user_app_service.upload_profile_picture(request.FILES, int(access_dto.sub))
-
-        return Response({"detail": "success"}, 200)
+    def get(self, request: Request) -> Response:
+        try:
+            access_dto: AccessPayloadDto = get_access_payload_dto(request.COOKIES)
+            user_profile_dto: UserProfileDto = Gateway.user_app_service.get_user_own_profile(
+                user_id=int(access_dto.sub)
+            )
+            return Response(asdict(user_profile_dto), status=status.HTTP_200_OK)
+        except self.error_classes as e:
+            logger.error(f"Exception: {repr(e)}")
+            return UserErrorResponseFactory.create_response(e)

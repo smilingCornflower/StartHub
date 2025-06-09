@@ -30,6 +30,7 @@ class GoogleCloudStorage(AbstractCloudStorage):
 
     @property
     def bucket(self) -> Bucket:
+        """:raises GoogleCloudError:"""
         if self._bucket is None:
             try:
                 self._bucket = self.client.get_bucket(self._bucket_name)

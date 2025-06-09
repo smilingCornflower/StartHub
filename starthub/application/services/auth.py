@@ -27,13 +27,13 @@ class RegistrationAppService(AbstractAppService):
 
     def register(self, request_data: dict[str, str]) -> User:
         """
-        :KeyError: Missing required fields.
-        :FirstNameIsTooLongException:
-        :LastNameIsTooLongException:
-        :EmptyStringException:
-        :InvalidEmailException:
-        :PasswordValidationException:
-        :pydantic.ValidationError: If fields has incorrect types
+        :raises KeyError: Missing required fields.
+        :raises FirstNameIsTooLongException:
+        :raises LastNameIsTooLongException:
+        :raises EmptyStringException:
+        :raises InvalidEmailException:
+        :raises PasswordValidationException:
+        :raises pydantic.ValidationError: If fields has incorrect types
         :raises EmailAlreadyExistsException:
         """
         user_data: UserCreatePayload = request_data_to_user_create_payload(data=request_data)
@@ -57,7 +57,7 @@ class AuthAppService(AbstractAppService):
 
     def login(self, credentials_raw: dict[str, str]) -> TokenPairDto:
         """
-        :raises KeyError: If required fields missing.
+        :raises MissingRequiredFieldException: If required fields missing.
         :raises UserNotFoundException:
         :raises EmptyStringException:
         :raises InvalidEmailException:
@@ -89,8 +89,9 @@ class AuthAppService(AbstractAppService):
 
     def verify_access(self, cookies: dict[str, str]) -> AccessPayloadDto:
         """
-        :raises ValidationException:
+        :raises MissingAccessTokenException:
         :raises InvalidTokenException:
+        :raises TokenExpiredException:
         """
         access_token: AccessTokenVo = request_cookies_to_access_token(cookies)
         access_payload: AccessPayload = self._token_service.verify_access(access_token)

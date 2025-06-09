@@ -5,6 +5,7 @@ from django.core.validators import EmailValidator
 from domain.constants import PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_PATTERN
 from domain.exceptions.auth import PasswordValidationException
 from domain.exceptions.validation import EmptyStringException, InvalidEmailException
+from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
 from domain.value_objects.common import FirstName, Id, LastName
@@ -17,6 +18,10 @@ class RawPassword(BaseVo):
     @field_validator("value", mode="after")
     @classmethod
     def is_strong_password(cls, value: str) -> str:
+        """
+        :raises EmptyStringException:
+        :raises PasswordValidationException:
+        """
         if not value:
             raise EmptyStringException("Password cannot be empty.")
 
@@ -36,6 +41,10 @@ class Email(BaseVo):
     @field_validator("value", mode="after")
     @classmethod
     def is_valid_email(cls, value: str) -> str:
+        """
+        :raises EmptyStringException:
+        :raises InvalidEmailException:
+        """
         if not value:
             raise EmptyStringException("Email cannot be empty.")
         email_validator = EmailValidator()
@@ -57,11 +66,27 @@ class UserUpdatePayload(AbstractUpdatePayload):
     id_: Id
     first_name: FirstName | None = None
     last_name: LastName | None = None
-    email: Email | None = None
     password: RawPassword | None = None
     picture: str | None = None
 
 
-class ProfilePictureUploadPayload(AbstractCreatePayload):
+class ProfilePictureUploadCommand(BaseCommand):
     user_id: Id
     file_data: bytes
+
+
+class UserProfile(BaseVo):
+    id_: Id
+    first_name: FirstName
+    last_name: LastName
+    email: Email
+    picture: str | None
+
+
+# Commands
+class UserUpdateCommand(BaseCommand):
+    id_: Id
+    first_name: FirstName | None = None
+    last_name: LastName | None = None
+    password: RawPassword | None = None
+    picture_data: bytes | None = None

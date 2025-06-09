@@ -20,6 +20,8 @@ PROFILE_PICTURE_PATH = MODE + "/profile_pictures"
 
 ACCESS_TOKEN_LIFETIME = 15 * 60  # 15 minutes
 REFRESH_TOKEN_LIFETIME = 15 * 24 * 3600  # 15 days
+
+
 JWT_ALGORITHM = "HS256"
 ACCESS_DECODE_OPTIONS = {
     "verify_signature": True,

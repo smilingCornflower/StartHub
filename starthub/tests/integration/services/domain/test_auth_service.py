@@ -84,6 +84,7 @@ class TestAuthService(TestCase):
             self.service.reissue_refresh(token_pair.refresh)
 
     def test_protected_authenticate_user_with_correct_credentials(self) -> None:
+        """:raises ValueError:"""
         credentials = LoginCredentials(
             email=Email(value=self.user_data["email"]),
             password=RawPassword(value=self.user_data["password"]),

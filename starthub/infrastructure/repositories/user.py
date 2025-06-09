@@ -50,8 +50,6 @@ class DjUserWriteRepository(UserWriteRepository):
         except User.DoesNotExist:
             raise UserNotFoundException(f"An user with id = {data.id_.value} is not found.")
 
-        if data.email:
-            user.email = data.email.value
         if data.first_name:
             user.first_name = data.first_name.value
         if data.last_name:

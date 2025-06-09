@@ -8,7 +8,7 @@ from domain.models.user import User
 from domain.services.image import ImageService
 from domain.services.user import UserService
 from domain.value_objects.common import Id
-from domain.value_objects.user import ProfilePictureUploadPayload
+from domain.value_objects.user import ProfilePictureUploadCommand
 from infrastructure.cloud_storages.google import google_cloud_storage
 from infrastructure.repositories.user import DjUserReadRepository, DjUserWriteRepository
 from loguru import logger
@@ -46,7 +46,7 @@ class TestUserService(TestCase):
     def test_upload_profile_picture(self) -> None:
         with open(self.image_path, mode="rb") as image_file:
             self.user_service.upload_profile_picture(
-                payload=ProfilePictureUploadPayload(
+                payload=ProfilePictureUploadCommand(
                     user_id=Id(value=self.user_valid_data["id"]),
                     file_data=image_file.read(),
                 )
@@ -57,7 +57,7 @@ class TestUserService(TestCase):
     def test_generate_url(self) -> None:
         with open(self.image_path, mode="rb") as image_file:
             self.user_service.upload_profile_picture(
-                payload=ProfilePictureUploadPayload(
+                payload=ProfilePictureUploadCommand(
                     user_id=Id(value=self.user_valid_data["id"]),
                     file_data=image_file.read(),
                 )

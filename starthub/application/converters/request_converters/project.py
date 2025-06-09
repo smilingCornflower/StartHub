@@ -3,7 +3,7 @@ from typing import Any, cast
 
 import pydantic
 from django.http import QueryDict
-from domain.exceptions.validation import DateIsNotIsoFormatException, ValidationException
+from domain.exceptions.validation import DateIsNotIsoFormatException, MissingRequiredFieldException, ValidationException
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
 from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project_management import (
@@ -27,8 +27,10 @@ def request_data_to_project_filter(data: QueryDict) -> ProjectFilter:
 
 def request_data_to_project_create_payload(data: dict[str, Any], user_id: int) -> ProjectCreatePayload:
     """
+    :raises MissingRequiredFieldException:
     :raises ValueError: if invalid data format or missing required fields.
     :raises ValidationException: if business rules was violated.
+    :raises DateIsNotIsoFormatException:
     """
     try:
         team_members: list[TeamMemberInProjectCreatePayload] = []
@@ -60,7 +62,7 @@ def request_data_to_project_create_payload(data: dict[str, Any], user_id: int) -
         )
     except KeyError as e:
         logger.error(e)
-        raise KeyError("Missing required field.")
+        raise MissingRequiredFieldException("Missing required field.")
     except (pydantic.ValidationError, ValueError) as e:
         logger.error(e)
         raise ValueError(str(e))

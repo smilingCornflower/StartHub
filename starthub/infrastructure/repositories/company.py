@@ -8,6 +8,7 @@ from domain.value_objects.filter import CompanyFilter
 
 class DjCompanyReadRepository(CompanyReadRepository):
     def get_by_id(self, id_: Id) -> Company:
+        """:raises CompanyNotFoundException:"""
         company: Company | None = Company.objects.filter(id=id_.value).first()
         if company is None:
             raise CompanyNotFoundException(f"Company with id = {id_.value} does not exist.")
@@ -29,7 +30,9 @@ class DjCompanyWriteRepository(CompanyWriteRepository):
         )
 
     def update(self, data: CompanyUpdatePayload) -> Company:
+        """:raises NotImplementedError:"""
         raise NotImplementedError("Method update() is not implemented yet.")
 
     def delete(self, id_: Id) -> None:
+        """:raises NotImplementedError:"""
         raise NotImplementedError("Method delete() is not implemented yet.")

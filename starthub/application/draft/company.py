@@ -9,6 +9,7 @@ from domain.value_objects.country import CountryCode
 from pydantic import field_validator
 
 
+# TODO: Use Command instead of Draft
 class CompanyCreateDraft(BaseVo):
     name: str
     representative_id: Id

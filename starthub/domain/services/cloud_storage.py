@@ -15,7 +15,9 @@ class CloudService:
         return file_path
 
     def delete_file(self, payload: CloudStorageDeletePayload) -> None:
+        """:raises NotImplementedError:"""
         raise NotImplementedError("The method delete_file() is not implemented yet.")
 
     def create_url(self, payload: CloudStorageCreateUrlPayload) -> str:
+        """:raises NotImplementedError:"""
         raise NotImplementedError("The method update_file() is not implemented yet.")

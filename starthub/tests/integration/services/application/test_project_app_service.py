@@ -22,6 +22,7 @@ from domain.exceptions.validation import (
     InvalidPhoneNumberException,
     InvalidSocialLinkException,
     LastNameIsTooLongException,
+    MissingRequiredFieldException,
 )
 from domain.models.company import Company
 from domain.models.country import Country
@@ -107,7 +108,7 @@ class TestProjectAppService(TestCase):
                 valid_data_copy = deepcopy(self.valid_data)
                 valid_data_copy.pop(k)
 
-                with self.assertRaises(KeyError):
+                with self.assertRaises(MissingRequiredFieldException):
                     self.service.create(valid_data_copy, self.user.id)
 
     def test_invalid_project_name(self) -> None:

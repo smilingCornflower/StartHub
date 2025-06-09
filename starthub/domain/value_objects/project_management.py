@@ -74,7 +74,10 @@ class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
     @field_validator("name", mode="after")
     @classmethod
     def is_valid_name(cls, value: str) -> str:
-        """:raises ProjectNameIsTooLongValidationException:"""
+        """
+        :raises ProjectNameIsTooLongValidationException:
+        :raises EmptyStringException:
+        """
         if not value:
             raise EmptyStringException("Project name cannot be empty.")
         if len(value) > CHAR_FIELD_MAX_LENGTH:

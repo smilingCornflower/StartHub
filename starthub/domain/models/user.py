@@ -24,6 +24,7 @@ class UserManager(BaseUserManager["User"]):
         password: str | None = None,
         **extra_fields: dict[str, Any],
     ) -> "User":
+        """:raises ValueError:"""
         if not email:
             raise ValueError("Email must be set.")
         if not first_name:
@@ -49,6 +50,7 @@ class UserManager(BaseUserManager["User"]):
         password: str | None = None,
         **extra_fields: Any,
     ) -> "User":
+        """:raises ValueError:"""
         extra_fields.setdefault("is_active", True)
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
