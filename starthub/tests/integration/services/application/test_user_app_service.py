@@ -1,5 +1,4 @@
 import pydantic
-
 from application.dto.user import UserProfileDto
 from application.services.gateway import Gateway
 from application.services.user import UserAppService
@@ -135,8 +134,8 @@ class TestUserAppService(TestCase):
 
         logger.debug(f"{profile=}")
         self.assertEqual(profile.first_name, "test-name")
-        self.assertEqual(profile.last_name, 'test-surname')
-        self.assertEqual(profile.email, 'test.email@example.com')
+        self.assertEqual(profile.last_name, "test-surname")
+        self.assertEqual(profile.email, "test.email@example.com")
         self.assertEqual(profile.picture, None)
 
     def test_success_get_user_own_profile(self) -> None:
@@ -144,6 +143,6 @@ class TestUserAppService(TestCase):
 
         logger.debug(f"{profile=}")
         self.assertEqual(profile.first_name, "test-name")
-        self.assertEqual(profile.last_name, 'test-surname')
-        self.assertEqual(profile.email, 'test.email@example.com')
+        self.assertEqual(profile.last_name, "test-surname")
+        self.assertEqual(profile.email, "test.email@example.com")
         self.assertEqual(profile.picture, None)
