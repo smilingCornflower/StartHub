@@ -1,10 +1,10 @@
 import re
 
-from django.test import TestCase
+from django.test import SimpleTestCase
 from domain.enums.social_links import SocialPlatform
 
 
-class SocialPlatformPatternTests(TestCase):
+class SocialPlatformPatternTests(SimpleTestCase):
     def _test_urls(self, platform: SocialPlatform, valid_urls: list[str], invalid_urls: list[str]) -> None:
         pattern = re.compile(platform.pattern)
         for url in valid_urls:

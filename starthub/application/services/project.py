@@ -10,6 +10,8 @@ from application.dto.project import ProjectDto
 from application.ports.service import AbstractAppService
 from django.db import transaction
 from django.http import QueryDict
+
+from domain.exceptions.project_management import InvalidProjectStageException
 from domain.models.project import Project, ProjectPhone, TeamMember
 from domain.services.project_management import (
     ProjectPhoneService,
@@ -86,6 +88,7 @@ class ProjectAppService(AbstractAppService):
             DateIsNoIsoFormatException: If deadline date format is invalid.
             ProjectCategoryNotFoundException: If project category does not exist.
             FundingModelNotFoundException: If funding model does not exist.
+            InvalidProjectStageException: If value is not allowed. Valid values: idea, mvp, scale, validation, prototype
             CompanyNotFoundException: If company does not exist.
             InvalidPhoneNumberException: If phone number is invalid.
             InvalidSocialLinkException: If any social link is invalid.
@@ -99,7 +102,6 @@ class ProjectAppService(AbstractAppService):
             - Project creation and related objects are created within a single transaction.
             - On validation failure, the transaction is rolled back and no objects are created.
         """
-
         logger.warning("Started creating project.")
         logger.debug(f"{data=}")
 

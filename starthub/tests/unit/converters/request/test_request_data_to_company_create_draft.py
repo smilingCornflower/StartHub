@@ -2,14 +2,14 @@ from datetime import date, timedelta
 
 import pydantic
 from application.converters.request_converters.company import request_data_to_company_create_draft
-from django.test import TestCase
-from domain.exceptions.validation import ValidationException
+from django.test import SimpleTestCase
+from domain.exceptions.validation import ValidationException, DateIsNotIsoFormatException
 from domain.value_objects.common import Id
 from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode
 
 
-class ConvertRequestDataToCompanyDraftTests(TestCase):
+class ConvertRequestDataToCompanyDraftTests(SimpleTestCase):
     def setUp(self) -> None:
         self.valid_payload = {
             "name": "ООО Технологии Будущего",
@@ -69,7 +69,7 @@ class ConvertRequestDataToCompanyDraftTests(TestCase):
             with self.subTest(date_format=date_str):
                 test_data = self.valid_payload.copy()
                 test_data["established_date"] = date_str
-                with self.assertRaises((ValueError, ValidationException)):
+                with self.assertRaises(ValueError):
                     request_data_to_company_create_draft(test_data, self.user_id)
 
     def test_accepts_valid_iso_formats(self) -> None:

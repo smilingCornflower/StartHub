@@ -1,9 +1,10 @@
 from datetime import date, timedelta
 from typing import Any
 
+from django.test import SimpleTestCase
+
 from application.converters.request_converters.project import request_data_to_project_create_payload
-from django.test import TestCase
-from domain.exceptions.project_management import ProjectDeadlineInPastValidationException
+from domain.exceptions.project_management import ProjectDeadlineInPastValidationException, InvalidProjectStageException
 from domain.exceptions.validation import (
     DateIsNotIsoFormatException,
     DisallowedSocialLinkException,
@@ -18,7 +19,7 @@ from domain.exceptions.validation import (
 from domain.value_objects.project_management import ProjectCreatePayload
 
 
-class TestProjectCreatePayloadConversion(TestCase):
+class TestProjectCreatePayloadConversion(SimpleTestCase):
     def setUp(self) -> None:
         self.valid_data: dict[str, Any] = {
             "name": "Test Project",
@@ -26,6 +27,7 @@ class TestProjectCreatePayloadConversion(TestCase):
             "category_id": 1,
             "company_id": 1,
             "funding_model_id": 3,
+            "stage": 'idea',
             "goal_sum": 10000.0,
             "deadline": (date.today() + timedelta(days=30)).isoformat(),
             "team_members": [{"first_name": "John", "last_name": "Doe", "description": "Developer"}],
@@ -47,6 +49,7 @@ class TestProjectCreatePayloadConversion(TestCase):
         self.assertEqual(payload.creator_id.value, self.user_id)
         self.assertEqual(payload.company_id.value, self.valid_data["company_id"])
         self.assertEqual(payload.funding_model_id.value, self.valid_data["funding_model_id"])
+        self.assertEqual(payload.stage.value, self.valid_data["stage"])
         self.assertEqual(payload.goal_sum, self.valid_data["goal_sum"])
         self.assertEqual(payload.deadline.isoformat(), self.valid_data["deadline"])
         self.assertEqual(payload.phone_number.value, self.valid_data["phone_number"])
@@ -70,6 +73,7 @@ class TestProjectCreatePayloadConversion(TestCase):
             "description",
             "category_id",
             "funding_model_id",
+            "stage",
             "goal_sum",
             "deadline",
             "company_id",
@@ -78,32 +82,32 @@ class TestProjectCreatePayloadConversion(TestCase):
             "social_links",
         ]:
             with self.subTest(field=field):
-                invalid_data = self.valid_data.copy()
-                invalid_data.pop(field)
+
+                self.valid_data.pop(field)
                 with self.assertRaises(MissingRequiredFieldException):
-                    request_data_to_project_create_payload(invalid_data, self.user_id)
+                    request_data_to_project_create_payload(self.valid_data, self.user_id)
 
     def test_invalid_goal_sum(self) -> None:
-        invalid_data = self.valid_data.copy()
-        invalid_data["goal_sum"] = -100
+
+        self.valid_data["goal_sum"] = -100
         with self.assertRaises(ValidationException):
-            request_data_to_project_create_payload(invalid_data, self.user_id)
+            request_data_to_project_create_payload(self.valid_data, self.user_id)
 
     def test_invalid_deadline(self) -> None:
-        invalid_data = self.valid_data.copy()
-        invalid_data["deadline"] = (date.today() - timedelta(days=1)).isoformat()
-        with self.assertRaises(ProjectDeadlineInPastValidationException):
-            request_data_to_project_create_payload(invalid_data, self.user_id)
 
-        invalid_data["deadline"] = "invalid-date"
+        self.valid_data["deadline"] = (date.today() - timedelta(days=1)).isoformat()
+        with self.assertRaises(ProjectDeadlineInPastValidationException):
+            request_data_to_project_create_payload(self.valid_data, self.user_id)
+
+        self.valid_data["deadline"] = "invalid-date"
         with self.assertRaises(DateIsNotIsoFormatException):
-            request_data_to_project_create_payload(invalid_data, self.user_id)
+            request_data_to_project_create_payload(self.valid_data, self.user_id)
 
     def test_invalid_phone_number(self) -> None:
-        invalid_data = self.valid_data.copy()
-        invalid_data["phone_number"] = "invalid-phone"
+
+        self.valid_data["phone_number"] = "invalid-phone"
         with self.assertRaises(InvalidPhoneNumberException):
-            request_data_to_project_create_payload(invalid_data, self.user_id)
+            request_data_to_project_create_payload(self.valid_data, self.user_id)
 
     def test_invalid_social_links(self) -> None:
         self.valid_data["social_links"] = {
@@ -122,11 +126,11 @@ class TestProjectCreatePayloadConversion(TestCase):
             request_data_to_project_create_payload(self.valid_data, self.user_id)
 
     def test_empty_team_members(self) -> None:
-        invalid_data = self.valid_data.copy()
-        invalid_data["team_members"] = []
+
+        self.valid_data["team_members"] = []
 
         # no exceptions
-        request_data_to_project_create_payload(invalid_data, self.user_id)
+        request_data_to_project_create_payload(self.valid_data, self.user_id)
 
     def test_invalid_team_member_data(self) -> None:
         with self.subTest("first name is too long"):
@@ -154,15 +158,21 @@ class TestProjectCreatePayloadConversion(TestCase):
             self.valid_data["team_members"][0]["last_name"] = "surname1"
 
     def test_invalid_category_id_type(self) -> None:
-        invalid_data = self.valid_data.copy()
-        invalid_data["category_id"] = "not-an-integer"
+
+        self.valid_data["category_id"] = "not-an-integer"
 
         with self.assertRaises(ValueError):
-            request_data_to_project_create_payload(invalid_data, self.user_id)
+            request_data_to_project_create_payload(self.valid_data, self.user_id)
 
     def test_invalid_funding_model_id_type(self) -> None:
-        invalid_data = self.valid_data.copy()
-        invalid_data["funding_model_id"] = "not-an-integer"
+
+        self.valid_data["funding_model_id"] = "not-an-integer"
 
         with self.assertRaises(ValueError):
-            request_data_to_project_create_payload(invalid_data, self.user_id)
+            request_data_to_project_create_payload(self.valid_data, self.user_id)
+
+    def test_invalid_stage(self) -> None:
+        self.valid_data["stage"] = "invalid-stage"
+
+        with self.assertRaises(InvalidProjectStageException):
+            request_data_to_project_create_payload(self.valid_data, self.user_id)

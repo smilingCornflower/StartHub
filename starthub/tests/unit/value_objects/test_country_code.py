@@ -1,9 +1,9 @@
-from django.test import TestCase
+from django.test import SimpleTestCase
 from domain.value_objects.country import CountryCode
 from pydantic import ValidationError
 
 
-class CountryCodeValidationTest(TestCase):
+class CountryCodeValidationTest(SimpleTestCase):
     def test_valid_country_codes(self) -> None:
         valid_codes = ["US", "GB", "DE", "FR", "RU", "JP", "CN"]
 

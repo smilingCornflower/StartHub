@@ -11,7 +11,7 @@ from domain.exceptions.project_management import (
     NegativeProjectGoalSumValidationException,
     ProjectCategoryNotFoundException,
     ProjectDeadlineInPastValidationException,
-    ProjectNameIsTooLongValidationException,
+    ProjectNameIsTooLongValidationException, ProjectStageException, InvalidProjectStageException,
 )
 from domain.exceptions.user import UserNotFoundException
 from domain.exceptions.validation import (
@@ -45,6 +45,7 @@ APPLICATION_ERROR_CODES: dict[type, tuple[str, int]] = {
     InvalidSocialLinkException: ("INVALID_SOCIAL_LINK", 422),
     DisallowedSocialLinkException: ("DISALLOWED_SOCIAL_PLATFORM", 422),
     DateIsNotIsoFormatException: ("DATE_IS_NOT_ISO_FORMAT", 422),
+    InvalidProjectStageException: ("INVALID_PROJECT_STAGE", 422),
     # 401 Unauthorized
     InvalidCredentialsException: ("INVALID_CREDENTIALS", 401),
     InvalidTokenException: ("INVALID_TOKEN", 401),

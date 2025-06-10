@@ -1,14 +1,14 @@
 from datetime import date, timedelta
 from typing import Any
 
-from django.test import TestCase
+from django.test import SimpleTestCase
 from domain.exceptions.validation import ValidationException
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, SocialLink
-from domain.value_objects.project_management import ProjectCreatePayload, TeamMemberInProjectCreatePayload
+from domain.value_objects.project_management import ProjectCreatePayload, TeamMemberInProjectCreatePayload, ProjectStage
 from pydantic import ValidationError
 
 
-class ProjectCreatePayloadTests(TestCase):
+class TestProjectCreatePayload(SimpleTestCase):
     def setUp(self) -> None:
         self.valid_data: dict[str, Any] = {
             "name": "Test Project",
@@ -16,6 +16,7 @@ class ProjectCreatePayloadTests(TestCase):
             "category_id": Id(value=1),
             "creator_id": Id(value=2),
             "funding_model_id": Id(value=3),
+            "stage": ProjectStage(value="idea"),
             "goal_sum": 1000.0,
             "deadline": date.today() + timedelta(days=30),
             "team_members": [
@@ -36,6 +37,7 @@ class ProjectCreatePayloadTests(TestCase):
         self.assertEqual(payload.funding_model_id.value, 3)
         self.assertEqual(payload.team_members[0].first_name.value, "John")
         self.assertEqual(payload.company_id.value, 1)
+        self.assertEqual(payload.stage.value, "idea")
 
     def test_goal_sum_validation(self) -> None:
         test_cases = [0, -100, -0.01]
