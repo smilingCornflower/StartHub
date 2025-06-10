@@ -1,18 +1,18 @@
 from datetime import date
 
-from pydantic import field_validator
-
 from domain.constants import CHAR_FIELD_MAX_LENGTH
 from domain.enums.project_stage import ProjectStageEnum
 from domain.exceptions.project_management import (
+    InvalidProjectStageException,
     NegativeProjectGoalSumValidationException,
     ProjectDeadlineInPastValidationException,
-    ProjectNameIsTooLongValidationException, InvalidProjectStageException,
+    ProjectNameIsTooLongValidationException,
 )
 from domain.exceptions.validation import EmptyStringException
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, SocialLink
+from pydantic import field_validator
 
 
 class ProjectPhoneCreatePayload(AbstractCreatePayload, BaseVo):
@@ -63,7 +63,7 @@ class ProjectCategoryUpdatePayload(AbstractUpdatePayload, BaseVo):
 class ProjectStage(BaseVo):
     value: str
 
-    @field_validator("value", mode='after')
+    @field_validator("value", mode="after")
     @classmethod
     def is_valid_stage(cls, value: str) -> str:
         """:raises InvalidProjectStageException:"""

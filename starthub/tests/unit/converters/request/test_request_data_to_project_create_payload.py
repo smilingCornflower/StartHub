@@ -1,10 +1,9 @@
 from datetime import date, timedelta
 from typing import Any
 
-from django.test import SimpleTestCase
-
 from application.converters.request_converters.project import request_data_to_project_create_payload
-from domain.exceptions.project_management import ProjectDeadlineInPastValidationException, InvalidProjectStageException
+from django.test import SimpleTestCase
+from domain.exceptions.project_management import InvalidProjectStageException, ProjectDeadlineInPastValidationException
 from domain.exceptions.validation import (
     DateIsNotIsoFormatException,
     DisallowedSocialLinkException,
@@ -27,7 +26,7 @@ class TestProjectCreatePayloadConversion(SimpleTestCase):
             "category_id": 1,
             "company_id": 1,
             "funding_model_id": 3,
-            "stage": 'idea',
+            "stage": "idea",
             "goal_sum": 10000.0,
             "deadline": (date.today() + timedelta(days=30)).isoformat(),
             "team_members": [{"first_name": "John", "last_name": "Doe", "description": "Developer"}],

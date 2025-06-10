@@ -1,9 +1,8 @@
 from django.test import SimpleTestCase
-from loguru import logger
-
 from domain.enums.project_stage import ProjectStageEnum
 from domain.exceptions.project_management import InvalidProjectStageException
 from domain.value_objects.project_management import ProjectStage
+
 
 class TestProjectStage(SimpleTestCase):
     def test_allowed_values(self) -> None:

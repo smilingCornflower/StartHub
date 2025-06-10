@@ -4,7 +4,7 @@ from typing import Any
 from django.test import SimpleTestCase
 from domain.exceptions.validation import ValidationException
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, SocialLink
-from domain.value_objects.project_management import ProjectCreatePayload, TeamMemberInProjectCreatePayload, ProjectStage
+from domain.value_objects.project_management import ProjectCreatePayload, ProjectStage, TeamMemberInProjectCreatePayload
 from pydantic import ValidationError
 
 

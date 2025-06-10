@@ -8,10 +8,11 @@ from domain.exceptions.company import CompanyNotFoundException, CompanyOwnership
 from domain.exceptions.permissions import DeletePermissionDenied
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
+    InvalidProjectStageException,
     NegativeProjectGoalSumValidationException,
     ProjectCategoryNotFoundException,
     ProjectDeadlineInPastValidationException,
-    ProjectNameIsTooLongValidationException, ProjectStageException, InvalidProjectStageException,
+    ProjectNameIsTooLongValidationException,
 )
 from domain.exceptions.user import UserNotFoundException
 from domain.exceptions.validation import (

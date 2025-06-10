@@ -10,8 +10,6 @@ from application.dto.project import ProjectDto
 from application.ports.service import AbstractAppService
 from django.db import transaction
 from django.http import QueryDict
-
-from domain.exceptions.project_management import InvalidProjectStageException
 from domain.models.project import Project, ProjectPhone, TeamMember
 from domain.services.project_management import (
     ProjectPhoneService,

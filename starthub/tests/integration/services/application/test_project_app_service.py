@@ -88,7 +88,7 @@ class TestProjectAppService(TestCase):
         self.assertEqual(project.description, self.valid_data["description"])
         self.assertEqual(project.category.id, self.valid_data["category_id"])
         self.assertEqual(project.funding_model.id, self.valid_data["funding_model_id"])
-        self.assertEqual(project.stage, self.valid_data['stage'])
+        self.assertEqual(project.stage, self.valid_data["stage"])
         self.assertEqual(project.goal_sum, self.valid_data["goal_sum"])
         self.assertEqual(str(project.deadline), self.valid_data["deadline"])
         self.assertEqual(project.company.id, self.valid_data["company_id"])

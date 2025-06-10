@@ -3,15 +3,14 @@ from typing import Any, cast
 
 import pydantic
 from django.http import QueryDict
-
-from domain.enums.project_stage import ProjectStageEnum
 from domain.exceptions.validation import DateIsNotIsoFormatException, MissingRequiredFieldException, ValidationException
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
 from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project_management import (
     ProjectCreatePayload,
+    ProjectStage,
     ProjectUpdatePayload,
-    TeamMemberInProjectCreatePayload, ProjectStage,
+    TeamMemberInProjectCreatePayload,
 )
 from loguru import logger
 
