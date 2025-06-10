@@ -33,6 +33,10 @@ class DateIsNotIsoFormatException(ValidationException):
     pass
 
 
+class DateInFutureException(ValidationException):
+    pass
+
+
 class InvalidEmailException(ValidationException):
     pass
 

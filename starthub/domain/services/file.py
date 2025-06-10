@@ -3,9 +3,10 @@ from io import BytesIO
 from typing import BinaryIO
 
 import filetype
-from domain.exceptions.image import NotSupportedImageFormatException
 from loguru import logger
 from wand.image import Image
+
+from domain.exceptions.file import NotSupportedImageFormatException, NotPdfFileException
 
 
 class ImageService:
@@ -39,3 +40,18 @@ class ImageService:
             with img.convert("jpg") as converted:
                 converted.save(file=result)
         return result
+
+
+class PdfService:
+    def check_is_pdf(self, file_obj: BinaryIO) -> None:
+        """:raises NotPdfFileException:"""
+
+        kind = filetype.guess(file_obj)
+        if kind is None:
+            logger.debug("Failed to identify file type.")
+            raise NotPdfFileException("Unrecognized file type, expected pdf file.")
+        logger.debug(f"king.mime = {kind.mime}")
+        if kind.mime != "application/pdf":
+            raise NotPdfFileException(
+                f"The file format: {kind.mime} is not supported, allowed pdf file only."
+            )

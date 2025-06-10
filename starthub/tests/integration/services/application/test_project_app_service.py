@@ -83,7 +83,7 @@ class TestProjectAppService(TestCase):
         }
 
     def test_valid_create(self) -> None:
-        project: Project = self.service.create(self.valid_data, self.user.id)
+        project: Project = self.service.create(self.valid_data, {}, self.user.id)
         self.assertEqual(project.name, self.valid_data["name"])
         self.assertEqual(project.description, self.valid_data["description"])
         self.assertEqual(project.category.id, self.valid_data["category_id"])

@@ -4,8 +4,8 @@ from pathlib import Path
 import filetype
 from config.settings import BASE_DIR
 from django.test import SimpleTestCase
-from domain.exceptions.image import NotSupportedImageFormatException
-from domain.services.image import ImageService
+from domain.exceptions.file import NotSupportedImageFormatException
+from domain.services.file import ImageService
 from loguru import logger
 
 

@@ -1,5 +1,7 @@
 from datetime import date
 
+from pydantic import field_validator
+
 from domain.constants import CHAR_FIELD_MAX_LENGTH
 from domain.enums.project_stage import ProjectStageEnum
 from domain.exceptions.project_management import (
@@ -9,10 +11,12 @@ from domain.exceptions.project_management import (
     ProjectNameIsTooLongValidationException,
 )
 from domain.exceptions.validation import EmptyStringException
+from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, SocialLink
-from pydantic import field_validator
+from domain.value_objects.company import CompanyCreateCommand
+from domain.value_objects.file import PdfFile
 
 
 class ProjectPhoneCreatePayload(AbstractCreatePayload, BaseVo):
@@ -42,7 +46,7 @@ class TeamMemberCreatePayload(AbstractCreatePayload, BaseVo):
     description: str
 
 
-class TeamMemberInProjectCreatePayload(BaseVo):
+class TeamMemberCreateCommand(BaseVo):
     first_name: FirstName
     last_name: LastName
     description: str
@@ -75,7 +79,7 @@ class ProjectStage(BaseVo):
         return value.lower()
 
 
-class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
+class ProjectCreateCommand(BaseCommand):
     name: str
     description: str
     category_id: Id
@@ -84,10 +88,11 @@ class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
     stage: ProjectStage
     goal_sum: float
     deadline: date
-    team_members: list[TeamMemberInProjectCreatePayload]
-    company_id: Id
+    team_members: list[TeamMemberCreateCommand]
+    company: CompanyCreateCommand
     social_links: list[SocialLink]
     phone_number: PhoneNumber
+    project_plan_data: PdfFile
 
     @field_validator("name", mode="after")
     @classmethod
@@ -121,11 +126,25 @@ class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
         return value
 
 
+class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
+    name: str
+    description: str
+    category_id: Id
+    creator_id: Id
+    funding_model_id: Id
+    company_id: Id
+    stage: ProjectStage
+    goal_sum: float
+    deadline: date
+    project_plan_data: bytes
+
+
 class ProjectUpdatePayload(AbstractUpdatePayload, BaseVo):
     id_: Id
-    name: str | None
-    description: str | None
-    category_id: Id | None
-    funding_model_id: Id | None
-    goal_sum: float | None
-    deadline: date | None
+    name: str | None = None
+    description: str | None = None
+    category_id: Id | None = None
+    funding_model_id: Id | None = None
+    goal_sum: float | None = None
+    deadline: date | None = None
+    plan: str | None = None
