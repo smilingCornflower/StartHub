@@ -1,11 +1,11 @@
-from django.test import TestCase
+from django.test import SimpleTestCase
 from domain.exceptions.validation import ValidationException
 from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode
 from pydantic import ValidationError
 
 
-class BusinessNumberValidationTest(TestCase):
+class BusinessNumberValidationTest(SimpleTestCase):
     def test_valid_kz_business_number(self) -> None:
         test_data = {"country_code": CountryCode(value="KZ"), "value": "123456789012"}
         business_number = BusinessNumber(**test_data)  # type: ignore

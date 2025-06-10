@@ -8,6 +8,7 @@ from domain.exceptions.company import CompanyNotFoundException, CompanyOwnership
 from domain.exceptions.permissions import DeletePermissionDenied
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
+    InvalidProjectStageException,
     NegativeProjectGoalSumValidationException,
     ProjectCategoryNotFoundException,
     ProjectDeadlineInPastValidationException,
@@ -45,6 +46,7 @@ APPLICATION_ERROR_CODES: dict[type, tuple[str, int]] = {
     InvalidSocialLinkException: ("INVALID_SOCIAL_LINK", 422),
     DisallowedSocialLinkException: ("DISALLOWED_SOCIAL_PLATFORM", 422),
     DateIsNotIsoFormatException: ("DATE_IS_NOT_ISO_FORMAT", 422),
+    InvalidProjectStageException: ("INVALID_PROJECT_STAGE", 422),
     # 401 Unauthorized
     InvalidCredentialsException: ("INVALID_CREDENTIALS", 401),
     InvalidTokenException: ("INVALID_TOKEN", 401),

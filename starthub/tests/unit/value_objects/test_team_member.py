@@ -1,12 +1,12 @@
 from typing import Any
 
-from django.test import TestCase
+from django.test import SimpleTestCase
 from domain.value_objects.common import FirstName, Id, LastName
 from domain.value_objects.project_management import TeamMemberCreatePayload, TeamMemberInProjectCreatePayload
 from pydantic import ValidationError
 
 
-class TeamMemberPayloadTest(TestCase):
+class TeamMemberPayloadTest(SimpleTestCase):
     def test_valid_team_member_create_payload(self) -> None:
         valid_data: dict[str, Any] = {
             "project_id": Id(value=1),

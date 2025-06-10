@@ -31,7 +31,9 @@ class CommonErrorResponseFactory(ErrorResponseFactory):
 
 
 class ProjectErrorResponseFactory(CommonErrorResponseFactory):
-    error_codes = CommonErrorResponseFactory.error_codes | {KeyError: ("MISSING_REQUIRED_FIELD", 400)}
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        KeyError: ("MISSING_REQUIRED_FIELD", 400),
+    }
 
 
 class AuthErrorResponseFactory(CommonErrorResponseFactory):

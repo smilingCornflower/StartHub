@@ -3,7 +3,11 @@ from domain.exceptions.repository import AlreadyExistsException, NotFoundExcepti
 from domain.exceptions.validation import ValidationException
 
 
-class ProjectCategoryException(DomainException):
+class ProjectException(DomainException):
+    pass
+
+
+class ProjectCategoryException(ProjectException):
     pass
 
 
@@ -11,7 +15,7 @@ class ProjectCategoryNotFoundException(NotFoundException, ProjectCategoryExcepti
     pass
 
 
-class ProjectPhoneException(DomainException):
+class ProjectPhoneException(ProjectException):
     pass
 
 
@@ -20,30 +24,6 @@ class ProjectPhoneAlreadyExistsException(AlreadyExistsException, ProjectPhoneExc
 
 
 class ProjectPhoneNotFoundException(NotFoundException, ProjectPhoneException):
-    pass
-
-
-class ProjectSocialLinkException(DomainException):
-    pass
-
-
-class ProjectSocialLinkNotFoundException(NotFoundException, ProjectSocialLinkException):
-    pass
-
-
-class ProjectSocialLinkAlreadyExistsException(AlreadyExistsException, ProjectSocialLinkException):
-    pass
-
-
-class TeamMemberException(DomainException):
-    pass
-
-
-class TeamMemberNotFoundException(NotFoundException, TeamMemberException):
-    pass
-
-
-class ProjectException(DomainException):
     pass
 
 
@@ -67,9 +47,41 @@ class ProjectNameAlreadyExistsException(AlreadyExistsException, ProjectException
     pass
 
 
-class FundingModelException(DomainException):
+# ==== Funding Model Exceptions ====
+class FundingModelException(ProjectException):
     pass
 
 
 class FundingModelNotFoundException(NotFoundException, FundingModelException):
+    pass
+
+
+# ==== Team Member Exceptions ====
+class TeamMemberException(ProjectException):
+    pass
+
+
+class TeamMemberNotFoundException(NotFoundException, TeamMemberException):
+    pass
+
+
+# ==== Project Social Link Exceptions ====
+class ProjectSocialLinkException(ProjectException):
+    pass
+
+
+class ProjectSocialLinkNotFoundException(NotFoundException, ProjectSocialLinkException):
+    pass
+
+
+class ProjectSocialLinkAlreadyExistsException(AlreadyExistsException, ProjectSocialLinkException):
+    pass
+
+
+# ==== Project Stage Exceptions ====
+class ProjectStageException(ProjectException):
+    pass
+
+
+class InvalidProjectStageException(ValidationException, ProjectStageException):
     pass

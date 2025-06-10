@@ -1,7 +1,9 @@
 from datetime import date
 
 from domain.constants import CHAR_FIELD_MAX_LENGTH
+from domain.enums.project_stage import ProjectStageEnum
 from domain.exceptions.project_management import (
+    InvalidProjectStageException,
     NegativeProjectGoalSumValidationException,
     ProjectDeadlineInPastValidationException,
     ProjectNameIsTooLongValidationException,
@@ -58,12 +60,28 @@ class ProjectCategoryUpdatePayload(AbstractUpdatePayload, BaseVo):
     pass
 
 
+class ProjectStage(BaseVo):
+    value: str
+
+    @field_validator("value", mode="after")
+    @classmethod
+    def is_valid_stage(cls, value: str) -> str:
+        """:raises InvalidProjectStageException:"""
+
+        if value.lower() not in ProjectStageEnum:
+            raise InvalidProjectStageException(
+                f"Invalid project stage: {value}. Allowed stages: {', '.join([stage for stage in ProjectStageEnum])}"
+            )
+        return value.lower()
+
+
 class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
     name: str
     description: str
     category_id: Id
     creator_id: Id
     funding_model_id: Id
+    stage: ProjectStage
     goal_sum: float
     deadline: date
     team_members: list[TeamMemberInProjectCreatePayload]

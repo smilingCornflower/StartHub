@@ -1,10 +1,10 @@
-from django.test import TestCase
+from django.test import SimpleTestCase
 from domain.exceptions.validation import InvalidPhoneNumberException
 from domain.value_objects.common import PhoneNumber
 from pydantic import ValidationError
 
 
-class PhoneNumberTestCase(TestCase):
+class PhoneNumberTestCase(SimpleTestCase):
     def test_valid_phone_numbers(self) -> None:
         """Checks correct format numbers in E164."""
         test_cases: list[tuple[str, str]] = [

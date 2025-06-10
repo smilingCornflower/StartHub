@@ -81,6 +81,7 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             creator_id=data.creator_id.value,
             company_id=data.company_id.value,
             funding_model_id=data.funding_model_id.value,
+            stage=data.stage.value,
             goal_sum=data.goal_sum,
             deadline=data.deadline,
         )

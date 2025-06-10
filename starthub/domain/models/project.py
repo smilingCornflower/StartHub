@@ -8,14 +8,6 @@ from domain.constants import (
 )
 from domain.models.base import BaseModel
 
-STAGE_CHOICES = [
-    ("idea", "Idea"),
-    ("mvp", "MVP"),
-    ("scale", "Scale"),
-    ("validation", "Validation"),
-    ("prototype", "Prototype"),
-]
-
 
 class Project(BaseModel):
     name = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
@@ -25,7 +17,7 @@ class Project(BaseModel):
     company = models.ForeignKey("domain.Company", on_delete=models.PROTECT)
     creator = models.ForeignKey("domain.User", on_delete=models.PROTECT, related_name="created_projects")
     funding_model = models.ForeignKey("domain.FundingModel", on_delete=models.PROTECT)
-    # stage = models.CharField(max_length=10, choices=STAGE_CHOICES)
+    stage = models.CharField(max_length=16, default=None, null=True)
 
     goal_sum = models.DecimalField(max_digits=FUNDING_GOAL_MAX_DIGITS, decimal_places=2)
     current_sum = models.DecimalField(max_digits=FUNDING_GOAL_MAX_DIGITS, decimal_places=2, default=0)
