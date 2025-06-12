@@ -19,7 +19,7 @@ class CompanyFounder(BaseModel):
 class Company(BaseModel):
     name = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
     slug = AutoSlugField(populate_from="name", unique=True, max_length=CHAR_FIELD_MAX_LENGTH)
-    founder = models.OneToOneField("domain.CompanyFounder", on_delete=models.PROTECT, related_name="company", null=True)
+    founder = models.OneToOneField("domain.CompanyFounder", on_delete=models.PROTECT, related_name="company")
     representative = models.ForeignKey("domain.User", on_delete=models.PROTECT, related_name="companies")
 
     description = models.TextField()
@@ -27,7 +27,7 @@ class Company(BaseModel):
     business_id = models.CharField(max_length=32, unique=True)
 
     business_plan = models.FileField(upload_to="business_plans/", blank=True, null=True)
-    established_date = models.DateField(blank=True, null=True)
+    established_date = models.DateField()
 
     class Meta:
         db_table = "company"

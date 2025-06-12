@@ -23,7 +23,7 @@ from domain.repositories.project_management import (
 )
 from domain.repositories.user import UserReadRepository
 from domain.services.file import PdfService
-from domain.value_objects.cloud_storage import CloudStorageUploadPayload
+from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
 from domain.value_objects.common import Id
 from domain.value_objects.filter import ProjectFilter, ProjectPhoneFilter, ProjectSocialLinkFilter
 from domain.value_objects.project_management import (
@@ -121,6 +121,13 @@ class ProjectService:
     def get(self, filter_: ProjectFilter) -> list[Project]:
         return self._project_read_repository.get_all(filter_=filter_)
 
+    def get_plan_url(self, project_id: Id) -> str:
+        plan_path = self._generate_plan_path(project_id)
+        return self._cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=plan_path))
+
+    def _generate_plan_path(self, project_id: Id) -> str:
+        return f"{PROJECT_PLAN_PATH}/{project_id.value}.pdf"
+
     def create(self, payload: ProjectCreatePayload) -> Project:
         """
         :raises ProjectCategoryNotFoundException:
@@ -141,7 +148,7 @@ class ProjectService:
 
         project: Project = self._project_write_repository.create(payload)
         logger.info("Project created successfully.")
-        project_plan_path = f"{PROJECT_PLAN_PATH}/{project.id}.pdf"
+        project_plan_path: str = self._generate_plan_path(project_id=Id(value=project.id))
         uploaded_path: str = self._cloud_storage.upload_file(
             CloudStorageUploadPayload(file_data=payload.project_plan_data, file_path=project_plan_path)
         )
