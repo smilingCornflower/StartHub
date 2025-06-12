@@ -51,7 +51,7 @@ class DjProjectReadRepository(ProjectReadRepository):
         project: Project | None = Project.objects.filter(id=id_.value).first()
 
         if project is None:
-            raise ProjectNotFoundException
+            raise ProjectNotFoundException(f"Project with id = {id_.value} not found.")
         return project
 
     def get_all(self, filter_: ProjectFilter) -> list[Project]:
@@ -95,18 +95,22 @@ class DjProjectWriteRepository(ProjectWriteRepository):
 
         if data.name is not None:
             project.name = data.name
+            project.slug = None
         if data.description is not None:
             project.description = data.description
         if data.goal_sum is not None:
             project.goal_sum = data.goal_sum
         if data.deadline is not None:
             project.deadline = data.deadline
+        if data.stage is not None:
+            project.stage = data.stage.value
         if data.category_id is not None:
             project.category_id = data.category_id.value
         if data.funding_model_id is not None:
             project.funding_model_id = data.funding_model_id.value
         if data.plan is not None:
             project.plan = data.plan
+
         project.save()
         return project
 

@@ -1,6 +1,6 @@
 import pydantic
 from application.dto.user import UserProfileDto
-from application.services.gateway import Gateway, gateway
+from application.services.gateway import gateway
 from application.services.user import UserAppService
 from config.settings import BASE_DIR
 from django.core.files.uploadedfile import SimpleUploadedFile

@@ -1,5 +1,6 @@
 from dataclasses import asdict
 
+from application.dto.auth import AccessPayloadDto
 from application.dto.project import ProjectDto
 from application.service_factories.project import ProjectServiceFactory
 from application.services.gateway import gateway
@@ -52,6 +53,17 @@ class ProjectView(APIView):
             return ProjectErrorResponseFactory.create_response(e)
 
         return Response({"project_id": project.id, "code": "SUCCESS"}, status=status.HTTP_201_CREATED)
+
+    def patch(self, request: Request, project_id: int) -> Response:
+        logger.debug(f"request.data = {request.data}")
+        try:
+            access_dto: AccessPayloadDto = get_access_payload_dto(request.COOKIES)
+            gateway.project_app_service.update(request.data, request.FILES, project_id, user_id=int(access_dto.sub))
+            return Response({"detail": "updated successfully.", "code": SUCCESS}, status=status.HTTP_200_OK)
+
+        except self.error_classes as e:
+            logger.exception(f"Exception: {repr(e)}")
+            return ProjectErrorResponseFactory.create_response(e)
 
     def delete(self, request: Request, project_id: int) -> Response:
         try:

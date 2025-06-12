@@ -10,6 +10,10 @@ class NotPdfFileException(FileException):
     pass
 
 
+class PdfFileTooLargeException(FileException):
+    pass
+
+
 # ==== Image Exception ====
 class ImageException(FileException):
     pass

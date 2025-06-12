@@ -15,10 +15,16 @@ from domain.value_objects.filter import CompanyFilter, CompanyFounderFilter
 class CompanyReadRepository(AbstractReadRepository[Company, CompanyFilter], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> Company:
+        """:raises CompanyNotFoundException:"""
         pass
 
     @abstractmethod
     def get_all(self, filter_: CompanyFilter) -> list[Company]:
+        pass
+
+    @abstractmethod
+    def get_by_project_id(self, id_: Id) -> Company:
+        """:raises CompanyNotFoundException:"""
         pass
 
 

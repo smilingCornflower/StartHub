@@ -4,6 +4,7 @@ from application.converters.inner.project_command_to_payload import convert_proj
 from application.converters.request_converters.project import (
     request_data_to_project_create_command,
     request_data_to_project_filter,
+    request_data_to_the_project_update_command,
 )
 from application.converters.resposne_converters.project import project_to_dto, projects_to_dtos
 from application.dto.project import ProjectDto
@@ -25,6 +26,7 @@ from domain.value_objects.project_management import (
     ProjectCreateCommand,
     ProjectPhoneCreatePayload,
     ProjectSocialLinkCreatePayload,
+    ProjectUpdateCommand,
     TeamMemberCreatePayload,
 )
 from loguru import logger
@@ -96,6 +98,16 @@ class ProjectAppService(AbstractAppService):
             logger.info("All social links create successfully.")
 
         return project
+
+    def update(self, data: dict[str, Any], files: dict[str, UploadedFile], project_id: int, user_id: int) -> None:
+        update_command: ProjectUpdateCommand = request_data_to_the_project_update_command(
+            data, files, project_id, user_id
+        )
+        logger.debug(f"update_command = {update_command}")
+        with transaction.atomic():
+            logger.warning("Started updating project.")
+            self._project_service.update(update_command)
+            logger.info("Project updated successfully.")
 
     def delete(self, project_id: int, user_id: int) -> None:
         logger.debug(f"project_id = {project_id}, user_id = {user_id}")

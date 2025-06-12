@@ -1,6 +1,6 @@
 from domain.constants import PROJECT_PLAN_PATH
 from domain.exceptions.company import CompanyOwnershipRequiredException
-from domain.exceptions.permissions import DeletePermissionDenied
+from domain.exceptions.permissions import DeleteDeniedPermissionException, UpdateDeniedPermissionException
 from domain.exceptions.project_management import (
     ProjectPhoneAlreadyExistsException,
     ProjectSocialLinkAlreadyExistsException,
@@ -8,7 +8,7 @@ from domain.exceptions.project_management import (
 from domain.models.company import Company
 from domain.models.project import Project, ProjectPhone, ProjectSocialLink, TeamMember
 from domain.ports.cloud_storage import AbstractCloudStorage
-from domain.repositories.company import CompanyReadRepository
+from domain.repositories.company import CompanyReadRepository, CompanyWriteRepository
 from domain.repositories.project_management import (
     FundingModelReadRepository,
     ProjectCategoryReadRepository,
@@ -30,6 +30,7 @@ from domain.value_objects.project_management import (
     ProjectCreatePayload,
     ProjectPhoneCreatePayload,
     ProjectSocialLinkCreatePayload,
+    ProjectUpdateCommand,
     ProjectUpdatePayload,
     TeamMemberCreatePayload,
 )
@@ -102,6 +103,7 @@ class ProjectService:
         user_read_repository: UserReadRepository,
         funding_model_read_repository: FundingModelReadRepository,
         company_read_repository: CompanyReadRepository,
+        company_write_repository: CompanyWriteRepository,
         cloud_storage: AbstractCloudStorage,
         pdf_service: PdfService,
     ):
@@ -111,6 +113,7 @@ class ProjectService:
         self._user_read_repository = user_read_repository
         self._funding_model_read_repository = funding_model_read_repository
         self._company_read_repository = company_read_repository
+        self._company_write_repository = company_write_repository
         self._cloud_storage = cloud_storage
         self._pdf_service = pdf_service
 
@@ -160,24 +163,51 @@ class ProjectService:
 
         return project
 
-    def update(self, payload: ProjectUpdatePayload, user_id: Id) -> Project:
+    def update(self, update_command: ProjectUpdateCommand) -> Project:
         """
+        :raises ProjectNotFoundException:
+        :raises UpdateDeniedPermissionException:
         :raises ProjectCategoryNotFoundException:
         :raises FundingModelNotFoundException:
-        :raises DeletePermissionDenied:
         """
+        project: Project = self._project_read_repository.get_by_id(update_command.project_id)
+        if update_command.user_id.value != project.creator_id:
+            raise UpdateDeniedPermissionException("User is not the creator of the project and cannot update it")
 
-        project: Project = self._project_read_repository.get_by_id(id_=payload.id_)
-        if project.creator_id != user_id.value:
-            raise DeletePermissionDenied("Permission denied: Only project owners can update projects")
+        if update_command.category_id:
+            logger.debug("Checking category exists.")
+            self._project_category_read_repository.get_by_id(update_command.category_id)
 
-        if payload.category_id:
-            self._project_category_read_repository.get_by_id(payload.category_id)
-        if payload.funding_model_id:
-            self._funding_model_read_repository.get_by_id(payload.funding_model_id)
+        if update_command.funding_model_id:
+            logger.debug("Checking funding model exists.")
+            self._funding_model_read_repository.get_by_id(update_command.funding_model_id)
 
-        project_updated: Project = self._project_write_repository.update(payload)
-        return project_updated
+        if update_command.project_plan:
+            logger.info("Updating project_plan file.")
+            project_plan_path: str = self._generate_plan_path(project_id=Id(value=project.id))
+            uploaded_path: str = self._cloud_storage.upload_file(
+                CloudStorageUploadPayload(file_data=update_command.project_plan.value, file_path=project_plan_path)
+            )
+            logger.debug(f"File uploaded, uploaded_path = {uploaded_path}.")
+
+        if update_command.company:
+            logger.info("Updating company fields.")
+            self._company_write_repository.update(update_command.company)
+            logger.info("Company data updated successfully.")
+
+        updated_project: Project = self._project_write_repository.update(
+            ProjectUpdatePayload(
+                id_=update_command.project_id,
+                name=update_command.name,
+                description=update_command.description,
+                category_id=update_command.category_id,
+                funding_model_id=update_command.funding_model_id,
+                stage=update_command.stage,
+                goal_sum=update_command.goal_sum,
+                deadline=update_command.deadline,
+            )
+        )
+        return updated_project
 
     def delete(self, project_id: Id, user_id: Id) -> None:
         """
@@ -185,6 +215,6 @@ class ProjectService:
         """
         project: Project = self._project_read_repository.get_by_id(id_=project_id)
         if project.creator_id != user_id.value:
-            raise DeletePermissionDenied("Permission denied: Only project owners can delete projects")
+            raise DeleteDeniedPermissionException("Permission denied: Only project owners can delete projects")
 
         self._project_write_repository.delete(id_=project_id)

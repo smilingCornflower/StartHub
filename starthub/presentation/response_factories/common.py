@@ -4,7 +4,8 @@ from typing import cast
 import pydantic
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
-from domain.exceptions.file import NotPdfFileException, NotSupportedImageFormatException
+from domain.exceptions.file import NotPdfFileException, NotSupportedImageFormatException, PdfFileTooLargeException
+from domain.exceptions.project_management import ProjectNotFoundException
 from domain.exceptions.user import EmailAlreadyExistsException
 from domain.exceptions.validation import DateInFutureException, InvalidEmailException, ValidationException
 from presentation.constants import APPLICATION_ERROR_CODES
@@ -41,6 +42,8 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         NotPdfFileException: ("NOT_PDF_FILE", 400),
         CompanyNameIsTooLongException: ("COMPANY_NAME_TOO_LONG", 422),
         DateInFutureException: ("DATE_IN_FUTURE_NOT_ALLOWED", 422),
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+        PdfFileTooLargeException: ("PDF_FILE_TOO_LARGE", 412),
     }
 
 

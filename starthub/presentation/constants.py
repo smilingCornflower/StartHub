@@ -6,7 +6,7 @@ from domain.exceptions.auth import (
 )
 from domain.exceptions.company import CompanyNotFoundException, CompanyOwnershipRequiredException
 from domain.exceptions.country import InvalidCountryCodeException
-from domain.exceptions.permissions import DeletePermissionDenied
+from domain.exceptions.permissions import DeleteDeniedPermissionException
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
     InvalidProjectStageException,
@@ -35,7 +35,7 @@ APPLICATION_ERROR_CODES: dict[type, tuple[str, int]] = {
     FundingModelNotFoundException: ("FUNDING_MODEL_NOT_FOUND", 404),
     # 403 Forbidden
     CompanyOwnershipRequiredException: ("COMPANY_OWNERSHIP_REQUIRED", 403),
-    DeletePermissionDenied: ("DELETE_PERMISSION_DENIED", 403),
+    DeleteDeniedPermissionException: ("DELETE_PERMISSION_DENIED", 403),
     # 422 Unprocessable Entity
     ProjectNameIsTooLongValidationException: ("PROJECT_NAME_TOO_LONG", 422),
     NegativeProjectGoalSumValidationException: ("NEGATIVE_GOAL_SUM", 422),

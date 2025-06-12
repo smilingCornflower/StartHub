@@ -13,7 +13,7 @@ from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, SocialLink
-from domain.value_objects.company import CompanyCreateCommand
+from domain.value_objects.company import CompanyCreateCommand, CompanyUpdatePayload
 from domain.value_objects.file import PdfFile
 from pydantic import field_validator
 
@@ -110,7 +110,7 @@ class ProjectCreateCommand(BaseCommand):
 
     @field_validator("goal_sum", mode="after")
     @classmethod
-    def is_positive(cls, value: int) -> int:
+    def is_positive_goal_sum(cls, value: int) -> int:
         """:raises NegativeProjectGoalSumValidationException:"""
         if value <= 0:
             raise NegativeProjectGoalSumValidationException("goal_sum must be positive.")
@@ -121,6 +121,55 @@ class ProjectCreateCommand(BaseCommand):
     def deadline_in_future(cls, value: date) -> date:
         """:raises ProjectDeadlineInPastValidationException:"""
         if value <= date.today():
+            raise ProjectDeadlineInPastValidationException("deadline must be in the future.")
+        return value
+
+
+class ProjectUpdateCommand(BaseCommand):
+    project_id: Id
+    user_id: Id
+    company: CompanyUpdatePayload | None
+    name: str | None = None
+    description: str | None = None
+    category_id: Id | None = None
+    funding_model_id: Id | None = None
+    stage: ProjectStage | None = None
+    goal_sum: float | None = None
+    deadline: date | None = None
+    project_plan: PdfFile | None = None
+
+    # TODO: Create ProjectName value object
+    @field_validator("name", mode="after")
+    @classmethod
+    def is_valid_name(cls, value: str | None) -> str | None:
+        """
+        :raises ProjectNameIsTooLongValidationException:
+        :raises EmptyStringException:
+        """
+        if value is not None:
+            if not value:
+                raise EmptyStringException("Project name cannot be empty.")
+            if len(value) > CHAR_FIELD_MAX_LENGTH:
+                raise ProjectNameIsTooLongValidationException(
+                    f"Project name must be at most {CHAR_FIELD_MAX_LENGTH} characters long."
+                )
+        return value
+
+    # TODO: goal_sum is value_object
+    @field_validator("goal_sum", mode="after")
+    @classmethod
+    def is_positive_goal_sum(cls, value: int | None) -> int | None:
+        """:raises NegativeProjectGoalSumValidationException:"""
+        if value is not None and value <= 0:
+            raise NegativeProjectGoalSumValidationException("goal_sum must be positive.")
+        return value
+
+    # TODO: deadline is value_object
+    @field_validator("deadline", mode="after")
+    @classmethod
+    def deadline_in_future(cls, value: date | None) -> date | None:
+        """:raises ProjectDeadlineInPastValidationException:"""
+        if value is not None and value <= date.today():
             raise ProjectDeadlineInPastValidationException("deadline must be in the future.")
         return value
 
@@ -145,5 +194,6 @@ class ProjectUpdatePayload(AbstractUpdatePayload, BaseVo):
     category_id: Id | None = None
     funding_model_id: Id | None = None
     goal_sum: float | None = None
+    stage: ProjectStage | None = None
     deadline: date | None = None
     plan: str | None = None

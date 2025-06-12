@@ -27,6 +27,13 @@ class DjCompanyReadRepository(CompanyReadRepository):
             queryset = queryset.filter(business_id=filter_.business_id.value)
         return list(queryset.distinct())
 
+    def get_by_project_id(self, id_: Id) -> Company:
+        """:raises CompanyNotFoundException:"""
+        company: Company | None = Company.objects.filter(project__id=id_.value).first()
+        if company is None:
+            raise CompanyNotFoundException(f"Company with project id = {id_.value} does not exist.")
+        return company
+
 
 class DjCompanyWriteRepository(CompanyWriteRepository):
     def create(self, data: CompanyCreatePayload) -> Company:
@@ -41,8 +48,21 @@ class DjCompanyWriteRepository(CompanyWriteRepository):
         )
 
     def update(self, data: CompanyUpdatePayload) -> Company:
-        """:raises NotImplementedError:"""
-        raise NotImplementedError("Method update() is not implemented yet.")
+        """:raises CompanyNotFoundException:"""
+        company: Company | None = Company.objects.filter(project__id=data.project_id.value).first()
+        if company is None:
+            raise CompanyNotFoundException(f"Company with project id = {data.project_id.value} does not exist.")
+
+        if data.name is not None:
+            company.name = data.name
+            company.slug = None
+        if data.description is not None:
+            company.description = data.description
+        if data.established_date is not None:
+            company.established_date = data.established_date
+
+        company.save()
+        return company
 
     def delete(self, id_: Id) -> None:
         """:raises NotImplementedError:"""
