@@ -1,6 +1,6 @@
 from application.ports.service_factory import AbstractServiceFactory
 from application.services.user import UserAppService
-from domain.services.image import ImageService
+from domain.services.file import ImageService
 from domain.services.user import UserService
 from infrastructure.cloud_storages.google import google_cloud_storage
 from infrastructure.repositories.user import DjUserReadRepository, DjUserWriteRepository

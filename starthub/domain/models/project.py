@@ -22,7 +22,7 @@ class Project(BaseModel):
     goal_sum = models.DecimalField(max_digits=FUNDING_GOAL_MAX_DIGITS, decimal_places=2)
     current_sum = models.DecimalField(max_digits=FUNDING_GOAL_MAX_DIGITS, decimal_places=2, default=0)
     deadline = models.DateField()
-
+    plan = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH, blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self) -> str:

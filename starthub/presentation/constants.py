@@ -5,6 +5,7 @@ from domain.exceptions.auth import (
     TokenExpiredException,
 )
 from domain.exceptions.company import CompanyNotFoundException, CompanyOwnershipRequiredException
+from domain.exceptions.country import InvalidCountryCodeException
 from domain.exceptions.permissions import DeletePermissionDenied
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
@@ -47,6 +48,7 @@ APPLICATION_ERROR_CODES: dict[type, tuple[str, int]] = {
     DisallowedSocialLinkException: ("DISALLOWED_SOCIAL_PLATFORM", 422),
     DateIsNotIsoFormatException: ("DATE_IS_NOT_ISO_FORMAT", 422),
     InvalidProjectStageException: ("INVALID_PROJECT_STAGE", 422),
+    InvalidCountryCodeException: ("INVALID_COUNTRY_CODE", 422),
     # 401 Unauthorized
     InvalidCredentialsException: ("INVALID_CREDENTIALS", 401),
     InvalidTokenException: ("INVALID_TOKEN", 401),

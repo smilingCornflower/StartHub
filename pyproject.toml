@@ -1,5 +1,5 @@
 [project]
-name = "StartHubc"
+name = "StartHub"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -50,7 +50,7 @@ strict = true
 warn_unreachable = true
 warn_no_return = true
 cache_dir = ".mypy_cache"
-exclude = ["^migrations/.*", "bar.py", 'foo.py']
+exclude = ["^migrations/.*", "bar.py", 'foo.py', 'tests/']
 
 [tool.django-stubs]
 django_settings_module = "config.settings"
