@@ -2,7 +2,7 @@ from dataclasses import asdict
 
 from application.dto.project import ProjectDto
 from application.service_factories.project import ProjectServiceFactory
-from application.services.gateway import Gateway
+from application.services.gateway import gateway
 from application.services.project import ProjectAppService
 from application.utils.get_access_payload_dto import get_access_payload_dto
 from domain.exceptions.auth import InvalidTokenException
@@ -18,9 +18,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
-# TODO: ValidationError handling
 class ProjectView(APIView):
-    parser_classes = [MultiPartParser]  # multipart formdata
+    parser_classes = [MultiPartParser]
     error_classes: tuple[type[Exception], ...] = tuple(ProjectErrorResponseFactory.error_codes.keys())
 
     @staticmethod
@@ -43,7 +42,7 @@ class ProjectView(APIView):
     def post(self, reqeust: Request) -> Response:
         try:
             access_dto = get_access_payload_dto(reqeust.COOKIES)
-            project: Project = Gateway.project_app_service.create(
+            project: Project = gateway.project_app_service.create(
                 data=reqeust.data, files=reqeust.FILES, user_id=int(access_dto.sub)
             )
         except self.error_classes as e:
