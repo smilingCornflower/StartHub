@@ -39,7 +39,7 @@ class CompanyFounderUpdatePayload(AbstractUpdatePayload, BaseVo):
 
 
 class CompanyCreatePayload(AbstractCreatePayload, BaseVo):
-    name: str
+    name: str  # TODO: Company name is VO
     founder_id: Id
     representative_id: Id
     country_id: Id
@@ -49,7 +49,35 @@ class CompanyCreatePayload(AbstractCreatePayload, BaseVo):
 
 
 class CompanyUpdatePayload(AbstractUpdatePayload):
-    pass
+    project_id: Id
+    name: str | None = None
+    description: str | None = None
+    established_date: date | None = None
+
+    @field_validator("name", mode="after")
+    @classmethod
+    def is_valid_name(cls, value: str | None) -> str | None:
+        """
+        :raises CompanyNameIsTooLongException:
+        :raises EmptyStringException:
+        """
+        if value is not None:
+            if not value:
+                raise EmptyStringException("Company name cannot be empty.")
+            if len(value) > CHAR_FIELD_MAX_LENGTH:
+                raise CompanyNameIsTooLongException(
+                    f"Company name must be at most {CHAR_FIELD_MAX_LENGTH} characters long."
+                )
+        return value
+
+    @field_validator("established_date", mode="after")
+    @classmethod
+    def established_not_in_future(cls, value: date | None) -> date | None:
+        """:raises DateInFutureException:"""
+        if value is not None:
+            if value > date.today():
+                raise DateInFutureException("company_establishment_date must not be in the future.")
+        return value
 
 
 class CompanyCreateCommand(BaseCommand):

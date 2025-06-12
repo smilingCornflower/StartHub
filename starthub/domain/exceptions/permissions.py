@@ -5,5 +5,9 @@ class PermissionException(DomainException):
     pass
 
 
-class DeletePermissionDenied(PermissionException):
+class DeleteDeniedPermissionException(PermissionException):
+    pass
+
+
+class UpdateDeniedPermissionException(PermissionException):
     pass

@@ -41,6 +41,7 @@ class ProjectServiceFactory(AbstractServiceFactory[ProjectAppService]):
                 funding_model_read_repository=DjFundingModelReadRepository(),
                 user_read_repository=DjUserReadRepository(),
                 company_read_repository=DjCompanyReadRepository(),
+                company_write_repository=DjCompanyWriteRepository(),
                 cloud_storage=google_cloud_storage,
                 pdf_service=PdfService(),
             ),

@@ -25,8 +25,6 @@ class Company(BaseModel):
     description = models.TextField()
     country = models.ForeignKey("domain.Country", on_delete=models.PROTECT)
     business_id = models.CharField(max_length=32, unique=True)
-
-    business_plan = models.FileField(upload_to="business_plans/", blank=True, null=True)
     established_date = models.DateField()
 
     class Meta:
