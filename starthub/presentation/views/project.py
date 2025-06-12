@@ -10,6 +10,7 @@ from domain.exceptions.project_management import ProjectNotFoundException
 from domain.exceptions.validation import ValidationException
 from domain.models.project import Project
 from loguru import logger
+from presentation.constants import SUCCESS
 from presentation.response_factories.common import ProjectErrorResponseFactory
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
@@ -25,25 +26,26 @@ class ProjectView(APIView):
     @staticmethod
     def get(request: Request, project_id: int | None = None) -> Response:
         logger.info(f"request_data = {request.query_params}; project_id = {project_id}")
-        project_service: ProjectAppService = ProjectServiceFactory.create_service()
 
         if project_id:
             try:
-                project: ProjectDto = project_service.get_by_id(project_id=project_id)
+                project: ProjectDto = gateway.project_app_service.get_by_id(project_id=project_id)
                 return Response(asdict(project), status=status.HTTP_200_OK)
             except ProjectNotFoundException:
                 return Response(
                     {"detail": f"Project with id = {project_id} not found."}, status=status.HTTP_404_NOT_FOUND
                 )
 
-        projects: list[ProjectDto] = project_service.get(request.query_params)
+        projects: list[ProjectDto] = gateway.project_app_service.get(request.query_params)
         return Response(map(asdict, projects), status=status.HTTP_200_OK)
 
-    def post(self, reqeust: Request) -> Response:
+    def post(self, request: Request) -> Response:
+        logger.info(f"request_data = {request.data}")
+        logger.info(f"request files = {request.FILES}")
         try:
-            access_dto = get_access_payload_dto(reqeust.COOKIES)
+            access_dto = get_access_payload_dto(request.COOKIES)
             project: Project = gateway.project_app_service.create(
-                data=reqeust.data, files=reqeust.FILES, user_id=int(access_dto.sub)
+                data=request.data, files=request.FILES, user_id=int(access_dto.sub)
             )
         except self.error_classes as e:
             logger.error(f"Exception: {e}")
@@ -66,3 +68,16 @@ class ProjectView(APIView):
             return ProjectErrorResponseFactory.create_response(e)
 
         return Response({"detail": "deleted successfully.", "code": "SUCCESS"}, 200)
+
+
+class ProjectPlanView(APIView):
+    parser_classes = [MultiPartParser]
+    error_classes: tuple[type[Exception], ...] = tuple(ProjectErrorResponseFactory.error_codes.keys())
+
+    @staticmethod
+    def get(request: Request, project_id: int) -> Response:
+        try:
+            plan_url: str = gateway.project_app_service.get_plan_url(project_id)
+            return Response({"plan_url": plan_url, "code": SUCCESS}, status=status.HTTP_200_OK)
+        except ProjectNotFoundException:
+            return Response({"detail": f"Project with id = {project_id} not found."}, status=status.HTTP_404_NOT_FOUND)
