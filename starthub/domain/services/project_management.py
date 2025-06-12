@@ -1,5 +1,4 @@
-from io import BytesIO
-
+from domain.constants import PROJECT_PLAN_PATH
 from domain.exceptions.company import CompanyOwnershipRequiredException
 from domain.exceptions.permissions import DeletePermissionDenied
 from domain.exceptions.project_management import (
@@ -32,10 +31,10 @@ from domain.value_objects.project_management import (
     ProjectPhoneCreatePayload,
     ProjectSocialLinkCreatePayload,
     ProjectUpdatePayload,
-    TeamMemberCreatePayload, ProjectCreateCommand,
+    TeamMemberCreatePayload,
 )
 from loguru import logger
-from domain.constants import PROJECT_PLAN_PATH
+
 
 class ProjectPhoneService:
     def __init__(
@@ -104,7 +103,7 @@ class ProjectService:
         funding_model_read_repository: FundingModelReadRepository,
         company_read_repository: CompanyReadRepository,
         cloud_storage: AbstractCloudStorage,
-        pdf_service: PdfService
+        pdf_service: PdfService,
     ):
         self._project_read_repository = project_read_repository
         self._project_write_repository = project_write_repository
@@ -143,7 +142,9 @@ class ProjectService:
         project: Project = self._project_write_repository.create(payload)
         logger.info("Project created successfully.")
         project_plan_path = f"{PROJECT_PLAN_PATH}/{project.id}.pdf"
-        uploaded_path: str = self._cloud_storage.upload_file(CloudStorageUploadPayload(file_data=payload.project_plan_data, file_path=project_plan_path))
+        uploaded_path: str = self._cloud_storage.upload_file(
+            CloudStorageUploadPayload(file_data=payload.project_plan_data, file_path=project_plan_path)
+        )
         logger.debug("Project pdf uploaded.")
 
         assert project_plan_path == uploaded_path

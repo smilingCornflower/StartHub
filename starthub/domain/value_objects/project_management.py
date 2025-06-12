@@ -1,7 +1,5 @@
 from datetime import date
 
-from pydantic import field_validator
-
 from domain.constants import CHAR_FIELD_MAX_LENGTH
 from domain.enums.project_stage import ProjectStageEnum
 from domain.exceptions.project_management import (
@@ -17,6 +15,7 @@ from domain.value_objects import BaseVo
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, SocialLink
 from domain.value_objects.company import CompanyCreateCommand
 from domain.value_objects.file import PdfFile
+from pydantic import field_validator
 
 
 class ProjectPhoneCreatePayload(AbstractCreatePayload, BaseVo):

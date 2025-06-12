@@ -1,27 +1,24 @@
-from loguru import logger
-
 from domain.exceptions.company import BusinessNumberAlreadyExistsException
 from domain.exceptions.country import CountryNotFoundException
-from domain.models.company import Company
-from domain.models.company import CompanyFounder
+from domain.models.company import Company, CompanyFounder
 from domain.models.country import Country
-from domain.repositories.company import CompanyFounderWriteRepository, CompanyReadRepository
-from domain.repositories.company import CompanyWriteRepository
+from domain.repositories.company import CompanyFounderWriteRepository, CompanyReadRepository, CompanyWriteRepository
 from domain.repositories.country import CountryReadRepository
 from domain.repositories.user import UserReadRepository
 from domain.value_objects.common import Id
-from domain.value_objects.company import CompanyCreatePayload, CompanyCreateCommand
-from domain.value_objects.filter import CountryFilter
-from domain.value_objects.filter import CompanyFilter
+from domain.value_objects.company import CompanyCreateCommand, CompanyCreatePayload
+from domain.value_objects.filter import CompanyFilter, CountryFilter
+from loguru import logger
+
 
 class CompanyService:
     def __init__(
-            self,
-            company_write_repository: CompanyWriteRepository,
-            user_read_repository: UserReadRepository,
-            country_read_repository: CountryReadRepository,
-            founder_write_repository: CompanyFounderWriteRepository,
-            company_read_repository: CompanyReadRepository,
+        self,
+        company_write_repository: CompanyWriteRepository,
+        user_read_repository: UserReadRepository,
+        country_read_repository: CountryReadRepository,
+        founder_write_repository: CompanyFounderWriteRepository,
+        company_read_repository: CompanyReadRepository,
     ):
         self._company_write_repository = company_write_repository
         self._user_read_repository = user_read_repository
@@ -35,9 +32,11 @@ class CompanyService:
         :raises UserNotFoundException:
         :raises BusinessNumberAlreadyExistsException:
         """
-        search_result: list[Company] = self._company_read_repository.get_all(CompanyFilter(
-            business_id=command.business_id,
-        ))
+        search_result: list[Company] = self._company_read_repository.get_all(
+            CompanyFilter(
+                business_id=command.business_id,
+            )
+        )
         if search_result:
             raise BusinessNumberAlreadyExistsException("This business number is already exists.")
         countries: list[Country] = self._country_read_repository.get_all(CountryFilter(code=command.country_code))
@@ -54,8 +53,11 @@ class CompanyService:
         logger.debug(f"{founder.id=}")
         return self._company_write_repository.create(
             CompanyCreatePayload(
-                name=command.name, founder_id=Id(value=founder.id), representative_id=command.representative_id,
-                country_id=Id(value=country.id), business_id=command.business_id,
+                name=command.name,
+                founder_id=Id(value=founder.id),
+                representative_id=command.representative_id,
+                country_id=Id(value=country.id),
+                business_id=command.business_id,
                 established_date=command.established_date,
                 description=command.description,
             )

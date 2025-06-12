@@ -2,7 +2,7 @@ from typing import Any
 
 from django.test import SimpleTestCase
 from domain.value_objects.common import FirstName, Id, LastName
-from domain.value_objects.project_management import TeamMemberCreatePayload, TeamMemberCreateCommand
+from domain.value_objects.project_management import TeamMemberCreateCommand, TeamMemberCreatePayload
 from pydantic import ValidationError
 
 

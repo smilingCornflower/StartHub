@@ -9,8 +9,11 @@ from domain.services.project_management import (
     TamMemberService,
 )
 from infrastructure.cloud_storages.google import google_cloud_storage
-from infrastructure.repositories.company import DjCompanyReadRepository, DjCompanyWriteRepository, \
-    DjCompanyFounderWriteRepository
+from infrastructure.repositories.company import (
+    DjCompanyFounderWriteRepository,
+    DjCompanyReadRepository,
+    DjCompanyWriteRepository,
+)
 from infrastructure.repositories.country import DjCountryReadRepository
 from infrastructure.repositories.project_management import (
     DjFundingModelReadRepository,
@@ -59,7 +62,7 @@ class ProjectServiceFactory(AbstractServiceFactory[ProjectAppService]):
                 country_read_repository=DjCountryReadRepository(),
                 founder_write_repository=DjCompanyFounderWriteRepository(),
                 company_read_repository=DjCompanyReadRepository(),
-            )
+            ),
         )
 
 

@@ -1,12 +1,11 @@
 from datetime import date
 from typing import Any
 
+from domain.exceptions.validation import DateIsNotIsoFormatException, MissingRequiredFieldException
 from loguru import logger
 
-from domain.exceptions.validation import MissingRequiredFieldException, DateIsNotIsoFormatException
 
-
-def get_required_field(data: dict, field: str) -> Any:
+def get_required_field(data: dict[str, Any], field: str) -> Any:
     """:raises MissingRequiredFieldException:"""
     if field not in data:
         logger.exception(f"Missing required field: {field}.")

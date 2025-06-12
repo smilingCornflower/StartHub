@@ -1,22 +1,18 @@
+import json
 from datetime import date
 from typing import Any, cast
 
-from django.http import QueryDict
-from loguru import logger
-
-from domain.value_objects.country import CountryCode
 from application.converters.request_converters.common import get_required_field, parse_date
+from django.core.files.uploadedfile import UploadedFile
+from django.http import QueryDict
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
-from domain.value_objects.company import CompanyCreateCommand, BusinessNumber
-from domain.value_objects.company import CompanyFounderCreatePayload
+from domain.value_objects.company import BusinessNumber, CompanyCreateCommand, CompanyFounderCreatePayload
+from domain.value_objects.country import CountryCode
 from domain.value_objects.file import PdfFile
 from domain.value_objects.filter import ProjectFilter
-from domain.value_objects.project_management import (
-    ProjectStage,
-    TeamMemberCreateCommand, ProjectCreateCommand, ProjectCreatePayload,
-)
-from django.core.files.uploadedfile import UploadedFile
-import json
+from domain.value_objects.project_management import ProjectCreateCommand, ProjectStage, TeamMemberCreateCommand
+from loguru import logger
+
 
 def request_data_to_project_filter(data: QueryDict) -> ProjectFilter:
 
@@ -63,15 +59,15 @@ def _request_data_to_company_create_command(data: dict[str, Any], user_id: int) 
     established_date: date = parse_date(get_required_field(company_data, "established_date"))
 
     founder_create_command = CompanyFounderCreatePayload(
-        name=FirstName(value=get_required_field(founder_data, 'first_name')),
-        surname=LastName(value=get_required_field(founder_data, 'last_name')),
-        description=founder_data.get("description")
+        name=FirstName(value=get_required_field(founder_data, "first_name")),
+        surname=LastName(value=get_required_field(founder_data, "last_name")),
+        description=founder_data.get("description"),
     )
     country_code = CountryCode(value=get_required_field(company_data, "country_code"))
 
     return CompanyCreateCommand(
         name=get_required_field(company_data, "name"),
-        description=company_data.get("description"),
+        description=get_required_field(company_data, "description"),
         representative_id=Id(value=user_id),
         country_code=country_code,
         business_id=BusinessNumber(value=get_required_field(company_data, "business_id"), country_code=country_code),
@@ -80,7 +76,9 @@ def _request_data_to_company_create_command(data: dict[str, Any], user_id: int) 
     )
 
 
-def request_data_to_project_create_command(data: dict[str, str], files: dict[str, UploadedFile], user_id: int) -> ProjectCreateCommand:
+def request_data_to_project_create_command(
+    data: dict[str, str], files: dict[str, UploadedFile], user_id: int
+) -> ProjectCreateCommand:
     """
     :raises InvalidPhoneNumberException:
     :raises NegativeProjectGoalSumValidationException:
@@ -103,21 +101,20 @@ def request_data_to_project_create_command(data: dict[str, str], files: dict[str
     project_plan_file.seek(0)
     project_plan_data = PdfFile(value=project_plan_file.read())
 
-
     return ProjectCreateCommand(
-        name=get_required_field(project_data, field='name'),
+        name=get_required_field(project_data, field="name"),
         creator_id=Id(value=user_id),
-        description=get_required_field(project_data, field='description'),
-        category_id=Id(value=get_required_field(project_data, field='category_id')),
-        funding_model_id=Id(value=get_required_field(project_data, field='funding_model_id')),
-        stage=ProjectStage(value=get_required_field(project_data, field='stage')),
-        goal_sum=get_required_field(project_data, field='goal_sum'),
+        description=get_required_field(project_data, field="description"),
+        category_id=Id(value=get_required_field(project_data, field="category_id")),
+        funding_model_id=Id(value=get_required_field(project_data, field="funding_model_id")),
+        stage=ProjectStage(value=get_required_field(project_data, field="stage")),
+        goal_sum=get_required_field(project_data, field="goal_sum"),
         deadline=parse_date(get_required_field(project_data, field="deadline")),
         team_members=_request_data_to_team_members(data),
         company=_request_data_to_company_create_command(data, user_id),
-        social_links=[SocialLink(platform=k, link=v) for k, v in
-                      get_required_field(project_data, "social_links").items()],
+        social_links=[
+            SocialLink(platform=k, link=v) for k, v in get_required_field(project_data, "social_links").items()
+        ],
         phone_number=PhoneNumber(value=get_required_field(project_data, "phone_number")),
         project_plan_data=project_plan_data,
     )
-

@@ -1,11 +1,14 @@
 from django.db.models import QuerySet
-
 from domain.exceptions.company import CompanyNotFoundException
 from domain.models.company import Company, CompanyFounder
-from domain.repositories.company import CompanyReadRepository, CompanyWriteRepository, CompanyFounderWriteRepository
+from domain.repositories.company import CompanyFounderWriteRepository, CompanyReadRepository, CompanyWriteRepository
 from domain.value_objects.common import Id
-from domain.value_objects.company import CompanyCreatePayload, CompanyUpdatePayload, CompanyFounderUpdatePayload, \
-    CompanyFounderCreatePayload
+from domain.value_objects.company import (
+    CompanyCreatePayload,
+    CompanyFounderCreatePayload,
+    CompanyFounderUpdatePayload,
+    CompanyUpdatePayload,
+)
 from domain.value_objects.filter import CompanyFilter
 
 
@@ -23,6 +26,7 @@ class DjCompanyReadRepository(CompanyReadRepository):
         if filter_.business_id:
             queryset = queryset.filter(business_id=filter_.business_id.value)
         return list(queryset.distinct())
+
 
 class DjCompanyWriteRepository(CompanyWriteRepository):
     def create(self, data: CompanyCreatePayload) -> Company:
@@ -47,9 +51,7 @@ class DjCompanyWriteRepository(CompanyWriteRepository):
 class DjCompanyFounderWriteRepository(CompanyFounderWriteRepository):
     def create(self, data: CompanyFounderCreatePayload) -> CompanyFounder:
         return CompanyFounder.objects.create(
-            name=data.name.value,
-            surname=data.surname.value,
-            description=data.description
+            name=data.name.value, surname=data.surname.value, description=data.description
         )
 
     def update(self, data: CompanyFounderUpdatePayload) -> CompanyFounder:

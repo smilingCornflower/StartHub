@@ -1,8 +1,6 @@
 from django.test import SimpleTestCase
-
 from domain.exceptions.country import InvalidCountryCodeException
 from domain.value_objects.country import CountryCode
-from pydantic import ValidationError
 
 
 class CountryCodeValidationTest(SimpleTestCase):
@@ -29,7 +27,7 @@ class CountryCodeValidationTest(SimpleTestCase):
         for code in invalid_cases:
             with self.subTest(code=code):
                 with self.assertRaises(InvalidCountryCodeException):
-                    CountryCode(value=code)  # type: ignore
+                    CountryCode(value=code)
 
     def test_none_value(self) -> None:
         with self.assertRaises(ValueError):

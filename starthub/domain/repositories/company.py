@@ -3,8 +3,12 @@ from abc import ABC, abstractmethod
 from domain.models.company import Company, CompanyFounder
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
 from domain.value_objects.common import Id
-from domain.value_objects.company import CompanyCreatePayload, CompanyUpdatePayload, CompanyFounderCreatePayload, \
-    CompanyFounderUpdatePayload
+from domain.value_objects.company import (
+    CompanyCreatePayload,
+    CompanyFounderCreatePayload,
+    CompanyFounderUpdatePayload,
+    CompanyUpdatePayload,
+)
 from domain.value_objects.filter import CompanyFilter, CompanyFounderFilter
 
 
@@ -38,7 +42,7 @@ class CompanyFounderReadRepository(AbstractReadRepository[CompanyFounder, Compan
         pass
 
     @abstractmethod
-    def get_all(self, filter_: CompanyFounderFilter) -> list[CompanyFounderFilter]:
+    def get_all(self, filter_: CompanyFounderFilter) -> list[CompanyFounder]:
         pass
 
 

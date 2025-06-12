@@ -1,10 +1,5 @@
 from typing import Any
 
-from django.core.files.uploadedfile import UploadedFile
-from django.db import transaction
-from django.http import QueryDict
-from loguru import logger
-
 from application.converters.inner.project_command_to_payload import convert_project_create_command_to_payload
 from application.converters.request_converters.project import (
     request_data_to_project_create_command,
@@ -13,11 +8,12 @@ from application.converters.request_converters.project import (
 from application.converters.resposne_converters.project import project_to_dto, projects_to_dtos
 from application.dto.project import ProjectDto
 from application.ports.service import AbstractAppService
+from django.core.files.uploadedfile import UploadedFile
+from django.db import transaction
+from django.http import QueryDict
 from domain.models.company import Company
 from domain.models.project import Project, ProjectPhone, TeamMember
-from domain.services.cloud_storage import CloudService
 from domain.services.company import CompanyService
-from domain.services.file import PdfService
 from domain.services.project_management import (
     ProjectPhoneService,
     ProjectService,
@@ -25,23 +21,23 @@ from domain.services.project_management import (
     TamMemberService,
 )
 from domain.value_objects.common import Id
-from domain.value_objects.project_management import ProjectCreatePayload
 from domain.value_objects.project_management import (
+    ProjectCreateCommand,
     ProjectPhoneCreatePayload,
     ProjectSocialLinkCreatePayload,
-    ProjectUpdatePayload,
-    TeamMemberCreatePayload, ProjectCreateCommand,
+    TeamMemberCreatePayload,
 )
-from io import BytesIO
+from loguru import logger
+
 
 class ProjectAppService(AbstractAppService):
     def __init__(
-            self,
-            project_service: ProjectService,
-            team_member_service: TamMemberService,
-            project_phone_service: ProjectPhoneService,
-            project_social_link_service: ProjectSocialLinkService,
-            company_service: CompanyService,
+        self,
+        project_service: ProjectService,
+        team_member_service: TamMemberService,
+        project_phone_service: ProjectPhoneService,
+        project_social_link_service: ProjectSocialLinkService,
+        company_service: CompanyService,
     ):
         self._project_service = project_service
         self._team_member_service = team_member_service
@@ -71,7 +67,9 @@ class ProjectAppService(AbstractAppService):
             company: Company = self._company_service.create(command=command.company)
             logger.info(f"A company created successfully. Company id = {company.id}")
 
-            project: Project = self._project_service.create(convert_project_create_command_to_payload(command, company.id))
+            project: Project = self._project_service.create(
+                convert_project_create_command_to_payload(command, company.id)
+            )
 
             for member in command.team_members:
                 create_payload = TeamMemberCreatePayload(

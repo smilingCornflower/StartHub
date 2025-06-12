@@ -1,8 +1,5 @@
 from datetime import date
 
-from pydantic import field_validator
-from pydantic_core.core_schema import ValidationInfo
-
 from domain.constants import CHAR_FIELD_MAX_LENGTH
 from domain.exceptions.company import CompanyNameIsTooLongException
 from domain.exceptions.validation import DateInFutureException, EmptyStringException
@@ -10,8 +7,10 @@ from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.validators.business_number import KZBusinessNumberValidator
 from domain.value_objects import BaseVo
-from domain.value_objects.common import Id, FirstName, LastName
+from domain.value_objects.common import FirstName, Id, LastName
 from domain.value_objects.country import CountryCode
+from pydantic import field_validator
+from pydantic_core.core_schema import ValidationInfo
 
 
 class BusinessNumber(BaseVo):

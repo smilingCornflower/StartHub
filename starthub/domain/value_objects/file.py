@@ -1,9 +1,8 @@
 from io import BytesIO
 
-from pydantic import field_validator
-
 from domain.services.file import PdfService
 from domain.value_objects import BaseVo
+from pydantic import field_validator
 
 
 class PdfFile(BaseVo):

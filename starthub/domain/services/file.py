@@ -3,10 +3,9 @@ from io import BytesIO
 from typing import BinaryIO
 
 import filetype
+from domain.exceptions.file import NotPdfFileException, NotSupportedImageFormatException
 from loguru import logger
 from wand.image import Image
-
-from domain.exceptions.file import NotSupportedImageFormatException, NotPdfFileException
 
 
 class ImageService:
@@ -52,6 +51,4 @@ class PdfService:
             raise NotPdfFileException("Unrecognized file type, expected pdf file.")
         logger.debug(f"king.mime = {kind.mime}")
         if kind.mime != "application/pdf":
-            raise NotPdfFileException(
-                f"The file format: {kind.mime} is not supported, allowed pdf file only."
-            )
+            raise NotPdfFileException(f"The file format: {kind.mime} is not supported, allowed pdf file only.")
