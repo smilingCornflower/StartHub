@@ -105,7 +105,8 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             project.category_id = data.category_id.value
         if data.funding_model_id is not None:
             project.funding_model_id = data.funding_model_id.value
-
+        if data.plan is not None:
+            project.plan = data.plan
         project.save()
         return project
 

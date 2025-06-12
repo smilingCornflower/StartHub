@@ -34,6 +34,7 @@ class DjCompanyWriteRepository(CompanyWriteRepository):
             name=data.name,
             representative_id=data.representative_id.value,
             country_id=data.country_id.value,
+            founder_id=data.founder_id.value,
             business_id=data.business_id.value,
             established_date=data.established_date,
             description=data.description,

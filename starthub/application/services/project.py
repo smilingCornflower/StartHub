@@ -97,16 +97,9 @@ class ProjectAppService(AbstractAppService):
 
         return project
 
-    # def update(self, data: dict[str, Any], project_id: int, user_id: int) -> Project:
-    #     logger.info("Started updating project.")
-    #     logger.debug(f"user_id = {user_id}; data = {data}")
-    #
-    #     project_update_payload: ProjectUpdatePayload = request_data_to_project_update_payload(data, project_id)
-    #     logger.debug(f"project_update_payload = {project_update_payload}")
-    #
-    #     project_updated: Project = self._project_service.update(project_update_payload, Id(value=user_id))
-    #     return project_updated
-
     def delete(self, project_id: int, user_id: int) -> None:
         logger.debug(f"project_id = {project_id}, user_id = {user_id}")
         self._project_service.delete(Id(value=project_id), Id(value=user_id))
+
+    def get_plan_url(self, project_id: int) -> str:
+        return self._project_service.get_plan_url(Id(value=project_id))
