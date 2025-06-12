@@ -1,6 +1,7 @@
 from domain.ports.filter import AbstractFilter
 from domain.value_objects import BaseVo
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
+from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode
 from domain.value_objects.user import Email
 
@@ -27,7 +28,7 @@ class FundingModelFilter(AbstractFilter, BaseVo):
 
 
 class CompanyFilter(AbstractFilter, BaseVo):
-    pass
+    business_id: BusinessNumber | None = None
 
 
 class CountryFilter(AbstractFilter, BaseVo):
@@ -46,3 +47,7 @@ class ProjectPhoneFilter(AbstractFilter, BaseVo):
 class ProjectSocialLinkFilter(AbstractFilter, BaseVo):
     project_id: Id | None = None
     social_link: SocialLink | None = None
+
+
+class CompanyFounderFilter(AbstractFilter, BaseVo):
+    pass

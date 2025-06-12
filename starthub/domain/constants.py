@@ -17,6 +17,7 @@ PASSWORD_MAX_LENGTH = 64
 PASSWORD_PATTERN = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$")
 
 PROFILE_PICTURE_PATH = MODE + "/profile_pictures"
+PROJECT_PLAN_PATH = MODE + "/projects/plans"
 
 ACCESS_TOKEN_LIFETIME = 15 * 60  # 15 minutes
 REFRESH_TOKEN_LIFETIME = 15 * 24 * 3600  # 15 days

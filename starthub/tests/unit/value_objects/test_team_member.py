@@ -2,7 +2,7 @@ from typing import Any
 
 from django.test import SimpleTestCase
 from domain.value_objects.common import FirstName, Id, LastName
-from domain.value_objects.project_management import TeamMemberCreatePayload, TeamMemberInProjectCreatePayload
+from domain.value_objects.project_management import TeamMemberCreateCommand, TeamMemberCreatePayload
 from pydantic import ValidationError
 
 
@@ -41,7 +41,7 @@ class TeamMemberPayloadTest(SimpleTestCase):
             "description": "UI/UX Designer",
         }
 
-        payload: TeamMemberInProjectCreatePayload = TeamMemberInProjectCreatePayload(**valid_data)
+        payload: TeamMemberCreateCommand = TeamMemberCreateCommand(**valid_data)
         self.assertEqual(payload.first_name.value, valid_data["first_name"].value)
         self.assertEqual(payload.last_name.value, valid_data["last_name"].value)
         self.assertEqual(payload.description, valid_data["description"])
@@ -56,4 +56,4 @@ class TeamMemberPayloadTest(SimpleTestCase):
         for case in invalid_cases:
             with self.subTest(case=case):
                 with self.assertRaises(ValidationError):
-                    TeamMemberInProjectCreatePayload(**case)
+                    TeamMemberCreateCommand(**case)

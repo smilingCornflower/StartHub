@@ -3,7 +3,7 @@ from typing import cast
 from unittest.mock import MagicMock
 
 import jwt
-from django.test import TestCase
+from django.test import SimpleTestCase
 from domain.constants import ACCESS_TOKEN_LIFETIME, JWT_ALGORITHM, REFRESH_TOKEN_LIFETIME
 from domain.enums.token import TokenTypeEnum
 from domain.exceptions.auth import InvalidTokenException, TokenExpiredException
@@ -13,7 +13,7 @@ from domain.value_objects.token import AccessPayload, AccessTokenVo, RefreshPayl
 from loguru import logger
 
 
-class TokenServiceTestCase(TestCase):
+class TokenServiceTestCase(SimpleTestCase):
     secret_key: str
     token_service: TokenService
     token_service_with_invalid_key: TokenService
@@ -23,7 +23,7 @@ class TokenServiceTestCase(TestCase):
     invalid_secret: str
 
     @classmethod
-    def setUpTestData(cls) -> None:
+    def setUpClass(cls) -> None:
         cls.secret_key = "secret_key"
         cls.invalid_secret = "invalid_key"
         cls.access_token_lifetime = ACCESS_TOKEN_LIFETIME

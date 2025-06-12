@@ -1,12 +1,20 @@
 from application.ports.service_factory import AbstractServiceFactory
 from application.services.project import ProjectAppService
+from domain.services.company import CompanyService
+from domain.services.file import PdfService
 from domain.services.project_management import (
     ProjectPhoneService,
     ProjectService,
     ProjectSocialLinkService,
     TamMemberService,
 )
-from infrastructure.repositories.company import DjCompanyReadRepository
+from infrastructure.cloud_storages.google import google_cloud_storage
+from infrastructure.repositories.company import (
+    DjCompanyFounderWriteRepository,
+    DjCompanyReadRepository,
+    DjCompanyWriteRepository,
+)
+from infrastructure.repositories.country import DjCountryReadRepository
 from infrastructure.repositories.project_management import (
     DjFundingModelReadRepository,
     DjProjectCategoryReadRepository,
@@ -33,6 +41,8 @@ class ProjectServiceFactory(AbstractServiceFactory[ProjectAppService]):
                 funding_model_read_repository=DjFundingModelReadRepository(),
                 user_read_repository=DjUserReadRepository(),
                 company_read_repository=DjCompanyReadRepository(),
+                cloud_storage=google_cloud_storage,
+                pdf_service=PdfService(),
             ),
             team_member_service=TamMemberService(
                 team_member_read_repository=DjTeamMemberReadRepository(),
@@ -45,6 +55,13 @@ class ProjectServiceFactory(AbstractServiceFactory[ProjectAppService]):
             project_social_link_service=ProjectSocialLinkService(
                 read_repository=DjProjectSocialLinkReadRepository(),
                 write_repository=DjProjectSocialLinkWriteRepository(),
+            ),
+            company_service=CompanyService(
+                company_write_repository=DjCompanyWriteRepository(),
+                user_read_repository=DjUserReadRepository(),
+                country_read_repository=DjCountryReadRepository(),
+                founder_write_repository=DjCompanyFounderWriteRepository(),
+                company_read_repository=DjCompanyReadRepository(),
             ),
         )
 

@@ -1,8 +1,14 @@
+from django.db.models import QuerySet
 from domain.exceptions.company import CompanyNotFoundException
-from domain.models.company import Company
-from domain.repositories.company import CompanyReadRepository, CompanyWriteRepository
+from domain.models.company import Company, CompanyFounder
+from domain.repositories.company import CompanyFounderWriteRepository, CompanyReadRepository, CompanyWriteRepository
 from domain.value_objects.common import Id
-from domain.value_objects.company import CompanyCreatePayload, CompanyUpdatePayload
+from domain.value_objects.company import (
+    CompanyCreatePayload,
+    CompanyFounderCreatePayload,
+    CompanyFounderUpdatePayload,
+    CompanyUpdatePayload,
+)
 from domain.value_objects.filter import CompanyFilter
 
 
@@ -15,7 +21,11 @@ class DjCompanyReadRepository(CompanyReadRepository):
         return company
 
     def get_all(self, filter_: CompanyFilter) -> list[Company]:
-        return list(Company.objects.all())
+        queryset: QuerySet[Company] = Company.objects.all()
+
+        if filter_.business_id:
+            queryset = queryset.filter(business_id=filter_.business_id.value)
+        return list(queryset.distinct())
 
 
 class DjCompanyWriteRepository(CompanyWriteRepository):
@@ -36,3 +46,16 @@ class DjCompanyWriteRepository(CompanyWriteRepository):
     def delete(self, id_: Id) -> None:
         """:raises NotImplementedError:"""
         raise NotImplementedError("Method delete() is not implemented yet.")
+
+
+class DjCompanyFounderWriteRepository(CompanyFounderWriteRepository):
+    def create(self, data: CompanyFounderCreatePayload) -> CompanyFounder:
+        return CompanyFounder.objects.create(
+            name=data.name.value, surname=data.surname.value, description=data.description
+        )
+
+    def update(self, data: CompanyFounderUpdatePayload) -> CompanyFounder:
+        raise NotImplementedError("The method update() is not implemented yet.")
+
+    def delete(self, id_: Id) -> None:
+        raise NotImplementedError("The method delete() is not implemented yet.")

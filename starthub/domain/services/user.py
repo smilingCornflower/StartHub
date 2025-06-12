@@ -5,7 +5,7 @@ from domain.exceptions.user import ProfilePictureNotFoundException
 from domain.models.user import User
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.repositories.user import UserReadRepository, UserWriteRepository
-from domain.services.image import ImageService
+from domain.services.file import ImageService
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
 from domain.value_objects.common import FirstName, Id, LastName
 from domain.value_objects.user import (

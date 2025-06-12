@@ -5,7 +5,7 @@ from config.settings import BASE_DIR
 from django.test import TestCase
 from domain.constants import PROFILE_PICTURE_PATH
 from domain.models.user import User
-from domain.services.image import ImageService
+from domain.services.file import ImageService
 from domain.services.user import UserService
 from domain.value_objects.common import Id
 from domain.value_objects.user import ProfilePictureUploadCommand

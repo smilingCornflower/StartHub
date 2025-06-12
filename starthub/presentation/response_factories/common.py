@@ -1,10 +1,12 @@
+from json import JSONDecodeError
 from typing import cast
 
 import pydantic
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
-from domain.exceptions.image import NotSupportedImageFormatException
+from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
+from domain.exceptions.file import NotPdfFileException, NotSupportedImageFormatException
 from domain.exceptions.user import EmailAlreadyExistsException
-from domain.exceptions.validation import InvalidEmailException, ValidationException
+from domain.exceptions.validation import DateInFutureException, InvalidEmailException, ValidationException
 from presentation.constants import APPLICATION_ERROR_CODES
 from presentation.ports import ErrorResponseFactory
 from rest_framework.response import Response
@@ -33,6 +35,12 @@ class CommonErrorResponseFactory(ErrorResponseFactory):
 class ProjectErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
         KeyError: ("MISSING_REQUIRED_FIELD", 400),
+        BusinessNumberAlreadyExistsException: ("BUSINESS_NUMBER_ALREADY_EXISTS", 409),
+        JSONDecodeError: ("JSON_DECODE_ERROR", 400),
+        pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
+        NotPdfFileException: ("NOT_PDF_FILE", 400),
+        CompanyNameIsTooLongException: ("COMPANY_NAME_TOO_LONG", 422),
+        DateInFutureException: ("DATE_IN_FUTURE_NOT_ALLOWED", 422),
     }
 
 
