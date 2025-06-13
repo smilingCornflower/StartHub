@@ -1,4 +1,4 @@
-from application.ports.service_factory import AbstractServiceFactory
+from application.ports.service_factory import AbstractAppServiceFactory
 from application.services.auth import AuthAppService, RegistrationAppService
 from config import settings
 from domain.services.auth import AuthService, RegistrationService
@@ -6,7 +6,7 @@ from domain.services.token import TokenService
 from infrastructure.repositories.user import DjUserReadRepository, DjUserWriteRepository
 
 
-class AuthServiceFactory(AbstractServiceFactory[AuthAppService]):
+class AuthAppServiceFactory(AbstractAppServiceFactory[AuthAppService]):
     @staticmethod
     def create_service() -> AuthAppService:
         auth_service = AuthService(
@@ -19,7 +19,7 @@ class AuthServiceFactory(AbstractServiceFactory[AuthAppService]):
         )
 
 
-class RegistrationServiceFactory(AbstractServiceFactory[RegistrationAppService]):
+class RegistrationAppServiceFactory(AbstractAppServiceFactory[RegistrationAppService]):
     @staticmethod
     def create_service() -> RegistrationAppService:
         return RegistrationAppService(
@@ -30,5 +30,5 @@ class RegistrationServiceFactory(AbstractServiceFactory[RegistrationAppService])
         )
 
 
-auth_app_service: AuthAppService = AuthServiceFactory.create_service()
-registration_app_service: RegistrationAppService = RegistrationServiceFactory.create_service()
+auth_app_service: AuthAppService = AuthAppServiceFactory.create_service()
+registration_app_service: RegistrationAppService = RegistrationAppServiceFactory.create_service()

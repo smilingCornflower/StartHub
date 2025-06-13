@@ -2,7 +2,7 @@ from dataclasses import asdict
 
 from application.dto.auth import AccessPayloadDto
 from application.dto.project import ProjectDto
-from application.service_factories.project import ProjectServiceFactory
+from application.service_factories.project import ProjectAppServiceFactory
 from application.services.gateway import gateway
 from application.services.project import ProjectAppService
 from application.utils.get_access_payload_dto import get_access_payload_dto
@@ -71,7 +71,7 @@ class ProjectView(APIView):
         except (ValidationException, InvalidTokenException) as e:
             return Response({"detail": str(e), "code": "UNAUTHORIZED"}, status=status.HTTP_400_BAD_REQUEST)
 
-        project_service: ProjectAppService = ProjectServiceFactory.create_service()
+        project_service: ProjectAppService = ProjectAppServiceFactory.create_service()
         logger.debug("Project service created.")
         try:
             project_service.delete(project_id, int(access_dto.sub))

@@ -91,7 +91,7 @@ def request_data_to_project_create_command(
 ) -> ProjectCreateCommand:
     """
     :raises InvalidPhoneNumberException:
-    :raises NegativeProjectGoalSumValidationException:
+    :raises NegativeProjectGoalSumException:
     :raises ProjectDeadlineInPastValidationException:
     :raises DateIsNotIsoFormatException:
     :raises InvalidPhoneNumberException:

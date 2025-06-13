@@ -51,3 +51,8 @@ class ProjectSocialLinkFilter(AbstractFilter, BaseVo):
 
 class CompanyFounderFilter(AbstractFilter, BaseVo):
     company_id: Id | None = None
+
+
+class UserFavoriteFilter(AbstractFilter, BaseVo):
+    user_id: Id | None = None
+    project_id: Id | None = None

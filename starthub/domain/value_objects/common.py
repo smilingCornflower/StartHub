@@ -4,8 +4,8 @@ from datetime import date
 import phonenumbers
 from domain.constants import CHAR_FIELD_SHORT_LENGTH, DESCRIPTION_MAX_LENGTH
 from domain.enums.social_links import SocialPlatform
-from domain.exceptions.project_management import ProjectDeadlineInPastValidationException
 from domain.exceptions.validation import (
+    DeadlineInPastException,
     DisallowedSocialLinkException,
     EmptyStringException,
     FirstNameIsTooLongException,
@@ -102,9 +102,9 @@ class DeadlineDate(BaseVo):
     @field_validator("value", mode="after")
     @classmethod
     def validate_deadline_not_in_past(cls, value: date) -> date:
-        """:raises ProjectDeadlineInPastValidationException:"""
+        """:raises DeadlineInPastException:"""
         if value <= date.today():
-            raise ProjectDeadlineInPastValidationException("deadline must be in the future.")
+            raise DeadlineInPastException("deadline must be in the future.")
         return value
 
 
