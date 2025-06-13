@@ -1,11 +1,9 @@
 from domain.constants import PROJECT_PLAN_PATH
-from domain.exceptions.company import CompanyOwnershipRequiredException
 from domain.exceptions.permissions import DeleteDeniedPermissionException, UpdateDeniedPermissionException
 from domain.exceptions.project_management import (
     ProjectPhoneAlreadyExistsException,
     ProjectSocialLinkAlreadyExistsException,
 )
-from domain.models.company import Company
 from domain.models.project import Project, ProjectPhone, ProjectSocialLink, TeamMember
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.repositories.company import CompanyReadRepository, CompanyWriteRepository
@@ -143,22 +141,20 @@ class ProjectService:
         self._user_read_repository.get_by_id(payload.creator_id)
         self._funding_model_read_repository.get_by_id(payload.funding_model_id)
 
-        company: Company = self._company_read_repository.get_by_id(payload.company_id)
-
-        if company.representative_id != payload.creator_id.value:
-            logger.debug(f"Company representative: {company.representative_id}; user_id: {payload.creator_id.value}")
-            raise CompanyOwnershipRequiredException("User is not the representative of this company.")
-
         project: Project = self._project_write_repository.create(payload)
+
         logger.info("Project created successfully.")
         project_plan_path: str = self._generate_plan_path(project_id=Id(value=project.id))
+
         uploaded_path: str = self._cloud_storage.upload_file(
-            CloudStorageUploadPayload(file_data=payload.project_plan_data, file_path=project_plan_path)
+            CloudStorageUploadPayload(file_data=payload.plan_file.value, file_path=project_plan_path)
         )
         logger.debug("Project pdf uploaded.")
 
         assert project_plan_path == uploaded_path
-        self._project_write_repository.update(ProjectUpdatePayload(id_=Id(value=project.id), plan=project_plan_path))
+        self._project_write_repository.update(
+            ProjectUpdatePayload(id_=Id(value=project.id), plan_path=project_plan_path)
+        )
         logger.debug("Project.plan field was updated.")
 
         return project
@@ -182,11 +178,11 @@ class ProjectService:
             logger.debug("Checking funding model exists.")
             self._funding_model_read_repository.get_by_id(update_command.funding_model_id)
 
-        if update_command.project_plan:
+        if update_command.plan_file:
             logger.info("Updating project_plan file.")
             project_plan_path: str = self._generate_plan_path(project_id=Id(value=project.id))
             uploaded_path: str = self._cloud_storage.upload_file(
-                CloudStorageUploadPayload(file_data=update_command.project_plan.value, file_path=project_plan_path)
+                CloudStorageUploadPayload(file_data=update_command.plan_file.value, file_path=project_plan_path)
             )
             logger.debug(f"File uploaded, uploaded_path = {uploaded_path}.")
 
@@ -199,7 +195,6 @@ class ProjectService:
             ProjectUpdatePayload(
                 id_=update_command.project_id,
                 name=update_command.name,
-                description=update_command.description,
                 category_id=update_command.category_id,
                 funding_model_id=update_command.funding_model_id,
                 stage=update_command.stage,

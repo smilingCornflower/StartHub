@@ -12,7 +12,6 @@ def project_to_dto(project: Project) -> ProjectDto:
         company=CompanyDto(
             name=project.company.name,
             slug=project.company.slug,
-            description=project.company.description,
             country_code=project.company.country.code,
             business_id=project.company.business_id,
             established_date=project.company.established_date,

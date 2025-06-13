@@ -50,4 +50,4 @@ class ProjectSocialLinkFilter(AbstractFilter, BaseVo):
 
 
 class CompanyFounderFilter(AbstractFilter, BaseVo):
-    pass
+    company_id: Id | None = None

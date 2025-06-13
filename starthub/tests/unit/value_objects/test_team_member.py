@@ -1,7 +1,7 @@
 from typing import Any
 
 from django.test import SimpleTestCase
-from domain.value_objects.common import FirstName, Id, LastName
+from domain.value_objects.common import Description, FirstName, Id, LastName
 from domain.value_objects.project_management import TeamMemberCreateCommand, TeamMemberCreatePayload
 from pydantic import ValidationError
 
@@ -12,7 +12,7 @@ class TeamMemberPayloadTest(SimpleTestCase):
             "project_id": Id(value=1),
             "first_name": FirstName(value="John"),
             "last_name": LastName(value="Doe"),
-            "description": "Senior Developer",
+            "description": Description(value="Senior Developer"),
         }
 
         payload: TeamMemberCreatePayload = TeamMemberCreatePayload(**valid_data)
@@ -38,7 +38,7 @@ class TeamMemberPayloadTest(SimpleTestCase):
         valid_data: dict[str, Any] = {
             "first_name": FirstName(value="Jane"),
             "last_name": LastName(value="Smith"),
-            "description": "UI/UX Designer",
+            "description": Description(value="UI/UX Designer"),
         }
 
         payload: TeamMemberCreateCommand = TeamMemberCreateCommand(**valid_data)

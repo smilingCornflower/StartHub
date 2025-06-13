@@ -1,22 +1,33 @@
 import json
-from datetime import date
 from typing import Any, cast
 
 from application.converters.request_converters.common import get_required_field, parse_date
 from django.core.files.uploadedfile import UploadedFile
 from django.http import QueryDict
-from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
+from domain.value_objects.common import (
+    DeadlineDate,
+    Description,
+    FirstName,
+    Id,
+    LastName,
+    PhoneNumber,
+    Slug,
+    SocialLink,
+)
 from domain.value_objects.company import (
     BusinessNumber,
-    CompanyCreateCommand,
-    CompanyFounderCreatePayload,
+    CompanyFounderCreateCommand,
+    CompanyName,
     CompanyUpdatePayload,
+    EstablishedDate,
 )
 from domain.value_objects.country import CountryCode
 from domain.value_objects.file import PdfFile
 from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project_management import (
+    GoalSum,
     ProjectCreateCommand,
+    ProjectName,
     ProjectStage,
     ProjectUpdateCommand,
     TeamMemberCreateCommand,
@@ -35,8 +46,6 @@ def request_data_to_project_filter(data: QueryDict) -> ProjectFilter:
     return filter_
 
 
-########################################################################################################################
-# Project Update Converter
 def _request_data_to_team_members(data: dict[str, str]) -> list[TeamMemberCreateCommand]:
     """
     :raises MissingRequiredFieldException:
@@ -56,35 +65,25 @@ def _request_data_to_team_members(data: dict[str, str]) -> list[TeamMemberCreate
             TeamMemberCreateCommand(
                 first_name=FirstName(value=get_required_field(member, field="first_name")),
                 last_name=LastName(value=get_required_field(member, field="last_name")),
-                description=member["description"],
+                description=Description(value=member["description"]),
             )
         )
     return team_members
 
 
-def _request_data_to_company_create_command(data: dict[str, Any], user_id: int) -> CompanyCreateCommand:
-    logger.debug("Started _request_data_to_company_create_command()")
-    company_data: dict[str, Any] = json.loads(get_required_field(data, field="company"))
+def _request_data_to_company_founder_create_command(data: dict[str, Any]) -> CompanyFounderCreateCommand:
     founder_data: dict[str, Any] = json.loads(get_required_field(data, field="company_founder"))
-
-    established_date: date = parse_date(get_required_field(company_data, "established_date"))
-
-    founder_create_command = CompanyFounderCreatePayload(
-        name=FirstName(value=get_required_field(founder_data, "first_name")),
-        surname=LastName(value=get_required_field(founder_data, "last_name")),
-        description=founder_data.get("description"),
+    return CompanyFounderCreateCommand(
+        name=FirstName(value=get_required_field(founder_data, "first_name", "founder_first_name")),
+        surname=LastName(value=get_required_field(founder_data, "last_name", "founder_last_name")),
+        description=Description(value=get_required_field(founder_data, "description", "founder_description")),
     )
-    country_code = CountryCode(value=get_required_field(company_data, "country_code"))
 
-    return CompanyCreateCommand(
-        name=get_required_field(company_data, "name"),
-        description=get_required_field(company_data, "description"),
-        representative_id=Id(value=user_id),
-        country_code=country_code,
-        business_id=BusinessNumber(value=get_required_field(company_data, "business_id"), country_code=country_code),
-        established_date=established_date,
-        founder_create_payload=founder_create_command,
-    )
+
+def _request_files_to_project_plan(files: dict[str, UploadedFile]) -> PdfFile:
+    project_plan_file: UploadedFile = cast(UploadedFile, get_required_field(files, field="project_plan"))
+    project_plan_file.seek(0)
+    return PdfFile(value=project_plan_file.read())
 
 
 def request_data_to_project_create_command(
@@ -108,26 +107,33 @@ def request_data_to_project_create_command(
     :raises NotPdfFileException:
     """
     project_data = json.loads(get_required_field(data, field="project"))
-    project_plan_file: UploadedFile = cast(UploadedFile, get_required_field(files, field="project_plan"))
-    project_plan_file.seek(0)
-    project_plan_data = PdfFile(value=project_plan_file.read())
-
+    company_data = json.loads(get_required_field(data, field="company"))
+    project_plan: PdfFile = _request_files_to_project_plan(files=files)
+    country_code = CountryCode(value=get_required_field(company_data, "country_code", "company.country_code"))
     return ProjectCreateCommand(
-        name=get_required_field(project_data, field="name"),
+        name=ProjectName(value=get_required_field(project_data, field="name")),
         creator_id=Id(value=user_id),
-        description=get_required_field(project_data, field="description"),
+        description=Description(value=get_required_field(project_data, field="description")),
         category_id=Id(value=get_required_field(project_data, field="category_id")),
         funding_model_id=Id(value=get_required_field(project_data, field="funding_model_id")),
         stage=ProjectStage(value=get_required_field(project_data, field="stage")),
-        goal_sum=get_required_field(project_data, field="goal_sum"),
-        deadline=parse_date(get_required_field(project_data, field="deadline")),
-        team_members=_request_data_to_team_members(data),
-        company=_request_data_to_company_create_command(data, user_id),
+        goal_sum=GoalSum(value=get_required_field(project_data, field="goal_sum")),
+        deadline=DeadlineDate(value=parse_date(get_required_field(project_data, field="deadline"))),
         social_links=[
             SocialLink(platform=k, link=v) for k, v in get_required_field(project_data, "social_links").items()
         ],
         phone_number=PhoneNumber(value=get_required_field(project_data, "phone_number")),
-        project_plan_data=project_plan_data,
+        plan_file=project_plan,
+        company_name=CompanyName(value=get_required_field(company_data, "name", "company.name")),
+        country_code=country_code,
+        business_id=BusinessNumber(
+            value=get_required_field(company_data, "business_id", "company.business_id"), country_code=country_code
+        ),
+        established_date=EstablishedDate(
+            value=parse_date(get_required_field(company_data, "established_date", "company.established_date"))
+        ),
+        team_members=_request_data_to_team_members(data),
+        company_founder=_request_data_to_company_founder_create_command(data=data),
     )
 
 
@@ -149,10 +155,12 @@ def request_data_to_the_project_update_command(
         logger.debug(f"{company_data=}")
         company_update_command = CompanyUpdatePayload(
             project_id=Id(value=project_id),
-            name=company_data.get("name"),
-            description=company_data.get("description"),
+            name=CompanyName(value=company_data["name"]) if "name" in company_data else None,
+            description=Description(value=company_data["description"]) if "description" in company_data else None,
             established_date=(
-                parse_date(company_data["established_date"]) if "established_date" in company_data else None
+                EstablishedDate(value=parse_date(company_data["established_date"]))
+                if "established_date" in company_data
+                else None
             ),
         )
 
@@ -166,12 +174,11 @@ def request_data_to_the_project_update_command(
         project_id=Id(value=project_id),
         user_id=Id(value=user_id),
         company=company_update_command,
-        name=project_data.get("name"),
-        description=project_data.get("description"),
+        name=ProjectName(value=project_data["name"]) if "name" in project_data else None,
         category_id=Id(value=project_data["category_id"]) if "category_id" in project_data else None,
         funding_model_id=Id(value=project_data["funding_model_id"]) if "funding_model_id" in project_data else None,
         stage=ProjectStage(value=project_data["stage"]) if "stage" in project_data else None,
-        goal_sum=project_data.get("goal_sum"),
-        deadline=parse_date(project_data["deadline"]) if "deadline" in project_data else None,
-        project_plan=project_plan,
+        goal_sum=GoalSum(value=project_data["goal_sum"]) if "goal_sum" in project_data else None,
+        deadline=DeadlineDate(value=parse_date(project_data["deadline"])) if "deadline" in project_data else None,
+        plan_file=project_plan,
     )

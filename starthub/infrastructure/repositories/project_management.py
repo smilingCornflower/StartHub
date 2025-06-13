@@ -75,14 +75,13 @@ class DjProjectReadRepository(ProjectReadRepository):
 class DjProjectWriteRepository(ProjectWriteRepository):
     def create(self, data: ProjectCreatePayload) -> Project:
         project = Project.objects.create(
-            name=data.name,
-            description=data.description,
+            name=data.name.value,
+            description=data.description.value,
             category_id=data.category_id.value,
             creator_id=data.creator_id.value,
-            company_id=data.company_id.value,
             funding_model_id=data.funding_model_id.value,
             stage=data.stage.value,
-            goal_sum=data.goal_sum,
+            goal_sum=data.goal_sum.value,
             deadline=data.deadline,
         )
         return project
@@ -94,22 +93,20 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             raise ProjectNotFoundException(f"The project with id = {data.id_.value} is not found.")
 
         if data.name is not None:
-            project.name = data.name
+            project.name = data.name.value
             project.slug = None
-        if data.description is not None:
-            project.description = data.description
         if data.goal_sum is not None:
-            project.goal_sum = data.goal_sum
+            project.goal_sum = data.goal_sum.value
         if data.deadline is not None:
-            project.deadline = data.deadline
+            project.deadline = data.deadline.value
         if data.stage is not None:
             project.stage = data.stage.value
         if data.category_id is not None:
             project.category_id = data.category_id.value
         if data.funding_model_id is not None:
             project.funding_model_id = data.funding_model_id.value
-        if data.plan is not None:
-            project.plan = data.plan
+        if data.plan_path is not None:
+            project.plan = data.plan_path
 
         project.save()
         return project
@@ -239,7 +236,7 @@ class DjTeamMemberWriteRepository(TeamMemberWriteRepository):
             project_id=data.project_id.value,
             name=data.first_name.value,
             surname=data.last_name.value,
-            description=data.description,
+            description=data.description.value,
         )
 
     def update(self, data: TeamMemberUpdatePayload) -> TeamMember:

@@ -7,7 +7,8 @@ from domain.models.base import BaseModel
 class CompanyFounder(BaseModel):
     name = models.CharField(max_length=CHAR_FIELD_SHORT_LENGTH)
     surname = models.CharField(max_length=CHAR_FIELD_SHORT_LENGTH)
-    description = models.TextField(blank=True, null=True)
+    company = models.OneToOneField("domain.Company", on_delete=models.CASCADE, related_name="founder")
+    description = models.TextField()
 
     class Meta:
         db_table = "company_founder"
@@ -19,10 +20,7 @@ class CompanyFounder(BaseModel):
 class Company(BaseModel):
     name = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
     slug = AutoSlugField(populate_from="name", unique=True, max_length=CHAR_FIELD_MAX_LENGTH)
-    founder = models.OneToOneField("domain.CompanyFounder", on_delete=models.PROTECT, related_name="company")
-    representative = models.ForeignKey("domain.User", on_delete=models.PROTECT, related_name="companies")
-
-    description = models.TextField()
+    project = models.OneToOneField("domain.Project", on_delete=models.CASCADE)
     country = models.ForeignKey("domain.Country", on_delete=models.PROTECT)
     business_id = models.CharField(max_length=32, unique=True)
     established_date = models.DateField()
