@@ -17,11 +17,15 @@ class DisallowedSocialLinkException(ValidationException):
     pass
 
 
-class FirstNameIsTooLongException(ValidationException):
+class StringIsTooLongException(ValidationException):
     pass
 
 
-class LastNameIsTooLongException(ValidationException):
+class FirstNameIsTooLongException(StringIsTooLongException):
+    pass
+
+
+class LastNameIsTooLongException(StringIsTooLongException):
     pass
 
 

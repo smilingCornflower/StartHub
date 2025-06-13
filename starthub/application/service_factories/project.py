@@ -1,6 +1,6 @@
 from application.ports.service_factory import AbstractServiceFactory
 from application.services.project import ProjectAppService
-from domain.services.company import CompanyService
+from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.file import PdfService
 from domain.services.project_management import (
     ProjectPhoneService,
@@ -10,6 +10,7 @@ from domain.services.project_management import (
 )
 from infrastructure.cloud_storages.google import google_cloud_storage
 from infrastructure.repositories.company import (
+    DjCompanyFounderReadRepository,
     DjCompanyFounderWriteRepository,
     DjCompanyReadRepository,
     DjCompanyWriteRepository,
@@ -59,10 +60,12 @@ class ProjectServiceFactory(AbstractServiceFactory[ProjectAppService]):
             ),
             company_service=CompanyService(
                 company_write_repository=DjCompanyWriteRepository(),
-                user_read_repository=DjUserReadRepository(),
                 country_read_repository=DjCountryReadRepository(),
-                founder_write_repository=DjCompanyFounderWriteRepository(),
                 company_read_repository=DjCompanyReadRepository(),
+            ),
+            company_founder_service=CompanyFounderService(
+                company_founder_read_repository=DjCompanyFounderReadRepository(),
+                company_founder_write_repository=DjCompanyFounderWriteRepository(),
             ),
         )
 

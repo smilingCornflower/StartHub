@@ -58,7 +58,6 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
             },
             "company": {
                 "name": "AI Innovations Inc.",
-                "description": "Company developing AI solutions",
                 "country_code": "KZ",
                 "business_id": "123456789012",
                 "established_date": "2020-01-15",
@@ -83,23 +82,23 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
             self.prepare_data(self.valid_data), self.files, user_id=self.user_id
         )
         self.assertEqual(type(command), ProjectCreateCommand)
-        self.assertEqual(command.name, self.valid_data["project"]["name"])
-        self.assertEqual(command.description, self.valid_data["project"]["description"])
+        self.assertEqual(command.name.value, self.valid_data["project"]["name"])
+        self.assertEqual(command.description.value, self.valid_data["project"]["description"])
         self.assertEqual(command.category_id.value, self.valid_data["project"]["category_id"])
         self.assertEqual(command.creator_id.value, self.user_id)
         self.assertEqual(command.funding_model_id.value, self.valid_data["project"]["funding_model_id"])
         self.assertEqual(command.stage.value, self.valid_data["project"]["stage"])
-        self.assertEqual(command.goal_sum, self.valid_data["project"]["goal_sum"])
-        self.assertEqual(command.deadline.isoformat(), self.valid_data["project"]["deadline"])
+        self.assertEqual(command.goal_sum.value, self.valid_data["project"]["goal_sum"])
+        self.assertEqual(command.deadline.value.isoformat(), self.valid_data["project"]["deadline"])
         self.assertEqual(command.phone_number.value, self.valid_data["project"]["phone_number"])
-        self.assertTrue(isinstance(command.project_plan_data.value, bytes))
+        self.assertTrue(isinstance(command.plan_file.value, bytes))
 
         # Team members
         self.assertEqual(len(command.team_members), len(self.valid_data["team_members"]))
         for i, member in enumerate(command.team_members):
             self.assertEqual(member.first_name.value, self.valid_data["team_members"][i]["first_name"])
             self.assertEqual(member.last_name.value, self.valid_data["team_members"][i]["last_name"])
-            self.assertEqual(member.description, self.valid_data["team_members"][i]["description"])
+            self.assertEqual(member.description.value, self.valid_data["team_members"][i]["description"])
 
         # Social links
         self.assertEqual(len(command.social_links), len(self.valid_data["project"]["social_links"]))
@@ -108,20 +107,20 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
             self.assertEqual(social_links_dict[platform], link)
 
         # Company
-        self.assertEqual(command.company.name, self.valid_data["company"]["name"])
-        self.assertEqual(command.company.country_code.value, self.valid_data["company"]["country_code"])
-        self.assertEqual(command.company.description, self.valid_data["company"]["description"])
-        self.assertEqual(command.company.established_date.isoformat(), self.valid_data["company"]["established_date"])
-        self.assertEqual(command.company.representative_id.value, self.user_id)
-        self.assertEqual(command.company.business_id.value, self.valid_data["company"]["business_id"])
+        self.assertEqual(command.company_name.value, self.valid_data["company"]["name"])
+        self.assertEqual(command.country_code.value, self.valid_data["company"]["country_code"])
         self.assertEqual(
-            command.company.founder_create_payload.name.value, self.valid_data["company_founder"]["first_name"]
+            command.established_date.value.isoformat(), self.valid_data["company"]["established_date"]
+        )
+        self.assertEqual(command.business_id.value, self.valid_data["company"]["business_id"])
+        self.assertEqual(
+            command.company_founder.name.value, self.valid_data["company_founder"]["first_name"]
         )
         self.assertEqual(
-            command.company.founder_create_payload.surname.value, self.valid_data["company_founder"]["last_name"]
+            command.company_founder.surname.value, self.valid_data["company_founder"]["last_name"]
         )
         self.assertEqual(
-            command.company.founder_create_payload.description, self.valid_data["company_founder"]["description"]
+            command.company_founder.description.value, self.valid_data["company_founder"]["description"]
         )
 
     def test_missing_required_field(self) -> None:
@@ -298,19 +297,6 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
 
         self.check_raises(pydantic.ValidationError)
 
-    def test_empty_company_description_handling(self) -> None:
-        self.valid_data["company"]["description"] = ""
-
-        result = request_data_to_project_create_command(self.prepare_data(self.valid_data), self.files, self.user_id)
-        self.assertEqual(result.company.description, "")
-
-    def test_company_none_description(self) -> None:
-        self.valid_data["company"]["description"] = None  # type: ignore
-
-        with self.assertRaises(pydantic.ValidationError):
-            request_data_to_project_create_command(self.prepare_data(self.valid_data), self.files, self.user_id)
-        self.check_raises(pydantic.ValidationError)
-
     def test_rejects_invalid_date_formats(self) -> None:
         invalid_formats = [
             "01.01.2020",
@@ -325,9 +311,9 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
         for date_str in invalid_formats:
             with self.subTest(date_format=date_str):
                 test_data = self.valid_data.copy()
-                test_data["company"]["established_date"] = date_str
+                test_data["company"]["established_date"] = date_str  # type: ignore
                 with self.assertRaises(DateIsNotIsoFormatException):
-                    request_data_to_project_create_command(self.prepare_data(test_data), self.files, self.user_id)
+                    request_data_to_project_create_command(self.prepare_data(test_data), self.files, self.user_id)  # type: ignore
 
     def test_rejects_company_established_future_dates(self) -> None:
         future_dates = [
@@ -338,7 +324,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
 
         for future_date in future_dates:
             test_data = self.valid_data.copy()
-            test_data["company"]["established_date"] = future_date
+            test_data["company"]["established_date"] = future_date  # type: ignore
             with self.assertRaises(DateInFutureException):
                 request_data_to_project_create_command(self.prepare_data(test_data), self.files, self.user_id)  # type: ignore
             self.check_raises(DateInFutureException)

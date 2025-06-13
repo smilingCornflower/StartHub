@@ -1,6 +1,13 @@
 from typing import Any
 
+from application.converters.inner.company_founder_command_to_payload import convert_company_founder_command_to_payload
+from application.converters.inner.project_command_to_company_create_command import (
+    convert_project_create_command_to_company_create_command,
+)
 from application.converters.inner.project_command_to_payload import convert_project_create_command_to_payload
+from application.converters.inner.team_members_create_command_to_payload import (
+    convert_team_members_create_command_to_payload,
+)
 from application.converters.request_converters.project import (
     request_data_to_project_create_command,
     request_data_to_project_filter,
@@ -12,9 +19,9 @@ from application.ports.service import AbstractAppService
 from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction
 from django.http import QueryDict
-from domain.models.company import Company
+from domain.models.company import Company, CompanyFounder
 from domain.models.project import Project, ProjectPhone, TeamMember
-from domain.services.company import CompanyService
+from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management import (
     ProjectPhoneService,
     ProjectService,
@@ -27,7 +34,6 @@ from domain.value_objects.project_management import (
     ProjectPhoneCreatePayload,
     ProjectSocialLinkCreatePayload,
     ProjectUpdateCommand,
-    TeamMemberCreatePayload,
 )
 from loguru import logger
 
@@ -40,12 +46,14 @@ class ProjectAppService(AbstractAppService):
         project_phone_service: ProjectPhoneService,
         project_social_link_service: ProjectSocialLinkService,
         company_service: CompanyService,
+        company_founder_service: CompanyFounderService,
     ):
         self._project_service = project_service
         self._team_member_service = team_member_service
         self._project_phone_service = project_phone_service
         self._social_link_service = project_social_link_service
         self._company_service = company_service
+        self._company_founder_service = company_founder_service
 
     def get_by_id(self, project_id: int) -> ProjectDto:
         """:raises ProjectNotFoundException:"""
@@ -64,23 +72,22 @@ class ProjectAppService(AbstractAppService):
 
         command: ProjectCreateCommand = request_data_to_project_create_command(data, files, user_id)
         logger.debug(f"Command = {command}")
-
         with transaction.atomic():
-            company: Company = self._company_service.create(command=command.company)
-            logger.info(f"A company created successfully. Company id = {company.id}")
-
-            project: Project = self._project_service.create(
-                convert_project_create_command_to_payload(command, company.id)
+            project: Project = self._project_service.create(convert_project_create_command_to_payload(command))
+            company: Company = self._company_service.create(
+                convert_project_create_command_to_company_create_command(command, project_id=Id(value=project.id))
             )
 
-            for member in command.team_members:
-                create_payload = TeamMemberCreatePayload(
-                    project_id=Id(value=project.id),
-                    first_name=member.first_name,
-                    last_name=member.last_name,
-                    description=member.description,
-                )
-                team_member: TeamMember = self._team_member_service.create(create_payload)
+            logger.info(f"A company created successfully. Company id = {company.id}")
+            founder: CompanyFounder = self._company_founder_service.create(
+                convert_company_founder_command_to_payload(command.company_founder, Id(value=company.id))
+            )
+            logger.info(f"A company_founder created successfully. Founder id = {founder.id}")
+
+            for member_payload in convert_team_members_create_command_to_payload(
+                command.team_members, Id(value=project.id)
+            ):
+                team_member: TeamMember = self._team_member_service.create(member_payload)
                 logger.debug(f"Team member with id = {team_member.id} is attached to the project successfully.")
             logger.info("All team members were created successfully.")
 

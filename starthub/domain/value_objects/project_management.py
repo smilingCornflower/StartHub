@@ -5,15 +5,21 @@ from domain.enums.project_stage import ProjectStageEnum
 from domain.exceptions.project_management import (
     InvalidProjectStageException,
     NegativeProjectGoalSumValidationException,
-    ProjectDeadlineInPastValidationException,
     ProjectNameIsTooLongValidationException,
 )
 from domain.exceptions.validation import EmptyStringException
 from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
-from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, SocialLink
-from domain.value_objects.company import CompanyCreateCommand, CompanyUpdatePayload
+from domain.value_objects.common import DeadlineDate, Description, FirstName, Id, LastName, PhoneNumber, SocialLink
+from domain.value_objects.company import (
+    BusinessNumber,
+    CompanyFounderCreateCommand,
+    CompanyName,
+    CompanyUpdatePayload,
+    EstablishedDate,
+)
+from domain.value_objects.country import CountryCode
 from domain.value_objects.file import PdfFile
 from pydantic import field_validator
 
@@ -42,13 +48,13 @@ class TeamMemberCreatePayload(AbstractCreatePayload, BaseVo):
     project_id: Id
     first_name: FirstName
     last_name: LastName
-    description: str
+    description: Description
 
 
 class TeamMemberCreateCommand(BaseVo):
     first_name: FirstName
     last_name: LastName
-    description: str
+    description: Description
 
 
 class TeamMemberUpdatePayload(AbstractUpdatePayload, BaseVo):
@@ -78,22 +84,10 @@ class ProjectStage(BaseVo):
         return value.lower()
 
 
-class ProjectCreateCommand(BaseCommand):
-    name: str
-    description: str
-    category_id: Id
-    creator_id: Id
-    funding_model_id: Id
-    stage: ProjectStage
-    goal_sum: float
-    deadline: date
-    team_members: list[TeamMemberCreateCommand]
-    company: CompanyCreateCommand
-    social_links: list[SocialLink]
-    phone_number: PhoneNumber
-    project_plan_data: PdfFile
+class ProjectName(BaseVo):
+    value: str
 
-    @field_validator("name", mode="after")
+    @field_validator("value", mode="after")
     @classmethod
     def is_valid_name(cls, value: str) -> str:
         """
@@ -108,7 +102,11 @@ class ProjectCreateCommand(BaseCommand):
             )
         return value
 
-    @field_validator("goal_sum", mode="after")
+
+class GoalSum(BaseVo):
+    value: float
+
+    @field_validator("value", mode="after")
     @classmethod
     def is_positive_goal_sum(cls, value: int) -> int:
         """:raises NegativeProjectGoalSumValidationException:"""
@@ -116,84 +114,60 @@ class ProjectCreateCommand(BaseCommand):
             raise NegativeProjectGoalSumValidationException("goal_sum must be positive.")
         return value
 
-    @field_validator("deadline", mode="after")
-    @classmethod
-    def deadline_in_future(cls, value: date) -> date:
-        """:raises ProjectDeadlineInPastValidationException:"""
-        if value <= date.today():
-            raise ProjectDeadlineInPastValidationException("deadline must be in the future.")
-        return value
+
+class ProjectCreateCommand(BaseCommand):
+    name: ProjectName
+    description: Description
+    category_id: Id
+    creator_id: Id
+    funding_model_id: Id
+    stage: ProjectStage
+    goal_sum: GoalSum
+    deadline: DeadlineDate
+    social_links: list[SocialLink]
+    phone_number: PhoneNumber
+    plan_file: PdfFile
+
+    company_name: CompanyName
+    country_code: CountryCode
+    business_id: BusinessNumber
+    established_date: EstablishedDate
+
+    team_members: list[TeamMemberCreateCommand]
+    company_founder: CompanyFounderCreateCommand
 
 
 class ProjectUpdateCommand(BaseCommand):
     project_id: Id
     user_id: Id
     company: CompanyUpdatePayload | None
-    name: str | None = None
-    description: str | None = None
+    name: ProjectName | None = None
     category_id: Id | None = None
     funding_model_id: Id | None = None
     stage: ProjectStage | None = None
-    goal_sum: float | None = None
-    deadline: date | None = None
-    project_plan: PdfFile | None = None
-
-    # TODO: Create ProjectName value object
-    @field_validator("name", mode="after")
-    @classmethod
-    def is_valid_name(cls, value: str | None) -> str | None:
-        """
-        :raises ProjectNameIsTooLongValidationException:
-        :raises EmptyStringException:
-        """
-        if value is not None:
-            if not value:
-                raise EmptyStringException("Project name cannot be empty.")
-            if len(value) > CHAR_FIELD_MAX_LENGTH:
-                raise ProjectNameIsTooLongValidationException(
-                    f"Project name must be at most {CHAR_FIELD_MAX_LENGTH} characters long."
-                )
-        return value
-
-    # TODO: goal_sum is value_object
-    @field_validator("goal_sum", mode="after")
-    @classmethod
-    def is_positive_goal_sum(cls, value: int | None) -> int | None:
-        """:raises NegativeProjectGoalSumValidationException:"""
-        if value is not None and value <= 0:
-            raise NegativeProjectGoalSumValidationException("goal_sum must be positive.")
-        return value
-
-    # TODO: deadline is value_object
-    @field_validator("deadline", mode="after")
-    @classmethod
-    def deadline_in_future(cls, value: date | None) -> date | None:
-        """:raises ProjectDeadlineInPastValidationException:"""
-        if value is not None and value <= date.today():
-            raise ProjectDeadlineInPastValidationException("deadline must be in the future.")
-        return value
+    goal_sum: GoalSum | None = None
+    deadline: DeadlineDate | None = None
+    plan_file: PdfFile | None = None
 
 
 class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
-    name: str
-    description: str
+    name: ProjectName
+    description: Description
     category_id: Id
     creator_id: Id
     funding_model_id: Id
-    company_id: Id
     stage: ProjectStage
-    goal_sum: float
+    goal_sum: GoalSum
     deadline: date
-    project_plan_data: bytes
+    plan_file: PdfFile
 
 
 class ProjectUpdatePayload(AbstractUpdatePayload, BaseVo):
     id_: Id
-    name: str | None = None
-    description: str | None = None
+    name: ProjectName | None = None
     category_id: Id | None = None
     funding_model_id: Id | None = None
-    goal_sum: float | None = None
+    goal_sum: GoalSum | None = None
     stage: ProjectStage | None = None
-    deadline: date | None = None
-    plan: str | None = None
+    deadline: DeadlineDate | None = None
+    plan_path: str | None = None

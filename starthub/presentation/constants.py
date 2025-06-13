@@ -5,7 +5,7 @@ from domain.exceptions.auth import (
     TokenExpiredException,
 )
 from domain.exceptions.company import CompanyNotFoundException, CompanyOwnershipRequiredException
-from domain.exceptions.country import InvalidCountryCodeException
+from domain.exceptions.country import CountryNotFoundException, InvalidCountryCodeException
 from domain.exceptions.permissions import DeleteDeniedPermissionException
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
@@ -33,6 +33,7 @@ APPLICATION_ERROR_CODES: dict[type, tuple[str, int]] = {
     CompanyNotFoundException: ("COMPANY_NOT_FOUND", 404),
     ProjectCategoryNotFoundException: ("PROJECT_CATEGORY_NOT_FOUND", 404),
     FundingModelNotFoundException: ("FUNDING_MODEL_NOT_FOUND", 404),
+    CountryNotFoundException: ("COUNTRY_NOT_FOUND", 404),
     # 403 Forbidden
     CompanyOwnershipRequiredException: ("COMPANY_OWNERSHIP_REQUIRED", 403),
     DeleteDeniedPermissionException: ("DELETE_PERMISSION_DENIED", 403),

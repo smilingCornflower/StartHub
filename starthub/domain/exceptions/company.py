@@ -27,3 +27,16 @@ class BusinessNumberException(DomainException):
 
 class BusinessNumberAlreadyExistsException(AlreadyExistsException, BusinessNumberException):
     pass
+
+
+# ==== Company Founder Exceptions ====
+class CompanyFounderException(DomainException):
+    pass
+
+
+class CompanyFounderNotFoundException(NotFoundException, DomainException):
+    pass
+
+
+class CompanyFounderAlreadyExistsException(AlreadyExistsException, DomainException):
+    pass

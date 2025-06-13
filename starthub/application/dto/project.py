@@ -28,7 +28,6 @@ class CompanyDto:
     name: str
     slug: str
     founder: CompanyFounderDto
-    description: str
     country_code: str
     business_id: str
     established_date: date
