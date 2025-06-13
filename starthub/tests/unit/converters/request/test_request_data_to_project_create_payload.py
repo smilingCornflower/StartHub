@@ -109,19 +109,11 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
         # Company
         self.assertEqual(command.company_name.value, self.valid_data["company"]["name"])
         self.assertEqual(command.country_code.value, self.valid_data["company"]["country_code"])
-        self.assertEqual(
-            command.established_date.value.isoformat(), self.valid_data["company"]["established_date"]
-        )
+        self.assertEqual(command.established_date.value.isoformat(), self.valid_data["company"]["established_date"])
         self.assertEqual(command.business_id.value, self.valid_data["company"]["business_id"])
-        self.assertEqual(
-            command.company_founder.name.value, self.valid_data["company_founder"]["first_name"]
-        )
-        self.assertEqual(
-            command.company_founder.surname.value, self.valid_data["company_founder"]["last_name"]
-        )
-        self.assertEqual(
-            command.company_founder.description.value, self.valid_data["company_founder"]["description"]
-        )
+        self.assertEqual(command.company_founder.name.value, self.valid_data["company_founder"]["first_name"])
+        self.assertEqual(command.company_founder.surname.value, self.valid_data["company_founder"]["last_name"])
+        self.assertEqual(command.company_founder.description.value, self.valid_data["company_founder"]["description"])
 
     def test_missing_required_field(self) -> None:
         required_fields = [
