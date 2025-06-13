@@ -83,12 +83,15 @@ class MeFavoriteProjectsView(APIView):
             logger.error(f"Exception: {repr(e)}")
             return UserFavoriteResponseFactory.create_response(e)
 
+
 class UserFavoriteProjectsView(APIView):
     error_classes: tuple[type[Exception], ...] = tuple(UserFavoriteResponseFactory.error_codes.keys())
 
     def get(self, request: Request, user_id: int) -> Response:
         try:
-            user_favorites: list[UserFavoriteDto] = gateway.user_favorite_app_service.get_user_favorites(user_id=user_id)
+            user_favorites: list[UserFavoriteDto] = gateway.user_favorite_app_service.get_user_favorites(
+                user_id=user_id
+            )
             return Response(map(asdict, user_favorites), status=status.HTTP_200_OK)
         except self.error_classes as e:
             logger.error(f"Exception: {repr(e)}")
