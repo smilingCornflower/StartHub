@@ -1,4 +1,4 @@
-from application.ports.service_factory import AbstractServiceFactory
+from application.ports.service_factory import AbstractAppServiceFactory
 from application.services.project import ProjectAppService
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.file import PdfService
@@ -31,7 +31,7 @@ from infrastructure.repositories.project_management import (
 from infrastructure.repositories.user import DjUserReadRepository
 
 
-class ProjectServiceFactory(AbstractServiceFactory[ProjectAppService]):
+class ProjectAppServiceFactory(AbstractAppServiceFactory[ProjectAppService]):
     @staticmethod
     def create_service() -> ProjectAppService:
         return ProjectAppService(
@@ -70,4 +70,4 @@ class ProjectServiceFactory(AbstractServiceFactory[ProjectAppService]):
         )
 
 
-project_app_service: ProjectAppService = ProjectServiceFactory.create_service()
+project_app_service: ProjectAppService = ProjectAppServiceFactory.create_service()

@@ -1,7 +1,7 @@
 from dataclasses import asdict
 
 from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
-from application.service_factories.auth import AuthServiceFactory, RegistrationServiceFactory
+from application.service_factories.auth import AuthAppServiceFactory, RegistrationAppServiceFactory
 from application.services.auth import AuthAppService, RegistrationAppService
 from loguru import logger
 from presentation.constants import SUCCESS
@@ -25,7 +25,7 @@ class LoginView(APIView):
         form_data: dict[str, str] = request.data
         logger.debug(f"request data = {form_data}")
 
-        auth_service: AuthAppService = AuthServiceFactory.create_service()
+        auth_service: AuthAppService = AuthAppServiceFactory.create_service()
         try:
             tokens_pair_dto: TokenPairDto = auth_service.login(form_data)
         except self.error_classes as e:
@@ -58,7 +58,7 @@ class RegistrationView(APIView):
 
     def post(self, request: Request) -> Response:
         form_data: dict[str, str] = request.data
-        registration_service: RegistrationAppService = RegistrationServiceFactory.create_service()
+        registration_service: RegistrationAppService = RegistrationAppServiceFactory.create_service()
         try:
             registration_service.register(form_data)
         except self.error_classes as e:
@@ -72,7 +72,7 @@ class ReissueAccessTokenView(APIView):
     error_classes: tuple[type[Exception], ...] = tuple(CommonErrorResponseFactory.error_codes.keys())
 
     def post(self, request: Request) -> Response:
-        auth_service: AuthAppService = AuthServiceFactory.create_service()
+        auth_service: AuthAppService = AuthAppServiceFactory.create_service()
 
         try:
             access_token_dto: AccessTokenDto = auth_service.reissue_access(request.COOKIES)
@@ -94,7 +94,7 @@ class AccessVerifyView(APIView):
     error_classes: tuple[type[Exception], ...] = tuple(CommonErrorResponseFactory.error_codes.keys())
 
     def post(self, request: Request) -> Response:
-        auth_service: AuthAppService = AuthServiceFactory.create_service()
+        auth_service: AuthAppService = AuthAppServiceFactory.create_service()
 
         try:
             access_payload_dto: AccessPayloadDto = auth_service.verify_access(request.COOKIES)

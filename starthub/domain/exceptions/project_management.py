@@ -27,15 +27,11 @@ class ProjectPhoneNotFoundException(NotFoundException, ProjectPhoneException):
     pass
 
 
-class ProjectNameIsTooLongValidationException(ValidationException, ProjectException):
+class ProjectNameIsTooLongException(ValidationException, ProjectException):
     pass
 
 
-class NegativeProjectGoalSumValidationException(ValidationException, ProjectException):
-    pass
-
-
-class ProjectDeadlineInPastValidationException(ValidationException, ProjectException):
+class NegativeProjectGoalSumException(ValidationException, ProjectException):
     pass
 
 

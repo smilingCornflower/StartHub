@@ -7,6 +7,7 @@ from domain.exceptions.company import BusinessNumberAlreadyExistsException, Comp
 from domain.exceptions.file import NotPdfFileException, NotSupportedImageFormatException, PdfFileTooLargeException
 from domain.exceptions.project_management import ProjectNotFoundException
 from domain.exceptions.user import EmailAlreadyExistsException
+from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
 from domain.exceptions.validation import DateInFutureException, InvalidEmailException, ValidationException
 from presentation.constants import APPLICATION_ERROR_CODES
 from presentation.ports import ErrorResponseFactory
@@ -75,4 +76,11 @@ class UserErrorResponseFactory(CommonErrorResponseFactory):
         NotSupportedImageFormatException: ("UNSUPPORTED_IMAGE_FORMAT", 400),
         pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
         PasswordValidationException: ("WEAK_PASSWORD", 422),
+    }
+
+
+class UserFavoriteResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+        UserFavoriteAlreadyExistsException: ("USER_FAVORITE_ALREADY_EXISTS", 409),
     }

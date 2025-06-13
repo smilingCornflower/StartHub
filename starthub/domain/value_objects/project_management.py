@@ -4,8 +4,8 @@ from domain.constants import CHAR_FIELD_MAX_LENGTH
 from domain.enums.project_stage import ProjectStageEnum
 from domain.exceptions.project_management import (
     InvalidProjectStageException,
-    NegativeProjectGoalSumValidationException,
-    ProjectNameIsTooLongValidationException,
+    NegativeProjectGoalSumException,
+    ProjectNameIsTooLongException,
 )
 from domain.exceptions.validation import EmptyStringException
 from domain.ports.command import BaseCommand
@@ -91,13 +91,13 @@ class ProjectName(BaseVo):
     @classmethod
     def is_valid_name(cls, value: str) -> str:
         """
-        :raises ProjectNameIsTooLongValidationException:
+        :raises ProjectNameIsTooLongException:
         :raises EmptyStringException:
         """
         if not value:
             raise EmptyStringException("Project name cannot be empty.")
         if len(value) > CHAR_FIELD_MAX_LENGTH:
-            raise ProjectNameIsTooLongValidationException(
+            raise ProjectNameIsTooLongException(
                 f"Project name must be at most {CHAR_FIELD_MAX_LENGTH} characters long."
             )
         return value
@@ -109,9 +109,9 @@ class GoalSum(BaseVo):
     @field_validator("value", mode="after")
     @classmethod
     def is_positive_goal_sum(cls, value: int) -> int:
-        """:raises NegativeProjectGoalSumValidationException:"""
+        """:raises NegativeProjectGoalSumException:"""
         if value <= 0:
-            raise NegativeProjectGoalSumValidationException("goal_sum must be positive.")
+            raise NegativeProjectGoalSumException("goal_sum must be positive.")
         return value
 
 

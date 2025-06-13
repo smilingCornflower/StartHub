@@ -8,14 +8,11 @@ from application.converters.request_converters.project import request_data_to_pr
 from config.settings import BASE_DIR
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase
-from domain.exceptions.project_management import (
-    InvalidProjectStageException,
-    NegativeProjectGoalSumValidationException,
-    ProjectDeadlineInPastValidationException,
-)
+from domain.exceptions.project_management import InvalidProjectStageException, NegativeProjectGoalSumException
 from domain.exceptions.validation import (
     DateInFutureException,
     DateIsNotIsoFormatException,
+    DeadlineInPastException,
     DisallowedSocialLinkException,
     EmptyStringException,
     FirstNameIsTooLongException,
@@ -184,18 +181,18 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
 
     def test_invalid_goal_sum(self) -> None:
         self.valid_data["project"]["goal_sum"] = -100  # type: ignore
-        with self.assertRaises(NegativeProjectGoalSumValidationException):
+        with self.assertRaises(NegativeProjectGoalSumException):
             request_data_to_project_create_command(self.prepare_data(self.valid_data), self.files, self.user_id)
-        self.check_raises(NegativeProjectGoalSumValidationException)
+        self.check_raises(NegativeProjectGoalSumException)
 
     def test_invalid_deadline(self) -> None:
         self.valid_data["project"]["deadline"] = (date.today() - timedelta(days=1)).isoformat()
-        with self.assertRaises(ProjectDeadlineInPastValidationException):
+        with self.assertRaises(DeadlineInPastException):
             request_data_to_project_create_command(
                 self.prepare_data(self.valid_data), files=self.files, user_id=self.user_id
             )
 
-            self.check_raises(ProjectDeadlineInPastValidationException)
+            self.check_raises(DeadlineInPastException)
 
         self.valid_data["project"]["deadline"] = "invalid-date"
         with self.assertRaises(DateIsNotIsoFormatException):

@@ -47,3 +47,7 @@ class InvalidEmailException(ValidationException):
 
 class MissingRequiredFieldException(ValidationException):
     pass
+
+
+class DeadlineInPastException(ValidationException):
+    pass
