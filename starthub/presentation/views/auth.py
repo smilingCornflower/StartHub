@@ -4,6 +4,8 @@ from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
 from application.service_factories.auth import AuthAppServiceFactory, RegistrationAppServiceFactory
 from application.services.auth import AuthAppService, RegistrationAppService
 from loguru import logger
+
+from application.services.gateway import gateway
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import (
     CommonErrorResponseFactory,
@@ -57,10 +59,9 @@ class RegistrationView(APIView):
     error_classes: tuple[type[Exception], ...] = tuple(RegistrationErrorResponseFactory.error_codes.keys())
 
     def post(self, request: Request) -> Response:
-        form_data: dict[str, str] = request.data
-        registration_service: RegistrationAppService = RegistrationAppServiceFactory.create_service()
+        logger.info("POST /auth/register/")
         try:
-            registration_service.register(form_data)
+            gateway.get_registration_app_service.register(request.data)
         except self.error_classes as e:
             logger.error(e)
             return RegistrationErrorResponseFactory.create_response(e)
