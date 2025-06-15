@@ -23,7 +23,7 @@ class LoginView(APIView):
     def post(self, request: Request) -> Response:
         logger.info("POST /auth/login/")
         try:
-            tokens_pair_dto: TokenPairDto = gateway.get_auth_app_service.login(request.data)
+            tokens_pair_dto: TokenPairDto = gateway.auth_app_service.login(request.data)
         except self.error_classes as e:
             logger.error(e)
             return LoginErrorResponseFactory.create_response(e)
@@ -55,7 +55,7 @@ class RegistrationView(APIView):
     def post(self, request: Request) -> Response:
         logger.info("POST /auth/register/")
         try:
-            gateway.get_registration_app_service.register(request.data)
+            gateway.registration_app_service.register(request.data)
         except self.error_classes as e:
             logger.error(e)
             return RegistrationErrorResponseFactory.create_response(e)
@@ -69,7 +69,7 @@ class ReissueAccessTokenView(APIView):
     def post(self, request: Request) -> Response:
         logger.debug("POST /auth/reissue-access/")
         try:
-            access_token_dto: AccessTokenDto = gateway.get_auth_app_service.reissue_access(request.COOKIES)
+            access_token_dto: AccessTokenDto = gateway.auth_app_service.reissue_access(request.COOKIES)
         except self.error_classes as e:
             return CommonErrorResponseFactory.create_response(e)
 
@@ -90,7 +90,7 @@ class AccessVerifyView(APIView):
     def post(self, request: Request) -> Response:
         logger.debug("POST /auth/verify-access/")
         try:
-            access_payload_dto: AccessPayloadDto = gateway.get_auth_app_service.verify_access(request.COOKIES)
+            access_payload_dto: AccessPayloadDto = gateway.auth_app_service.verify_access(request.COOKIES)
         except self.error_classes as e:
             return CommonErrorResponseFactory.create_response(e)
 

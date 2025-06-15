@@ -1,3 +1,4 @@
+from application.service_factories.auth import AuthAppServiceFactory, RegistrationAppServiceFactory
 from application.service_factories.project import ProjectAppServiceFactory
 from application.service_factories.user import UserAppServiceFactory
 from application.service_factories.user_favorite import UserFavoriteAppAppServiceFactory
