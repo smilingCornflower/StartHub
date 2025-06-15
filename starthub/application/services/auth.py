@@ -28,8 +28,6 @@ class RegistrationAppService(AbstractAppService):
     def register(self, request_data: dict[str, str]) -> User:
         """
         :raises KeyError: Missing required fields.
-        :raises FirstNameIsTooLongException:
-        :raises LastNameIsTooLongException:
         :raises EmptyStringException:
         :raises InvalidEmailException:
         :raises PasswordValidationException:

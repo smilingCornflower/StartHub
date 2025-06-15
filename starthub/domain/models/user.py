@@ -18,26 +18,28 @@ from domain.models.base import BaseModel
 class UserManager(BaseUserManager["User"]):
     def create_user(
         self,
-        email: str,
-        first_name: str,
-        last_name: str,
+        email: str | None,
+        first_name: str | None = None,
+        last_name: str | None = None,
         password: str | None = None,
         **extra_fields: dict[str, Any],
     ) -> "User":
         """:raises ValueError:"""
         if not email:
             raise ValueError("Email must be set.")
-        if not first_name:
-            raise ValueError("First name must be set.")
-        if not last_name:
-            raise ValueError("Last name must be set.")
         normalized_email: str = self.normalize_email(email)
-        user: "User" = self.model(
-            email=normalized_email,
-            first_name=first_name,
-            last_name=last_name,
-            **extra_fields,
-        )
+        if first_name and last_name:
+            user = self.model(
+                email=normalized_email,
+                first_name=first_name,
+                last_name=last_name,
+                **extra_fields,
+            )
+        else:
+            user = self.model(
+                email=normalized_email,
+                **extra_fields,
+            )
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -67,12 +69,10 @@ class UserManager(BaseUserManager["User"]):
 class User(AbstractBaseUser, BaseModel, PermissionsMixin):
     email = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH, unique=True, validators=[EmailValidator()])
     first_name = models.CharField(
-        max_length=CHAR_FIELD_SHORT_LENGTH,
-        validators=[RegexValidator(NAME_PATTERN)],
+        max_length=CHAR_FIELD_SHORT_LENGTH, validators=[RegexValidator(NAME_PATTERN)], default="default first name"
     )
     last_name = models.CharField(
-        max_length=CHAR_FIELD_SHORT_LENGTH,
-        validators=[RegexValidator(NAME_PATTERN)],
+        max_length=CHAR_FIELD_SHORT_LENGTH, validators=[RegexValidator(NAME_PATTERN)], default="default last name"
     )
     password = models.CharField(
         max_length=128,

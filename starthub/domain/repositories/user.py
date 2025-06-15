@@ -37,3 +37,7 @@ class UserWriteRepository(AbstractWriteRepository[User, UserCreatePayload, UserU
     def delete(self, id_: Id) -> None:
         """:raises UserNotFoundException:"""
         pass
+
+    @abstractmethod
+    def update_last_login(self, user: User) -> None:
+        pass

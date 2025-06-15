@@ -56,8 +56,6 @@ class Email(BaseVo):
 
 
 class UserCreatePayload(AbstractCreatePayload):
-    first_name: FirstName
-    last_name: LastName
     email: Email
     password: RawPassword
 
