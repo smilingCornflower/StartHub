@@ -12,9 +12,10 @@ from loguru import logger
 
 
 class AuthService:
-    def __init__(self, token_service: TokenService, user_read_repository: UserReadRepository):
+    def __init__(self, token_service: TokenService, user_read_repository: UserReadRepository, user_write_repository: UserWriteRepository):
         self._token_service = token_service
         self._user_read_repository = user_read_repository
+        self._user_write_repository = user_write_repository
 
     def check_user_existence(self, email: Email) -> None:
         """:raises UserNotFoundException:"""
@@ -27,6 +28,8 @@ class AuthService:
         """
         user: User = self._authenticate_user(credentials=credentials)
         logger.info(f"User '{credentials.email}' is successfully authenticated.")
+        self._user_write_repository.update_last_login(user)
+        logger.debug("last_login updated")
 
         return TokenPairVo(
             access=self._token_service.generate_access(user=user),
