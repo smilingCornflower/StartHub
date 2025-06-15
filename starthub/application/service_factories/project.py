@@ -3,6 +3,7 @@ from application.services.project import ProjectAppService
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.file import PdfService
 from domain.services.project_management import (
+    ProjectImageService,
     ProjectPhoneService,
     ProjectService,
     ProjectSocialLinkService,
@@ -19,6 +20,8 @@ from infrastructure.repositories.country import DjCountryReadRepository
 from infrastructure.repositories.project_management import (
     DjFundingModelReadRepository,
     DjProjectCategoryReadRepository,
+    DjProjectImageReadRepository,
+    DjProjectImageWriteRepository,
     DjProjectPhoneReadRepository,
     DjProjectPhoneWriteRepository,
     DjProjectReadRepository,
@@ -66,6 +69,12 @@ class ProjectAppServiceFactory(AbstractAppServiceFactory[ProjectAppService]):
             company_founder_service=CompanyFounderService(
                 company_founder_read_repository=DjCompanyFounderReadRepository(),
                 company_founder_write_repository=DjCompanyFounderWriteRepository(),
+            ),
+            project_image_service=ProjectImageService(
+                project_image_read_repository=DjProjectImageReadRepository(),
+                project_image_write_repository=DjProjectImageWriteRepository(),
+                project_read_repository=DjProjectReadRepository(),
+                cloud_storage=google_cloud_storage,
             ),
         )
 

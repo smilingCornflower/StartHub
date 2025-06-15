@@ -120,3 +120,7 @@ class Description(BaseVo):
                 f"Description is too long. Max length is {DESCRIPTION_MAX_LENGTH} characters."
             )
         return value
+
+
+class Order(BaseVo):
+    value: int

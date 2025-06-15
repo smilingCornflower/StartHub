@@ -41,7 +41,7 @@ class DjUserFavoriteWriteRepository(UserFavoriteWriteRepository):
     def update(self, data: UserFavoriteUpdatePayload) -> UserFavorite:
         raise NotImplementedError("Method update() not supported for UserFavorite.")
 
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         """:raises UserFavoriteNotFoundException:"""
         try:
             user_favorite: UserFavorite = UserFavorite.objects.get(id=id_.value)

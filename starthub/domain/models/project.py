@@ -69,12 +69,13 @@ class ProjectPhone(BaseModel):
         return f"{self.project.name} {self.number}"
 
 
-class ProjectPhoto(BaseModel):
+class ProjectImage(BaseModel):
     project = models.ForeignKey("domain.Project", on_delete=models.CASCADE, related_name="photos")
     file_path = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
+    order = models.SmallIntegerField()
 
     class Meta:
-        db_table = "project_photo"
+        db_table = "project_images"
 
     def __str__(self) -> str:
         return self.file_path

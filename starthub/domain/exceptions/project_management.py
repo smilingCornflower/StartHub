@@ -43,6 +43,19 @@ class ProjectNameAlreadyExistsException(AlreadyExistsException, ProjectException
     pass
 
 
+# ==== Project Image Exceptions ====
+class ProjectImageException(ProjectException):
+    pass
+
+
+class ProjectImageMaxAmountException(ProjectImageException):
+    pass
+
+
+class ProjectImageNotFoundException(NotFoundException, ProjectImageException):
+    pass
+
+
 # ==== Funding Model Exceptions ====
 class FundingModelException(ProjectException):
     pass

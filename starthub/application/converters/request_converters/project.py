@@ -10,6 +10,7 @@ from domain.value_objects.common import (
     FirstName,
     Id,
     LastName,
+    Order,
     PhoneNumber,
     Slug,
     SocialLink,
@@ -22,11 +23,13 @@ from domain.value_objects.company import (
     EstablishedDate,
 )
 from domain.value_objects.country import CountryCode
-from domain.value_objects.file import PdfFile
+from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project_management import (
     GoalSum,
     ProjectCreateCommand,
+    ProjectImageCreateCommand,
+    ProjectImageUpdateCommand,
     ProjectName,
     ProjectStage,
     ProjectUpdateCommand,
@@ -81,7 +84,7 @@ def _request_data_to_company_founder_create_command(data: dict[str, Any]) -> Com
 
 
 def _request_files_to_project_plan(files: dict[str, UploadedFile]) -> PdfFile:
-    project_plan_file: UploadedFile = cast(UploadedFile, get_required_field(files, field="project_plan"))
+    project_plan_file: UploadedFile = get_required_field(files, field="project_plan")
     project_plan_file.seek(0)
     return PdfFile(value=project_plan_file.read())
 
@@ -182,3 +185,33 @@ def request_data_to_the_project_update_command(
         deadline=DeadlineDate(value=parse_date(project_data["deadline"])) if "deadline" in project_data else None,
         plan_file=project_plan,
     )
+
+
+########################################################################################################################
+# Project Image Converter
+def request_files_to_project_image_create_command(
+    files: dict[str, UploadedFile],
+    project_id: int,
+    user_id: int,
+) -> ProjectImageCreateCommand:
+    project_image_file: UploadedFile = get_required_field(files, "project_image")
+    project_image_file.seek(0)
+    image = ImageFile(value=project_image_file.read())
+    logger.debug("request.FILES -> ImageFile conversion OK")
+    project_image_create = ProjectImageCreateCommand(
+        user_id=Id(value=user_id), project_id=Id(value=project_id), image_file=image
+    )
+    logger.debug("ProjectImageCreateCommand converted")
+    return project_image_create
+
+
+def request_project_data_to_project_images_update_command(
+    data: dict[str, Any], project_id: int, user_id: int
+) -> ProjectImageUpdateCommand:
+    new_order: list[Order] = list()
+
+    for i in get_required_field(data, "new_order"):
+        logger.debug(f"i = {repr(i)}")
+        new_order.append(Order(value=i))
+    logger.debug(f"{new_order=}")
+    return ProjectImageUpdateCommand(project_id=Id(value=project_id), user_id=Id(value=user_id), new_order=new_order)

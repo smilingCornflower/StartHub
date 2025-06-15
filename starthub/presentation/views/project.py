@@ -26,7 +26,7 @@ class ProjectView(APIView):
 
     @staticmethod
     def get(request: Request, project_id: int | None = None) -> Response:
-        logger.info(f"request_data = {request.query_params}; project_id = {project_id}")
+        logger.info("GET project request", project_id=project_id, query_params=request.query_params)
 
         if project_id:
             try:
@@ -93,3 +93,57 @@ class ProjectPlanView(APIView):
             return Response({"plan_url": plan_url, "code": SUCCESS}, status=status.HTTP_200_OK)
         except ProjectNotFoundException:
             return Response({"detail": f"Project with id = {project_id} not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ProjectImageView(APIView):
+    error_classes: tuple[type[Exception], ...] = tuple(ProjectErrorResponseFactory.error_codes.keys())
+
+    def post(self, request: Request, project_id: int) -> Response:
+        logger.info(f"POST project photo request.\n\t {project_id=}")
+
+        try:
+            access_dto: AccessPayloadDto = get_access_payload_dto(request.COOKIES)
+            gateway.project_app_service.upload_project_image(
+                files=request.FILES, project_id=project_id, user_id=int(access_dto.sub)
+            )
+            return Response({"detail": "Image uploaded successfully.", "code": SUCCESS}, status=status.HTTP_201_CREATED)
+        except self.error_classes as e:
+            logger.exception(f"Exception: {repr(e)}")
+            return ProjectErrorResponseFactory.create_response(e)
+
+    def get(self, request: Request, project_id: int) -> Response:
+        logger.info(f"GET project photo request.\n\t {project_id=}")
+
+        try:
+            image_urls: list[str] = gateway.project_app_service.get_image_urls(project_id=project_id)
+            return Response(image_urls, status=status.HTTP_200_OK)
+        except self.error_classes as e:
+            logger.exception(f"Exception: {repr(e)}")
+            return ProjectErrorResponseFactory.create_response(e)
+
+    def delete(self, request: Request, project_id: int, image_order: int) -> Response:
+        logger.info(f"GET /projects/images/ \n\t {project_id=}\n\t {image_order=}")
+
+        try:
+            access_dto: AccessPayloadDto = get_access_payload_dto(request.COOKIES)
+            gateway.project_app_service.delete_image(
+                project_id=project_id,
+                image_order=image_order,
+                user_id=int(access_dto.sub),
+            )
+            return Response({"detail": "image deleted successfully", "code": SUCCESS}, status=status.HTTP_200_OK)
+        except self.error_classes as e:
+            logger.exception(f"Exception: {repr(e)}")
+            return ProjectErrorResponseFactory.create_response(e)
+
+    def patch(self, request: Request, project_id: int) -> Response:
+        logger.info(f"PATCH /projects/images/ \n\t {request.data=}")
+        try:
+            access_dto: AccessPayloadDto = get_access_payload_dto(request.COOKIES)
+            gateway.project_app_service.update_project_images(
+                request.data, project_id=project_id, user_id=int(access_dto.sub)
+            )
+            return Response({"detail": "image deleted successfully", "code": SUCCESS}, status=status.HTTP_200_OK)
+        except self.error_classes as e:
+            logger.exception(f"Exception: {repr(e)}")
+            return ProjectErrorResponseFactory.create_response(e)

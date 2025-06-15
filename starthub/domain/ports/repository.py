@@ -34,6 +34,6 @@ class AbstractWriteRepository(ABC, Generic[T, C, U]):
         pass
 
     @abstractmethod
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         """:raises domain.exception.NotFoundException:"""
         pass
