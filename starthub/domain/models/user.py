@@ -29,14 +29,14 @@ class UserManager(BaseUserManager["User"]):
             raise ValueError("Email must be set.")
         normalized_email: str = self.normalize_email(email)
         if first_name and last_name:
-            user: "User" = self.model(
+            user = self.model(
                 email=normalized_email,
                 first_name=first_name,
                 last_name=last_name,
                 **extra_fields,
             )
         else:
-            user: "User" = self.model(
+            user = self.model(
                 email=normalized_email,
                 **extra_fields,
             )
@@ -69,14 +69,10 @@ class UserManager(BaseUserManager["User"]):
 class User(AbstractBaseUser, BaseModel, PermissionsMixin):
     email = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH, unique=True, validators=[EmailValidator()])
     first_name = models.CharField(
-        max_length=CHAR_FIELD_SHORT_LENGTH,
-        validators=[RegexValidator(NAME_PATTERN)],
-        default="default first name"
+        max_length=CHAR_FIELD_SHORT_LENGTH, validators=[RegexValidator(NAME_PATTERN)], default="default first name"
     )
     last_name = models.CharField(
-        max_length=CHAR_FIELD_SHORT_LENGTH,
-        validators=[RegexValidator(NAME_PATTERN)],
-        default="default last name"
+        max_length=CHAR_FIELD_SHORT_LENGTH, validators=[RegexValidator(NAME_PATTERN)], default="default last name"
     )
     password = models.CharField(
         max_length=128,

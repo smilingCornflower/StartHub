@@ -12,6 +12,7 @@ class AuthAppServiceFactory(AbstractAppServiceFactory[AuthAppService]):
         auth_service = AuthService(
             token_service=TokenService(secret_key=settings.SECRET_KEY),
             user_read_repository=DjUserReadRepository(),
+            user_write_repository=DjUserWriteRepository(),
         )
         return AuthAppService(
             token_service=TokenService(secret_key=settings.SECRET_KEY),

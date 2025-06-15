@@ -1,4 +1,4 @@
-from datetime import datetime, UTC
+from datetime import UTC, datetime
 
 from domain.exceptions.user import UserNotFoundException
 from domain.models.user import User

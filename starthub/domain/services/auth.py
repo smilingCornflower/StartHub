@@ -12,7 +12,12 @@ from loguru import logger
 
 
 class AuthService:
-    def __init__(self, token_service: TokenService, user_read_repository: UserReadRepository, user_write_repository: UserWriteRepository):
+    def __init__(
+        self,
+        token_service: TokenService,
+        user_read_repository: UserReadRepository,
+        user_write_repository: UserWriteRepository,
+    ):
         self._token_service = token_service
         self._user_read_repository = user_read_repository
         self._user_write_repository = user_write_repository

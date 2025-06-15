@@ -1,7 +1,6 @@
 from domain.exceptions.auth import MissingAccessTokenException
 from domain.exceptions.validation import MissingRequiredFieldException, ValidationException
 from domain.value_objects.auth import LoginCredentials
-from domain.value_objects.common import FirstName, LastName
 from domain.value_objects.token import AccessTokenVo, RefreshTokenVo
 from domain.value_objects.user import Email, RawPassword, UserCreatePayload
 from loguru import logger

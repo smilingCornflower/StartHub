@@ -2,13 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from domain.exceptions.auth import PasswordValidationException
 from domain.exceptions.user import EmailAlreadyExistsException
-from domain.exceptions.validation import (
-    EmptyStringException,
-    FirstNameIsTooLongException,
-    InvalidEmailException,
-    LastNameIsTooLongException,
-    MissingRequiredFieldException,
-)
+from domain.exceptions.validation import InvalidEmailException, MissingRequiredFieldException
 from domain.models.user import User
 from loguru import logger
 from presentation.constants import SUCCESS
@@ -22,8 +16,6 @@ class TestRegister(TestCase):
         self.client = APIClient()
         self.register_url = reverse("register")
         self.valid_data = {
-            "first_name": "first_name",
-            "last_name": "last_name",
             "email": "new.email@example.com",
             "password": "Pass1234",
         }
@@ -74,35 +66,6 @@ class TestRegister(TestCase):
         self.assertEqual(response.status_code, http_code)
         self.assertEqual(response.json()["code"], app_code)
 
-    def test_too_long_first_name(self) -> None:
-        self.valid_data["first_name"] = "A" * 256
-        response = self.client.post(self.register_url, data=self.valid_data, content_type=self.content_type)
-        app_code, http_code = RegistrationErrorResponseFactory.error_codes[FirstNameIsTooLongException]
-        logger.info(f"Expecting app_code: {app_code} and http_code: {http_code}")
-
-        self.assertEqual(response.status_code, http_code)
-        self.assertEqual(response.json()["code"], app_code)
-
-    def test_too_long_last_name(self) -> None:
-        self.valid_data["last_name"] = "A" * 256
-        response = self.client.post(self.register_url, data=self.valid_data, content_type=self.content_type)
-        app_code, http_code = RegistrationErrorResponseFactory.error_codes[LastNameIsTooLongException]
-        logger.info(f"Expecting app_code: {app_code} and http_code: {http_code}")
-
-        self.assertEqual(response.status_code, http_code)
-        self.assertEqual(response.json()["code"], app_code)
-
-    def test_empty_name(self) -> None:
-        for name in ["first_name", "last_name"]:
-            with self.subTest(empty=name):
-                self.valid_data[name] = ""
-                response = self.client.post(self.register_url, data=self.valid_data, content_type=self.content_type)
-                app_code, http_code = RegistrationErrorResponseFactory.error_codes[EmptyStringException]
-                logger.info(f"Expecting app_code: {app_code} and http_code: {http_code}")
-
-                self.assertEqual(response.status_code, http_code)
-                self.assertEqual(response.json()["code"], app_code)
-
     def test_duplicate_email(self) -> None:
         self.client.post(self.register_url, data=self.valid_data, content_type=self.content_type)
         response = self.client.post(self.register_url, data=self.valid_data, content_type=self.content_type)
@@ -114,12 +77,6 @@ class TestRegister(TestCase):
 
     def test_invalid_data_types(self) -> None:
         invalid_type_cases = [
-            # (field_name, invalid_value)
-            ("first_name", 123),
-            ("first_name", True),
-            ("last_name", 123.45),
-            ("last_name", ["array"]),
-            ("last_name", {"key": "value"}),
             ("email", 12345),
             ("email", False),
             ("password", 999999),

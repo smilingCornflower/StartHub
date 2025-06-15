@@ -1,11 +1,8 @@
 from dataclasses import asdict
 
 from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
-from application.service_factories.auth import AuthAppServiceFactory, RegistrationAppServiceFactory
-from application.services.auth import AuthAppService, RegistrationAppService
-from loguru import logger
-
 from application.services.gateway import gateway
+from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import (
     CommonErrorResponseFactory,
@@ -98,5 +95,6 @@ class AccessVerifyView(APIView):
             return CommonErrorResponseFactory.create_response(e)
 
         return Response(asdict(access_payload_dto), status=status.HTTP_200_OK)
+
 
 # TODO: Add logout

@@ -68,6 +68,7 @@ class ProjectPhone(BaseModel):
     def __str__(self) -> str:
         return f"{self.project.name} {self.number}"
 
+
 class ProjectPhoto(BaseModel):
     project = models.ForeignKey("domain.Project", on_delete=models.CASCADE, related_name="photos")
     file_path = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
