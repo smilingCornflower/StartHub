@@ -133,3 +133,9 @@ class ProjectAppService(AbstractAppService):
         )
         self._project_image_service.create(image_create_command)
         logger.info("ProjectImage created successfully.")
+
+    def get_image_urls(self, project_id: int) -> list[str]:
+        """:raises ProjectNotFoundException:"""
+
+        logger.info(f"Get image urls for project with id = {project_id}")
+        return self._project_image_service.get_urls(project_id=Id(value=project_id))

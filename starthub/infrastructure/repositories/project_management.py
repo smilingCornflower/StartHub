@@ -261,7 +261,6 @@ class DjFundingModelReadRepository(FundingModelReadRepository):
 
 
 class DjProjectImageReadRepository(ProjectImageReadRepository):
-
     def get_by_id(self, id_: Id) -> ProjectImage:
         raise NotImplementedError("The method get_by_id() not implemented yet.")
 

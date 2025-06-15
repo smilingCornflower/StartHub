@@ -264,6 +264,19 @@ class ProjectImageService:
 
         return project_image
 
+    def get_urls(self, project_id: Id) -> list[str]:
+        """:raises ProjectNotFoundException:"""
+        self._project_read_repository.get_by_id(project_id)
+
+        project_images: list[ProjectImage] = self._project_image_read_repository.get_all(ProjectImageFilter(project_id=project_id))
+        image_urls: list[str] = list()
+        for i in project_images:
+            image_url: str = self._cloud_storage.create_url(CloudStorageCreateUrlPayload(file_path=i.file_path))
+            image_urls.append(image_url)
+        logger.debug(f"Found {len(image_urls)} urls")
+        return image_urls
+
+
     def delete(self):
         pass
 

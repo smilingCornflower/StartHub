@@ -113,6 +113,8 @@ class ProjectImageView(APIView):
         logger.info(f"GET project photo request.\n\t {project_id=}")
 
         try:
-            pass
+            image_urls: list[str] = gateway.project_app_service.get_image_urls(project_id=project_id)
+            return Response(image_urls, status=status.HTTP_200_OK)
         except self.error_classes as e:
             logger.exception(f"Exception: {repr(e)}")
+            return ProjectErrorResponseFactory.create_response(e)
