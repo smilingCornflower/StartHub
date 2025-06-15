@@ -1,4 +1,3 @@
-from application.service_factories.auth import AuthAppServiceFactory, RegistrationAppServiceFactory
 from application.service_factories.project import ProjectAppServiceFactory
 from application.service_factories.user import UserAppServiceFactory
 from application.service_factories.user_favorite import UserFavoriteAppAppServiceFactory
@@ -17,13 +16,13 @@ class Gateway:
     _user_favorite_app_service: UserFavoriteAppService | None = None
 
     @property
-    def get_auth_app_service(self) -> AuthAppService:
+    def auth_app_service(self) -> AuthAppService:
         if self._auth_app_service is None:
             self._auth_app_service = AuthAppServiceFactory.create_service()
         return self._auth_app_service
 
     @property
-    def get_registration_app_service(self) -> RegistrationAppService:
+    def registration_app_service(self) -> RegistrationAppService:
         if self._registration_app_service is None:
             self._registration_app_service = RegistrationAppServiceFactory.create_service()
         return self._registration_app_service

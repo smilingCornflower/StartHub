@@ -5,7 +5,8 @@ import pydantic
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
 from domain.exceptions.file import NotPdfFileException, NotSupportedImageFormatException, PdfFileTooLargeException
-from domain.exceptions.project_management import ProjectNotFoundException
+from domain.exceptions.permissions import UpdateDeniedPermissionException
+from domain.exceptions.project_management import ProjectImageMaxAmountException, ProjectNotFoundException
 from domain.exceptions.user import EmailAlreadyExistsException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
 from domain.exceptions.validation import DateInFutureException, InvalidEmailException, ValidationException
@@ -45,6 +46,8 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         DateInFutureException: ("DATE_IN_FUTURE_NOT_ALLOWED", 422),
         ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
         PdfFileTooLargeException: ("PDF_FILE_TOO_LARGE", 412),
+        ProjectImageMaxAmountException: ("PROJECT_IMAGES_LIMIT_REACHED", 409),
+        UpdateDeniedPermissionException: ("UPDATE_PERMISSION_DENIED", 403),
     }
 
 

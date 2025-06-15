@@ -39,14 +39,14 @@ class TestImageService(SimpleTestCase):
         for i in self.supported_image_files:
             with self.subTest(file=i.suffix):
                 with open(i, mode="rb") as img_file:
-                    ImageService()._check_image_format(img_file)
+                    ImageService().check_image_format(img_file)
 
     def test_invalid_image_files(self) -> None:
         for i in self.not_image_files:
             with self.assertRaises(NotSupportedImageFormatException):
                 logger.info(i)
                 with open(i, mode="rb") as f:
-                    ImageService()._check_image_format(f)
+                    ImageService().check_image_format(f)
 
     def test_convert_to_jpg(self) -> None:
         for i in self.supported_image_files:

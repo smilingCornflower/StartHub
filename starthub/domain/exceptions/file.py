@@ -21,3 +21,7 @@ class ImageException(FileException):
 
 class NotSupportedImageFormatException(ImageException):
     pass
+
+
+class ImageFileTooLargeException(ImageException):
+    pass
