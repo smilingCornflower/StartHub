@@ -56,3 +56,7 @@ class CompanyFounderFilter(AbstractFilter, BaseVo):
 class UserFavoriteFilter(AbstractFilter, BaseVo):
     user_id: Id | None = None
     project_id: Id | None = None
+
+
+class ProjectImageFilter(AbstractFilter, BaseVo):
+    project_id: Id | None = None

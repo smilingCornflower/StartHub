@@ -11,7 +11,7 @@ from wand.image import Image
 class ImageService:
     IMAGE_FORMATS = ("image/jpeg", "image/png", "image/gif", "image/webp", "image/avif")
 
-    def _check_image_format(self, file_obj: BinaryIO) -> None:
+    def check_image_format(self, file_obj: BinaryIO) -> None:
         """
         :raises  NotSupportedImageFormatException:
         """
@@ -32,7 +32,7 @@ class ImageService:
         """
         :raises NotSupportedImageFormatException:
         """
-        self._check_image_format(file_obj)
+        self.check_image_format(file_obj)
         result = io.BytesIO()
 
         with Image(file=file_obj) as img:

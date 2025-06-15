@@ -6,7 +6,7 @@ from domain.services.project_management import (
     ProjectPhoneService,
     ProjectService,
     ProjectSocialLinkService,
-    TamMemberService,
+    TamMemberService, ProjectImageService,
 )
 from infrastructure.cloud_storages.google import google_cloud_storage
 from infrastructure.repositories.company import (
@@ -26,7 +26,7 @@ from infrastructure.repositories.project_management import (
     DjProjectSocialLinkWriteRepository,
     DjProjectWriteRepository,
     DjTeamMemberReadRepository,
-    DjTeamMemberWriteRepository,
+    DjTeamMemberWriteRepository, DjProjectImageReadRepository, DjProjectImageWriteRepository,
 )
 from infrastructure.repositories.user import DjUserReadRepository
 
@@ -67,6 +67,12 @@ class ProjectAppServiceFactory(AbstractAppServiceFactory[ProjectAppService]):
                 company_founder_read_repository=DjCompanyFounderReadRepository(),
                 company_founder_write_repository=DjCompanyFounderWriteRepository(),
             ),
+            project_image_service=ProjectImageService(
+                project_image_read_repository=DjProjectImageReadRepository(),
+                project_image_write_repository=DjProjectImageWriteRepository(),
+                project_read_repository=DjProjectReadRepository(),
+                cloud_storage=google_cloud_storage,
+            )
         )
 
 

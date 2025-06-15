@@ -1,11 +1,11 @@
 from io import BytesIO
 
-from domain.constants import PROFILE_PICTURE_PATH
 from domain.exceptions.user import ProfilePictureNotFoundException
 from domain.models.user import User
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.repositories.user import UserReadRepository, UserWriteRepository
 from domain.services.file import ImageService
+from domain.services.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
 from domain.value_objects.common import FirstName, Id, LastName
 from domain.value_objects.user import (
@@ -20,11 +20,11 @@ from loguru import logger
 
 class UserService:
     def __init__(
-        self,
-        cloud_storage: AbstractCloudStorage,
-        user_read_repository: UserReadRepository,
-        user_write_repository: UserWriteRepository,
-        image_service: ImageService,
+            self,
+            cloud_storage: AbstractCloudStorage,
+            user_read_repository: UserReadRepository,
+            user_write_repository: UserWriteRepository,
+            image_service: ImageService,
     ):
         self._cloud_storage = cloud_storage
         self._user_read_repository = user_read_repository
@@ -63,7 +63,7 @@ class UserService:
 
         self._user_read_repository.get_by_id(payload.user_id)
 
-        file_path = f"{PROFILE_PICTURE_PATH}/{payload.user_id.value}.jpg"
+        file_path = PathProvider.get_user_profile_picture_path(user_id=payload.user_id)
         logger.debug(f"file_path: {file_path}")
 
         uploaded_path: str = self._cloud_storage.upload_file(

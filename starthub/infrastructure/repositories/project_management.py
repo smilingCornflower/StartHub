@@ -9,7 +9,7 @@ from domain.exceptions.project_management import (
     TeamMemberNotFoundException,
 )
 from domain.models.funding_model import FundingModel
-from domain.models.project import Project, ProjectPhone, ProjectSocialLink, TeamMember
+from domain.models.project import Project, ProjectPhone, ProjectSocialLink, TeamMember, ProjectImage
 from domain.models.project_category import ProjectCategory
 from domain.repositories.project_management import (
     FundingModelReadRepository,
@@ -21,7 +21,7 @@ from domain.repositories.project_management import (
     ProjectSocialLinkWriteRepository,
     ProjectWriteRepository,
     TeamMemberReadRepository,
-    TeamMemberWriteRepository,
+    TeamMemberWriteRepository, ProjectImageReadRepository, ProjectImageWriteRepository,
 )
 from domain.value_objects.common import Id, Slug
 from domain.value_objects.filter import (
@@ -30,7 +30,7 @@ from domain.value_objects.filter import (
     ProjectFilter,
     ProjectPhoneFilter,
     ProjectSocialLinkFilter,
-    TeamMemberFilter,
+    TeamMemberFilter, ProjectImageFilter,
 )
 from domain.value_objects.project_management import (
     ProjectCreatePayload,
@@ -40,7 +40,7 @@ from domain.value_objects.project_management import (
     ProjectSocialLinkUpdatePayload,
     ProjectUpdatePayload,
     TeamMemberCreatePayload,
-    TeamMemberUpdatePayload,
+    TeamMemberUpdatePayload, ProjectImageUpdatePayload, ProjectImageCreatePayload,
 )
 from loguru import logger
 
@@ -258,3 +258,28 @@ class DjFundingModelReadRepository(FundingModelReadRepository):
 
     def get_all(self, filter_: FundingModelFilter) -> list[FundingModel]:
         return list(FundingModel.objects.all())
+
+
+class DjProjectImageReadRepository(ProjectImageReadRepository):
+
+    def get_by_id(self, id_: Id) -> ProjectImage:
+        raise NotImplementedError("The method get_by_id() not implemented yet.")
+
+    def get_all(self, filter_: ProjectImageFilter) -> list[ProjectImageFilter]:
+        queryset = ProjectImage.objects.all()
+        if filter_.project_id:
+            queryset = queryset.filter(project_id=filter_.project_id.value)
+        return list(queryset.distinct())
+
+    def get_images_count_for_project(self, project_id: Id) -> int:
+        return ProjectImage.objects.filter(project_id=project_id.value).count()
+
+class DjProjectImageWriteRepository(ProjectImageWriteRepository):
+    def create(self, data: ProjectImageCreatePayload) -> ProjectImage:
+        return ProjectImage.objects.create(project_id=data.project_id.value, file_path=data.file_path)
+
+    def update(self, data: ProjectImageUpdatePayload) -> ProjectImage:
+        raise NotImplementedError("The method update() not implemented yet.")
+
+    def delete(self, id_: Id) -> None:
+        raise NotImplementedError("The method delete() not implemented yet.")

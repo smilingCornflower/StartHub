@@ -5,7 +5,7 @@ from domain.exceptions.validation import DateIsNotIsoFormatException, MissingReq
 from loguru import logger
 
 
-def get_required_field(data: dict[str, Any], field: str, field_name_in_exception: str | None = None) -> Any:
+def get_required_field[T](data: dict[str, T], field: str, field_name_in_exception: str | None = None) -> T:
     """:raises MissingRequiredFieldException:"""
     if field_name_in_exception is None:
         field_name_in_exception = field

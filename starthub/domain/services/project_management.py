@@ -1,10 +1,13 @@
-from domain.constants import PROJECT_PLAN_PATH
+from loguru import logger
+
+from domain.constants import PROJECT_IMAGES_MAX_AMOUNT
+from domain.exceptions import BusinessRuleException
 from domain.exceptions.permissions import DeleteDeniedPermissionException, UpdateDeniedPermissionException
 from domain.exceptions.project_management import (
     ProjectPhoneAlreadyExistsException,
-    ProjectSocialLinkAlreadyExistsException,
+    ProjectSocialLinkAlreadyExistsException, ProjectImageMaxAmountException,
 )
-from domain.models.project import Project, ProjectPhone, ProjectSocialLink, TeamMember
+from domain.models.project import Project, ProjectPhone, ProjectSocialLink, TeamMember, ProjectImage
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.repositories.company import CompanyReadRepository, CompanyWriteRepository
 from domain.repositories.project_management import (
@@ -17,29 +20,29 @@ from domain.repositories.project_management import (
     ProjectSocialLinkWriteRepository,
     ProjectWriteRepository,
     TeamMemberReadRepository,
-    TeamMemberWriteRepository,
+    TeamMemberWriteRepository, ProjectImageReadRepository, ProjectImageWriteRepository,
 )
 from domain.repositories.user import UserReadRepository
 from domain.services.file import PdfService
+from domain.services.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
 from domain.value_objects.common import Id
-from domain.value_objects.filter import ProjectFilter, ProjectPhoneFilter, ProjectSocialLinkFilter
+from domain.value_objects.filter import ProjectFilter, ProjectPhoneFilter, ProjectSocialLinkFilter, ProjectImageFilter
 from domain.value_objects.project_management import (
     ProjectCreatePayload,
     ProjectPhoneCreatePayload,
     ProjectSocialLinkCreatePayload,
     ProjectUpdateCommand,
     ProjectUpdatePayload,
-    TeamMemberCreatePayload,
+    TeamMemberCreatePayload, ProjectImageCreateCommand, ProjectImageCreatePayload,
 )
-from loguru import logger
 
 
 class ProjectPhoneService:
     def __init__(
-        self,
-        project_phone_read_repository: ProjectPhoneReadRepository,
-        project_phone_write_repository: ProjectPhoneWriteRepository,
+            self,
+            project_phone_read_repository: ProjectPhoneReadRepository,
+            project_phone_write_repository: ProjectPhoneWriteRepository,
     ):
         self._read_repository = project_phone_read_repository
         self._write_repository = project_phone_write_repository
@@ -59,9 +62,9 @@ class ProjectPhoneService:
 
 class ProjectSocialLinkService:
     def __init__(
-        self,
-        read_repository: ProjectSocialLinkReadRepository,
-        write_repository: ProjectSocialLinkWriteRepository,
+            self,
+            read_repository: ProjectSocialLinkReadRepository,
+            write_repository: ProjectSocialLinkWriteRepository,
     ):
         self._read_repository = read_repository
         self._write_repository = write_repository
@@ -81,9 +84,9 @@ class ProjectSocialLinkService:
 
 class TamMemberService:
     def __init__(
-        self,
-        team_member_read_repository: TeamMemberReadRepository,
-        team_member_write_repository: TeamMemberWriteRepository,
+            self,
+            team_member_read_repository: TeamMemberReadRepository,
+            team_member_write_repository: TeamMemberWriteRepository,
     ):
         self._team_member_read_repository = team_member_read_repository
         self._team_member_write_repository = team_member_write_repository
@@ -94,16 +97,16 @@ class TamMemberService:
 
 class ProjectService:
     def __init__(
-        self,
-        project_read_repository: ProjectReadRepository,
-        project_write_repository: ProjectWriteRepository,
-        project_category_read_repository: ProjectCategoryReadRepository,
-        user_read_repository: UserReadRepository,
-        funding_model_read_repository: FundingModelReadRepository,
-        company_read_repository: CompanyReadRepository,
-        company_write_repository: CompanyWriteRepository,
-        cloud_storage: AbstractCloudStorage,
-        pdf_service: PdfService,
+            self,
+            project_read_repository: ProjectReadRepository,
+            project_write_repository: ProjectWriteRepository,
+            project_category_read_repository: ProjectCategoryReadRepository,
+            user_read_repository: UserReadRepository,
+            funding_model_read_repository: FundingModelReadRepository,
+            company_read_repository: CompanyReadRepository,
+            company_write_repository: CompanyWriteRepository,
+            cloud_storage: AbstractCloudStorage,
+            pdf_service: PdfService,
     ):
         self._project_read_repository = project_read_repository
         self._project_write_repository = project_write_repository
@@ -123,11 +126,8 @@ class ProjectService:
         return self._project_read_repository.get_all(filter_=filter_)
 
     def get_plan_url(self, project_id: Id) -> str:
-        plan_path = self._generate_plan_path(project_id)
+        plan_path = PathProvider.get_project_plan_path(project_id)
         return self._cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=plan_path))
-
-    def _generate_plan_path(self, project_id: Id) -> str:
-        return f"{PROJECT_PLAN_PATH}/{project_id.value}.pdf"
 
     def create(self, payload: ProjectCreatePayload) -> Project:
         """
@@ -144,7 +144,7 @@ class ProjectService:
         project: Project = self._project_write_repository.create(payload)
 
         logger.info("Project created successfully.")
-        project_plan_path: str = self._generate_plan_path(project_id=Id(value=project.id))
+        project_plan_path: str = PathProvider.get_project_plan_path(Id(value=project.id))
 
         uploaded_path: str = self._cloud_storage.upload_file(
             CloudStorageUploadPayload(file_data=payload.plan_file.value, file_path=project_plan_path)
@@ -180,7 +180,7 @@ class ProjectService:
 
         if update_command.plan_file:
             logger.info("Updating project_plan file.")
-            project_plan_path: str = self._generate_plan_path(project_id=Id(value=project.id))
+            project_plan_path: str = PathProvider.get_project_plan_path(Id(value=project.id))
             uploaded_path: str = self._cloud_storage.upload_file(
                 CloudStorageUploadPayload(file_data=update_command.plan_file.value, file_path=project_plan_path)
             )
@@ -213,3 +213,59 @@ class ProjectService:
             raise DeleteDeniedPermissionException("Permission denied: Only project owners can delete projects")
 
         self._project_write_repository.delete(id_=project_id)
+
+
+class ProjectImageService:
+    def __init__(
+            self,
+            project_image_read_repository: ProjectImageReadRepository,
+            project_image_write_repository: ProjectImageWriteRepository,
+            project_read_repository: ProjectReadRepository,
+            cloud_storage: AbstractCloudStorage,
+    ):
+        self._project_image_read_repository = project_image_read_repository
+        self._project_image_write_repository = project_image_write_repository
+        self._project_read_repository = project_read_repository
+        self._cloud_storage = cloud_storage
+
+    def create(self, command: ProjectImageCreateCommand) -> ProjectImage:
+        """
+        :raises ProjectNotFoundException:
+        :raises UpdateDeniedPermissionException:
+        :raises ProjectImageMaxAmountException:
+        :raises BusinessRuleException:
+        """
+
+        project: Project = self._project_read_repository.get_by_id(command.project_id)
+        if project.creator_id != command.user_id.value:
+            logger.debug(f"creator_id = {project.creator_id}; user_id = {command.user_id.value}")
+            raise UpdateDeniedPermissionException("You don't have permission to add images to this project")
+
+        image_count = self._project_image_read_repository.get_images_count_for_project(command.project_id)
+        if image_count == PROJECT_IMAGES_MAX_AMOUNT:
+            logger.exception("Images max amount reached.")
+            raise ProjectImageMaxAmountException(f"Project images max limit is {PROJECT_IMAGES_MAX_AMOUNT}")
+
+        if image_count > PROJECT_IMAGES_MAX_AMOUNT:
+            logger.critical("Project images amount exceeds allowed max limit!")
+            raise BusinessRuleException(f"Project images max limit is {PROJECT_IMAGES_MAX_AMOUNT}")
+
+        img_path: str = PathProvider.get_project_image_path(command.project_id, image_count + 1)
+        uploaded_path: str = self._cloud_storage.upload_file(
+            CloudStorageUploadPayload(file_data=command.image_file.value, file_path=img_path)
+        )
+        assert img_path == uploaded_path, "Expected and actual paths don't match."
+
+        logger.debug("Project image uploaded.")
+        project_image: ProjectImage = self._project_image_write_repository.create(ProjectImageCreatePayload(
+            project_id=command.project_id, file_path=img_path)
+        )
+        logger.debug("project_image created successfully.")
+
+        return project_image
+
+    def delete(self):
+        pass
+
+    def change_order(self):
+        pass

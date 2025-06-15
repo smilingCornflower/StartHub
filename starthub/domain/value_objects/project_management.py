@@ -20,7 +20,7 @@ from domain.value_objects.company import (
     EstablishedDate,
 )
 from domain.value_objects.country import CountryCode
-from domain.value_objects.file import PdfFile
+from domain.value_objects.file import PdfFile, ImageFile
 from pydantic import field_validator
 
 
@@ -171,3 +171,19 @@ class ProjectUpdatePayload(AbstractUpdatePayload, BaseVo):
     stage: ProjectStage | None = None
     deadline: DeadlineDate | None = None
     plan_path: str | None = None
+
+
+# ==== ProjectImage ====
+class ProjectImageCreatePayload(AbstractCreatePayload, BaseVo):
+    project_id: Id
+    file_path: str
+
+
+class ProjectImageUpdatePayload(AbstractUpdatePayload, BaseVo):
+    pass
+
+
+class ProjectImageCreateCommand(BaseCommand):
+    user_id: Id
+    project_id: Id
+    image_file: ImageFile

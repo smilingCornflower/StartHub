@@ -22,7 +22,7 @@ from domain.value_objects.company import (
     EstablishedDate,
 )
 from domain.value_objects.country import CountryCode
-from domain.value_objects.file import PdfFile
+from domain.value_objects.file import PdfFile, ImageFile
 from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project_management import (
     GoalSum,
@@ -30,7 +30,7 @@ from domain.value_objects.project_management import (
     ProjectName,
     ProjectStage,
     ProjectUpdateCommand,
-    TeamMemberCreateCommand,
+    TeamMemberCreateCommand, ProjectImageCreateCommand,
 )
 from loguru import logger
 
@@ -87,7 +87,7 @@ def _request_files_to_project_plan(files: dict[str, UploadedFile]) -> PdfFile:
 
 
 def request_data_to_project_create_command(
-    data: dict[str, str], files: dict[str, UploadedFile], user_id: int
+        data: dict[str, str], files: dict[str, UploadedFile], user_id: int
 ) -> ProjectCreateCommand:
     """
     :raises InvalidPhoneNumberException:
@@ -140,7 +140,7 @@ def request_data_to_project_create_command(
 ########################################################################################################################
 # Project Update Converter
 def request_data_to_the_project_update_command(
-    data: dict[str, str], files: dict[str, UploadedFile], project_id: int, user_id: int
+        data: dict[str, str], files: dict[str, UploadedFile], project_id: int, user_id: int
 ) -> ProjectUpdateCommand:
     logger.debug(f"{data=}")
 
@@ -182,3 +182,21 @@ def request_data_to_the_project_update_command(
         deadline=DeadlineDate(value=parse_date(project_data["deadline"])) if "deadline" in project_data else None,
         plan_file=project_plan,
     )
+
+
+########################################################################################################################
+# Project Image Converter
+def request_files_to_project_image_create_command(files: dict[str, UploadedFile],
+                                                  project_id: int,
+                                                  user_id: int,
+                                                  ) -> ProjectImageCreateCommand:
+    project_image_file: UploadedFile = get_required_field(files, "project_image")
+    project_image_file.seek(0)
+    image = ImageFile(value=project_image_file.read())
+    logger.debug("request.FILES -> ImageFile conversion OK")
+    project_image_create = ProjectImageCreateCommand(
+        user_id=Id(value=user_id),
+        project_id=Id(value=project_id),
+        image_file=image)
+    logger.debug("ProjectImageCreateCommand converted")
+    return project_image_create

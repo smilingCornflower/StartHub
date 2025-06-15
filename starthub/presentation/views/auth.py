@@ -22,9 +22,9 @@ class LoginView(APIView):
     error_classes: tuple[type[Exception], ...] = tuple(LoginErrorResponseFactory.error_codes.keys())
 
     def post(self, request: Request) -> Response:
-        form_data: dict[str, str] = request.data
-        logger.debug(f"request data = {form_data}")
+        logger.info("POST Login")
 
+        form_data: dict[str, str] = request.data
         auth_service: AuthAppService = AuthAppServiceFactory.create_service()
         try:
             tokens_pair_dto: TokenPairDto = auth_service.login(form_data)
