@@ -3,10 +3,11 @@ from application.services.project import ProjectAppService
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.file import PdfService
 from domain.services.project_management import (
+    ProjectImageService,
     ProjectPhoneService,
     ProjectService,
     ProjectSocialLinkService,
-    TamMemberService, ProjectImageService,
+    TamMemberService,
 )
 from infrastructure.cloud_storages.google import google_cloud_storage
 from infrastructure.repositories.company import (
@@ -19,6 +20,8 @@ from infrastructure.repositories.country import DjCountryReadRepository
 from infrastructure.repositories.project_management import (
     DjFundingModelReadRepository,
     DjProjectCategoryReadRepository,
+    DjProjectImageReadRepository,
+    DjProjectImageWriteRepository,
     DjProjectPhoneReadRepository,
     DjProjectPhoneWriteRepository,
     DjProjectReadRepository,
@@ -26,7 +29,7 @@ from infrastructure.repositories.project_management import (
     DjProjectSocialLinkWriteRepository,
     DjProjectWriteRepository,
     DjTeamMemberReadRepository,
-    DjTeamMemberWriteRepository, DjProjectImageReadRepository, DjProjectImageWriteRepository,
+    DjTeamMemberWriteRepository,
 )
 from infrastructure.repositories.user import DjUserReadRepository
 
@@ -72,7 +75,7 @@ class ProjectAppServiceFactory(AbstractAppServiceFactory[ProjectAppService]):
                 project_image_write_repository=DjProjectImageWriteRepository(),
                 project_read_repository=DjProjectReadRepository(),
                 cloud_storage=google_cloud_storage,
-            )
+            ),
         )
 
 

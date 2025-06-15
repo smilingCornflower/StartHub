@@ -1,5 +1,4 @@
 from datetime import date
-from typing import Any
 
 from domain.exceptions.validation import DateIsNotIsoFormatException, MissingRequiredFieldException
 from loguru import logger
@@ -12,7 +11,7 @@ def get_required_field[T](data: dict[str, T], field: str, field_name_in_exceptio
     if field not in data:
         logger.exception(f"Missing required field: {field_name_in_exception}.")
         raise MissingRequiredFieldException(f"Missing required field: {field_name_in_exception}.")
-    return data.get(field)
+    return data[field]
 
 
 def parse_date(date_str: str) -> date:

@@ -6,7 +6,7 @@ from domain.exceptions.auth import InvalidCredentialsException, PasswordValidati
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
 from domain.exceptions.file import NotPdfFileException, NotSupportedImageFormatException, PdfFileTooLargeException
 from domain.exceptions.permissions import UpdateDeniedPermissionException
-from domain.exceptions.project_management import ProjectNotFoundException, ProjectImageMaxAmountException
+from domain.exceptions.project_management import ProjectImageMaxAmountException, ProjectNotFoundException
 from domain.exceptions.user import EmailAlreadyExistsException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
 from domain.exceptions.validation import DateInFutureException, InvalidEmailException, ValidationException

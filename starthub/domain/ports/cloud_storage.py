@@ -15,6 +15,7 @@ class AbstractCloudStorage(ABC):
 
     @abstractmethod
     def delete_file(self, payload: CloudStorageDeletePayload) -> None:
+        """:raises FileNotFoundCloudStorageException:"""
         pass
 
     @abstractmethod

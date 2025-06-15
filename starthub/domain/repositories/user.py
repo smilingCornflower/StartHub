@@ -34,6 +34,6 @@ class UserWriteRepository(AbstractWriteRepository[User, UserCreatePayload, UserU
         pass
 
     @abstractmethod
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         """:raises UserNotFoundException:"""
         pass

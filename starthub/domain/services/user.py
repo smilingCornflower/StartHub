@@ -20,11 +20,11 @@ from loguru import logger
 
 class UserService:
     def __init__(
-            self,
-            cloud_storage: AbstractCloudStorage,
-            user_read_repository: UserReadRepository,
-            user_write_repository: UserWriteRepository,
-            image_service: ImageService,
+        self,
+        cloud_storage: AbstractCloudStorage,
+        user_read_repository: UserReadRepository,
+        user_write_repository: UserWriteRepository,
+        image_service: ImageService,
     ):
         self._cloud_storage = cloud_storage
         self._user_read_repository = user_read_repository

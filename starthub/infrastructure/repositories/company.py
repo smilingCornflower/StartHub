@@ -65,7 +65,7 @@ class DjCompanyWriteRepository(CompanyWriteRepository):
         company.save()
         return company
 
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         """:raises NotImplementedError:"""
         raise NotImplementedError("Method delete() is not implemented yet.")
 
@@ -97,5 +97,5 @@ class DjCompanyFounderWriteRepository(CompanyFounderWriteRepository):
     def update(self, data: CompanyFounderUpdatePayload) -> CompanyFounder:
         raise NotImplementedError("The method update() is not implemented yet.")
 
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         raise NotImplementedError("The method delete() is not implemented yet.")

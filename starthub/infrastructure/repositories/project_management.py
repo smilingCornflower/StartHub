@@ -2,6 +2,7 @@ from django.db.models import Q, QuerySet
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
     ProjectCategoryNotFoundException,
+    ProjectImageNotFoundException,
     ProjectNotFoundException,
     ProjectPhoneAlreadyExistsException,
     ProjectPhoneNotFoundException,
@@ -9,11 +10,13 @@ from domain.exceptions.project_management import (
     TeamMemberNotFoundException,
 )
 from domain.models.funding_model import FundingModel
-from domain.models.project import Project, ProjectPhone, ProjectSocialLink, TeamMember, ProjectImage
+from domain.models.project import Project, ProjectImage, ProjectPhone, ProjectSocialLink, TeamMember
 from domain.models.project_category import ProjectCategory
 from domain.repositories.project_management import (
     FundingModelReadRepository,
     ProjectCategoryReadRepository,
+    ProjectImageReadRepository,
+    ProjectImageWriteRepository,
     ProjectPhoneReadRepository,
     ProjectPhoneWriteRepository,
     ProjectReadRepository,
@@ -21,26 +24,30 @@ from domain.repositories.project_management import (
     ProjectSocialLinkWriteRepository,
     ProjectWriteRepository,
     TeamMemberReadRepository,
-    TeamMemberWriteRepository, ProjectImageReadRepository, ProjectImageWriteRepository,
+    TeamMemberWriteRepository,
 )
 from domain.value_objects.common import Id, Slug
 from domain.value_objects.filter import (
     FundingModelFilter,
     ProjectCategoryFilter,
     ProjectFilter,
+    ProjectImageFilter,
     ProjectPhoneFilter,
     ProjectSocialLinkFilter,
-    TeamMemberFilter, ProjectImageFilter,
+    TeamMemberFilter,
 )
 from domain.value_objects.project_management import (
     ProjectCreatePayload,
+    ProjectImageCreatePayload,
+    ProjectImageDeletePayload,
+    ProjectImageUpdatePayload,
     ProjectPhoneCreatePayload,
     ProjectPhoneUpdatePayload,
     ProjectSocialLinkCreatePayload,
     ProjectSocialLinkUpdatePayload,
     ProjectUpdatePayload,
     TeamMemberCreatePayload,
-    TeamMemberUpdatePayload, ProjectImageUpdatePayload, ProjectImageCreatePayload,
+    TeamMemberUpdatePayload,
 )
 from loguru import logger
 
@@ -111,7 +118,7 @@ class DjProjectWriteRepository(ProjectWriteRepository):
         project.save()
         return project
 
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         """:raises ProjectNotFoundException:"""
         try:
             project: Project = Project.objects.get(id=id_.value)
@@ -180,7 +187,7 @@ class DjProjectPhoneWriteRepository(ProjectPhoneWriteRepository):
         project_phone.save()
         return project_phone
 
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         """:raises ProjectPhoneNotFoundException:"""
         try:
             ProjectPhone.objects.get(id=id_.value).delete()
@@ -215,7 +222,7 @@ class DjProjectSocialLinkWriteRepository(ProjectSocialLinkWriteRepository):
     def update(self, data: ProjectSocialLinkUpdatePayload) -> ProjectSocialLink:
         raise NotImplementedError("Method update() is not implemented yet.")
 
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         raise NotImplementedError("Method delete() is not implemented yet.")
 
 
@@ -243,7 +250,7 @@ class DjTeamMemberWriteRepository(TeamMemberWriteRepository):
         """:raises NotImplementedError:"""
         raise NotImplementedError("Method update is not implemented yet.")
 
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         """:raises NotImplementedError:"""
         raise NotImplementedError("Method delete is not implemented yet.")
 
@@ -264,21 +271,35 @@ class DjProjectImageReadRepository(ProjectImageReadRepository):
     def get_by_id(self, id_: Id) -> ProjectImage:
         raise NotImplementedError("The method get_by_id() not implemented yet.")
 
-    def get_all(self, filter_: ProjectImageFilter) -> list[ProjectImageFilter]:
+    def get_all(self, filter_: ProjectImageFilter) -> list[ProjectImage]:
         queryset = ProjectImage.objects.all()
-        if filter_.project_id:
+        if filter_.project_id is not None:
             queryset = queryset.filter(project_id=filter_.project_id.value)
+        if filter_.image_order is not None:
+            queryset = queryset.filter(order=filter_.image_order)
+
         return list(queryset.distinct())
 
     def get_images_count_for_project(self, project_id: Id) -> int:
         return ProjectImage.objects.filter(project_id=project_id.value).count()
 
+
 class DjProjectImageWriteRepository(ProjectImageWriteRepository):
     def create(self, data: ProjectImageCreatePayload) -> ProjectImage:
-        return ProjectImage.objects.create(project_id=data.project_id.value, file_path=data.file_path)
+        return ProjectImage.objects.create(project_id=data.project_id.value, file_path=data.file_path, order=data.order)
 
     def update(self, data: ProjectImageUpdatePayload) -> ProjectImage:
-        raise NotImplementedError("The method update() not implemented yet.")
+        project_image: ProjectImage | None = ProjectImage.objects.filter(id=data.image_id.value).first()
+        if project_image is None:
+            raise ProjectImageNotFoundException(f"A project_image with id = {data.image_id.value} not found.")
 
-    def delete(self, id_: Id) -> None:
+        if data.order is not None:
+            project_image.order = data.order.value
+        project_image.save()
+        return project_image
+
+    def delete_by_id(self, id_: Id) -> None:
         raise NotImplementedError("The method delete() not implemented yet.")
+
+    def delete(self, data: ProjectImageDeletePayload) -> None:
+        ProjectImage.objects.filter(project_id=data.project_id.value, order=data.image_order).delete()

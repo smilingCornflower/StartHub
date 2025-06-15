@@ -1,11 +1,10 @@
 from dataclasses import asdict
 
 from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
-from application.service_factories.auth import AuthAppServiceFactory, RegistrationAppServiceFactory
-from application.services.auth import AuthAppService, RegistrationAppService
-from loguru import logger
-
+from application.service_factories.auth import AuthAppServiceFactory
+from application.services.auth import AuthAppService
 from application.services.gateway import gateway
+from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import (
     CommonErrorResponseFactory,
@@ -61,7 +60,7 @@ class RegistrationView(APIView):
     def post(self, request: Request) -> Response:
         logger.info("POST /auth/register/")
         try:
-            gateway.get_registration_app_service.register(request.data)
+            gateway.registration_app_service.register(request.data)
         except self.error_classes as e:
             logger.error(e)
             return RegistrationErrorResponseFactory.create_response(e)

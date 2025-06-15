@@ -3,7 +3,7 @@ from typing import Any, cast
 
 from config.settings import BASE_DIR
 from django.test import TestCase
-from domain.constants import PROFILE_PICTURE_PATH
+from domain.constants import StorageLocations
 from domain.models.user import User
 from domain.services.file import ImageService
 from domain.services.user import UserService
@@ -52,7 +52,7 @@ class TestUserService(TestCase):
                 )
             )
         user: User = cast(User, User.objects.filter(id=self.user_valid_data["id"]).first())
-        self.assertEqual(user.picture, f"{PROFILE_PICTURE_PATH}/{self.user_valid_data['id']}.jpg")
+        self.assertEqual(user.picture, f"{StorageLocations.PROFILE_PICTURE_PATH}/{self.user_valid_data['id']}.jpg")
 
     def test_generate_url(self) -> None:
         with open(self.image_path, mode="rb") as image_file:

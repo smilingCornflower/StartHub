@@ -1,9 +1,8 @@
 from io import BytesIO
 
-from domain.constants import MEGABYTE, PDF_MAX_SIZE_IN_BYTES, IMAGE_MAX_SIZE_IN_BYTES
-from domain.exceptions.file import PdfFileTooLargeException, ImageFileTooLargeException
-from domain.services.file import PdfService
-from domain.services.file import ImageService
+from domain.constants import IMAGE_MAX_SIZE_IN_BYTES, MEGABYTE, PDF_MAX_SIZE_IN_BYTES
+from domain.exceptions.file import ImageFileTooLargeException, PdfFileTooLargeException
+from domain.services.file import ImageService, PdfService
 from domain.value_objects import BaseVo
 from pydantic import field_validator
 

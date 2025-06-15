@@ -1,7 +1,5 @@
 from typing import Any
 
-from django_countries.data import self_generate
-
 from application.converters.inner.company_founder_command_to_payload import convert_company_founder_command_to_payload
 from application.converters.inner.project_command_to_company_create_command import (
     convert_project_create_command_to_company_create_command,
@@ -13,7 +11,9 @@ from application.converters.inner.team_members_create_command_to_payload import 
 from application.converters.request_converters.project import (
     request_data_to_project_create_command,
     request_data_to_project_filter,
-    request_data_to_the_project_update_command, request_files_to_project_image_create_command,
+    request_data_to_the_project_update_command,
+    request_files_to_project_image_create_command,
+    request_project_data_to_project_images_update_command,
 )
 from application.converters.resposne_converters.project import project_to_dto, projects_to_dtos
 from application.dto.project import ProjectDto
@@ -25,31 +25,35 @@ from domain.models.company import Company, CompanyFounder
 from domain.models.project import Project, ProjectPhone, TeamMember
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management import (
+    ProjectImageService,
     ProjectPhoneService,
     ProjectService,
     ProjectSocialLinkService,
-    TamMemberService, ProjectImageService,
+    TamMemberService,
 )
 from domain.value_objects.common import Id
 from domain.value_objects.project_management import (
     ProjectCreateCommand,
+    ProjectImageCreateCommand,
+    ProjectImageDeleteCommand,
+    ProjectImageUpdateCommand,
     ProjectPhoneCreatePayload,
     ProjectSocialLinkCreatePayload,
-    ProjectUpdateCommand, ProjectImageCreateCommand,
+    ProjectUpdateCommand,
 )
 from loguru import logger
 
 
 class ProjectAppService(AbstractAppService):
     def __init__(
-            self,
-            project_service: ProjectService,
-            team_member_service: TamMemberService,
-            project_phone_service: ProjectPhoneService,
-            project_social_link_service: ProjectSocialLinkService,
-            company_service: CompanyService,
-            company_founder_service: CompanyFounderService,
-            project_image_service: ProjectImageService,
+        self,
+        project_service: ProjectService,
+        team_member_service: TamMemberService,
+        project_phone_service: ProjectPhoneService,
+        project_social_link_service: ProjectSocialLinkService,
+        company_service: CompanyService,
+        company_founder_service: CompanyFounderService,
+        project_image_service: ProjectImageService,
     ):
         self._project_service = project_service
         self._team_member_service = team_member_service
@@ -89,7 +93,7 @@ class ProjectAppService(AbstractAppService):
             logger.info(f"A company_founder created successfully. Founder id = {founder.id}")
 
             for member_payload in convert_team_members_create_command_to_payload(
-                    command.team_members, Id(value=project.id)
+                command.team_members, Id(value=project.id)
             ):
                 team_member: TeamMember = self._team_member_service.create(member_payload)
                 logger.debug(f"Team member with id = {team_member.id} is attached to the project successfully.")
@@ -139,3 +143,19 @@ class ProjectAppService(AbstractAppService):
 
         logger.info(f"Get image urls for project with id = {project_id}")
         return self._project_image_service.get_urls(project_id=Id(value=project_id))
+
+    def delete_image(self, project_id: int, image_order: int, user_id: int) -> None:
+        logger.info(f"Deleting image. project_id: {project_id}, image_order: {image_order}")
+        self._project_image_service.delete(
+            command=ProjectImageDeleteCommand(
+                project_id=Id(value=project_id), image_order=image_order, user_id=Id(value=user_id)
+            )
+        )
+        logger.info(f"Image deleted successfully. project_id: {project_id}, image_order: {image_order}")
+
+    def update_project_images(self, request_data: dict[str, Any], project_id: int, user_id: int) -> None:
+        image_update_command: ProjectImageUpdateCommand = request_project_data_to_project_images_update_command(
+            request_data, project_id=project_id, user_id=user_id
+        )
+        logger.debug(f"{image_update_command=}")
+        self._project_image_service.update(image_update_command)

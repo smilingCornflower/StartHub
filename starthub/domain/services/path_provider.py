@@ -1,5 +1,7 @@
-from domain.value_objects.common import Id
+from uuid import uuid4
+
 from domain.constants import StorageLocations
+from domain.value_objects.common import Id
 
 
 class PathProvider:
@@ -12,5 +14,5 @@ class PathProvider:
         return f"{StorageLocations.PROJECT_PLAN_PATH}/{project_id.value}.pdf"
 
     @staticmethod
-    def get_project_image_path(project_id: Id, order_number: int) -> str:
-        return f"{StorageLocations.PROJECT_PHOTO_PATH}/{project_id.value}/{order_number}.jpg"
+    def get_project_image_path(project_id: Id) -> str:
+        return f"{StorageLocations.PROJECT_PHOTO_PATH}/{project_id.value}/{str(uuid4())}.jpg"

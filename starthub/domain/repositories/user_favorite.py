@@ -34,7 +34,7 @@ class UserFavoriteWriteRepository(
         pass
 
     @abstractmethod
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         pass
 
     @abstractmethod

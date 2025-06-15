@@ -38,7 +38,7 @@ class CompanyWriteRepository(AbstractWriteRepository[Company, CompanyCreatePaylo
         pass
 
     @abstractmethod
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         pass
 
 
@@ -64,5 +64,5 @@ class CompanyFounderWriteRepository(
         pass
 
     @abstractmethod
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         pass

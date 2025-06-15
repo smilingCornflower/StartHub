@@ -9,9 +9,18 @@ from domain.exceptions.project_management import (
 )
 from domain.exceptions.validation import EmptyStringException
 from domain.ports.command import BaseCommand
-from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
+from domain.ports.payload import AbstractCreatePayload, AbstractDeletePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
-from domain.value_objects.common import DeadlineDate, Description, FirstName, Id, LastName, PhoneNumber, SocialLink
+from domain.value_objects.common import (
+    DeadlineDate,
+    Description,
+    FirstName,
+    Id,
+    LastName,
+    Order,
+    PhoneNumber,
+    SocialLink,
+)
 from domain.value_objects.company import (
     BusinessNumber,
     CompanyFounderCreateCommand,
@@ -20,7 +29,7 @@ from domain.value_objects.company import (
     EstablishedDate,
 )
 from domain.value_objects.country import CountryCode
-from domain.value_objects.file import PdfFile, ImageFile
+from domain.value_objects.file import ImageFile, PdfFile
 from pydantic import field_validator
 
 
@@ -177,13 +186,32 @@ class ProjectUpdatePayload(AbstractUpdatePayload, BaseVo):
 class ProjectImageCreatePayload(AbstractCreatePayload, BaseVo):
     project_id: Id
     file_path: str
+    order: int
 
 
 class ProjectImageUpdatePayload(AbstractUpdatePayload, BaseVo):
-    pass
+    image_id: Id
+    order: Order | None = None
 
 
 class ProjectImageCreateCommand(BaseCommand):
     user_id: Id
     project_id: Id
     image_file: ImageFile
+
+
+class ProjectImageUpdateCommand(BaseCommand):
+    project_id: Id
+    user_id: Id
+    new_order: list[Order] | None = None
+
+
+class ProjectImageDeletePayload(AbstractDeletePayload):
+    project_id: Id
+    image_order: int
+
+
+class ProjectImageDeleteCommand(BaseCommand):
+    project_id: Id
+    image_order: int
+    user_id: Id

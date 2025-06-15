@@ -61,7 +61,7 @@ class DjUserWriteRepository(UserWriteRepository):
         user.save()
         return user
 
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         """:raises UserNotFoundException:"""
         try:
             User.objects.get(id=id_.value).delete()

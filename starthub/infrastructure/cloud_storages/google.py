@@ -3,6 +3,7 @@ from io import BytesIO
 from typing import cast
 
 from config import settings
+from domain.exceptions.cloud_storage import FileNotFoundCloudStorageException
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.value_objects.cloud_storage import (
     CloudStorageCreateUrlPayload,
@@ -74,7 +75,7 @@ class GoogleCloudStorage(AbstractCloudStorage):
             logger.info("Finished deleting blob")
         except NotFound:
             logger.error(f"Blob {payload.file_path} not found in bucket.")
-            raise
+            raise FileNotFoundCloudStorageException("A file {payload.file_path} not found in cloud storage.")
         except GoogleCloudError as e:
             logger.error(f"Google Cloud error during deleting blob {payload.file_path}: {e}")
             raise e

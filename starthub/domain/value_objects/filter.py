@@ -60,3 +60,4 @@ class UserFavoriteFilter(AbstractFilter, BaseVo):
 
 class ProjectImageFilter(AbstractFilter, BaseVo):
     project_id: Id | None = None
+    image_order: int | None = None
