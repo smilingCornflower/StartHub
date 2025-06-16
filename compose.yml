@@ -13,6 +13,8 @@ services:
       - "5432:5432"
     volumes:
       - postgresql-data:/var/lib/postgresql/data
+    networks:
+      - starthub_default
 
   starthub-api:
     image: smilekundev/starthub-api
@@ -23,7 +25,10 @@ services:
     volumes:
       - static_volume:/app/starthub/staticfiles
     env_file:
-      - .env
+      - .env'
+    networks:
+      - starthub_default
+
   proxy:
     image: nginx:latest
     container_name: proxy
@@ -35,6 +40,13 @@ services:
       - static_volume:/usr/share/nginx/html/static:ro
     depends_on:
       - starthub-api
+    networks:
+      - starthub_default
+
+networks:
+  starthub_default:
+    driver: bridge
+
 volumes:
   static_volume:
   postgresql-data:
