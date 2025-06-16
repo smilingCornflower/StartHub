@@ -14,7 +14,8 @@ services:
     volumes:
       - postgresql-data:/var/lib/postgresql/data
     networks:
-      - starthub_default
+      - starthub_network
+
 
   starthub-api:
     image: smilekundev/starthub-api
@@ -27,7 +28,7 @@ services:
     env_file:
       - .env
     networks:
-      - starthub_default
+      - starthub_network
   proxy:
     image: nginx:latest
     container_name: proxy
@@ -40,10 +41,12 @@ services:
     depends_on:
       - starthub-api
     networks:
-      - starthub_default
+      - starthub_network
 volumes:
   static_volume:
   postgresql-data:
 
 networks:
-  starthub_default:
+  starthub_network:
+    name: starthub_network
+    driver: bridge
