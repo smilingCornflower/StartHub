@@ -25,7 +25,7 @@ services:
     volumes:
       - static_volume:/app/starthub/staticfiles
     env_file:
-      - .env'
+      - .env
     networks:
       - starthub_default
 
