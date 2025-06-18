@@ -1,4 +1,4 @@
-from application.ports.service_factory import AbstractAppServiceFactory
+from application.ports.app_service_factory import AbstractAppServiceFactory
 from application.services.auth import AuthAppService, RegistrationAppService
 from config import settings
 from domain.services.auth import AuthService, RegistrationService

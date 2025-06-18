@@ -1,4 +1,4 @@
-from application.ports.service_factory import AbstractAppServiceFactory
+from application.ports.app_service_factory import AbstractAppServiceFactory
 from application.services.user_favorite import UserFavoriteAppService
 from domain.services.user_favorite import UserFavoriteService
 from infrastructure.repositories.project_management import DjProjectReadRepository

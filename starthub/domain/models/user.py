@@ -83,7 +83,7 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
             MaxLengthValidator(PASSWORD_MAX_LENGTH),
         ],
     )
-    roles = models.ManyToManyField("domain.Role", default=get_default_role)
+    roles = models.ManyToManyField("domain.Role", default=get_default_role, related_name="users")
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -108,3 +108,7 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
         db_table = "users"
         verbose_name = "user"
         verbose_name_plural = "users"
+
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "user"

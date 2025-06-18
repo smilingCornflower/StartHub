@@ -4,11 +4,12 @@ from typing import BinaryIO
 
 import filetype
 from domain.exceptions.file import NotPdfFileException, NotSupportedImageFormatException
+from domain.ports.service import AbstractDomainService
 from loguru import logger
 from wand.image import Image
 
 
-class ImageService:
+class ImageService(AbstractDomainService):
     IMAGE_FORMATS = ("image/jpeg", "image/png", "image/gif", "image/webp", "image/avif")
 
     def check_image_format(self, file_obj: BinaryIO) -> None:
@@ -41,7 +42,7 @@ class ImageService:
         return result
 
 
-class PdfService:
+class PdfService(AbstractDomainService):
     def check_is_pdf(self, file_obj: BinaryIO) -> None:
         """:raises NotPdfFileException:"""
 

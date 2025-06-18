@@ -1,10 +1,11 @@
 from uuid import uuid4
 
 from domain.constants import StorageLocations
+from domain.ports.service import AbstractDomainService
 from domain.value_objects.common import Id
 
 
-class PathProvider:
+class PathProvider(AbstractDomainService):
     @staticmethod
     def get_user_profile_picture_path(user_id: Id) -> str:
         return f"{StorageLocations.PROFILE_PICTURE_PATH}/{user_id.value}.jpg"

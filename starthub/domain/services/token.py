@@ -11,11 +11,12 @@ from domain.constants import (
 )
 from domain.exceptions.auth import InvalidTokenException, TokenExpiredException
 from domain.models.user import User
+from domain.ports.service import AbstractDomainService
 from domain.value_objects.token import AccessPayload, AccessTokenVo, RefreshPayload, RefreshTokenVo
 from loguru import logger
 
 
-class TokenService:
+class TokenService(AbstractDomainService):
     def __init__(
         self,
         secret_key: str,

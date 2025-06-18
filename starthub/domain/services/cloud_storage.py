@@ -1,4 +1,5 @@
 from domain.ports.cloud_storage import AbstractCloudStorage
+from domain.ports.service import AbstractDomainService
 from domain.value_objects.cloud_storage import (
     CloudStorageCreateUrlPayload,
     CloudStorageDeletePayload,
@@ -6,7 +7,7 @@ from domain.value_objects.cloud_storage import (
 )
 
 
-class CloudService:
+class CloudService(AbstractDomainService):
     def __init__(self, cloud_storage: AbstractCloudStorage):
         self._cloud_storage = cloud_storage
 

@@ -2,6 +2,7 @@ from domain.exceptions.company import BusinessNumberAlreadyExistsException, Comp
 from domain.exceptions.country import CountryNotFoundException
 from domain.models.company import Company, CompanyFounder
 from domain.models.country import Country
+from domain.ports.service import AbstractDomainService
 from domain.repositories.company import (
     CompanyFounderReadRepository,
     CompanyFounderWriteRepository,
@@ -14,7 +15,7 @@ from domain.value_objects.company import CompanyCreateCommand, CompanyCreatePayl
 from domain.value_objects.filter import CompanyFilter, CompanyFounderFilter, CountryFilter
 
 
-class CompanyService:
+class CompanyService(AbstractDomainService):
     def __init__(
         self,
         company_write_repository: CompanyWriteRepository,
@@ -54,7 +55,7 @@ class CompanyService:
         )
 
 
-class CompanyFounderService:
+class CompanyFounderService(AbstractDomainService):
     def __init__(
         self,
         company_founder_write_repository: CompanyFounderWriteRepository,

@@ -16,6 +16,10 @@ class CompanyFounder(BaseModel):
     def __str__(self) -> str:
         return f"{self.name} {self.surname}"
 
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "company_founder"
+
 
 class Company(BaseModel):
     name = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
@@ -32,3 +36,7 @@ class Company(BaseModel):
 
     def __str__(self) -> str:
         return self.name
+
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "company"

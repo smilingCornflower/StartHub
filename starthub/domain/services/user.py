@@ -3,6 +3,7 @@ from io import BytesIO
 from domain.exceptions.user import ProfilePictureNotFoundException
 from domain.models.user import User
 from domain.ports.cloud_storage import AbstractCloudStorage
+from domain.ports.service import AbstractDomainService
 from domain.repositories.user import UserReadRepository, UserWriteRepository
 from domain.services.file import ImageService
 from domain.services.path_provider import PathProvider
@@ -18,7 +19,7 @@ from domain.value_objects.user import (
 from loguru import logger
 
 
-class UserService:
+class UserService(AbstractDomainService):
     def __init__(
         self,
         cloud_storage: AbstractCloudStorage,

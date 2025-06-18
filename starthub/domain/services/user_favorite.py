@@ -1,5 +1,6 @@
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
 from domain.models.user_favorite import UserFavorite
+from domain.ports.service import AbstractDomainService
 from domain.repositories.project_management import ProjectReadRepository
 from domain.repositories.user import UserReadRepository
 from domain.repositories.user_favorite import UserFavoriteReadRepository, UserFavoriteWriteRepository
@@ -9,7 +10,7 @@ from domain.value_objects.user_favorite import UserFavoriteCreatePayload
 from loguru import logger
 
 
-class UserFavoriteService:
+class UserFavoriteService(AbstractDomainService):
     def __init__(
         self,
         user_favorite_read_repository: UserFavoriteReadRepository,

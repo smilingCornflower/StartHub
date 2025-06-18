@@ -30,6 +30,10 @@ class Project(BaseModel):
     class Meta:
         db_table = "projects"
 
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "project"
+
 
 class TeamMember(BaseModel):
     project = models.ForeignKey("domain.Project", on_delete=models.CASCADE, related_name="team_members")
@@ -42,6 +46,10 @@ class TeamMember(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.name} {self.surname}"
+
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "project_team_member"
 
 
 class ProjectSocialLink(BaseModel):
@@ -56,6 +64,10 @@ class ProjectSocialLink(BaseModel):
     def __str__(self) -> str:
         return f"{self.project.name} {self.platform}"
 
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "project_social_link"
+
 
 class ProjectPhone(BaseModel):
     project = models.ForeignKey("domain.Project", on_delete=models.CASCADE, related_name="phones")
@@ -68,6 +80,10 @@ class ProjectPhone(BaseModel):
     def __str__(self) -> str:
         return f"{self.project.name} {self.number}"
 
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "project_phone"
+
 
 class ProjectImage(BaseModel):
     project = models.ForeignKey("domain.Project", on_delete=models.CASCADE, related_name="photos")
@@ -79,3 +95,7 @@ class ProjectImage(BaseModel):
 
     def __str__(self) -> str:
         return self.file_path
+
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "project_image"
