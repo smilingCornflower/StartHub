@@ -3,7 +3,6 @@
 import os
 import sys
 
-
 def main() -> None:
     """:raises ImportError:"""
 

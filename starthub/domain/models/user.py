@@ -13,6 +13,7 @@ from domain.constants import (
     PASSWORD_PATTERN,
 )
 from domain.models.base import BaseModel
+from domain.models.role import get_default_role
 
 
 class UserManager(BaseUserManager["User"]):
@@ -82,6 +83,8 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
             MaxLengthValidator(PASSWORD_MAX_LENGTH),
         ],
     )
+    roles = models.ManyToManyField("domain.Role", default=get_default_role)
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
