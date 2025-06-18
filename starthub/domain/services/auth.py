@@ -1,6 +1,7 @@
 from domain.exceptions.auth import InvalidCredentialsException, InvalidTokenException
 from domain.exceptions.user import EmailAlreadyExistsException, UserNotFoundException
 from domain.models.user import User
+from domain.ports.service import AbstractDomainService
 from domain.repositories.user import UserReadRepository, UserWriteRepository
 from domain.services.token import TokenService
 from domain.value_objects.auth import LoginCredentials
@@ -11,7 +12,7 @@ from domain.value_objects.user import Email, UserCreatePayload
 from loguru import logger
 
 
-class AuthService:
+class AuthService(AbstractDomainService):
     def __init__(
         self,
         token_service: TokenService,
@@ -86,7 +87,7 @@ class AuthService:
         return user
 
 
-class RegistrationService:
+class RegistrationService(AbstractDomainService):
     def __init__(
         self,
         read_repository: UserReadRepository,

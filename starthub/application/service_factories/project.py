@@ -1,4 +1,4 @@
-from application.ports.service_factory import AbstractAppServiceFactory
+from application.ports.app_service_factory import AbstractAppServiceFactory
 from application.services.project import ProjectAppService
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.file import PdfService

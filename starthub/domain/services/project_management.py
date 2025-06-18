@@ -9,6 +9,7 @@ from domain.exceptions.project_management import (
 )
 from domain.models.project import Project, ProjectImage, ProjectPhone, ProjectSocialLink, TeamMember
 from domain.ports.cloud_storage import AbstractCloudStorage
+from domain.ports.service import AbstractDomainService
 from domain.repositories.company import CompanyReadRepository, CompanyWriteRepository
 from domain.repositories.project_management import (
     FundingModelReadRepository,
@@ -51,7 +52,7 @@ from domain.value_objects.project_management import (
 from loguru import logger
 
 
-class ProjectPhoneService:
+class ProjectPhoneService(AbstractDomainService):
     def __init__(
         self,
         project_phone_read_repository: ProjectPhoneReadRepository,
@@ -73,7 +74,7 @@ class ProjectPhoneService:
         return self._write_repository.create(payload)
 
 
-class ProjectSocialLinkService:
+class ProjectSocialLinkService(AbstractDomainService):
     def __init__(
         self,
         read_repository: ProjectSocialLinkReadRepository,
@@ -95,7 +96,7 @@ class ProjectSocialLinkService:
         return self._write_repository.create(payload)
 
 
-class TamMemberService:
+class TamMemberService(AbstractDomainService):
     def __init__(
         self,
         team_member_read_repository: TeamMemberReadRepository,
@@ -108,7 +109,7 @@ class TamMemberService:
         return self._team_member_write_repository.create(payload)
 
 
-class ProjectService:
+class ProjectService(AbstractDomainService):
     def __init__(
         self,
         project_read_repository: ProjectReadRepository,
@@ -228,7 +229,7 @@ class ProjectService:
         self._project_write_repository.delete_by_id(id_=project_id)
 
 
-class ProjectImageService:
+class ProjectImageService(AbstractDomainService):
     def __init__(
         self,
         project_image_read_repository: ProjectImageReadRepository,

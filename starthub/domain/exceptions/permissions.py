@@ -1,4 +1,5 @@
 from domain.exceptions import DomainException
+from domain.exceptions.repository import NotFoundException
 
 
 class PermissionException(DomainException):
@@ -10,4 +11,8 @@ class DeleteDeniedPermissionException(PermissionException):
 
 
 class UpdateDeniedPermissionException(PermissionException):
+    pass
+
+
+class PermissionNotFoundException(NotFoundException, PermissionException):
     pass

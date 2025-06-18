@@ -1,11 +1,12 @@
 from domain.exceptions.country import CountryNotFoundException
 from domain.models.country import Country
+from domain.ports.service import AbstractDomainService
 from domain.repositories.country import CountryReadRepository
 from domain.value_objects.country import CountryCode
 from domain.value_objects.filter import CountryFilter
 
 
-class CountryService:
+class CountryService(AbstractDomainService):
     def __init__(self, country_read_repository: CountryReadRepository):
         self._country_read_repository = country_read_repository
 

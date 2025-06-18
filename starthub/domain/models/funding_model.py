@@ -15,3 +15,7 @@ class FundingModel(BaseModel):
 
     def __str__(self) -> str:
         return self.name
+
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "funding_model"

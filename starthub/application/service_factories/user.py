@@ -1,4 +1,4 @@
-from application.ports.service_factory import AbstractAppServiceFactory
+from application.ports.app_service_factory import AbstractAppServiceFactory
 from application.services.user import UserAppService
 from domain.services.file import ImageService
 from domain.services.user import UserService

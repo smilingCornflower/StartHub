@@ -14,3 +14,7 @@ class UserFavorite(BaseModel):
 
     def __str__(self) -> str:
         return f"(user_id={self.user_id}, project_id={self.project_id})"
+
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "user_favorite"
