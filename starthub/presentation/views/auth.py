@@ -33,14 +33,14 @@ class LoginView(APIView):
             "access_token",
             tokens_pair_dto.access_token,
             httponly=False,
-            samesite="None",
+            samesite="Lax",
             secure=True,
         )
         response.set_cookie(
             "refresh_token",
             tokens_pair_dto.refresh_token,
             httponly=True,
-            samesite="None",
+            samesite="Lax",
             secure=True,
         )
         logger.info("Tokens has been set to cookies.")
