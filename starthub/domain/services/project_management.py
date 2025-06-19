@@ -27,7 +27,7 @@ from domain.repositories.project_management import (
 )
 from domain.repositories.user import UserReadRepository
 from domain.services.file import PdfService
-from domain.services.path_provider import PathProvider
+from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import (
     CloudStorageCreateUrlPayload,
     CloudStorageDeletePayload,

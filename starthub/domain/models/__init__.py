@@ -14,6 +14,7 @@ ProjectSocialLink = import_module("domain.models.project").ProjectSocialLink
 ProjectCategory = import_module("domain.models.project_category").ProjectCategory
 FundingModel = import_module("domain.models.funding_model").FundingModel
 Country = import_module("domain.models.country").Country
+News = import_module("domain.models.news").News
 
 __all__ = [
     "User",
@@ -29,4 +30,5 @@ __all__ = [
     "ProjectCategory",
     "FundingModel",
     "Country",
+    "News",
 ]

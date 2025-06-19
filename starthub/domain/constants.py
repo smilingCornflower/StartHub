@@ -41,9 +41,11 @@ IMAGE_MAX_SIZE_IN_BYTES = 5 * MEGABYTE
 PROJECT_IMAGES_MAX_AMOUNT = 7
 
 DESCRIPTION_MAX_LENGTH = 2_000
+NEWS_CONTENT_MAX_LENGTH = 2_000
 
 
 class StorageLocations:
-    PROFILE_PICTURE_PATH = MODE + "/profile_pictures"  # /user_id.jpg
-    PROJECT_PLAN_PATH = MODE + "/projects/plans"  # /project_id.pdf
-    PROJECT_PHOTO_PATH = MODE + "/projects/photos"  # /project_id/photo_number.jpg
+    PROFILE_PICTURE_PATH = MODE + "/profile_pictures"  # + /user_id.jpg
+    PROJECT_PLAN_PATH = MODE + "/projects/plans"  # + /project_id.pdf
+    PROJECT_PHOTO_PATH = MODE + "/projects/photos"  # + /photo_order.jpg
+    NEWS_IMAGE_PATH = MODE + "/news/images"  # + /news_id.jpg

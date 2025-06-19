@@ -6,7 +6,7 @@ from application.services.gateway import gateway
 from application.utils.get_access_payload_dto import get_access_payload_dto
 from loguru import logger
 from presentation.constants import SUCCESS
-from presentation.response_factories.common import UserErrorResponseFactory, UserFavoriteResponseFactory
+from presentation.response_factories.common import UserErrorResponseFactory, UserFavoriteErrorResponseFactory
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from rest_framework.request import Request
@@ -51,7 +51,7 @@ class MeView(APIView):
 
 
 class MeFavoriteProjectsView(APIView):
-    error_classes: tuple[type[Exception], ...] = tuple(UserFavoriteResponseFactory.error_codes.keys())
+    error_classes: tuple[type[Exception], ...] = tuple(UserFavoriteErrorResponseFactory.error_codes.keys())
 
     def get(self, request: Request) -> Response:
         try:
@@ -72,7 +72,7 @@ class MeFavoriteProjectsView(APIView):
 
         except self.error_classes as e:
             logger.error(f"Exception: {repr(e)}")
-            return UserFavoriteResponseFactory.create_response(e)
+            return UserFavoriteErrorResponseFactory.create_response(e)
 
     def delete(self, request: Request, project_id: int) -> Response:
         try:
@@ -81,11 +81,11 @@ class MeFavoriteProjectsView(APIView):
             return Response({"detail": "success", "code": SUCCESS}, status=status.HTTP_200_OK)
         except self.error_classes as e:
             logger.error(f"Exception: {repr(e)}")
-            return UserFavoriteResponseFactory.create_response(e)
+            return UserFavoriteErrorResponseFactory.create_response(e)
 
 
 class UserFavoriteProjectsView(APIView):
-    error_classes: tuple[type[Exception], ...] = tuple(UserFavoriteResponseFactory.error_codes.keys())
+    error_classes: tuple[type[Exception], ...] = tuple(UserFavoriteErrorResponseFactory.error_codes.keys())
 
     def get(self, request: Request, user_id: int) -> Response:
         try:
