@@ -82,8 +82,12 @@ class UserErrorResponseFactory(CommonErrorResponseFactory):
     }
 
 
-class UserFavoriteResponseFactory(CommonErrorResponseFactory):
+class UserFavoriteErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
         ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
         UserFavoriteAlreadyExistsException: ("USER_FAVORITE_ALREADY_EXISTS", 409),
     }
+
+
+class NewsErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes

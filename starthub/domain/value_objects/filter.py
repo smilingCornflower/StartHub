@@ -69,3 +69,7 @@ class PermissionFilter(AbstractFilter, BaseVo):
 
 class RoleFilter(AbstractFilter, BaseVo):
     pass
+
+
+class NewsFilter(AbstractFilter, BaseVo):
+    pass

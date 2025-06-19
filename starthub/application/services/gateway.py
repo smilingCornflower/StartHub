@@ -1,8 +1,10 @@
-from application.service_factories.auth import AuthAppServiceFactory, RegistrationAppServiceFactory
-from application.service_factories.project import ProjectAppServiceFactory
-from application.service_factories.user import UserAppServiceFactory
-from application.service_factories.user_favorite import UserFavoriteAppAppServiceFactory
+from application.service_factories.app_service.auth import AuthAppServiceFactory, RegistrationAppServiceFactory
+from application.service_factories.app_service.news import NewsAppServiceFactory
+from application.service_factories.app_service.project import ProjectAppServiceFactory
+from application.service_factories.app_service.user import UserAppServiceFactory
+from application.service_factories.app_service.user_favorite import UserFavoriteAppAppServiceFactory
 from application.services.auth import AuthAppService, RegistrationAppService
+from application.services.news import NewsAppService
 from application.services.project import ProjectAppService
 from application.services.user import UserAppService
 from application.services.user_favorite import UserFavoriteAppService
@@ -15,6 +17,7 @@ class Gateway:
     _user_app_service: UserAppService | None = None
     _project_app_service: ProjectAppService | None = None
     _user_favorite_app_service: UserFavoriteAppService | None = None
+    _news_app_service: NewsAppService | None = None
 
     @property
     def auth_app_service(self) -> AuthAppService:
@@ -45,6 +48,12 @@ class Gateway:
         if self._user_favorite_app_service is None:
             self._user_favorite_app_service = UserFavoriteAppAppServiceFactory.create_service()
         return self._user_favorite_app_service
+
+    @property
+    def news_app_service(self) -> NewsAppService:
+        if self._news_app_service is None:
+            self._news_app_service = NewsAppServiceFactory.create_service()
+        return self._news_app_service
 
 
 gateway = Gateway()

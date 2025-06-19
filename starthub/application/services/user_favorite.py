@@ -2,7 +2,7 @@ from application.converters.resposne_converters.user import user_favorite_to_dto
 from application.dto.user import UserFavoriteDto
 from application.ports.service import AbstractAppService
 from domain.models.user_favorite import UserFavorite
-from domain.services.user_favorite import UserFavoriteService
+from domain.services.user_management import UserFavoriteService
 from domain.value_objects.common import Id
 from domain.value_objects.user_favorite import UserFavoriteCreatePayload
 from loguru import logger

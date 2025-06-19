@@ -2,6 +2,8 @@ from dataclasses import asdict
 
 from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
 from application.services.gateway import gateway
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import (
@@ -16,6 +18,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
+@method_decorator(csrf_exempt, name="dispatch")
 class LoginView(APIView):
     parser_classes = [JSONParser]
     error_classes: tuple[type[Exception], ...] = tuple(LoginErrorResponseFactory.error_codes.keys())

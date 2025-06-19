@@ -17,3 +17,7 @@ class PathProvider(AbstractDomainService):
     @staticmethod
     def get_project_image_path(project_id: Id) -> str:
         return f"{StorageLocations.PROJECT_PHOTO_PATH}/{project_id.value}/{str(uuid4())}.jpg"
+
+    @staticmethod
+    def get_news_image_path() -> str:
+        return f"{StorageLocations.NEWS_IMAGE_PATH}/{str(uuid4())}.jpg"

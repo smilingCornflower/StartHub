@@ -1,5 +1,5 @@
 from application.dto.auth import AccessPayloadDto
-from application.service_factories.auth import AuthAppServiceFactory
+from application.service_factories.app_service.auth import AuthAppServiceFactory
 from application.services.auth import AuthAppService
 
 

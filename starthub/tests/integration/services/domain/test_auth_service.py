@@ -3,8 +3,7 @@ from datetime import UTC, datetime, timedelta
 from django.test import TestCase
 from domain.exceptions.auth import InvalidCredentialsException, TokenExpiredException
 from domain.models.user import User
-from domain.services.auth import AuthService
-from domain.services.token import TokenService
+from domain.services.auth import AuthService, TokenService
 from domain.value_objects.auth import LoginCredentials
 from domain.value_objects.token import AccessTokenVo, RefreshTokenVo, TokenPairVo
 from domain.value_objects.user import Email, RawPassword
