@@ -15,6 +15,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+
 def set_token_cookies(response: Response, access_token: str, refresh_token: str | None = None) -> None:
     response.set_cookie(
         key="access_token",
