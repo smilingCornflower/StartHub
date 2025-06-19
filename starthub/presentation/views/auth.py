@@ -16,6 +16,24 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
+def set_token_cookies(response: Response, access_token: str, refresh_token: str | None = None) -> None:
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        samesite="Lax",
+        secure=True,
+    )
+    if refresh_token:
+        response.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            samesite="Lax",
+            secure=True,
+        )
+
+
 class LoginView(APIView):
     parser_classes = [JSONParser]
     error_classes: tuple[type[Exception], ...] = tuple(LoginErrorResponseFactory.error_codes.keys())
@@ -29,20 +47,7 @@ class LoginView(APIView):
             return LoginErrorResponseFactory.create_response(e)
 
         response = Response(data={"detail": "success", "code": SUCCESS}, status=200)
-        response.set_cookie(
-            "access_token",
-            tokens_pair_dto.access_token,
-            httponly=False,
-            samesite="None",
-            secure=True,
-        )
-        response.set_cookie(
-            "refresh_token",
-            tokens_pair_dto.refresh_token,
-            httponly=True,
-            samesite="None",
-            secure=True,
-        )
+        set_token_cookies(response, tokens_pair_dto.access_token, tokens_pair_dto.refresh_token)
         logger.info("Tokens has been set to cookies.")
 
         return response
@@ -74,13 +79,7 @@ class ReissueAccessTokenView(APIView):
             return CommonErrorResponseFactory.create_response(e)
 
         response = Response(data={"detail": "success", "code": SUCCESS}, status=200)
-        response.set_cookie(
-            "access_token",
-            access_token_dto.access_token,
-            httponly=False,
-            samesite="None",
-            secure=True,
-        )
+        set_token_cookies(response, access_token_dto.access_token)
         return response
 
 
