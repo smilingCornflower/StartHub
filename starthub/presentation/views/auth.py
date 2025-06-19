@@ -22,7 +22,7 @@ def set_token_cookies(response: Response, access_token: str, refresh_token: str 
         value=access_token,
         httponly=True,
         samesite="Lax",
-        secure=True,
+        secure=False,
     )
     if refresh_token:
         response.set_cookie(
@@ -30,7 +30,7 @@ def set_token_cookies(response: Response, access_token: str, refresh_token: str 
             value=refresh_token,
             httponly=True,
             samesite="Lax",
-            secure=True,
+            secure=False,
         )
 
 
