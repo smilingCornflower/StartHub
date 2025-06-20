@@ -44,7 +44,7 @@ class TestPermissionService(TestCase):
             self.service.create_permission_vo(Project, ActionEnum, "all")
 
     def test_blogger_has_existing_permission(self):
-        for i in ['add.any.news', 'change.any.news', 'delete.any.news']:
+        for i in ["add.any.news", "change.any.news", "delete.any.news"]:
             with self.subTest(action=i):
                 permission = PermissionVo(value=i)
                 result = self.service.has_permission(user_id=Id(value=self.blogger.id), permission_vo=permission)

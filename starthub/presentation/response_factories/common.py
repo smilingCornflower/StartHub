@@ -2,17 +2,18 @@ from json import JSONDecodeError
 from typing import cast
 
 import pydantic
+from rest_framework.response import Response
+
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
 from domain.exceptions.file import NotPdfFileException, NotSupportedImageFormatException, PdfFileTooLargeException
-from domain.exceptions.permissions import UpdateDeniedPermissionException
+from domain.exceptions.permissions import UpdateDeniedPermissionException, AddDeniedPermissionException
 from domain.exceptions.project_management import ProjectImageMaxAmountException, ProjectNotFoundException
 from domain.exceptions.user import EmailAlreadyExistsException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
 from domain.exceptions.validation import DateInFutureException, InvalidEmailException, ValidationException
 from presentation.constants import APPLICATION_ERROR_CODES
 from presentation.ports import ErrorResponseFactory
-from rest_framework.response import Response
 
 
 class CommonErrorResponseFactory(ErrorResponseFactory):
@@ -90,4 +91,6 @@ class UserFavoriteErrorResponseFactory(CommonErrorResponseFactory):
 
 
 class NewsErrorResponseFactory(CommonErrorResponseFactory):
-    error_codes = CommonErrorResponseFactory.error_codes
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        AddDeniedPermissionException: ("ADD_PERMISSION_DENIED", 403),
+    }

@@ -25,6 +25,11 @@ class ImageFile(BaseVo):
         ImageService().check_image_format(BytesIO(value))
         return value
 
+    def __str__(self) -> str:
+        return f"ImageFile {len(self.value)} bytes"
+
+    def __repr__(self) -> str:
+        return f"ImageFile(bytes_len={len(self.value)})"
 
 class PdfFile(BaseVo):
     value: bytes
