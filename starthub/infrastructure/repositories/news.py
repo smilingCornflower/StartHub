@@ -1,3 +1,4 @@
+from domain.exceptions.news import NewsNotFoundException
 from domain.models.news import News
 from domain.repositories.news import NewsReadRepository, NewsWriteRepository
 from domain.value_objects.common import Id
@@ -7,10 +8,16 @@ from domain.value_objects.news import NewsCreatePayload, NewsUpdatePayload
 
 class DjNewsReadRepository(NewsReadRepository):
     def get_by_id(self, id_: Id) -> News:
-        raise NotImplementedError("The method get_by_id() not implemented yet.")
+        news: News | None = News.objects.filter(id=id_.value).first()
+        if news is None:
+            raise NewsNotFoundException(f"News with id = {id_.value} not found.")
+        return news
 
     def get_all(self, filter_: NewsFilter) -> list[News]:
-        raise NotImplementedError("The method get_all() not implemented yet.")
+        qs = News.objects.all().order_by("-id")
+        if filter_.last_id is not None:
+            qs = qs.filter(id__lt=filter_.last_id)
+        return list(qs[: filter_.limit])
 
 
 class DjNewsWriteRepository(NewsWriteRepository):
@@ -23,7 +30,20 @@ class DjNewsWriteRepository(NewsWriteRepository):
         )
 
     def update(self, data: NewsUpdatePayload) -> News:
-        raise NotImplementedError("The method update() not implemented yet.")
+        """:raises NewsNotFoundException:"""
+        news: News | None = News.objects.filter(id=data.news_id.value).first()
+        if news is None:
+            raise NewsNotFoundException(f"News with id = {data.news_id.value} not found.")
+
+        if data.title:
+            news.title = data.title.value
+        if data.content:
+            news.content = data.content.value
+        if data.image_url:
+            news.image = data.image_url
+
+        news.save()
+        return news
 
     def delete_by_id(self, id_: Id) -> None:
-        raise NotImplementedError("The method delete_by_id() not implemented yet.")
+        News.objects.filter(id=id_.value).delete()
