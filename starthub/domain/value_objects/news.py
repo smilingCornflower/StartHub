@@ -68,3 +68,5 @@ class NewsCreateCommand(BaseCommand):
 
 class NewsImageUploadCommand(BaseCommand):
     image: ImageFile
+
+
