@@ -1,11 +1,10 @@
 from typing import Any
 
-from django.apps import apps
 from django.core.management import call_command
 from django.db import connection
+from django.db.migrations.executor import MigrationExecutor
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
-from django.db.migrations.executor import MigrationExecutor
 
 _ran = False
 

@@ -9,7 +9,13 @@ from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageUploadPayload
 from domain.value_objects.common import Id
 from domain.value_objects.filter import NewsFilter
-from domain.value_objects.news import NewsCreateCommand, NewsCreatePayload, NewsImageUploadCommand
+from domain.value_objects.news import (
+    NewsCreateCommand,
+    NewsCreatePayload,
+    NewsImageUploadCommand,
+    NewsUpdateCommand,
+    NewsUpdatePayload,
+)
 from loguru import logger
 
 
@@ -29,7 +35,7 @@ class NewsService(AbstractDomainService):
     def get_one(self, id_: Id) -> News:
         return self._news_read_repository.get_by_id(id_=id_)
 
-    def get_many(self, filter_: NewsFilter):
+    def get_many(self, filter_: NewsFilter) -> list[News]:
         news: list[News] = self._news_read_repository.get_all(filter_=filter_)
         logger.debug(f"Found {len(news)} news")
         return news
@@ -60,3 +66,21 @@ class NewsService(AbstractDomainService):
         )
         logger.debug(f"File uploaded into the {uploaded_path}.")
         return uploaded_path
+
+    def update(self, command: NewsUpdateCommand) -> None:
+        image_path: str | None = None
+        if command.image:
+            image_path = self.upload_news_image(NewsImageUploadCommand(image=command.image))
+
+        self._news_write_repository.update(
+            NewsUpdatePayload(
+                news_id=command.news_id,
+                title=command.title,
+                content=command.content,
+                image_url=image_path,
+            )
+        )
+
+    def delete_by_id(self, id_: Id) -> None:
+        self._news_write_repository.delete_by_id(id_=id_)
+        logger.debug("Deleted successfully")

@@ -56,7 +56,10 @@ class NewsCreatePayload(AbstractCreatePayload):
 
 
 class NewsUpdatePayload(AbstractUpdatePayload):
-    pass
+    news_id: Id
+    title: NewsTitle | None = None
+    content: NewsContent | None = None
+    image_url: str | None = None
 
 
 class NewsCreateCommand(BaseCommand):
@@ -66,7 +69,12 @@ class NewsCreateCommand(BaseCommand):
     image: ImageFile
 
 
+class NewsUpdateCommand(BaseCommand):
+    news_id: Id
+    title: NewsTitle | None = None
+    content: NewsContent | None = None
+    image: ImageFile | None = None
+
+
 class NewsImageUploadCommand(BaseCommand):
     image: ImageFile
-
-

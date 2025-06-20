@@ -31,6 +31,7 @@ class ImageFile(BaseVo):
     def __repr__(self) -> str:
         return f"ImageFile(bytes_len={len(self.value)})"
 
+
 class PdfFile(BaseVo):
     value: bytes
 
