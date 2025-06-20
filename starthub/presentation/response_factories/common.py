@@ -4,8 +4,14 @@ from typing import cast
 import pydantic
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
-from domain.exceptions.file import NotPdfFileException, NotSupportedImageFormatException, PdfFileTooLargeException
-from domain.exceptions.permissions import UpdateDeniedPermissionException
+from domain.exceptions.file import (
+    ImageFileTooLargeException,
+    NotPdfFileException,
+    NotSupportedImageFormatException,
+    PdfFileTooLargeException,
+)
+from domain.exceptions.news import NewsContentIsTooLongException, NewsNotFoundException, NewsTitleIsTooLongException
+from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
 from domain.exceptions.project_management import ProjectImageMaxAmountException, ProjectNotFoundException
 from domain.exceptions.user import EmailAlreadyExistsException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
@@ -90,4 +96,13 @@ class UserFavoriteErrorResponseFactory(CommonErrorResponseFactory):
 
 
 class NewsErrorResponseFactory(CommonErrorResponseFactory):
-    error_codes = CommonErrorResponseFactory.error_codes
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        AddDeniedPermissionException: ("ADD_PERMISSION_DENIED", 403),
+        UpdateDeniedPermissionException: ("UPDATE_PERMISSION_DENIED", 403),
+        NotSupportedImageFormatException: ("UNSUPPORTED_IMAGE_FORMAT", 400),
+        ImageFileTooLargeException: ("IMAGE_TOO_LARGE", 422),
+        NewsTitleIsTooLongException: ("NEWS_TITLE_TOO_LONG", 422),
+        NewsContentIsTooLongException: ("NEWS_CONTENT_TOO_LONG", 422),
+        pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
+        NewsNotFoundException: ("NEWS_NOT_FOUND", 404),
+    }
