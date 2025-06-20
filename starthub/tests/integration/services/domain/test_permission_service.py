@@ -44,11 +44,13 @@ class TestPermissionService(TestCase):
             self.service.create_permission_vo(Project, ActionEnum, "all")
 
     def test_blogger_has_existing_permission(self):
-        permission = PermissionVo(value="manage.any.news")
-        result = self.service.has_permission(user_id=Id(value=self.blogger.id), permission_vo=permission)
-        self.assertTrue(result)
+        for i in ['add.any.news', 'change.any.news', 'delete.any.news']:
+            with self.subTest(action=i):
+                permission = PermissionVo(value=i)
+                result = self.service.has_permission(user_id=Id(value=self.blogger.id), permission_vo=permission)
+                self.assertTrue(result)
 
     def test_not_existing_permission(self):
-        permission = PermissionVo(value="manage.any.another_model")
+        permission = PermissionVo(value="add.any.another_model")
         result = self.service.has_permission(user_id=Id(value=self.blogger.id), permission_vo=permission)
         self.assertFalse(result)
