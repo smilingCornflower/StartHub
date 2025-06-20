@@ -43,7 +43,12 @@ class UserManager(BaseUserManager["User"]):
             )
         user.set_password(password)
         user.save(using=self._db)
+        self._assign_default_role(user)
         return user
+
+    def _assign_default_role(self, user: "User") -> None:
+        default_role = get_default_role()
+        user.roles.add(default_role)
 
     def create_superuser(
         self,
