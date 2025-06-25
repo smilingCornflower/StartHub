@@ -1,4 +1,4 @@
-from application.dto.project import CategoryDto, FundingModelDto, ProjectDto
+from application.dto.project import CategoryDto, CompanyDto, CompanyFounderDto, FundingModelDto, ProjectDto
 from domain.models.project import Project
 
 
@@ -9,6 +9,18 @@ def project_to_dto(project: Project) -> ProjectDto:
         slug=project.slug,
         description=project.description,
         creator_id=project.creator.id,
+        company=CompanyDto(
+            name=project.company.name,
+            slug=project.company.slug,
+            country_code=project.company.country.code,
+            business_id=project.company.business_id,
+            established_date=project.company.established_date,
+            founder=CompanyFounderDto(
+                name=project.company.founder.name,
+                surname=project.company.founder.surname,
+                description=project.company.founder.description,
+            ),
+        ),
         category=CategoryDto(
             id=project.category.id,
             name=project.category.name,
@@ -19,6 +31,7 @@ def project_to_dto(project: Project) -> ProjectDto:
             name=project.funding_model.name,
             slug=project.funding_model.slug,
         ),
+        stage=project.stage,
         goal_sum=float(project.goal_sum),
         current_sum=float(project.current_sum),
         deadline=project.deadline,

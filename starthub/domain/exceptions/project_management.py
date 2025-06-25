@@ -27,15 +27,11 @@ class ProjectPhoneNotFoundException(NotFoundException, ProjectPhoneException):
     pass
 
 
-class ProjectNameIsTooLongValidationException(ValidationException, ProjectException):
+class ProjectNameIsTooLongException(ValidationException, ProjectException):
     pass
 
 
-class NegativeProjectGoalSumValidationException(ValidationException, ProjectException):
-    pass
-
-
-class ProjectDeadlineInPastValidationException(ValidationException, ProjectException):
+class NegativeProjectGoalSumException(ValidationException, ProjectException):
     pass
 
 
@@ -44,6 +40,19 @@ class ProjectNotFoundException(NotFoundException, ProjectException):
 
 
 class ProjectNameAlreadyExistsException(AlreadyExistsException, ProjectException):
+    pass
+
+
+# ==== Project Image Exceptions ====
+class ProjectImageException(ProjectException):
+    pass
+
+
+class ProjectImageMaxAmountException(ProjectImageException):
+    pass
+
+
+class ProjectImageNotFoundException(NotFoundException, ProjectImageException):
     pass
 
 

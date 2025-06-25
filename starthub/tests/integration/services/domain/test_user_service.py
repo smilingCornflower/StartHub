@@ -3,10 +3,10 @@ from typing import Any, cast
 
 from config.settings import BASE_DIR
 from django.test import TestCase
-from domain.constants import PROFILE_PICTURE_PATH
+from domain.constants import StorageLocations
 from domain.models.user import User
 from domain.services.file import ImageService
-from domain.services.user import UserService
+from domain.services.user_management import UserService
 from domain.value_objects.common import Id
 from domain.value_objects.user import ProfilePictureUploadCommand
 from infrastructure.cloud_storages.google import google_cloud_storage
@@ -46,18 +46,18 @@ class TestUserService(TestCase):
     def test_upload_profile_picture(self) -> None:
         with open(self.image_path, mode="rb") as image_file:
             self.user_service.upload_profile_picture(
-                payload=ProfilePictureUploadCommand(
+                command=ProfilePictureUploadCommand(
                     user_id=Id(value=self.user_valid_data["id"]),
                     file_data=image_file.read(),
                 )
             )
         user: User = cast(User, User.objects.filter(id=self.user_valid_data["id"]).first())
-        self.assertEqual(user.picture, f"{PROFILE_PICTURE_PATH}/{self.user_valid_data['id']}.jpg")
+        self.assertEqual(user.picture, f"{StorageLocations.PROFILE_PICTURE_PATH}/{self.user_valid_data['id']}.jpg")
 
     def test_generate_url(self) -> None:
         with open(self.image_path, mode="rb") as image_file:
             self.user_service.upload_profile_picture(
-                payload=ProfilePictureUploadCommand(
+                command=ProfilePictureUploadCommand(
                     user_id=Id(value=self.user_valid_data["id"]),
                     file_data=image_file.read(),
                 )

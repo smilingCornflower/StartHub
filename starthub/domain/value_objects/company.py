@@ -7,7 +7,7 @@ from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.validators.business_number import KZBusinessNumberValidator
 from domain.value_objects import BaseVo
-from domain.value_objects.common import FirstName, Id, LastName
+from domain.value_objects.common import Description, FirstName, Id, LastName
 from domain.value_objects.country import CountryCode
 from pydantic import field_validator
 from pydantic_core.core_schema import ValidationInfo
@@ -26,50 +26,10 @@ class BusinessNumber(BaseVo):
         return value
 
 
-class CompanyFounderCreatePayload(AbstractCreatePayload, BaseVo):
-    name: FirstName
-    surname: LastName
-    description: str | None
+class CompanyName(BaseVo):
+    value: str
 
-
-class CompanyFounderUpdatePayload(AbstractUpdatePayload, BaseVo):
-    name: FirstName | None
-    surname: LastName | None
-    description: str | None
-
-
-class CompanyCreatePayload(AbstractCreatePayload, BaseVo):
-    name: str
-    founder_id: Id
-    representative_id: Id
-    country_id: Id
-    business_id: BusinessNumber
-    established_date: date
-    description: str
-
-
-class CompanyUpdatePayload(AbstractUpdatePayload):
-    pass
-
-
-class CompanyCreateCommand(BaseCommand):
-    name: str
-    representative_id: Id
-    country_code: CountryCode
-    business_id: BusinessNumber
-    established_date: date
-    founder_create_payload: CompanyFounderCreatePayload
-    description: str
-
-    @field_validator("established_date", mode="after")
-    @classmethod
-    def established_not_in_future(cls, value: date) -> date:
-        """:raises DateInFutureException:"""
-        if value > date.today():
-            raise DateInFutureException("company_establishment_date must not be in the future.")
-        return value
-
-    @field_validator("name", mode="after")
+    @field_validator("value", mode="after")
     @classmethod
     def is_valid_name(cls, value: str) -> str:
         """
@@ -83,3 +43,60 @@ class CompanyCreateCommand(BaseCommand):
                 f"Company name must be at most {CHAR_FIELD_MAX_LENGTH} characters long."
             )
         return value
+
+
+class EstablishedDate(BaseVo):
+    value: date
+
+    @field_validator("value", mode="after")
+    @classmethod
+    def validate_date_not_in_future(cls, value: date | None) -> date | None:
+        """:raises DateInFutureException:"""
+        if value is not None:
+            if value > date.today():
+                raise DateInFutureException("company_establishment_date must not be in the future.")
+        return value
+
+
+class CompanyFounderCreateCommand(BaseCommand):
+    name: FirstName
+    surname: LastName
+    description: Description
+
+
+class CompanyFounderCreatePayload(AbstractCreatePayload, BaseVo):
+    company_id: Id
+    name: FirstName
+    surname: LastName
+    description: Description
+
+
+class CompanyFounderUpdatePayload(AbstractUpdatePayload, BaseVo):
+    name: FirstName | None
+    surname: LastName | None
+    description: Description | None
+
+
+class CompanyCreatePayload(AbstractCreatePayload, BaseVo):
+    name: CompanyName
+    project_id: Id
+    country_id: Id
+    business_id: BusinessNumber
+    established_date: EstablishedDate
+    description: Description
+
+
+class CompanyUpdatePayload(AbstractUpdatePayload):
+    project_id: Id
+    name: CompanyName | None = None
+    description: Description | None = None
+    established_date: EstablishedDate | None = None
+
+
+class CompanyCreateCommand(BaseCommand):
+    project_id: Id
+    name: CompanyName
+    country_code: CountryCode
+    business_id: BusinessNumber
+    established_date: EstablishedDate
+    description: Description

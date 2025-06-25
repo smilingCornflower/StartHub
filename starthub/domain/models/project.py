@@ -14,10 +14,9 @@ class Project(BaseModel):
     slug = AutoSlugField(populate_from="name", unique=True, max_length=CHAR_FIELD_MAX_LENGTH)
     description = models.TextField()
     category = models.ForeignKey("domain.ProjectCategory", on_delete=models.PROTECT)
-    company = models.ForeignKey("domain.Company", on_delete=models.PROTECT)
     creator = models.ForeignKey("domain.User", on_delete=models.PROTECT, related_name="created_projects")
     funding_model = models.ForeignKey("domain.FundingModel", on_delete=models.PROTECT)
-    stage = models.CharField(max_length=16, default=None, null=True)
+    stage = models.CharField(max_length=16)
 
     goal_sum = models.DecimalField(max_digits=FUNDING_GOAL_MAX_DIGITS, decimal_places=2)
     current_sum = models.DecimalField(max_digits=FUNDING_GOAL_MAX_DIGITS, decimal_places=2, default=0)
@@ -30,6 +29,10 @@ class Project(BaseModel):
 
     class Meta:
         db_table = "projects"
+
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "project"
 
 
 class TeamMember(BaseModel):
@@ -44,6 +47,10 @@ class TeamMember(BaseModel):
     def __str__(self) -> str:
         return f"{self.name} {self.surname}"
 
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "project_team_member"
+
 
 class ProjectSocialLink(BaseModel):
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="social_links")
@@ -57,6 +64,10 @@ class ProjectSocialLink(BaseModel):
     def __str__(self) -> str:
         return f"{self.project.name} {self.platform}"
 
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "project_social_link"
+
 
 class ProjectPhone(BaseModel):
     project = models.ForeignKey("domain.Project", on_delete=models.CASCADE, related_name="phones")
@@ -68,3 +79,23 @@ class ProjectPhone(BaseModel):
 
     def __str__(self) -> str:
         return f"{self.project.name} {self.number}"
+
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "project_phone"
+
+
+class ProjectImage(BaseModel):
+    project = models.ForeignKey("domain.Project", on_delete=models.CASCADE, related_name="photos")
+    file_path = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
+    order = models.SmallIntegerField()
+
+    class Meta:
+        db_table = "project_images"
+
+    def __str__(self) -> str:
+        return self.file_path
+
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "project_image"

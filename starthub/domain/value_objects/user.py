@@ -3,6 +3,7 @@ import re
 from django.core.exceptions import ValidationError as DjValidationError
 from django.core.validators import EmailValidator
 from domain.constants import PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_PATTERN
+from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.auth import PasswordValidationException
 from domain.exceptions.validation import EmptyStringException, InvalidEmailException
 from domain.ports.command import BaseCommand
@@ -56,8 +57,6 @@ class Email(BaseVo):
 
 
 class UserCreatePayload(AbstractCreatePayload):
-    first_name: FirstName
-    last_name: LastName
     email: Email
     password: RawPassword
 
@@ -90,3 +89,42 @@ class UserUpdateCommand(BaseCommand):
     last_name: LastName | None = None
     password: RawPassword | None = None
     picture_data: bytes | None = None
+
+
+class PermissionVo(BaseVo):
+    value: str
+
+    @field_validator("value", mode="after")
+    @classmethod
+    def validate_permission(cls, value: str) -> str:
+        """
+        Validation format of permission string:
+        - action.scope.model.field
+        - action.scope.model
+        """
+        parts: list[str] = value.split(".")
+
+        if len(parts) not in (3, 4):
+            raise ValueError("Permission must be in format 'action.scope.model' or 'action.scope.model.field'")
+
+        action, scope, model, *field = parts
+
+        try:
+            ActionEnum(action)
+        except ValueError:
+            raise ValueError(f"Invalid action '{action}'. Must be one of: {', '.join(ActionEnum)}")
+
+        try:
+            ScopeEnum(scope)
+        except ValueError:
+            raise ValueError(f"Invalid scope '{scope}'. Must be one of: {', '.join(list(ScopeEnum))}")
+
+        if not model.isidentifier() or not model.islower():
+            raise ValueError("Model name must be lowercase and valid Python identifier")
+
+        if field:
+            field_name = field[0]
+            if not field_name.isidentifier() or not field_name.islower():
+                raise ValueError("Field name must be lowercase and valid Python identifier")
+
+        return value

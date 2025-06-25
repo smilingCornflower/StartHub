@@ -4,8 +4,17 @@ from typing import cast
 import pydantic
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
-from domain.exceptions.file import NotPdfFileException, NotSupportedImageFormatException
+from domain.exceptions.file import (
+    ImageFileTooLargeException,
+    NotPdfFileException,
+    NotSupportedImageFormatException,
+    PdfFileTooLargeException,
+)
+from domain.exceptions.news import NewsContentIsTooLongException, NewsNotFoundException, NewsTitleIsTooLongException
+from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
+from domain.exceptions.project_management import ProjectImageMaxAmountException, ProjectNotFoundException
 from domain.exceptions.user import EmailAlreadyExistsException
+from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
 from domain.exceptions.validation import DateInFutureException, InvalidEmailException, ValidationException
 from presentation.constants import APPLICATION_ERROR_CODES
 from presentation.ports import ErrorResponseFactory
@@ -41,6 +50,10 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         NotPdfFileException: ("NOT_PDF_FILE", 400),
         CompanyNameIsTooLongException: ("COMPANY_NAME_TOO_LONG", 422),
         DateInFutureException: ("DATE_IN_FUTURE_NOT_ALLOWED", 422),
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+        PdfFileTooLargeException: ("PDF_FILE_TOO_LARGE", 412),
+        ProjectImageMaxAmountException: ("PROJECT_IMAGES_LIMIT_REACHED", 409),
+        UpdateDeniedPermissionException: ("UPDATE_PERMISSION_DENIED", 403),
     }
 
 
@@ -72,4 +85,24 @@ class UserErrorResponseFactory(CommonErrorResponseFactory):
         NotSupportedImageFormatException: ("UNSUPPORTED_IMAGE_FORMAT", 400),
         pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
         PasswordValidationException: ("WEAK_PASSWORD", 422),
+    }
+
+
+class UserFavoriteErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+        UserFavoriteAlreadyExistsException: ("USER_FAVORITE_ALREADY_EXISTS", 409),
+    }
+
+
+class NewsErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        AddDeniedPermissionException: ("ADD_PERMISSION_DENIED", 403),
+        UpdateDeniedPermissionException: ("UPDATE_PERMISSION_DENIED", 403),
+        NotSupportedImageFormatException: ("UNSUPPORTED_IMAGE_FORMAT", 400),
+        ImageFileTooLargeException: ("IMAGE_TOO_LARGE", 422),
+        NewsTitleIsTooLongException: ("NEWS_TITLE_TOO_LONG", 422),
+        NewsContentIsTooLongException: ("NEWS_CONTENT_TOO_LONG", 422),
+        pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
+        NewsNotFoundException: ("NEWS_NOT_FOUND", 404),
     }

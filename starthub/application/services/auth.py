@@ -13,8 +13,7 @@ from application.converters.resposne_converters.auth import (
 from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
 from application.ports.service import AbstractAppService
 from domain.models.user import User
-from domain.services.auth import AuthService, RegistrationService
-from domain.services.token import TokenService
+from domain.services.auth import AuthService, RegistrationService, TokenService
 from domain.value_objects.auth import LoginCredentials
 from domain.value_objects.token import AccessPayload, AccessTokenVo, RefreshTokenVo, TokenPairVo
 from domain.value_objects.user import Email, UserCreatePayload
@@ -28,8 +27,6 @@ class RegistrationAppService(AbstractAppService):
     def register(self, request_data: dict[str, str]) -> User:
         """
         :raises KeyError: Missing required fields.
-        :raises FirstNameIsTooLongException:
-        :raises LastNameIsTooLongException:
         :raises EmptyStringException:
         :raises InvalidEmailException:
         :raises PasswordValidationException:

@@ -1,15 +1,18 @@
 import re
+from datetime import date
 
 import phonenumbers
-from domain.constants import CHAR_FIELD_SHORT_LENGTH
+from domain.constants import CHAR_FIELD_SHORT_LENGTH, DESCRIPTION_MAX_LENGTH
 from domain.enums.social_links import SocialPlatform
 from domain.exceptions.validation import (
+    DeadlineInPastException,
     DisallowedSocialLinkException,
     EmptyStringException,
     FirstNameIsTooLongException,
     InvalidPhoneNumberException,
     InvalidSocialLinkException,
     LastNameIsTooLongException,
+    StringIsTooLongException,
 )
 from domain.value_objects import BaseVo
 from pydantic import ValidationInfo, field_validator
@@ -91,3 +94,33 @@ class SocialLink(BaseVo):
         if not re.match(platform.pattern, value):
             raise InvalidSocialLinkException(f"Invalid link for platform {platform.value}")
         return value
+
+
+class DeadlineDate(BaseVo):
+    value: date
+
+    @field_validator("value", mode="after")
+    @classmethod
+    def validate_deadline_not_in_past(cls, value: date) -> date:
+        """:raises DeadlineInPastException:"""
+        if value <= date.today():
+            raise DeadlineInPastException("deadline must be in the future.")
+        return value
+
+
+class Description(BaseVo):
+    value: str
+
+    @field_validator("value", mode="after")
+    @classmethod
+    def validate_description_length(cls, value: str) -> str:
+        """:raises StringIsTooLongException:"""
+        if len(value) > DESCRIPTION_MAX_LENGTH:
+            raise StringIsTooLongException(
+                f"Description is too long. Max length is {DESCRIPTION_MAX_LENGTH} characters."
+            )
+        return value
+
+
+class Order(BaseVo):
+    value: int

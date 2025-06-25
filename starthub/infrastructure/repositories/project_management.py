@@ -2,6 +2,7 @@ from django.db.models import Q, QuerySet
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
     ProjectCategoryNotFoundException,
+    ProjectImageNotFoundException,
     ProjectNotFoundException,
     ProjectPhoneAlreadyExistsException,
     ProjectPhoneNotFoundException,
@@ -9,11 +10,13 @@ from domain.exceptions.project_management import (
     TeamMemberNotFoundException,
 )
 from domain.models.funding_model import FundingModel
-from domain.models.project import Project, ProjectPhone, ProjectSocialLink, TeamMember
+from domain.models.project import Project, ProjectImage, ProjectPhone, ProjectSocialLink, TeamMember
 from domain.models.project_category import ProjectCategory
 from domain.repositories.project_management import (
     FundingModelReadRepository,
     ProjectCategoryReadRepository,
+    ProjectImageReadRepository,
+    ProjectImageWriteRepository,
     ProjectPhoneReadRepository,
     ProjectPhoneWriteRepository,
     ProjectReadRepository,
@@ -28,12 +31,16 @@ from domain.value_objects.filter import (
     FundingModelFilter,
     ProjectCategoryFilter,
     ProjectFilter,
+    ProjectImageFilter,
     ProjectPhoneFilter,
     ProjectSocialLinkFilter,
     TeamMemberFilter,
 )
 from domain.value_objects.project_management import (
     ProjectCreatePayload,
+    ProjectImageCreatePayload,
+    ProjectImageDeletePayload,
+    ProjectImageUpdatePayload,
     ProjectPhoneCreatePayload,
     ProjectPhoneUpdatePayload,
     ProjectSocialLinkCreatePayload,
@@ -51,7 +58,7 @@ class DjProjectReadRepository(ProjectReadRepository):
         project: Project | None = Project.objects.filter(id=id_.value).first()
 
         if project is None:
-            raise ProjectNotFoundException
+            raise ProjectNotFoundException(f"Project with id = {id_.value} not found.")
         return project
 
     def get_all(self, filter_: ProjectFilter) -> list[Project]:
@@ -75,14 +82,13 @@ class DjProjectReadRepository(ProjectReadRepository):
 class DjProjectWriteRepository(ProjectWriteRepository):
     def create(self, data: ProjectCreatePayload) -> Project:
         project = Project.objects.create(
-            name=data.name,
-            description=data.description,
+            name=data.name.value,
+            description=data.description.value,
             category_id=data.category_id.value,
             creator_id=data.creator_id.value,
-            company_id=data.company_id.value,
             funding_model_id=data.funding_model_id.value,
             stage=data.stage.value,
-            goal_sum=data.goal_sum,
+            goal_sum=data.goal_sum.value,
             deadline=data.deadline,
         )
         return project
@@ -94,22 +100,25 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             raise ProjectNotFoundException(f"The project with id = {data.id_.value} is not found.")
 
         if data.name is not None:
-            project.name = data.name
-        if data.description is not None:
-            project.description = data.description
+            project.name = data.name.value
+            project.slug = None
         if data.goal_sum is not None:
-            project.goal_sum = data.goal_sum
+            project.goal_sum = data.goal_sum.value
         if data.deadline is not None:
-            project.deadline = data.deadline
+            project.deadline = data.deadline.value
+        if data.stage is not None:
+            project.stage = data.stage.value
         if data.category_id is not None:
             project.category_id = data.category_id.value
         if data.funding_model_id is not None:
             project.funding_model_id = data.funding_model_id.value
+        if data.plan_path is not None:
+            project.plan = data.plan_path
 
         project.save()
         return project
 
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         """:raises ProjectNotFoundException:"""
         try:
             project: Project = Project.objects.get(id=id_.value)
@@ -178,7 +187,7 @@ class DjProjectPhoneWriteRepository(ProjectPhoneWriteRepository):
         project_phone.save()
         return project_phone
 
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         """:raises ProjectPhoneNotFoundException:"""
         try:
             ProjectPhone.objects.get(id=id_.value).delete()
@@ -213,7 +222,7 @@ class DjProjectSocialLinkWriteRepository(ProjectSocialLinkWriteRepository):
     def update(self, data: ProjectSocialLinkUpdatePayload) -> ProjectSocialLink:
         raise NotImplementedError("Method update() is not implemented yet.")
 
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         raise NotImplementedError("Method delete() is not implemented yet.")
 
 
@@ -234,14 +243,14 @@ class DjTeamMemberWriteRepository(TeamMemberWriteRepository):
             project_id=data.project_id.value,
             name=data.first_name.value,
             surname=data.last_name.value,
-            description=data.description,
+            description=data.description.value,
         )
 
     def update(self, data: TeamMemberUpdatePayload) -> TeamMember:
         """:raises NotImplementedError:"""
         raise NotImplementedError("Method update is not implemented yet.")
 
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         """:raises NotImplementedError:"""
         raise NotImplementedError("Method delete is not implemented yet.")
 
@@ -256,3 +265,41 @@ class DjFundingModelReadRepository(FundingModelReadRepository):
 
     def get_all(self, filter_: FundingModelFilter) -> list[FundingModel]:
         return list(FundingModel.objects.all())
+
+
+class DjProjectImageReadRepository(ProjectImageReadRepository):
+    def get_by_id(self, id_: Id) -> ProjectImage:
+        raise NotImplementedError("The method get_by_id() not implemented yet.")
+
+    def get_all(self, filter_: ProjectImageFilter) -> list[ProjectImage]:
+        queryset = ProjectImage.objects.all()
+        if filter_.project_id is not None:
+            queryset = queryset.filter(project_id=filter_.project_id.value)
+        if filter_.image_order is not None:
+            queryset = queryset.filter(order=filter_.image_order)
+
+        return list(queryset.distinct())
+
+    def get_images_count_for_project(self, project_id: Id) -> int:
+        return ProjectImage.objects.filter(project_id=project_id.value).count()
+
+
+class DjProjectImageWriteRepository(ProjectImageWriteRepository):
+    def create(self, data: ProjectImageCreatePayload) -> ProjectImage:
+        return ProjectImage.objects.create(project_id=data.project_id.value, file_path=data.file_path, order=data.order)
+
+    def update(self, data: ProjectImageUpdatePayload) -> ProjectImage:
+        project_image: ProjectImage | None = ProjectImage.objects.filter(id=data.image_id.value).first()
+        if project_image is None:
+            raise ProjectImageNotFoundException(f"A project_image with id = {data.image_id.value} not found.")
+
+        if data.order is not None:
+            project_image.order = data.order.value
+        project_image.save()
+        return project_image
+
+    def delete_by_id(self, id_: Id) -> None:
+        raise NotImplementedError("The method delete() not implemented yet.")
+
+    def delete(self, data: ProjectImageDeletePayload) -> None:
+        ProjectImage.objects.filter(project_id=data.project_id.value, order=data.image_order).delete()

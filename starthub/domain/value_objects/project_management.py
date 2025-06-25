@@ -4,17 +4,32 @@ from domain.constants import CHAR_FIELD_MAX_LENGTH
 from domain.enums.project_stage import ProjectStageEnum
 from domain.exceptions.project_management import (
     InvalidProjectStageException,
-    NegativeProjectGoalSumValidationException,
-    ProjectDeadlineInPastValidationException,
-    ProjectNameIsTooLongValidationException,
+    NegativeProjectGoalSumException,
+    ProjectNameIsTooLongException,
 )
 from domain.exceptions.validation import EmptyStringException
 from domain.ports.command import BaseCommand
-from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
+from domain.ports.payload import AbstractCreatePayload, AbstractDeletePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
-from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, SocialLink
-from domain.value_objects.company import CompanyCreateCommand
-from domain.value_objects.file import PdfFile
+from domain.value_objects.common import (
+    DeadlineDate,
+    Description,
+    FirstName,
+    Id,
+    LastName,
+    Order,
+    PhoneNumber,
+    SocialLink,
+)
+from domain.value_objects.company import (
+    BusinessNumber,
+    CompanyFounderCreateCommand,
+    CompanyName,
+    CompanyUpdatePayload,
+    EstablishedDate,
+)
+from domain.value_objects.country import CountryCode
+from domain.value_objects.file import ImageFile, PdfFile
 from pydantic import field_validator
 
 
@@ -42,13 +57,13 @@ class TeamMemberCreatePayload(AbstractCreatePayload, BaseVo):
     project_id: Id
     first_name: FirstName
     last_name: LastName
-    description: str
+    description: Description
 
 
 class TeamMemberCreateCommand(BaseVo):
     first_name: FirstName
     last_name: LastName
-    description: str
+    description: Description
 
 
 class TeamMemberUpdatePayload(AbstractUpdatePayload, BaseVo):
@@ -78,72 +93,125 @@ class ProjectStage(BaseVo):
         return value.lower()
 
 
-class ProjectCreateCommand(BaseCommand):
-    name: str
-    description: str
-    category_id: Id
-    creator_id: Id
-    funding_model_id: Id
-    stage: ProjectStage
-    goal_sum: float
-    deadline: date
-    team_members: list[TeamMemberCreateCommand]
-    company: CompanyCreateCommand
-    social_links: list[SocialLink]
-    phone_number: PhoneNumber
-    project_plan_data: PdfFile
+class ProjectName(BaseVo):
+    value: str
 
-    @field_validator("name", mode="after")
+    @field_validator("value", mode="after")
     @classmethod
     def is_valid_name(cls, value: str) -> str:
         """
-        :raises ProjectNameIsTooLongValidationException:
+        :raises ProjectNameIsTooLongException:
         :raises EmptyStringException:
         """
         if not value:
             raise EmptyStringException("Project name cannot be empty.")
         if len(value) > CHAR_FIELD_MAX_LENGTH:
-            raise ProjectNameIsTooLongValidationException(
+            raise ProjectNameIsTooLongException(
                 f"Project name must be at most {CHAR_FIELD_MAX_LENGTH} characters long."
             )
         return value
 
-    @field_validator("goal_sum", mode="after")
+
+class GoalSum(BaseVo):
+    value: float
+
+    @field_validator("value", mode="after")
     @classmethod
-    def is_positive(cls, value: int) -> int:
-        """:raises NegativeProjectGoalSumValidationException:"""
+    def is_positive_goal_sum(cls, value: int) -> int:
+        """:raises NegativeProjectGoalSumException:"""
         if value <= 0:
-            raise NegativeProjectGoalSumValidationException("goal_sum must be positive.")
-        return value
-
-    @field_validator("deadline", mode="after")
-    @classmethod
-    def deadline_in_future(cls, value: date) -> date:
-        """:raises ProjectDeadlineInPastValidationException:"""
-        if value <= date.today():
-            raise ProjectDeadlineInPastValidationException("deadline must be in the future.")
+            raise NegativeProjectGoalSumException("goal_sum must be positive.")
         return value
 
 
-class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
-    name: str
-    description: str
+class ProjectCreateCommand(BaseCommand):
+    name: ProjectName
+    description: Description
     category_id: Id
     creator_id: Id
     funding_model_id: Id
-    company_id: Id
     stage: ProjectStage
-    goal_sum: float
+    goal_sum: GoalSum
+    deadline: DeadlineDate
+    social_links: list[SocialLink]
+    phone_number: PhoneNumber
+    plan_file: PdfFile
+
+    company_name: CompanyName
+    country_code: CountryCode
+    business_id: BusinessNumber
+    established_date: EstablishedDate
+
+    team_members: list[TeamMemberCreateCommand]
+    company_founder: CompanyFounderCreateCommand
+
+
+class ProjectUpdateCommand(BaseCommand):
+    project_id: Id
+    user_id: Id
+    company: CompanyUpdatePayload | None
+    name: ProjectName | None = None
+    category_id: Id | None = None
+    funding_model_id: Id | None = None
+    stage: ProjectStage | None = None
+    goal_sum: GoalSum | None = None
+    deadline: DeadlineDate | None = None
+    plan_file: PdfFile | None = None
+
+
+class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
+    name: ProjectName
+    description: Description
+    category_id: Id
+    creator_id: Id
+    funding_model_id: Id
+    stage: ProjectStage
+    goal_sum: GoalSum
     deadline: date
-    project_plan_data: bytes
+    plan_file: PdfFile
 
 
 class ProjectUpdatePayload(AbstractUpdatePayload, BaseVo):
     id_: Id
-    name: str | None = None
-    description: str | None = None
+    name: ProjectName | None = None
     category_id: Id | None = None
     funding_model_id: Id | None = None
-    goal_sum: float | None = None
-    deadline: date | None = None
-    plan: str | None = None
+    goal_sum: GoalSum | None = None
+    stage: ProjectStage | None = None
+    deadline: DeadlineDate | None = None
+    plan_path: str | None = None
+
+
+# ==== ProjectImage ====
+class ProjectImageCreatePayload(AbstractCreatePayload, BaseVo):
+    project_id: Id
+    file_path: str
+    order: int
+
+
+class ProjectImageUpdatePayload(AbstractUpdatePayload, BaseVo):
+    image_id: Id
+    order: Order | None = None
+
+
+class ProjectImageCreateCommand(BaseCommand):
+    user_id: Id
+    project_id: Id
+    image_file: ImageFile
+
+
+class ProjectImageUpdateCommand(BaseCommand):
+    project_id: Id
+    user_id: Id
+    new_order: list[Order] | None = None
+
+
+class ProjectImageDeletePayload(AbstractDeletePayload):
+    project_id: Id
+    image_order: int
+
+
+class ProjectImageDeleteCommand(BaseCommand):
+    project_id: Id
+    image_order: int
+    user_id: Id

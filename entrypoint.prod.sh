@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# shellcheck disable=SC2164
 cd starthub
 uv run manage.py collectstatic --noinput
 uv run manage.py migrate --noinput

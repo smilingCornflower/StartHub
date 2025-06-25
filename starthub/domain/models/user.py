@@ -13,34 +13,42 @@ from domain.constants import (
     PASSWORD_PATTERN,
 )
 from domain.models.base import BaseModel
+from domain.models.role import get_default_role
 
 
 class UserManager(BaseUserManager["User"]):
     def create_user(
         self,
-        email: str,
-        first_name: str,
-        last_name: str,
+        email: str | None,
+        first_name: str | None = None,
+        last_name: str | None = None,
         password: str | None = None,
         **extra_fields: dict[str, Any],
     ) -> "User":
         """:raises ValueError:"""
         if not email:
             raise ValueError("Email must be set.")
-        if not first_name:
-            raise ValueError("First name must be set.")
-        if not last_name:
-            raise ValueError("Last name must be set.")
         normalized_email: str = self.normalize_email(email)
-        user: "User" = self.model(
-            email=normalized_email,
-            first_name=first_name,
-            last_name=last_name,
-            **extra_fields,
-        )
+        if first_name and last_name:
+            user = self.model(
+                email=normalized_email,
+                first_name=first_name,
+                last_name=last_name,
+                **extra_fields,
+            )
+        else:
+            user = self.model(
+                email=normalized_email,
+                **extra_fields,
+            )
         user.set_password(password)
         user.save(using=self._db)
+        self._assign_default_role(user)
         return user
+
+    def _assign_default_role(self, user: "User") -> None:
+        default_role = get_default_role()
+        user.roles.add(default_role)
 
     def create_superuser(
         self,
@@ -67,12 +75,10 @@ class UserManager(BaseUserManager["User"]):
 class User(AbstractBaseUser, BaseModel, PermissionsMixin):
     email = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH, unique=True, validators=[EmailValidator()])
     first_name = models.CharField(
-        max_length=CHAR_FIELD_SHORT_LENGTH,
-        validators=[RegexValidator(NAME_PATTERN)],
+        max_length=CHAR_FIELD_SHORT_LENGTH, validators=[RegexValidator(NAME_PATTERN)], default="default first name"
     )
     last_name = models.CharField(
-        max_length=CHAR_FIELD_SHORT_LENGTH,
-        validators=[RegexValidator(NAME_PATTERN)],
+        max_length=CHAR_FIELD_SHORT_LENGTH, validators=[RegexValidator(NAME_PATTERN)], default="default last name"
     )
     password = models.CharField(
         max_length=128,
@@ -82,6 +88,8 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
             MaxLengthValidator(PASSWORD_MAX_LENGTH),
         ],
     )
+    roles = models.ManyToManyField("domain.Role", default=get_default_role, related_name="users")
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -105,3 +113,7 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
         db_table = "users"
         verbose_name = "user"
         verbose_name_plural = "users"
+
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "user"

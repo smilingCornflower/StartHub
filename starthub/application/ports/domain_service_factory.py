@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
-from application.ports.service import AbstractAppService
+from domain.ports.service import AbstractDomainService
 
-S = TypeVar("S", bound=AbstractAppService)
+S = TypeVar("S", bound=AbstractDomainService)
 
 
-class AbstractServiceFactory(ABC, Generic[S]):
+class AbstractDomainServiceFactory(ABC, Generic[S]):
     @staticmethod
     @abstractmethod
     def create_service() -> S:

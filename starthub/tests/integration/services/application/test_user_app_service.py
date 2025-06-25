@@ -1,6 +1,6 @@
 import pydantic
 from application.dto.user import UserProfileDto
-from application.services.gateway import Gateway
+from application.services.gateway import gateway
 from application.services.user import UserAppService
 from config.settings import BASE_DIR
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -26,7 +26,7 @@ class TestUserAppService(TestCase):
             password="Pass1234",
         )
         cls.user_id = user.id
-        cls.service = Gateway.user_app_service
+        cls.service = gateway.user_app_service
 
     def test_success_update_first_name(self) -> None:
         self.service.update_user(

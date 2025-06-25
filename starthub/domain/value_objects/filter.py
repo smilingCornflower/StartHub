@@ -50,4 +50,27 @@ class ProjectSocialLinkFilter(AbstractFilter, BaseVo):
 
 
 class CompanyFounderFilter(AbstractFilter, BaseVo):
+    company_id: Id | None = None
+
+
+class UserFavoriteFilter(AbstractFilter, BaseVo):
+    user_id: Id | None = None
+    project_id: Id | None = None
+
+
+class ProjectImageFilter(AbstractFilter, BaseVo):
+    project_id: Id | None = None
+    image_order: int | None = None
+
+
+class PermissionFilter(AbstractFilter, BaseVo):
+    user_id: Id | None = None
+
+
+class RoleFilter(AbstractFilter, BaseVo):
     pass
+
+
+class NewsFilter(AbstractFilter, BaseVo):
+    last_id: int | None = None
+    limit: int

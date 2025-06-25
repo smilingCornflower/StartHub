@@ -7,7 +7,8 @@ from domain.models.base import BaseModel
 class CompanyFounder(BaseModel):
     name = models.CharField(max_length=CHAR_FIELD_SHORT_LENGTH)
     surname = models.CharField(max_length=CHAR_FIELD_SHORT_LENGTH)
-    description = models.TextField(blank=True, null=True)
+    company = models.OneToOneField("domain.Company", on_delete=models.CASCADE, related_name="founder")
+    description = models.TextField()
 
     class Meta:
         db_table = "company_founder"
@@ -15,19 +16,18 @@ class CompanyFounder(BaseModel):
     def __str__(self) -> str:
         return f"{self.name} {self.surname}"
 
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "company_founder"
+
 
 class Company(BaseModel):
     name = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
     slug = AutoSlugField(populate_from="name", unique=True, max_length=CHAR_FIELD_MAX_LENGTH)
-    founder = models.OneToOneField("domain.CompanyFounder", on_delete=models.PROTECT, related_name="company", null=True)
-    representative = models.ForeignKey("domain.User", on_delete=models.PROTECT, related_name="companies")
-
-    description = models.TextField()
+    project = models.OneToOneField("domain.Project", on_delete=models.CASCADE)
     country = models.ForeignKey("domain.Country", on_delete=models.PROTECT)
     business_id = models.CharField(max_length=32, unique=True)
-
-    business_plan = models.FileField(upload_to="business_plans/", blank=True, null=True)
-    established_date = models.DateField(blank=True, null=True)
+    established_date = models.DateField()
 
     class Meta:
         db_table = "company"
@@ -36,3 +36,7 @@ class Company(BaseModel):
 
     def __str__(self) -> str:
         return self.name
+
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "company"

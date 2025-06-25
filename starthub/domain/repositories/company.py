@@ -15,10 +15,16 @@ from domain.value_objects.filter import CompanyFilter, CompanyFounderFilter
 class CompanyReadRepository(AbstractReadRepository[Company, CompanyFilter], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> Company:
+        """:raises CompanyNotFoundException:"""
         pass
 
     @abstractmethod
     def get_all(self, filter_: CompanyFilter) -> list[Company]:
+        pass
+
+    @abstractmethod
+    def get_by_project_id(self, id_: Id) -> Company:
+        """:raises CompanyNotFoundException:"""
         pass
 
 
@@ -32,7 +38,7 @@ class CompanyWriteRepository(AbstractWriteRepository[Company, CompanyCreatePaylo
         pass
 
     @abstractmethod
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         pass
 
 
@@ -58,5 +64,5 @@ class CompanyFounderWriteRepository(
         pass
 
     @abstractmethod
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         pass

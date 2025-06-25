@@ -24,3 +24,7 @@ class Country(BaseModel):
             "KZ": "Kazakhstan",
         }
         return names.get(self.code, self.code)
+
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "country"

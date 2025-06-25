@@ -5,19 +5,19 @@ from domain.exceptions.auth import (
     TokenExpiredException,
 )
 from domain.exceptions.company import CompanyNotFoundException, CompanyOwnershipRequiredException
-from domain.exceptions.country import InvalidCountryCodeException
-from domain.exceptions.permissions import DeletePermissionDenied
+from domain.exceptions.country import CountryNotFoundException, InvalidCountryCodeException
+from domain.exceptions.permissions import DeleteDeniedPermissionException
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
     InvalidProjectStageException,
-    NegativeProjectGoalSumValidationException,
+    NegativeProjectGoalSumException,
     ProjectCategoryNotFoundException,
-    ProjectDeadlineInPastValidationException,
-    ProjectNameIsTooLongValidationException,
+    ProjectNameIsTooLongException,
 )
 from domain.exceptions.user import UserNotFoundException
 from domain.exceptions.validation import (
     DateIsNotIsoFormatException,
+    DeadlineInPastException,
     DisallowedSocialLinkException,
     EmptyStringException,
     FirstNameIsTooLongException,
@@ -33,13 +33,14 @@ APPLICATION_ERROR_CODES: dict[type, tuple[str, int]] = {
     CompanyNotFoundException: ("COMPANY_NOT_FOUND", 404),
     ProjectCategoryNotFoundException: ("PROJECT_CATEGORY_NOT_FOUND", 404),
     FundingModelNotFoundException: ("FUNDING_MODEL_NOT_FOUND", 404),
+    CountryNotFoundException: ("COUNTRY_NOT_FOUND", 404),
     # 403 Forbidden
     CompanyOwnershipRequiredException: ("COMPANY_OWNERSHIP_REQUIRED", 403),
-    DeletePermissionDenied: ("DELETE_PERMISSION_DENIED", 403),
+    DeleteDeniedPermissionException: ("DELETE_PERMISSION_DENIED", 403),
     # 422 Unprocessable Entity
-    ProjectNameIsTooLongValidationException: ("PROJECT_NAME_TOO_LONG", 422),
-    NegativeProjectGoalSumValidationException: ("NEGATIVE_GOAL_SUM", 422),
-    ProjectDeadlineInPastValidationException: ("DEADLINE_IN_PAST", 422),
+    ProjectNameIsTooLongException: ("PROJECT_NAME_TOO_LONG", 422),
+    NegativeProjectGoalSumException: ("NEGATIVE_GOAL_SUM", 422),
+    DeadlineInPastException: ("DEADLINE_IN_PAST", 422),
     FirstNameIsTooLongException: ("FIRST_NAME_TOO_LONG", 422),
     LastNameIsTooLongException: ("LAST_NAME_TOO_LONG", 422),
     EmptyStringException: ("EMPTY_VALUE_NOT_ALLOWED ", 422),

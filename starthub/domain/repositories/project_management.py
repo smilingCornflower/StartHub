@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 from domain.models.funding_model import FundingModel
-from domain.models.project import Project, ProjectPhone, ProjectSocialLink, TeamMember
+from domain.models.project import Project, ProjectImage, ProjectPhone, ProjectSocialLink, TeamMember
 from domain.models.project_category import ProjectCategory
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
 from domain.value_objects.common import Id, Slug
@@ -9,6 +9,7 @@ from domain.value_objects.filter import (
     FundingModelFilter,
     ProjectCategoryFilter,
     ProjectFilter,
+    ProjectImageFilter,
     ProjectPhoneFilter,
     ProjectSocialLinkFilter,
     TeamMemberFilter,
@@ -17,6 +18,9 @@ from domain.value_objects.project_management import (
     ProjectCategoryCreatePayload,
     ProjectCategoryUpdatePayload,
     ProjectCreatePayload,
+    ProjectImageCreatePayload,
+    ProjectImageDeletePayload,
+    ProjectImageUpdatePayload,
     ProjectPhoneCreatePayload,
     ProjectPhoneUpdatePayload,
     ProjectSocialLinkCreatePayload,
@@ -27,6 +31,7 @@ from domain.value_objects.project_management import (
 )
 
 
+# noinspection DuplicatedCode
 class ProjectCategoryReadRepository(AbstractReadRepository[ProjectCategory, ProjectCategoryFilter], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> ProjectCategory:
@@ -51,7 +56,7 @@ class ProjectCategoryWriteRepository(
         pass
 
     @abstractmethod
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         """:raises ProjectCategoryNotFoundException:"""
         pass
 
@@ -78,10 +83,11 @@ class ProjectPhoneWriteRepository(
         pass
 
     @abstractmethod
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         pass
 
 
+# noinspection DuplicatedCode
 class ProjectSocialLinkReadRepository(AbstractReadRepository[ProjectSocialLink, ProjectSocialLinkFilter], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> ProjectSocialLink:
@@ -104,7 +110,7 @@ class ProjectSocialLinkWriteRepository(
         pass
 
     @abstractmethod
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         pass
 
 
@@ -130,10 +136,11 @@ class TeamMemberWriteRepository(
         pass
 
     @abstractmethod
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         pass
 
 
+# noinspection DuplicatedCode
 class ProjectReadRepository(AbstractReadRepository[Project, ProjectFilter], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> Project:
@@ -161,7 +168,7 @@ class ProjectWriteRepository(AbstractWriteRepository[Project, ProjectCreatePaylo
         pass
 
     @abstractmethod
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         """:raises ProjectNotFoundException:"""
         pass
 
@@ -174,4 +181,40 @@ class FundingModelReadRepository(AbstractReadRepository[FundingModel, FundingMod
 
     @abstractmethod
     def get_all(self, filter_: FundingModelFilter) -> list[FundingModel]:
+        pass
+
+
+# noinspection DuplicatedCode
+class ProjectImageReadRepository(AbstractReadRepository[ProjectImage, ProjectImageFilter], ABC):
+    @abstractmethod
+    def get_by_id(self, id_: Id) -> ProjectImage:
+        """:raises ProjectPhotoNotFoundException:"""
+        pass
+
+    @abstractmethod
+    def get_all(self, filter_: ProjectImageFilter) -> list[ProjectImage]:
+        pass
+
+    @abstractmethod
+    def get_images_count_for_project(self, project_id: Id) -> int:
+        pass
+
+
+class ProjectImageWriteRepository(
+    AbstractWriteRepository[ProjectImage, ProjectImageCreatePayload, ProjectImageUpdatePayload], ABC
+):
+    @abstractmethod
+    def create(self, data: ProjectImageCreatePayload) -> ProjectImage:
+        pass
+
+    @abstractmethod
+    def update(self, data: ProjectImageUpdatePayload) -> ProjectImage:
+        pass
+
+    @abstractmethod
+    def delete_by_id(self, id_: Id) -> None:
+        pass
+
+    @abstractmethod
+    def delete(self, data: ProjectImageDeletePayload) -> None:
         pass

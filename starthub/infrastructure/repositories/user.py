@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from domain.exceptions.user import UserNotFoundException
 from domain.models.user import User
 from domain.repositories.user import UserReadRepository, UserWriteRepository
@@ -38,8 +40,6 @@ class DjUserWriteRepository(UserWriteRepository):
     def create(self, data: UserCreatePayload) -> User:
         return User.objects.create_user(
             email=data.email.value,
-            first_name=data.first_name.value,
-            last_name=data.last_name.value,
             password=data.password.value,
         )
 
@@ -61,9 +61,13 @@ class DjUserWriteRepository(UserWriteRepository):
         user.save()
         return user
 
-    def delete(self, id_: Id) -> None:
+    def delete_by_id(self, id_: Id) -> None:
         """:raises UserNotFoundException:"""
         try:
             User.objects.get(id=id_.value).delete()
         except User.DoesNotExist:
             raise UserNotFoundException(f"An user with id = {id_.value} is not found.")
+
+    def update_last_login(self, user: User) -> None:
+        user.last_login = datetime.now(UTC)
+        user.save()
