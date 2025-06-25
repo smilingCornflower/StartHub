@@ -8,6 +8,7 @@ from application.services.news import NewsAppService
 from application.services.project import ProjectAppService
 from application.services.user import UserAppService
 from application.services.user_favorite import UserFavoriteAppService
+from infrastructure.services.cookie import CookieService, cookie_service
 
 
 class Gateway:
@@ -18,6 +19,8 @@ class Gateway:
     _project_app_service: ProjectAppService | None = None
     _user_favorite_app_service: UserFavoriteAppService | None = None
     _news_app_service: NewsAppService | None = None
+
+    _cookie_service: CookieService | None = None
 
     @property
     def auth_app_service(self) -> AuthAppService:
@@ -54,6 +57,12 @@ class Gateway:
         if self._news_app_service is None:
             self._news_app_service = NewsAppServiceFactory.create_service()
         return self._news_app_service
+
+    @property
+    def cookie_service(self) -> CookieService:
+        if self._cookie_service is None:
+            self._cookie_service = cookie_service
+        return self._cookie_service
 
 
 gateway = Gateway()
