@@ -1,6 +1,8 @@
 from dataclasses import asdict
+from typing import cast
 
 from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
+from application.ports.cookie_service import CookiesResponseProtocol
 from application.services.gateway import gateway
 from loguru import logger
 from presentation.constants import SUCCESS
@@ -16,24 +18,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
-def set_token_cookies(response: Response, access_token: str, refresh_token: str | None = None) -> None:
-    response.set_cookie(
-        key="access_token",
-        value=access_token,
-        httponly=True,
-        samesite="Lax",
-        secure=False,
-    )
-    if refresh_token:
-        response.set_cookie(
-            key="refresh_token",
-            value=refresh_token,
-            httponly=True,
-            samesite="Lax",
-            secure=False,
-        )
-
-
 class LoginView(APIView):
     parser_classes = [JSONParser]
     error_classes: tuple[type[Exception], ...] = tuple(LoginErrorResponseFactory.error_codes.keys())
@@ -47,8 +31,15 @@ class LoginView(APIView):
             return LoginErrorResponseFactory.create_response(e)
 
         response = Response(data={"detail": "success", "code": SUCCESS}, status=200)
-        set_token_cookies(response, tokens_pair_dto.access_token, tokens_pair_dto.refresh_token)
+
+        gateway.cookie_service.set_access_token_to_cookies(
+            cast(CookiesResponseProtocol, response), tokens_pair_dto.access_token
+        )
+        gateway.cookie_service.set_refresh_token_to_cookies(
+            cast(CookiesResponseProtocol, response), tokens_pair_dto.refresh_token
+        )
         logger.info("Tokens has been set to cookies.")
+        # C:\Users\Smile\Main\Projects\2025\StartHub\starthub\presentation\views\auth.py:34: error: Argument 1 to "set_access_token_to_cookies" of "CookieService" has incompatible type "Response"; expected "CookiesResponseProtocol"  [arg-type]
 
         return response
 
@@ -79,7 +70,10 @@ class ReissueAccessTokenView(APIView):
             return CommonErrorResponseFactory.create_response(e)
 
         response = Response(data={"detail": "success", "code": SUCCESS}, status=200)
-        set_token_cookies(response, access_token_dto.access_token)
+        gateway.cookie_service.set_access_token_to_cookies(
+            cast(CookiesResponseProtocol, response), access_token_dto.access_token
+        )
+        logger.debug("Access token has set to cookies")
         return response
 
 
@@ -96,4 +90,16 @@ class AccessVerifyView(APIView):
         return Response(asdict(access_payload_dto), status=status.HTTP_200_OK)
 
 
-# TODO: Add logout
+class LogoutView(APIView):
+    error_classes: tuple[type[Exception], ...] = tuple(CommonErrorResponseFactory.error_codes.keys())
+
+    def post(self, request: Request) -> Response:
+        logger.info("POST /auth/logout/")
+        try:
+            response = Response({"detail": SUCCESS}, status.HTTP_200_OK)
+            gateway.cookie_service.remove_access_token_from_cookies(response=cast(CookiesResponseProtocol, response))
+            gateway.cookie_service.remove_refresh_token_from_cookies(response=cast(CookiesResponseProtocol, response))
+        except self.error_classes as e:
+            return CommonErrorResponseFactory.create_response(e)
+
+        return response

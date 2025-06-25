@@ -37,7 +37,7 @@ class TestLogin(TestCase):
 
     def test_successful_login(self) -> None:
         response = self.client.post(self.login_url, data=self.valid_credentials, content_type=self.content_type)
-
+        logger.debug(f"{response.cookies=}")
         access: str = response.cookies.get("access_token").value  # type: ignore
         refresh: str = response.cookies.get("refresh_token").value  # type: ignore
 
@@ -56,6 +56,20 @@ class TestLogin(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["code"], SUCCESS)
+
+    def test_successful_logout(self) -> None:
+        response = self.client.post(self.login_url, data=self.valid_credentials, content_type=self.content_type)
+        self.client.cookies["access_token"] = response.cookies.get("access_token")
+        self.client.cookies["refresh_token"] = response.cookies.get("refresh_token")
+
+        self.assertIn("access_token", self.client.cookies)
+        self.assertIn("refresh_token", self.client.cookies)
+
+        logout_url = reverse("logout")
+        logout_response = self.client.post(logout_url)
+
+        self.assertEqual(logout_response.cookies.get("access_token").value, str())
+        self.assertEqual(logout_response.cookies.get("refresh_token").value, str())
 
     def test_another_email(self) -> None:
         self.valid_credentials["email"] = "another-email@example.com"
