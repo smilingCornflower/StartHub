@@ -42,7 +42,4 @@ def request_to_news_update_command(
 
 
 def request_to_news_filter(request_data: dict[str, Any]) -> NewsFilter:
-    return NewsFilter(
-        last_id=request_data["last_id"] if "last_id" in request_data else None,
-        limit=get_required_field(request_data, "limit"),
-    )
+    return NewsFilter()

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.role import Role
 from domain.ports.repository import AbstractReadRepository
-from domain.value_objects.common import Id
+from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import RoleFilter
 
 
@@ -13,5 +13,5 @@ class RoleReadRepository(AbstractReadRepository[Role, RoleFilter], ABC):
         pass
 
     @abstractmethod
-    def get_all(self, filter_: RoleFilter) -> list[Role]:
+    def get_all(self, filter_: RoleFilter, pagination: Pagination | None = None) -> list[Role]:
         pass

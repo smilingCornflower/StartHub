@@ -1,9 +1,9 @@
 from pprint import pformat
 from typing import Any
 
+from application.converters.request_converters.common import request_to_pagination
 from application.converters.request_converters.news import (
     request_to_news_create_command,
-    request_to_news_filter,
     request_to_news_update_command,
 )
 from application.converters.resposne_converters.news import news_to_dto
@@ -19,7 +19,7 @@ from domain.exceptions.permissions import (
 from domain.models.news import News
 from domain.services.news import NewsService
 from domain.services.permission import PermissionService
-from domain.value_objects.common import Id
+from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import NewsFilter
 from domain.value_objects.news import NewsCreateCommand, NewsUpdateCommand
 from domain.value_objects.user import PermissionVo
@@ -37,8 +37,8 @@ class NewsAppService(AbstractAppService):
             news_dto: NewsDto = news_to_dto(news)
             return [news_dto]
         else:
-            news_filter: NewsFilter = request_to_news_filter(request_data=request_data)
-            news_lst: list[News] = self._news_service.get_many(filter_=news_filter)
+            pagination: Pagination = request_to_pagination(request_data=request_data)
+            news_lst: list[News] = self._news_service.get_many(filter_=NewsFilter(), pagination=pagination)
             return [news_to_dto(i) for i in news_lst]
 
     def create(self, request_data: dict[str, Any], request_files: dict[str, UploadedFile], user_id: int) -> News:

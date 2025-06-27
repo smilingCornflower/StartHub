@@ -24,20 +24,19 @@ class ProjectView(APIView):
     parser_classes = [MultiPartParser]
     error_classes: tuple[type[Exception], ...] = tuple(ProjectErrorResponseFactory.error_codes.keys())
 
-    @staticmethod
-    def get(request: Request, project_id: int | None = None) -> Response:
+    def get(self, request: Request, project_id: int | None = None) -> Response:
         logger.info("GET project request", project_id=project_id, query_params=request.query_params)
 
-        if project_id:
-            try:
+        try:
+            if project_id:
                 project: ProjectDto = gateway.project_app_service.get_by_id(project_id=project_id)
                 return Response(asdict(project), status=status.HTTP_200_OK)
-            except ProjectNotFoundException:
-                return Response(
-                    {"detail": f"Project with id = {project_id} not found."}, status=status.HTTP_404_NOT_FOUND
-                )
 
-        projects: list[ProjectDto] = gateway.project_app_service.get(request.query_params)
+            projects: list[ProjectDto] = gateway.project_app_service.get(request.query_params)
+        except self.error_classes as e:
+            logger.error(f"Exception: {e}")
+            return ProjectErrorResponseFactory.create_response(e)
+
         return Response(map(asdict, projects), status=status.HTTP_200_OK)
 
     def post(self, request: Request) -> Response:

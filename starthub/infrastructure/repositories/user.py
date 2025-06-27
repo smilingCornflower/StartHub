@@ -3,7 +3,7 @@ from datetime import UTC, datetime
 from domain.exceptions.user import UserNotFoundException
 from domain.models.user import User
 from domain.repositories.user import UserReadRepository, UserWriteRepository
-from domain.value_objects.common import Id
+from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import UserFilter
 from domain.value_objects.user import Email, UserCreatePayload, UserUpdatePayload
 
@@ -17,7 +17,7 @@ class DjUserReadRepository(UserReadRepository):
             raise UserNotFoundException(f"An user with id = {id_.value} not found.")
         return user
 
-    def get_all(self, filter_: UserFilter) -> list[User]:
+    def get_all(self, filter_: UserFilter, pagination: Pagination | None = None) -> list[User]:
         if filter_.id_:
             return list(User.objects.filter(id=filter_.id_.value))
         if filter_.email:

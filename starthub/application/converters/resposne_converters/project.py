@@ -2,7 +2,7 @@ from application.dto.project import CategoryDto, CompanyDto, CompanyFounderDto, 
 from domain.models.project import Project
 
 
-def project_to_dto(project: Project) -> ProjectDto:
+def project_to_dto(project: Project, image_links: list[str] | None = None) -> ProjectDto:
     return ProjectDto(
         id=project.id,
         name=project.name,
@@ -21,6 +21,7 @@ def project_to_dto(project: Project) -> ProjectDto:
                 description=project.company.founder.description,
             ),
         ),
+        images=list() if image_links is None else image_links,
         category=CategoryDto(
             id=project.category.id,
             name=project.category.name,

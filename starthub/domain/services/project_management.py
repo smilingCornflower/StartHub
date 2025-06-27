@@ -33,7 +33,7 @@ from domain.value_objects.cloud_storage import (
     CloudStorageDeletePayload,
     CloudStorageUploadPayload,
 )
-from domain.value_objects.common import Id, Order
+from domain.value_objects.common import Id, Order, Pagination
 from domain.value_objects.filter import ProjectFilter, ProjectImageFilter, ProjectPhoneFilter, ProjectSocialLinkFilter
 from domain.value_objects.project_management import (
     ProjectCreatePayload,
@@ -122,6 +122,7 @@ class ProjectService(AbstractDomainService):
         cloud_storage: AbstractCloudStorage,
         pdf_service: PdfService,
     ):
+        # TODO: cloud service and pdf_service violates domain & application logic. It is need to move these services to application layer
         self._project_read_repository = project_read_repository
         self._project_write_repository = project_write_repository
         self._project_category_read_repository = project_category_read_repository
@@ -136,8 +137,8 @@ class ProjectService(AbstractDomainService):
         """:raises ProjectNotFoundException:"""
         return self._project_read_repository.get_by_id(id_=id_)
 
-    def get(self, filter_: ProjectFilter) -> list[Project]:
-        return self._project_read_repository.get_all(filter_=filter_)
+    def get(self, filter_: ProjectFilter, pagination: Pagination) -> list[Project]:
+        return self._project_read_repository.get_all(filter_=filter_, pagination=pagination)
 
     def get_plan_url(self, project_id: Id) -> str:
         plan_path = PathProvider.get_project_plan_path(project_id)
@@ -237,6 +238,7 @@ class ProjectImageService(AbstractDomainService):
         project_read_repository: ProjectReadRepository,
         cloud_storage: AbstractCloudStorage,
     ):
+        # TODO: move cloud_storage to application layer
         self._project_image_read_repository = project_image_read_repository
         self._project_image_write_repository = project_image_write_repository
         self._project_read_repository = project_read_repository
@@ -277,6 +279,12 @@ class ProjectImageService(AbstractDomainService):
         logger.debug("project_image created successfully.")
 
         return project_image
+
+    def get_paths(self, project_id: Id) -> list[str]:
+        project_images: list[ProjectImage] = self._project_image_read_repository.get_all(
+            ProjectImageFilter(project_id=project_id)
+        )
+        return [i.file_path for i in project_images]
 
     def get_urls(self, project_id: Id) -> list[str]:
         """:raises ProjectNotFoundException:"""

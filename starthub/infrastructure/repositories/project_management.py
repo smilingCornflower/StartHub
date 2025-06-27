@@ -26,7 +26,7 @@ from domain.repositories.project_management import (
     TeamMemberReadRepository,
     TeamMemberWriteRepository,
 )
-from domain.value_objects.common import Id, Slug
+from domain.value_objects.common import Id, Pagination, Slug
 from domain.value_objects.filter import (
     FundingModelFilter,
     ProjectCategoryFilter,
@@ -61,14 +61,21 @@ class DjProjectReadRepository(ProjectReadRepository):
             raise ProjectNotFoundException(f"Project with id = {id_.value} not found.")
         return project
 
-    def get_all(self, filter_: ProjectFilter) -> list[Project]:
-        queryset = Project.objects.all()
+    def get_all(self, filter_: ProjectFilter, pagination: Pagination | None = None) -> list[Project]:
+        queryset = Project.objects.all().order_by("-id")
 
         if filter_.category_slug:
             queryset = queryset.filter(category__slug=filter_.category_slug.value)
 
+        if pagination and pagination.last_id is not None:
+            queryset = queryset.filter(id__lt=pagination.last_id)
+
         logger.debug(f'SQL statement = {str(queryset.query).replace('"', '')}')
-        return list(queryset.distinct())
+        if pagination:
+            result = list(queryset.distinct()[: pagination.limit])
+        else:
+            result = list(queryset.distinct())
+        return result
 
     def get_by_slug(self, slug: Slug) -> Project:
         """:raises ProjectNotFoundException:"""
@@ -147,7 +154,7 @@ class DjProjectCategoryReadRepository(ProjectCategoryReadRepository):
 
         return project_category
 
-    def get_all(self, filter_: ProjectCategoryFilter) -> list[ProjectCategory]:
+    def get_all(self, filter_: ProjectCategoryFilter, pagination: Pagination | None = None) -> list[ProjectCategory]:
         return list(ProjectCategory.objects.all())
 
 
@@ -159,7 +166,7 @@ class DjProjectPhoneReadRepository(ProjectPhoneReadRepository):
             raise ProjectPhoneNotFoundException(f"Project phone with id = {id_.value} not found.")
         return project_phone
 
-    def get_all(self, filter_: ProjectPhoneFilter) -> list[ProjectPhone]:
+    def get_all(self, filter_: ProjectPhoneFilter, pagination: Pagination | None = None) -> list[ProjectPhone]:
         queryset: QuerySet[ProjectPhone] = ProjectPhone.objects.all()
         if filter_.project_id:
             queryset = queryset.filter(project_id=filter_.project_id.value)
@@ -202,7 +209,9 @@ class DjProjectSocialLinkReadRepository(ProjectSocialLinkReadRepository):
             raise ProjectSocialLinkNotFoundException(f"project social link with id = {id_.value} not found.")
         return social_link
 
-    def get_all(self, filter_: ProjectSocialLinkFilter) -> list[ProjectSocialLink]:
+    def get_all(
+        self, filter_: ProjectSocialLinkFilter, pagination: Pagination | None = None
+    ) -> list[ProjectSocialLink]:
         queryset: QuerySet[ProjectSocialLink] = ProjectSocialLink.objects.all()
         if filter_.project_id:
             queryset = queryset.filter(id=filter_.project_id.value)
@@ -233,7 +242,7 @@ class DjTeamMemberReadRepository(TeamMemberReadRepository):
             raise TeamMemberNotFoundException(f"Team member with id = {id_.value} does not exist.")
         return team_member
 
-    def get_all(self, filter_: TeamMemberFilter) -> list[TeamMember]:
+    def get_all(self, filter_: TeamMemberFilter, pagination: Pagination | None = None) -> list[TeamMember]:
         return list(TeamMember.objects.all())
 
 
@@ -263,7 +272,7 @@ class DjFundingModelReadRepository(FundingModelReadRepository):
             raise FundingModelNotFoundException(f"Funding models with id = {id_.value} does not exist.")
         return funding_model
 
-    def get_all(self, filter_: FundingModelFilter) -> list[FundingModel]:
+    def get_all(self, filter_: FundingModelFilter, pagination: Pagination | None = None) -> list[FundingModel]:
         return list(FundingModel.objects.all())
 
 
@@ -271,7 +280,7 @@ class DjProjectImageReadRepository(ProjectImageReadRepository):
     def get_by_id(self, id_: Id) -> ProjectImage:
         raise NotImplementedError("The method get_by_id() not implemented yet.")
 
-    def get_all(self, filter_: ProjectImageFilter) -> list[ProjectImage]:
+    def get_all(self, filter_: ProjectImageFilter, pagination: Pagination | None = None) -> list[ProjectImage]:
         queryset = ProjectImage.objects.all()
         if filter_.project_id is not None:
             queryset = queryset.filter(project_id=filter_.project_id.value)

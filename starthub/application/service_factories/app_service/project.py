@@ -9,6 +9,7 @@ from application.service_factories.domain_service.project_management import (
     TeamMemberServiceFactory,
 )
 from application.services.project import ProjectAppService
+from infrastructure.cloud_storages.google import google_cloud_storage
 
 
 class ProjectAppServiceFactory(AbstractAppServiceFactory[ProjectAppService]):
@@ -22,4 +23,5 @@ class ProjectAppServiceFactory(AbstractAppServiceFactory[ProjectAppService]):
             company_service=CompanyServiceFactory.create_service(),
             company_founder_service=CompanyFounderServiceFactory.create_service(),
             project_image_service=ProjectImageServiceFactory.create_service(),
+            google_cloud_storage=google_cloud_storage,
         )

@@ -124,3 +124,8 @@ class Description(BaseVo):
 
 class Order(BaseVo):
     value: int
+
+
+class Pagination(BaseVo):
+    last_id: int | None = None
+    limit: int
