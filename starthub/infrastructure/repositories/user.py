@@ -54,6 +54,8 @@ class DjUserWriteRepository(UserWriteRepository):
             user.first_name = data.first_name.value
         if data.last_name:
             user.last_name = data.last_name.value
+        if data.description:
+            user.description = data.description.value
         if data.password:
             user.set_password(data.password.value)
         if data.picture:

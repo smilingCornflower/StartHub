@@ -7,6 +7,7 @@ from django.utils import timezone
 from domain.constants import (
     CHAR_FIELD_MAX_LENGTH,
     CHAR_FIELD_SHORT_LENGTH,
+    DESCRIPTION_MAX_LENGTH,
     NAME_PATTERN,
     PASSWORD_MAX_LENGTH,
     PASSWORD_MIN_LENGTH,
@@ -88,6 +89,7 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
             MaxLengthValidator(PASSWORD_MAX_LENGTH),
         ],
     )
+    description = models.CharField(max_length=DESCRIPTION_MAX_LENGTH, default="", blank=True)
     roles = models.ManyToManyField("domain.Role", default=get_default_role, related_name="users")
 
     is_active = models.BooleanField(default=True)

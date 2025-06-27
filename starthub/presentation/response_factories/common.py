@@ -19,6 +19,7 @@ from domain.exceptions.validation import (
     DateInFutureException,
     InvalidEmailException,
     MissingRequiredFieldException,
+    StringIsTooLongException,
     ValidationException,
 )
 from presentation.constants import APPLICATION_ERROR_CODES
@@ -88,6 +89,7 @@ class LoginErrorResponseFactory(AuthErrorResponseFactory):
 
 class UserErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
+        StringIsTooLongException: ("STRING_TOO_LONG", 422),
         NotSupportedImageFormatException: ("UNSUPPORTED_IMAGE_FORMAT", 400),
         pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
         PasswordValidationException: ("WEAK_PASSWORD", 422),

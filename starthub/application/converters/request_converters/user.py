@@ -1,7 +1,7 @@
 from typing import Any
 
 from django.core.files.uploadedfile import UploadedFile
-from domain.value_objects.common import FirstName, Id, LastName
+from domain.value_objects.common import Description, FirstName, Id, LastName
 from domain.value_objects.user import RawPassword, UserUpdateCommand
 from loguru import logger
 
@@ -20,6 +20,7 @@ def request_to_user_update_command(
     first_name: Any | None = data.get("first_name")
     last_name: Any | None = data.get("last_name")
     password: Any | None = data.get("password")
+    description: Any | None = data.get("description")
 
     result = UserUpdateCommand(id_=Id(value=user_id))
 
@@ -35,4 +36,7 @@ def request_to_user_update_command(
     if password is not None:
         logger.info("password is provided.")
         result.password = RawPassword(value=password)
+    if description is not None:
+        logger.info("description is provided.")
+        result.description = Description(value=description)
     return result

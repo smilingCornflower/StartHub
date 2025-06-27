@@ -12,7 +12,7 @@ from domain.repositories.user_favorite import UserFavoriteReadRepository, UserFa
 from domain.services.file import ImageService
 from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
-from domain.value_objects.common import FirstName, Id, LastName
+from domain.value_objects.common import Description, FirstName, Id, LastName
 from domain.value_objects.filter import UserFavoriteFilter
 from domain.value_objects.user import (
     Email,
@@ -56,6 +56,7 @@ class UserService(AbstractDomainService):
                 id_=command.id_,
                 first_name=command.first_name,
                 last_name=command.last_name,
+                description=command.description,
                 password=command.password,
             )
         )
@@ -103,6 +104,7 @@ class UserService(AbstractDomainService):
             id_=Id(value=user.id),
             first_name=FirstName(value=user.first_name),
             last_name=LastName(value=user.last_name),
+            description=Description(value=user.description),
             email=Email(value=user.email),
             picture=picture_url,
         )
