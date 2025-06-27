@@ -12,7 +12,7 @@ from domain.repositories.user_favorite import UserFavoriteReadRepository, UserFa
 from domain.services.file import ImageService
 from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
-from domain.value_objects.common import FirstName, Id, LastName, Description
+from domain.value_objects.common import Description, FirstName, Id, LastName
 from domain.value_objects.filter import UserFavoriteFilter
 from domain.value_objects.user import (
     Email,

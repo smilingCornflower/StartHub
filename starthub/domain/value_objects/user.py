@@ -9,7 +9,7 @@ from domain.exceptions.validation import EmptyStringException, InvalidEmailExcep
 from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
-from domain.value_objects.common import FirstName, Id, LastName, Description
+from domain.value_objects.common import Description, FirstName, Id, LastName
 from pydantic import field_validator
 
 

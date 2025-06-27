@@ -19,7 +19,8 @@ from domain.exceptions.validation import (
     DateInFutureException,
     InvalidEmailException,
     MissingRequiredFieldException,
-    ValidationException, StringIsTooLongException,
+    StringIsTooLongException,
+    ValidationException,
 )
 from presentation.constants import APPLICATION_ERROR_CODES
 from presentation.ports import ErrorResponseFactory

@@ -1,7 +1,7 @@
 from typing import Any
 
 from django.core.files.uploadedfile import UploadedFile
-from domain.value_objects.common import FirstName, Id, LastName, Description
+from domain.value_objects.common import Description, FirstName, Id, LastName
 from domain.value_objects.user import RawPassword, UserUpdateCommand
 from loguru import logger
 
