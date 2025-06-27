@@ -86,7 +86,7 @@ class ProjectPhone(BaseModel):
 
 
 class ProjectImage(BaseModel):
-    project = models.ForeignKey("domain.Project", on_delete=models.CASCADE, related_name="photos")
+    project = models.ForeignKey("domain.Project", on_delete=models.CASCADE, related_name="images")
     file_path = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
     order = models.SmallIntegerField()
 

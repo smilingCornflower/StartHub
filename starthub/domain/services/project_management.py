@@ -122,6 +122,7 @@ class ProjectService(AbstractDomainService):
         cloud_storage: AbstractCloudStorage,
         pdf_service: PdfService,
     ):
+        # TODO: cloud service and pdf_service violates domain & application logic. It is need to move these services to application layer
         self._project_read_repository = project_read_repository
         self._project_write_repository = project_write_repository
         self._project_category_read_repository = project_category_read_repository
@@ -237,6 +238,7 @@ class ProjectImageService(AbstractDomainService):
         project_read_repository: ProjectReadRepository,
         cloud_storage: AbstractCloudStorage,
     ):
+        # TODO: move cloud_storage to application layer
         self._project_image_read_repository = project_image_read_repository
         self._project_image_write_repository = project_image_write_repository
         self._project_read_repository = project_read_repository
@@ -277,6 +279,12 @@ class ProjectImageService(AbstractDomainService):
         logger.debug("project_image created successfully.")
 
         return project_image
+
+    def get_paths(self, project_id: Id) -> list[str]:
+        project_images: list[ProjectImage] = self._project_image_read_repository.get_all(
+            ProjectImageFilter(project_id=project_id)
+        )
+        return [i.file_path for i in project_images]
 
     def get_urls(self, project_id: Id) -> list[str]:
         """:raises ProjectNotFoundException:"""

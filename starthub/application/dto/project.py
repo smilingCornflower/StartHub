@@ -39,6 +39,7 @@ class ProjectDto:
     name: str
     slug: str
     description: str
+    images: list[str]
     category: CategoryDto
     company: CompanyDto
     creator_id: int

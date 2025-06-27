@@ -31,6 +31,7 @@ from domain.services.project_management import (
     ProjectSocialLinkService,
     TamMemberService,
 )
+from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload
 from domain.value_objects.common import Id
 from domain.value_objects.project_management import (
     ProjectCreateCommand,
@@ -43,6 +44,8 @@ from domain.value_objects.project_management import (
 )
 from loguru import logger
 
+from infrastructure.cloud_storages.google import GoogleCloudStorage
+
 
 class ProjectAppService(AbstractAppService):
     def __init__(
@@ -54,6 +57,7 @@ class ProjectAppService(AbstractAppService):
         company_service: CompanyService,
         company_founder_service: CompanyFounderService,
         project_image_service: ProjectImageService,
+        google_cloud_storage: GoogleCloudStorage,
     ):
         self._project_service = project_service
         self._team_member_service = team_member_service
@@ -62,17 +66,36 @@ class ProjectAppService(AbstractAppService):
         self._company_service = company_service
         self._company_founder_service = company_founder_service
         self._project_image_service = project_image_service
+        self._google_cloud_storage = google_cloud_storage
 
     def get_by_id(self, project_id: int) -> ProjectDto:
         """:raises ProjectNotFoundException:"""
-        return project_to_dto(self._project_service.get_by_id(Id(value=project_id)))
+        project: Project = self._project_service.get_by_id(Id(value=project_id))
+        images: list[str] = self._project_image_service.get_paths(project_id=Id(value=project.id))
+        image_links: list[str] = list()
+        for i in images:
+            image_links.append(self._google_cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=i)))
+        return project_to_dto(project=project, image_links=image_links)
 
     def get(self, data: QueryDict) -> list[ProjectDto]:
         project_filter = request_data_to_project_filter(data)
         logger.debug(f"project_filter = {project_filter}")
 
-        project: list[Project] = self._project_service.get(project_filter)
-        return projects_to_dtos(project)
+        projects: list[Project] = self._project_service.get(project_filter)
+        logger.debug(f"found {len(projects)} projects.")
+        project_dtos: list[ProjectDto] = list()
+
+        for project in projects:
+            images: list[str] = self._project_image_service.get_paths(project_id=Id(value=project.id))
+            logger.debug(f'{images=}')
+            images_links: list[str] = list()
+            if images:
+                first_image: str = images[0]
+                images_links = [self._google_cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=first_image))]
+            project_dtos.append(project_to_dto(project=project, image_links=images_links))
+
+        logger.debug(f"project_dtos amount: {len(project_dtos)}")
+        return project_dtos
 
     def create(self, data: dict[str, Any], files: dict[str, UploadedFile], user_id: int) -> Project:
         logger.warning("Started creating project.")
