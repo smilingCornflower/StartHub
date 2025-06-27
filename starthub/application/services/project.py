@@ -8,6 +8,7 @@ from application.converters.inner.project_command_to_payload import convert_proj
 from application.converters.inner.team_members_create_command_to_payload import (
     convert_team_members_create_command_to_payload,
 )
+from application.converters.request_converters.common import request_to_pagination
 from application.converters.request_converters.project import (
     request_data_to_project_create_command,
     request_data_to_project_filter,
@@ -32,7 +33,7 @@ from domain.services.project_management import (
     TamMemberService,
 )
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload
-from domain.value_objects.common import Id
+from domain.value_objects.common import Id, Pagination
 from domain.value_objects.project_management import (
     ProjectCreateCommand,
     ProjectImageCreateCommand,
@@ -79,19 +80,23 @@ class ProjectAppService(AbstractAppService):
 
     def get(self, data: QueryDict) -> list[ProjectDto]:
         project_filter = request_data_to_project_filter(data)
+        pagination: Pagination = request_to_pagination(request_data=data)
+        logger.debug(f"pagination = {pagination}")
         logger.debug(f"project_filter = {project_filter}")
 
-        projects: list[Project] = self._project_service.get(project_filter)
+        projects: list[Project] = self._project_service.get(filter_=project_filter, pagination=pagination)
         logger.debug(f"found {len(projects)} projects.")
         project_dtos: list[ProjectDto] = list()
 
         for project in projects:
             images: list[str] = self._project_image_service.get_paths(project_id=Id(value=project.id))
-            logger.debug(f'{images=}')
+            logger.debug(f"{images=}")
             images_links: list[str] = list()
             if images:
                 first_image: str = images[0]
-                images_links = [self._google_cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=first_image))]
+                images_links = [
+                    self._google_cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=first_image))
+                ]
             project_dtos.append(project_to_dto(project=project, image_links=images_links))
 
         logger.debug(f"project_dtos amount: {len(project_dtos)}")

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.user import User
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Id
+from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import UserFilter
 from domain.value_objects.user import Email, UserCreatePayload, UserUpdatePayload
 
@@ -14,7 +14,7 @@ class UserReadRepository(AbstractReadRepository[User, UserFilter]):
         pass
 
     @abstractmethod
-    def get_all(self, filter_: UserFilter) -> list[User]:
+    def get_all(self, filter_: UserFilter, pagination: Pagination | None = None) -> list[User]:
         pass
 
     @abstractmethod

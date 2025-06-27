@@ -1,7 +1,7 @@
 from domain.exceptions.user_favorite import UserFavoriteNotFoundException
 from domain.models.user_favorite import UserFavorite
 from domain.repositories.user_favorite import UserFavoriteReadRepository, UserFavoriteWriteRepository
-from domain.value_objects.common import Id
+from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import UserFavoriteFilter
 from domain.value_objects.user_favorite import UserFavoriteCreatePayload, UserFavoriteUpdatePayload
 
@@ -13,7 +13,7 @@ class DjUserFavoriteReadRepository(UserFavoriteReadRepository):
             raise UserFavoriteNotFoundException(f"UserFavorite with id = {id_.value} not found.")
         return user_favorite
 
-    def get_all(self, filter_: UserFavoriteFilter) -> list[UserFavorite]:
+    def get_all(self, filter_: UserFavoriteFilter, pagination: Pagination | None = None) -> list[UserFavorite]:
         queryset = UserFavorite.objects.all()
         if filter_.user_id:
             queryset = queryset.filter(user_id=filter_.user_id.value)

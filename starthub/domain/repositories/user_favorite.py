@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.user_favorite import UserFavorite
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Id
+from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import UserFavoriteFilter
 from domain.value_objects.user_favorite import UserFavoriteCreatePayload, UserFavoriteUpdatePayload
 
@@ -13,7 +13,7 @@ class UserFavoriteReadRepository(AbstractReadRepository[UserFavorite, UserFavori
         """:raises UserFavoriteNotFoundException:"""
 
     @abstractmethod
-    def get_all(self, filter_: UserFavoriteFilter) -> list[UserFavorite]:
+    def get_all(self, filter_: UserFavoriteFilter, pagination: Pagination | None = None) -> list[UserFavorite]:
         pass
 
     @abstractmethod

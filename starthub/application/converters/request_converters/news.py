@@ -1,12 +1,13 @@
 from typing import Any
 
-from application.converters.request_converters.common import get_required_field
 from django.core.files.uploadedfile import UploadedFile
+from loguru import logger
+
+from application.converters.request_converters.common import get_required_field
 from domain.value_objects.common import Id
 from domain.value_objects.file import ImageFile
 from domain.value_objects.filter import NewsFilter
 from domain.value_objects.news import NewsContent, NewsCreateCommand, NewsTitle, NewsUpdateCommand
-from loguru import logger
 
 
 def request_to_news_create_command(
@@ -42,7 +43,4 @@ def request_to_news_update_command(
 
 
 def request_to_news_filter(request_data: dict[str, Any]) -> NewsFilter:
-    return NewsFilter(
-        last_id=request_data["last_id"] if "last_id" in request_data else None,
-        limit=get_required_field(request_data, "limit"),
-    )
+    return NewsFilter()

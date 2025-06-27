@@ -33,7 +33,7 @@ from domain.value_objects.cloud_storage import (
     CloudStorageDeletePayload,
     CloudStorageUploadPayload,
 )
-from domain.value_objects.common import Id, Order
+from domain.value_objects.common import Id, Order, Pagination
 from domain.value_objects.filter import ProjectFilter, ProjectImageFilter, ProjectPhoneFilter, ProjectSocialLinkFilter
 from domain.value_objects.project_management import (
     ProjectCreatePayload,
@@ -137,8 +137,8 @@ class ProjectService(AbstractDomainService):
         """:raises ProjectNotFoundException:"""
         return self._project_read_repository.get_by_id(id_=id_)
 
-    def get(self, filter_: ProjectFilter) -> list[Project]:
-        return self._project_read_repository.get_all(filter_=filter_)
+    def get(self, filter_: ProjectFilter, pagination: Pagination) -> list[Project]:
+        return self._project_read_repository.get_all(filter_=filter_, pagination=pagination)
 
     def get_plan_url(self, project_id: Id) -> str:
         plan_path = PathProvider.get_project_plan_path(project_id)

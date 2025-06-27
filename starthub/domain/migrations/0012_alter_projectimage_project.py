@@ -7,13 +7,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('domain', '0011_alter_news_table'),
+        ("domain", "0011_alter_news_table"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='projectimage',
-            name='project',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='images', to='domain.project'),
+            model_name="projectimage",
+            name="project",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, related_name="images", to="domain.project"
+            ),
         ),
     ]

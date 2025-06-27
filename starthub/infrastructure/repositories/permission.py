@@ -1,7 +1,7 @@
 from domain.exceptions.permissions import PermissionNotFoundException
 from domain.models.permission import Permission
 from domain.repositories.permission import PermissionReadRepository
-from domain.value_objects.common import Id
+from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import PermissionFilter
 
 
@@ -12,7 +12,7 @@ class DjPermissionReadRepository(PermissionReadRepository):
             raise PermissionNotFoundException(f"Permission with id = {id_.value} not found.")
         return permission
 
-    def get_all(self, filter_: PermissionFilter) -> list[Permission]:
+    def get_all(self, filter_: PermissionFilter, pagination: Pagination | None = None) -> list[Permission]:
         queryset = Permission.objects.all()
         if filter_.user_id:
             queryset = queryset.filter(roles__users__id=filter_.user_id.value)

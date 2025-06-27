@@ -1,7 +1,17 @@
 from datetime import date
+from typing import Any
 
 from domain.exceptions.validation import DateIsNotIsoFormatException, MissingRequiredFieldException
 from loguru import logger
+
+from domain.value_objects.common import Pagination
+
+
+def request_to_pagination(request_data: dict[str, Any]) -> Pagination:
+    return Pagination(
+        last_id=request_data["last_id"] if "last_id" in request_data else None,
+        limit=get_required_field(request_data, "limit"),
+    )
 
 
 def get_required_field[T](data: dict[str, T], field: str, field_name_in_exception: str | None = None) -> T:

@@ -7,7 +7,7 @@ from domain.repositories.news import NewsReadRepository, NewsWriteRepository
 from domain.services.file import ImageService
 from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageUploadPayload
-from domain.value_objects.common import Id
+from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import NewsFilter
 from domain.value_objects.news import (
     NewsCreateCommand,
@@ -35,8 +35,8 @@ class NewsService(AbstractDomainService):
     def get_one(self, id_: Id) -> News:
         return self._news_read_repository.get_by_id(id_=id_)
 
-    def get_many(self, filter_: NewsFilter) -> list[News]:
-        news: list[News] = self._news_read_repository.get_all(filter_=filter_)
+    def get_many(self, filter_: NewsFilter, pagination: Pagination) -> list[News]:
+        news: list[News] = self._news_read_repository.get_all(filter_=filter_, pagination=pagination)
         logger.debug(f"Found {len(news)} news")
         return news
 

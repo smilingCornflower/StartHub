@@ -72,5 +72,4 @@ class RoleFilter(AbstractFilter, BaseVo):
 
 
 class NewsFilter(AbstractFilter, BaseVo):
-    last_id: int | None = None
-    limit: int
+    pass

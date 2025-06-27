@@ -4,7 +4,7 @@ from domain.models.funding_model import FundingModel
 from domain.models.project import Project, ProjectImage, ProjectPhone, ProjectSocialLink, TeamMember
 from domain.models.project_category import ProjectCategory
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Id, Slug
+from domain.value_objects.common import Id, Slug, Pagination
 from domain.value_objects.filter import (
     FundingModelFilter,
     ProjectCategoryFilter,
@@ -39,7 +39,7 @@ class ProjectCategoryReadRepository(AbstractReadRepository[ProjectCategory, Proj
         pass
 
     @abstractmethod
-    def get_all(self, filter_: ProjectCategoryFilter) -> list[ProjectCategory]:
+    def get_all(self, filter_: ProjectCategoryFilter, pagination: Pagination | None = None) -> list[ProjectCategory]:
         pass
 
 
@@ -67,7 +67,7 @@ class ProjectPhoneReadRepository(AbstractReadRepository[ProjectPhone, ProjectPho
         pass
 
     @abstractmethod
-    def get_all(self, filter_: ProjectPhoneFilter) -> list[ProjectPhone]:
+    def get_all(self, filter_: ProjectPhoneFilter, pagination: Pagination | None = None) -> list[ProjectPhone]:
         pass
 
 
@@ -94,7 +94,9 @@ class ProjectSocialLinkReadRepository(AbstractReadRepository[ProjectSocialLink, 
         pass
 
     @abstractmethod
-    def get_all(self, filter_: ProjectSocialLinkFilter) -> list[ProjectSocialLink]:
+    def get_all(
+        self, filter_: ProjectSocialLinkFilter, pagination: Pagination | None = None
+    ) -> list[ProjectSocialLink]:
         pass
 
 
@@ -120,7 +122,7 @@ class TeamMemberReadRepository(AbstractReadRepository[TeamMember, TeamMemberFilt
         pass
 
     @abstractmethod
-    def get_all(self, filter_: TeamMemberFilter) -> list[TeamMember]:
+    def get_all(self, filter_: TeamMemberFilter, pagination: Pagination | None = None) -> list[TeamMember]:
         pass
 
 
@@ -148,7 +150,7 @@ class ProjectReadRepository(AbstractReadRepository[Project, ProjectFilter], ABC)
         pass
 
     @abstractmethod
-    def get_all(self, filter_: ProjectFilter) -> list[Project]:
+    def get_all(self, filter_: ProjectFilter, pagination: Pagination | None = None) -> list[Project]:
         pass
 
     @abstractmethod
@@ -180,7 +182,7 @@ class FundingModelReadRepository(AbstractReadRepository[FundingModel, FundingMod
         pass
 
     @abstractmethod
-    def get_all(self, filter_: FundingModelFilter) -> list[FundingModel]:
+    def get_all(self, filter_: FundingModelFilter, pagination: Pagination | None = None) -> list[FundingModel]:
         pass
 
 
@@ -192,7 +194,7 @@ class ProjectImageReadRepository(AbstractReadRepository[ProjectImage, ProjectIma
         pass
 
     @abstractmethod
-    def get_all(self, filter_: ProjectImageFilter) -> list[ProjectImage]:
+    def get_all(self, filter_: ProjectImageFilter, pagination: Pagination | None = None) -> list[ProjectImage]:
         pass
 
     @abstractmethod
