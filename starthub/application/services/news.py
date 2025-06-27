@@ -4,7 +4,6 @@ from typing import Any
 from application.converters.request_converters.common import request_to_pagination
 from application.converters.request_converters.news import (
     request_to_news_create_command,
-    request_to_news_filter,
     request_to_news_update_command,
 )
 from application.converters.resposne_converters.news import news_to_dto

@@ -17,7 +17,8 @@ class DjNewsReadRepository(NewsReadRepository):
         qs = News.objects.all().order_by("-id")
         if pagination and pagination.last_id is not None:
             qs = qs.filter(id__lt=pagination.last_id)
-        qs = qs[: pagination.limit]
+        if pagination:
+            qs = qs[: pagination.limit]
         return list(qs)
 
 

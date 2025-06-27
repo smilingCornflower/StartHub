@@ -4,7 +4,7 @@ from domain.models.funding_model import FundingModel
 from domain.models.project import Project, ProjectImage, ProjectPhone, ProjectSocialLink, TeamMember
 from domain.models.project_category import ProjectCategory
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Id, Slug, Pagination
+from domain.value_objects.common import Id, Pagination, Slug
 from domain.value_objects.filter import (
     FundingModelFilter,
     ProjectCategoryFilter,

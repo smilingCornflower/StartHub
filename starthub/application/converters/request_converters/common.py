@@ -2,9 +2,8 @@ from datetime import date
 from typing import Any
 
 from domain.exceptions.validation import DateIsNotIsoFormatException, MissingRequiredFieldException
-from loguru import logger
-
 from domain.value_objects.common import Pagination
+from loguru import logger
 
 
 def request_to_pagination(request_data: dict[str, Any]) -> Pagination:

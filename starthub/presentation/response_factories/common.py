@@ -15,8 +15,12 @@ from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDe
 from domain.exceptions.project_management import ProjectImageMaxAmountException, ProjectNotFoundException
 from domain.exceptions.user import EmailAlreadyExistsException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
-from domain.exceptions.validation import DateInFutureException, InvalidEmailException, ValidationException, \
-    MissingRequiredFieldException
+from domain.exceptions.validation import (
+    DateInFutureException,
+    InvalidEmailException,
+    MissingRequiredFieldException,
+    ValidationException,
+)
 from presentation.constants import APPLICATION_ERROR_CODES
 from presentation.ports import ErrorResponseFactory
 from rest_framework.response import Response

@@ -26,7 +26,7 @@ from domain.repositories.project_management import (
     TeamMemberReadRepository,
     TeamMemberWriteRepository,
 )
-from domain.value_objects.common import Id, Slug, Pagination
+from domain.value_objects.common import Id, Pagination, Slug
 from domain.value_objects.filter import (
     FundingModelFilter,
     ProjectCategoryFilter,
@@ -71,7 +71,11 @@ class DjProjectReadRepository(ProjectReadRepository):
             queryset = queryset.filter(id__lt=pagination.last_id)
 
         logger.debug(f'SQL statement = {str(queryset.query).replace('"', '')}')
-        return list(queryset.distinct()[:pagination.limit])
+        if pagination:
+            result = list(queryset.distinct()[: pagination.limit])
+        else:
+            result = list(queryset.distinct())
+        return result
 
     def get_by_slug(self, slug: Slug) -> Project:
         """:raises ProjectNotFoundException:"""
