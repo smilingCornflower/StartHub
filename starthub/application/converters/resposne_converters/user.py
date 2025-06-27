@@ -8,6 +8,7 @@ def user_profile_to_dto(profile: UserProfile) -> UserProfileDto:
         id=profile.id_.value,
         first_name=profile.first_name.value,
         last_name=profile.last_name.value,
+        description=profile.description.value,
         email=profile.email.value,
         picture=profile.picture,
     )

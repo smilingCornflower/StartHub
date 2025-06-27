@@ -9,7 +9,7 @@ from domain.exceptions.validation import EmptyStringException, InvalidEmailExcep
 from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
-from domain.value_objects.common import FirstName, Id, LastName
+from domain.value_objects.common import FirstName, Id, LastName, Description
 from pydantic import field_validator
 
 
@@ -65,6 +65,7 @@ class UserUpdatePayload(AbstractUpdatePayload):
     id_: Id
     first_name: FirstName | None = None
     last_name: LastName | None = None
+    description: Description | None = None
     password: RawPassword | None = None
     picture: str | None = None
 
@@ -78,6 +79,7 @@ class UserProfile(BaseVo):
     id_: Id
     first_name: FirstName
     last_name: LastName
+    description: Description
     email: Email
     picture: str | None
 
@@ -87,6 +89,7 @@ class UserUpdateCommand(BaseCommand):
     id_: Id
     first_name: FirstName | None = None
     last_name: LastName | None = None
+    description: Description | None = None
     password: RawPassword | None = None
     picture_data: bytes | None = None
 

@@ -10,7 +10,7 @@ from domain.constants import (
     NAME_PATTERN,
     PASSWORD_MAX_LENGTH,
     PASSWORD_MIN_LENGTH,
-    PASSWORD_PATTERN,
+    PASSWORD_PATTERN, DESCRIPTION_MAX_LENGTH,
 )
 from domain.models.base import BaseModel
 from domain.models.role import get_default_role
@@ -88,6 +88,7 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
             MaxLengthValidator(PASSWORD_MAX_LENGTH),
         ],
     )
+    description = models.CharField(max_length=DESCRIPTION_MAX_LENGTH, default="", blank=True)
     roles = models.ManyToManyField("domain.Role", default=get_default_role, related_name="users")
 
     is_active = models.BooleanField(default=True)
