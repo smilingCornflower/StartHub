@@ -154,6 +154,7 @@ class ProjectCreateCommand(BaseCommand):
     social_links: list[SocialLink]
     phone_number: PhoneNumber
     plan_file: PdfFile
+    images: list[ImageFile]
 
     company_name: CompanyName
     country_code: CountryCode

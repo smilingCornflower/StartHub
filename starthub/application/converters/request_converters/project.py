@@ -4,6 +4,7 @@ from typing import Any, cast
 from application.converters.request_converters.common import get_required_field, parse_date
 from django.core.files.uploadedfile import UploadedFile
 from django.http import QueryDict
+from django.utils.datastructures import MultiValueDict
 from domain.value_objects.common import (
     DeadlineDate,
     Description,
@@ -88,14 +89,14 @@ def _request_data_to_company_founder_create_command(data: dict[str, Any]) -> Com
     )
 
 
-def _request_files_to_project_plan(files: dict[str, UploadedFile]) -> PdfFile:
-    project_plan_file: UploadedFile = get_required_field(files, field="project_plan")
+def _request_files_to_project_plan(files: MultiValueDict[str, UploadedFile]) -> PdfFile:
+    project_plan_file: UploadedFile = get_required_field(cast(dict[str, UploadedFile], files), field="project_plan")
     project_plan_file.seek(0)
     return PdfFile(value=project_plan_file.read())
 
 
 def request_data_to_project_create_command(
-    data: dict[str, str], files: dict[str, UploadedFile], user_id: int
+    data: dict[str, str], files: MultiValueDict[str, UploadedFile], user_id: int
 ) -> ProjectCreateCommand:
     """
     :raises InvalidPhoneNumberException:
@@ -118,6 +119,14 @@ def request_data_to_project_create_command(
     company_data = json.loads(get_required_field(data, field="company"))
     project_plan: PdfFile = _request_files_to_project_plan(files=files)
     country_code = CountryCode(value=get_required_field(company_data, "country_code", "company.country_code"))
+    project_images: list[ImageFile] = list()
+
+    images: list[UploadedFile] = files.getlist("images")
+    for image in images:
+        image.seek(0)
+        project_images.append(ImageFile(value=image.read()))
+    logger.debug("request.FILES -> ImageFile conversion OK")
+
     return ProjectCreateCommand(
         name=ProjectName(value=get_required_field(project_data, field="name")),
         creator_id=Id(value=user_id),
@@ -132,6 +141,7 @@ def request_data_to_project_create_command(
         ],
         phone_number=PhoneNumber(value=get_required_field(project_data, "phone_number")),
         plan_file=project_plan,
+        images=project_images,
         company_name=CompanyName(value=get_required_field(company_data, "name", "company.name")),
         country_code=country_code,
         business_id=BusinessNumber(

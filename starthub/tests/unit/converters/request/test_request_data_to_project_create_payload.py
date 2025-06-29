@@ -8,6 +8,7 @@ from application.converters.request_converters.project import request_data_to_pr
 from config.settings import BASE_DIR
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase
+from django.utils.datastructures import MultiValueDict
 from domain.exceptions.project_management import InvalidProjectStageException, NegativeProjectGoalSumException
 from domain.exceptions.validation import (
     DateInFutureException,
@@ -21,7 +22,9 @@ from domain.exceptions.validation import (
     LastNameIsTooLongException,
     MissingRequiredFieldException,
 )
+from domain.value_objects.file import ImageFile
 from domain.value_objects.project_management import ProjectCreateCommand
+from loguru import logger
 
 
 class TestProjectCreateCommandConversion(SimpleTestCase):
@@ -30,13 +33,12 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
 
         with open(pdf_file, "rb") as f:
             pdf_data: bytes = f.read()
-
         simple_pdf = SimpleUploadedFile(
             name="project_plan.pdf",
             content=pdf_data,
             content_type="application/pdf",
         )
-        self.files = {"project_plan": simple_pdf}
+        self.files = MultiValueDict({"project_plan": [simple_pdf]})
 
         self.valid_data = {
             "project": {
@@ -317,3 +319,30 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
             with self.assertRaises(DateInFutureException):
                 request_data_to_project_create_command(self.prepare_data(test_data), self.files, self.user_id)  # type: ignore
             self.check_raises(DateInFutureException)
+
+    def test_get_images(self):
+        image1: Path = BASE_DIR / "tests/images/frieren.jpg"
+        image2: Path = BASE_DIR / "tests/images/Kawaii.png"
+
+        with open(image1, mode="rb") as img1:
+            img1_data: bytes = img1.read()
+        with open(image2, mode="rb") as img2:
+            img2_data: bytes = img2.read()
+
+        img1_file = SimpleUploadedFile(
+            name="img1.jpg",
+            content=img1_data,
+            content_type="image/jpeg",
+        )
+        img2_file = SimpleUploadedFile(
+            name="img2.png",
+            content=img2_data,
+            content_type="image/png",
+        )
+        self.files.update(MultiValueDict({"images": [img1_file, img2_file]}))
+        command = request_data_to_project_create_command(
+            self.prepare_data(self.valid_data), self.files, user_id=self.user_id
+        )
+        logger.debug(f"{command.images=}")
+        self.assertEqual(len(command.images), 2)
+        self.assertTrue(isinstance(command.images[0], ImageFile))
