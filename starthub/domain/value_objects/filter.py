@@ -19,6 +19,7 @@ class ProjectFilter(AbstractFilter, BaseVo):
     funding_model_slug: Slug | None = None
 
 
+
 class ProjectCategoryFilter(AbstractFilter, BaseVo):
     pass
 
