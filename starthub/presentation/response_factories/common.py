@@ -12,6 +12,13 @@ from domain.exceptions.file import (
 )
 from domain.exceptions.news import NewsContentIsTooLongException, NewsNotFoundException, NewsTitleIsTooLongException
 from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
+from domain.exceptions.project_management import (
+    InvalidProjectStageException,
+    InvalidProjectStatusException,
+    ProjectImageMaxAmountException,
+    ProjectNotFoundException,
+)
+from domain.exceptions.user import EmailAlreadyExistsException
 from domain.exceptions.project_management import ProjectImageMaxAmountException, ProjectNotFoundException
 from domain.exceptions.user import EmailAlreadyExistsException, UserPhoneAlreadyExistException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
@@ -61,6 +68,8 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         PdfFileTooLargeException: ("PDF_FILE_TOO_LARGE", 412),
         ProjectImageMaxAmountException: ("PROJECT_IMAGES_LIMIT_REACHED", 409),
         UpdateDeniedPermissionException: ("UPDATE_PERMISSION_DENIED", 403),
+        InvalidProjectStatusException: ("INVALID_STATUS", 422),
+        InvalidProjectStageException: ("INVALID_STAGE", 422),
     }
 
 
