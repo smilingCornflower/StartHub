@@ -9,6 +9,7 @@ class UserProfileDto:
     description: str
     email: str
     picture: str | None
+    phone_numbers: list[str]
 
 
 @dataclass

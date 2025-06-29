@@ -71,7 +71,7 @@ class DjProjectReadRepository(ProjectReadRepository):
             queryset = queryset.filter(id__lt=pagination.last_id)
 
         logger.debug(f'SQL statement = {str(queryset.query).replace('"', '')}')
-        if pagination:
+        if pagination and pagination.limit is not None:
             result = list(queryset.distinct()[: pagination.limit])
         else:
             result = list(queryset.distinct())

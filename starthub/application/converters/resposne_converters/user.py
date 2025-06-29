@@ -11,6 +11,7 @@ def user_profile_to_dto(profile: UserProfile) -> UserProfileDto:
         description=profile.description.value,
         email=profile.email.value,
         picture=profile.picture,
+        phone_numbers=[i.value for i in profile.phone_numbers],
     )
 
 
