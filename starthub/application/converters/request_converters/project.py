@@ -32,6 +32,7 @@ from domain.value_objects.project_management import (
     ProjectImageUpdateCommand,
     ProjectName,
     ProjectStage,
+    ProjectStatus,
     ProjectUpdateCommand,
     TeamMemberCreateCommand,
 )
@@ -45,6 +46,10 @@ def request_data_to_project_filter(data: QueryDict) -> ProjectFilter:
         filter_.category_slug = Slug(value=cast(str, data.get("category_slug")))
     if data.get("funding_model_slug"):
         filter_.funding_model_slug = Slug(value=cast(str, data.get("funding_model_slug")))
+    if data.get("status"):
+        filter_.status = ProjectStatus(value=cast(str, data.get("status")))
+    if data.get("stage"):
+        filter_.stage = ProjectStage(value=cast(str, data.get("stage")))
 
     return filter_
 

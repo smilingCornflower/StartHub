@@ -1,4 +1,5 @@
 from domain.constants import PROJECT_IMAGES_MAX_AMOUNT
+from domain.enums.project_status import ProjectStatusEnum
 from domain.exceptions import BusinessRuleException
 from domain.exceptions.cloud_storage import FileNotFoundCloudStorageException
 from domain.exceptions.permissions import DeleteDeniedPermissionException, UpdateDeniedPermissionException
@@ -36,6 +37,7 @@ from domain.value_objects.cloud_storage import (
 from domain.value_objects.common import Id, Order, Pagination
 from domain.value_objects.filter import ProjectFilter, ProjectImageFilter, ProjectPhoneFilter, ProjectSocialLinkFilter
 from domain.value_objects.project_management import (
+    ProjectCreateCommand,
     ProjectCreatePayload,
     ProjectImageCreateCommand,
     ProjectImageCreatePayload,
@@ -45,6 +47,7 @@ from domain.value_objects.project_management import (
     ProjectImageUpdatePayload,
     ProjectPhoneCreatePayload,
     ProjectSocialLinkCreatePayload,
+    ProjectStatus,
     ProjectUpdateCommand,
     ProjectUpdatePayload,
     TeamMemberCreatePayload,
@@ -144,7 +147,7 @@ class ProjectService(AbstractDomainService):
         plan_path = PathProvider.get_project_plan_path(project_id)
         return self._cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=plan_path))
 
-    def create(self, payload: ProjectCreatePayload) -> Project:
+    def create(self, command: ProjectCreateCommand) -> Project:
         """
         :raises ProjectCategoryNotFoundException:
         :raises UserNotFoundException:
@@ -152,6 +155,19 @@ class ProjectService(AbstractDomainService):
         :raises CompanyNotFoundException:
         :raises CompanyOwnershipRequiredException:
         """
+        payload = ProjectCreatePayload(
+            name=command.name,
+            description=command.description,
+            category_id=command.category_id,
+            creator_id=command.creator_id,
+            funding_model_id=command.funding_model_id,
+            stage=command.stage,
+            status=ProjectStatus(value=ProjectStatusEnum.UNDER_MODERATION),
+            goal_sum=command.goal_sum,
+            deadline=command.deadline.value,
+            plan_file=command.plan_file,
+        )
+
         self._project_category_read_repository.get_by_id(payload.category_id)
         self._user_read_repository.get_by_id(payload.creator_id)
         self._funding_model_read_repository.get_by_id(payload.funding_model_id)
