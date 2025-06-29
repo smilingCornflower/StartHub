@@ -33,6 +33,7 @@ def project_to_dto(project: Project, image_links: list[str] | None = None) -> Pr
             slug=project.funding_model.slug,
         ),
         stage=project.stage,
+        status=project.status,
         goal_sum=float(project.goal_sum),
         current_sum=float(project.current_sum),
         deadline=project.deadline,

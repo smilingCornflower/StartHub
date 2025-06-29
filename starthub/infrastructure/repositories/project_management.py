@@ -66,6 +66,12 @@ class DjProjectReadRepository(ProjectReadRepository):
 
         if filter_.category_slug:
             queryset = queryset.filter(category__slug=filter_.category_slug.value)
+        if filter_.funding_model_slug:
+            queryset = queryset.filter(funding_model__slug=filter_.funding_model_slug.value)
+        if filter_.status:
+            queryset = queryset.filter(status=filter_.status.value)
+        if filter_.stage:
+            queryset = queryset.filter(stage=filter_.stage.value)
 
         if pagination and pagination.last_id is not None:
             queryset = queryset.filter(id__lt=pagination.last_id)
@@ -95,6 +101,7 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             creator_id=data.creator_id.value,
             funding_model_id=data.funding_model_id.value,
             stage=data.stage.value,
+            status=data.status.value,
             goal_sum=data.goal_sum.value,
             deadline=data.deadline,
         )

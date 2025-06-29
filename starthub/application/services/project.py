@@ -4,7 +4,6 @@ from application.converters.inner.company_founder_command_to_payload import conv
 from application.converters.inner.project_command_to_company_create_command import (
     convert_project_create_command_to_company_create_command,
 )
-from application.converters.inner.project_command_to_payload import convert_project_create_command_to_payload
 from application.converters.inner.team_members_create_command_to_payload import (
     convert_team_members_create_command_to_payload,
 )
@@ -109,7 +108,7 @@ class ProjectAppService(AbstractAppService):
         command: ProjectCreateCommand = request_data_to_project_create_command(data, files, user_id)
         logger.debug(f"Command = {command}")
         with transaction.atomic():
-            project: Project = self._project_service.create(convert_project_create_command_to_payload(command))
+            project: Project = self._project_service.create(command=command)
             company: Company = self._company_service.create(
                 convert_project_create_command_to_company_create_command(command, project_id=Id(value=project.id))
             )

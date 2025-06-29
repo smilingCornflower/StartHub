@@ -3,6 +3,7 @@ from domain.value_objects import BaseVo
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
 from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode
+from domain.value_objects.project_management import ProjectStage, ProjectStatus
 from domain.value_objects.user import Email
 
 
@@ -17,7 +18,8 @@ class ProjectFilter(AbstractFilter, BaseVo):
     id_: Id | None = None
     category_slug: Slug | None = None
     funding_model_slug: Slug | None = None
-
+    status: ProjectStatus | None = None
+    stage: ProjectStage | None = None
 
 
 class ProjectCategoryFilter(AbstractFilter, BaseVo):

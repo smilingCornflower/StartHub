@@ -48,3 +48,4 @@ class ProjectDto:
     current_sum: float
     deadline: date
     stage: str
+    status: str

@@ -94,3 +94,12 @@ class ProjectStageException(ProjectException):
 
 class InvalidProjectStageException(ValidationException, ProjectStageException):
     pass
+
+
+# ==== Project Status Exceptions ====
+class ProjectStatusException(ProjectException):
+    pass
+
+
+class InvalidProjectStatusException(ValidationException, ProjectStatusException):
+    pass
