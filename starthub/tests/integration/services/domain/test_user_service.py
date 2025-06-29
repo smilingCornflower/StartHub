@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any, cast
 
+from application.service_factories.domain_service.user import UserServiceFactory
 from config.settings import BASE_DIR
 from django.test import TestCase
 from domain.constants import StorageLocations
@@ -35,12 +36,7 @@ class TestUserService(TestCase):
             "first_name": "name",
             "last_name": "surname",
         }
-        cls.user_service = UserService(
-            cloud_storage=google_cloud_storage,
-            user_read_repository=DjUserReadRepository(),
-            user_write_repository=DjUserWriteRepository(),
-            image_service=ImageService(),
-        )
+        cls.user_service = UserServiceFactory.create_service()
         cls.image_path = BASE_DIR / "tests/images/frieren.jpg"
 
     def test_upload_profile_picture(self) -> None:
