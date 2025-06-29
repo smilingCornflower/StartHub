@@ -40,8 +40,8 @@ class ProjectView(APIView):
         return Response(map(asdict, projects), status=status.HTTP_200_OK)
 
     def post(self, request: Request) -> Response:
-        logger.info(f"request_data = {request.data}")
-        logger.info(f"request files = {request.FILES}")
+        logger.info(f"request_data = {request.data} \n\t {type(request.data)=}")
+        logger.info(f"request files = {request.FILES} \n\t {type(request.FILES)=}")
         try:
             access_dto = get_access_payload_dto(request.COOKIES)
             project: Project = gateway.project_app_service.create(

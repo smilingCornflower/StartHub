@@ -21,6 +21,7 @@ from application.ports.service import AbstractAppService
 from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction
 from django.http import QueryDict
+from django.utils.datastructures import MultiValueDict
 from domain.models.company import Company, CompanyFounder
 from domain.models.project import Project, ProjectPhone, TeamMember
 from domain.services.company import CompanyFounderService, CompanyService
@@ -101,7 +102,7 @@ class ProjectAppService(AbstractAppService):
         logger.debug(f"project_dtos amount: {len(project_dtos)}")
         return project_dtos
 
-    def create(self, data: dict[str, Any], files: dict[str, UploadedFile], user_id: int) -> Project:
+    def create(self, data: dict[str, Any], files: MultiValueDict[str, UploadedFile], user_id: int) -> Project:
         logger.warning("Started creating project.")
         logger.debug(f"{data=}")
 
@@ -118,6 +119,14 @@ class ProjectAppService(AbstractAppService):
                 convert_company_founder_command_to_payload(command.company_founder, Id(value=company.id))
             )
             logger.info(f"A company_founder created successfully. Founder id = {founder.id}")
+
+            for image in command.images:
+                self._project_image_service.create(
+                    command=ProjectImageCreateCommand(
+                        user_id=Id(value=user_id), project_id=Id(value=project.id), image_file=image
+                    )
+                )
+                logger.debug("ProjectImage uploaded successfully.")
 
             for member_payload in convert_team_members_create_command_to_payload(
                 command.team_members, Id(value=project.id)
