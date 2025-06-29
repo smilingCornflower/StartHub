@@ -1,11 +1,23 @@
 from datetime import UTC, datetime
 
 from domain.exceptions.user import UserNotFoundException
-from domain.models.user import User
-from domain.repositories.user import UserReadRepository, UserWriteRepository
-from domain.value_objects.common import Id, Pagination
-from domain.value_objects.filter import UserFilter
-from domain.value_objects.user import Email, UserCreatePayload, UserUpdatePayload
+from domain.models.user import User, UserPhone
+from domain.repositories.user import (
+    UserPhoneReadRepository,
+    UserPhoneWriteRepository,
+    UserReadRepository,
+    UserWriteRepository,
+)
+from domain.value_objects.common import Id, Pagination, PhoneNumber
+from domain.value_objects.filter import UserFilter, UserPhoneFilter
+from domain.value_objects.user import (
+    Email,
+    UserCreatePayload,
+    UserPhoneCreatePayload,
+    UserPhoneUpdatePayload,
+    UserUpdatePayload,
+)
+from loguru import logger
 
 
 class DjUserReadRepository(UserReadRepository):
@@ -73,3 +85,35 @@ class DjUserWriteRepository(UserWriteRepository):
     def update_last_login(self, user: User) -> None:
         user.last_login = datetime.now(UTC)
         user.save()
+
+
+class DjUserPhoneReadRepository(UserPhoneReadRepository):
+    def get_by_id(self, id_: Id) -> UserPhone:
+        raise NotImplementedError("The method get_by_id() not implemented yet.")
+
+    def get_all(self, filter_: UserPhoneFilter, pagination: Pagination | None = None) -> list[UserPhone]:
+        qs = UserPhone.objects.all()
+
+        if filter_.user_id is not None:
+            qs = qs.filter(user_id=filter_.user_id.value)
+        if filter_.phone is not None:
+            qs = qs.filter(number=filter_.phone.value)
+        logger.debug(qs.query)
+        return list(qs.distinct())
+
+
+class DjUserPhoneWriteRepository(UserPhoneWriteRepository):
+    def create(self, data: UserPhoneCreatePayload) -> UserPhone:
+        return UserPhone.objects.create(user_id=data.user_id.value, number=data.phone.value)
+
+    def update(self, data: UserPhoneUpdatePayload) -> UserPhone:
+        raise NotImplementedError("The method update() not implemented yet.")
+
+    def delete_by_id(self, id_: Id) -> None:
+        raise NotImplementedError("The method delete_by_id() not implemented yet.")
+
+    def delete_by_phone(self, phone: PhoneNumber) -> None:
+        try:
+            UserPhone.objects.get(number=phone.value).delete()
+        except UserPhone.DoesNotExist:
+            logger.info("Phone not found. Ignoring this exception as delete is idempotent.")

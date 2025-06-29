@@ -73,3 +73,8 @@ class RoleFilter(AbstractFilter, BaseVo):
 
 class NewsFilter(AbstractFilter, BaseVo):
     pass
+
+
+class UserPhoneFilter(AbstractFilter, BaseVo):
+    user_id: Id | None = None
+    phone: PhoneNumber | None = None

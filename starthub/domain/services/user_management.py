@@ -1,22 +1,28 @@
 from io import BytesIO
 
-from domain.exceptions.user import ProfilePictureNotFoundException
+from domain.exceptions.user import ProfilePictureNotFoundException, UserPhoneAlreadyExistException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
-from domain.models.user import User
+from domain.models.user import User, UserPhone
 from domain.models.user_favorite import UserFavorite
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project_management import ProjectReadRepository
-from domain.repositories.user import UserReadRepository, UserWriteRepository
+from domain.repositories.user import (
+    UserPhoneReadRepository,
+    UserPhoneWriteRepository,
+    UserReadRepository,
+    UserWriteRepository,
+)
 from domain.repositories.user_favorite import UserFavoriteReadRepository, UserFavoriteWriteRepository
 from domain.services.file import ImageService
 from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
-from domain.value_objects.common import Description, FirstName, Id, LastName
-from domain.value_objects.filter import UserFavoriteFilter
+from domain.value_objects.common import Description, FirstName, Id, LastName, PhoneNumber
+from domain.value_objects.filter import UserFavoriteFilter, UserPhoneFilter
 from domain.value_objects.user import (
     Email,
     ProfilePictureUploadCommand,
+    UserPhoneCreatePayload,
     UserProfile,
     UserUpdateCommand,
     UserUpdatePayload,
@@ -31,29 +37,49 @@ class UserService(AbstractDomainService):
         cloud_storage: AbstractCloudStorage,
         user_read_repository: UserReadRepository,
         user_write_repository: UserWriteRepository,
+        user_phone_write_repository: UserPhoneWriteRepository,
+        user_phone_read_repository: UserPhoneReadRepository,
         image_service: ImageService,
     ):
         self._cloud_storage = cloud_storage
         self._user_read_repository = user_read_repository
         self._user_write_repository = user_write_repository
+        self._user_phone_write_repository = user_phone_write_repository
+        self._user_phone_read_repository = user_phone_read_repository
         self._image_service = image_service
 
     def update_user(self, command: UserUpdateCommand) -> None:
         """
         :raises UserNotFoundException:
         :raises NotSupportedImageFormat:
+        :raises UserPhoneAlreadyExistException:
         """
 
         if command.picture_data:
             self.upload_profile_picture(
                 ProfilePictureUploadCommand(
-                    user_id=command.id_,
+                    user_id=command.user_id,
                     file_data=command.picture_data,
                 )
             )
+        if command.add_phone:
+            search_result: list[UserPhone] = self._user_phone_read_repository.get_all(
+                UserPhoneFilter(user_id=command.user_id, phone=command.add_phone)
+            )
+            if search_result:
+                logger.exception("UserPhone already exist.")
+                raise UserPhoneAlreadyExistException(phone=command.add_phone.value)
+            self._user_phone_write_repository.create(
+                data=UserPhoneCreatePayload(user_id=command.user_id, phone=command.add_phone)
+            )
+            logger.debug(f"user_phone {command.add_phone} added.")
+        if command.remove_phone:
+            self._user_phone_write_repository.delete_by_phone(command.remove_phone)
+            logger.debug(f"user_phone {command.remove_phone} removed.")
+
         self._user_write_repository.update(
             UserUpdatePayload(
-                id_=command.id_,
+                id_=command.user_id,
                 first_name=command.first_name,
                 last_name=command.last_name,
                 description=command.description,
@@ -100,6 +126,8 @@ class UserService(AbstractDomainService):
         if user.picture:
             picture_url = self._cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=user.picture))
 
+        phones: list[UserPhone] = self._user_phone_read_repository.get_all(UserPhoneFilter(user_id=user_id))
+        logger.debug(f"phones = {phones}")
         return UserProfile(
             id_=Id(value=user.id),
             first_name=FirstName(value=user.first_name),
@@ -107,6 +135,7 @@ class UserService(AbstractDomainService):
             description=Description(value=user.description),
             email=Email(value=user.email),
             picture=picture_url,
+            phone_numbers=[PhoneNumber(value=i.number) for i in phones],
         )
 
 

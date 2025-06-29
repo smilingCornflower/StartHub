@@ -13,7 +13,7 @@ from domain.exceptions.file import (
 from domain.exceptions.news import NewsContentIsTooLongException, NewsNotFoundException, NewsTitleIsTooLongException
 from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
 from domain.exceptions.project_management import ProjectImageMaxAmountException, ProjectNotFoundException
-from domain.exceptions.user import EmailAlreadyExistsException
+from domain.exceptions.user import EmailAlreadyExistsException, UserPhoneAlreadyExistException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
 from domain.exceptions.validation import (
     DateInFutureException,
@@ -93,6 +93,7 @@ class UserErrorResponseFactory(CommonErrorResponseFactory):
         NotSupportedImageFormatException: ("UNSUPPORTED_IMAGE_FORMAT", 400),
         pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
         PasswordValidationException: ("WEAK_PASSWORD", 422),
+        UserPhoneAlreadyExistException: ("USER_PHONE_ALREADY_EXISTS", 409),
     }
 
 

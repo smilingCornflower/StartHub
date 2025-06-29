@@ -119,3 +119,21 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
     @classmethod
     def get_permission_key(cls) -> str:
         return "user"
+
+
+class UserPhone(BaseModel):
+    user = models.ForeignKey("domain.User", on_delete=models.CASCADE, related_name="phones")
+    number = models.CharField(max_length=20, unique=True)
+
+    class Meta:
+        db_table = "user_phones"
+
+    def __str__(self) -> str:
+        return self.number
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(user_id={self.user.id}, number={self.number})"
+
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "user_phone"

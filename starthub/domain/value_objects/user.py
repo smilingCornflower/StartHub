@@ -9,7 +9,7 @@ from domain.exceptions.validation import EmptyStringException, InvalidEmailExcep
 from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
-from domain.value_objects.common import Description, FirstName, Id, LastName
+from domain.value_objects.common import Description, FirstName, Id, LastName, PhoneNumber
 from pydantic import field_validator
 
 
@@ -82,16 +82,19 @@ class UserProfile(BaseVo):
     description: Description
     email: Email
     picture: str | None
+    phone_numbers: list[PhoneNumber]
 
 
 # Commands
 class UserUpdateCommand(BaseCommand):
-    id_: Id
+    user_id: Id
     first_name: FirstName | None = None
     last_name: LastName | None = None
     description: Description | None = None
     password: RawPassword | None = None
     picture_data: bytes | None = None
+    add_phone: PhoneNumber | None = None
+    remove_phone: PhoneNumber | None = None
 
 
 class PermissionVo(BaseVo):
@@ -131,3 +134,12 @@ class PermissionVo(BaseVo):
                 raise ValueError("Field name must be lowercase and valid Python identifier")
 
         return value
+
+
+class UserPhoneCreatePayload(AbstractCreatePayload):
+    user_id: Id
+    phone: PhoneNumber
+
+
+class UserPhoneUpdatePayload(AbstractUpdatePayload):
+    pass
