@@ -18,8 +18,6 @@ from domain.exceptions.project_management import (
     ProjectImageMaxAmountException,
     ProjectNotFoundException,
 )
-from domain.exceptions.user import EmailAlreadyExistsException
-from domain.exceptions.project_management import ProjectImageMaxAmountException, ProjectNotFoundException
 from domain.exceptions.user import EmailAlreadyExistsException, UserPhoneAlreadyExistException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
 from domain.exceptions.validation import (
