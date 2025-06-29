@@ -16,8 +16,6 @@ class TestRegistrationService(TestCase):
 
     def test_success_registration(self) -> None:
         payload = UserCreatePayload(
-            first_name=FirstName(value="first_name"),
-            last_name=LastName(value="last_name"),
             email=Email(value="test@example.com"),
             password=RawPassword(value="Pass1234"),
         )
@@ -29,8 +27,6 @@ class TestRegistrationService(TestCase):
             first_name="first_name", last_name="last_name", email="test@example.com", password="Pass1234"
         )
         payload = UserCreatePayload(
-            first_name=FirstName(value="first_name"),
-            last_name=LastName(value="last_name"),
             email=Email(value="test@example.com"),
             password=RawPassword(value="Pass1234"),
         )
