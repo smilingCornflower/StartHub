@@ -4,6 +4,7 @@ from application.converters.request_converters.auth import (
     request_data_to_email,
     request_data_to_login_credentials,
     request_data_to_user_create_payload,
+    request_headers_to_access_token,
 )
 from application.converters.resposne_converters.auth import (
     access_payload_to_dto,
@@ -96,3 +97,14 @@ class AuthAppService(AbstractAppService):
 
         access_payload_dto: AccessPayloadDto = access_payload_to_dto(access_payload)
         return access_payload_dto
+
+    def verify_access_from_headers(self, headers: dict[str, str]) -> AccessPayloadDto:
+        """
+        :raises MissingRequiredFieldException:
+        :raises pydantic.ValidationError:
+        :raises InvalidTokenException:
+        :raises TokenExpiredException:
+        """
+        access_token: AccessTokenVo = request_headers_to_access_token(headers=headers)
+        access_payload: AccessPayload = self._token_service.verify_access(access_token)
+        return access_payload_to_dto(access_payload)

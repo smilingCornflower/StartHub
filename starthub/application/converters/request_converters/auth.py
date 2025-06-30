@@ -1,3 +1,6 @@
+import re
+
+from application.converters.request_converters.common import get_required_field
 from domain.exceptions.auth import MissingAccessTokenException
 from domain.exceptions.validation import MissingRequiredFieldException, ValidationException
 from domain.value_objects.auth import LoginCredentials
@@ -76,3 +79,20 @@ def request_data_to_email(data: dict[str, str]) -> Email:
         return Email(value=data["email"])
     except KeyError:
         raise MissingRequiredFieldException("Missing required fields: email must be provided.")
+
+
+def request_headers_to_access_token(headers: dict[str, str]) -> AccessTokenVo:
+    """
+    :raises MissingRequiredFieldException:
+    :raises pydantic.ValidationError:
+    """
+
+    auth_header: str = get_required_field(headers, "Authorization")
+    bearer_token_regex = r"^Bearer\s(.+)$"
+    match: re.Match[str] | None = re.match(bearer_token_regex, auth_header)
+    if match:
+        logger.debug("Bearer Token provided.")
+        token: str = match.group(1)
+        return AccessTokenVo(value=token)
+    logger.exception("Failed to get Bearer token from Authorization headers.")
+    raise MissingRequiredFieldException("Failed to get Bearer token from Authorization headers.")
