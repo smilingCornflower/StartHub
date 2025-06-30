@@ -20,27 +20,22 @@ from rest_framework.views import APIView
 
 class LoginView(APIView):
     parser_classes = [JSONParser]
-    error_classes: tuple[type[Exception], ...] = tuple(LoginErrorResponseFactory.error_codes.keys())
 
-    def post(self, request: Request) -> Response:
+    @staticmethod
+    def post(request: Request) -> Response:
         logger.info("POST /auth/login/")
         try:
             tokens_pair_dto: TokenPairDto = gateway.auth_app_service.login(request.data)
-        except self.error_classes as e:
+        except Exception as e:
             logger.error(e)
             return LoginErrorResponseFactory.create_response(e)
 
-        response = Response(data={"detail": "success", "code": SUCCESS}, status=200)
-
-        gateway.cookie_service.set_access_token_to_cookies(
-            cast(CookiesResponseProtocol, response), tokens_pair_dto.access_token
-        )
+        response = Response(data={"access_token": tokens_pair_dto.access_token, "code": SUCCESS}, status=200)
         gateway.cookie_service.set_refresh_token_to_cookies(
             cast(CookiesResponseProtocol, response), tokens_pair_dto.refresh_token
         )
-        logger.info("Tokens has been set to cookies.")
-        # C:\Users\Smile\Main\Projects\2025\StartHub\starthub\presentation\views\auth.py:34: error: Argument 1 to "set_access_token_to_cookies" of "CookieService" has incompatible type "Response"; expected "CookiesResponseProtocol"  [arg-type]
 
+        logger.info("Refresh has been set to cookies.")
         return response
 
 

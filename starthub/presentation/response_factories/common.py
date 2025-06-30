@@ -1,32 +1,14 @@
-from json import JSONDecodeError
 from typing import cast
 
 import pydantic
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
-from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
-from domain.exceptions.file import (
-    ImageFileTooLargeException,
-    NotPdfFileException,
-    NotSupportedImageFormatException,
-    PdfFileTooLargeException,
-)
+from domain.exceptions.file import ImageFileTooLargeException, NotSupportedImageFormatException
 from domain.exceptions.news import NewsContentIsTooLongException, NewsNotFoundException, NewsTitleIsTooLongException
 from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
-from domain.exceptions.project_management import (
-    InvalidProjectStageException,
-    InvalidProjectStatusException,
-    ProjectImageMaxAmountException,
-    ProjectNotFoundException,
-)
+from domain.exceptions.project_management import ProjectNotFoundException
 from domain.exceptions.user import EmailAlreadyExistsException, UserPhoneAlreadyExistException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
-from domain.exceptions.validation import (
-    DateInFutureException,
-    InvalidEmailException,
-    MissingRequiredFieldException,
-    StringIsTooLongException,
-    ValidationException,
-)
+from domain.exceptions.validation import InvalidEmailException, StringIsTooLongException, ValidationException
 from presentation.constants import APPLICATION_ERROR_CODES
 from presentation.ports import ErrorResponseFactory
 from rest_framework.response import Response
@@ -53,21 +35,21 @@ class CommonErrorResponseFactory(ErrorResponseFactory):
 
 
 class ProjectErrorResponseFactory(CommonErrorResponseFactory):
-    error_codes = CommonErrorResponseFactory.error_codes | {
-        KeyError: ("MISSING_REQUIRED_FIELD", 400),
-        MissingRequiredFieldException: ("MISSING_REQUIRED_FIELD", 400),
-        BusinessNumberAlreadyExistsException: ("BUSINESS_NUMBER_ALREADY_EXISTS", 409),
-        JSONDecodeError: ("JSON_DECODE_ERROR", 400),
-        pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
-        NotPdfFileException: ("NOT_PDF_FILE", 400),
-        CompanyNameIsTooLongException: ("COMPANY_NAME_TOO_LONG", 422),
-        DateInFutureException: ("DATE_IN_FUTURE_NOT_ALLOWED", 422),
-        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
-        PdfFileTooLargeException: ("PDF_FILE_TOO_LARGE", 412),
-        ProjectImageMaxAmountException: ("PROJECT_IMAGES_LIMIT_REACHED", 409),
-        UpdateDeniedPermissionException: ("UPDATE_PERMISSION_DENIED", 403),
-        InvalidProjectStatusException: ("INVALID_STATUS", 422),
-        InvalidProjectStageException: ("INVALID_STAGE", 422),
+    error_codes = {
+        # KeyError: ("MISSING_REQUIRED_FIELD", 400),
+        # MissingRequiredFieldException: ("MISSING_REQUIRED_FIELD", 400),
+        # BusinessNumberAlreadyExistsException: ("BUSINESS_NUMBER_ALREADY_EXISTS", 409),
+        # JSONDecodeError: ("JSON_DECODE_ERROR", 400),
+        # pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
+        # NotPdfFileException: ("NOT_PDF_FILE", 400),
+        # CompanyNameIsTooLongException: ("COMPANY_NAME_TOO_LONG", 422),
+        # DateInFutureException: ("DATE_IN_FUTURE_NOT_ALLOWED", 422),
+        # ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+        # PdfFileTooLargeException: ("PDF_FILE_TOO_LARGE", 412),
+        # ProjectImageMaxAmountException: ("PROJECT_IMAGES_LIMIT_REACHED", 409),
+        # UpdateDeniedPermissionException: ("UPDATE_PERMISSION_DENIED", 403),
+        # InvalidProjectStatusException: ("INVALID_STATUS", 422),
+        # InvalidProjectStageException: ("INVALID_STAGE", 422),
     }
 
 

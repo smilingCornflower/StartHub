@@ -5,7 +5,7 @@ from application.dto.project import ProjectDto
 from application.service_factories.app_service.project import ProjectAppServiceFactory
 from application.services.gateway import gateway
 from application.services.project import ProjectAppService
-from application.utils.get_access_payload_dto import get_access_payload_dto
+from application.utils.get_access_payload_dto import get_access_payload_dto, get_access_payload_dto_from_headers
 from domain.exceptions.auth import InvalidTokenException
 from domain.exceptions.project_management import ProjectNotFoundException
 from domain.exceptions.validation import ValidationException
@@ -43,7 +43,7 @@ class ProjectView(APIView):
         logger.info(f"request_data = {request.data} \n\t {type(request.data)=}")
         logger.info(f"request files = {request.FILES} \n\t {type(request.FILES)=}")
         try:
-            access_dto = get_access_payload_dto(request.COOKIES)
+            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
             project: Project = gateway.project_app_service.create(
                 data=request.data, files=request.FILES, user_id=int(access_dto.sub)
             )
@@ -56,7 +56,7 @@ class ProjectView(APIView):
     def patch(self, request: Request, project_id: int) -> Response:
         logger.debug(f"request.data = {request.data}")
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto(request.COOKIES)
+            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
             gateway.project_app_service.update(request.data, request.FILES, project_id, user_id=int(access_dto.sub))
             return Response({"detail": "updated successfully.", "code": SUCCESS}, status=status.HTTP_200_OK)
 
@@ -66,7 +66,7 @@ class ProjectView(APIView):
 
     def delete(self, request: Request, project_id: int) -> Response:
         try:
-            access_dto = get_access_payload_dto(request.COOKIES)
+            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
         except (ValidationException, InvalidTokenException) as e:
             return Response({"detail": str(e), "code": "UNAUTHORIZED"}, status=status.HTTP_400_BAD_REQUEST)
 
