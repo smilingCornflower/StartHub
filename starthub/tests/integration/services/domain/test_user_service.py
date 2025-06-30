@@ -7,12 +7,9 @@ from django.test import TestCase
 from domain.constants import StorageLocations
 from domain.exceptions.user import UserNotFoundException, UserPhoneAlreadyExistException
 from domain.models.user import User
-from domain.services.file import ImageService
 from domain.services.user_management import UserService
 from domain.value_objects.common import Description, FirstName, Id, LastName, PhoneNumber
 from domain.value_objects.user import ProfilePictureUploadCommand, RawPassword, UserProfile, UserUpdateCommand
-from infrastructure.cloud_storages.google import google_cloud_storage
-from infrastructure.repositories.user import DjUserReadRepository, DjUserWriteRepository
 from loguru import logger
 
 

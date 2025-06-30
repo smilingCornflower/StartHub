@@ -2,7 +2,7 @@ import re
 
 from application.converters.request_converters.common import get_required_field
 from domain.exceptions.auth import MissingAccessTokenException
-from domain.exceptions.validation import MissingRequiredFieldException, ValidationException
+from domain.exceptions.validation import MissingRequiredFieldException
 from domain.value_objects.auth import LoginCredentials
 from domain.value_objects.token import AccessTokenVo, RefreshTokenVo
 from domain.value_objects.user import Email, RawPassword, UserCreatePayload
@@ -55,12 +55,8 @@ def request_data_to_login_credentials(data: dict[str, str]) -> LoginCredentials:
 
 
 def request_cookies_to_refresh_token(cookies: dict[str, str]) -> RefreshTokenVo:
-    """:raises ValidationException: If missing 'refresh_token' field."""
-    token: str | None = cookies.get("refresh_token")
-
-    if not token:
-        logger.error("Missing refresh_token field.")
-        raise ValidationException("Missing required field: refresh_token.")
+    """:raises MissingRequiredFieldException: If missing 'refresh_token' field."""
+    token: str = get_required_field(cookies, "refresh_token")
     return RefreshTokenVo(value=token)
 
 

@@ -64,6 +64,7 @@ class AuthAppService(AbstractAppService):
 
     def reissue_access(self, cookies: dict[str, str]) -> AccessTokenDto:
         """
+        :raises MissingRequiredFieldException:
         :raises ValidationException:
         :raises InvalidTokenException:
         """

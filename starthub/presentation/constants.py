@@ -1,6 +1,12 @@
-from domain.exceptions.validation import MissingRequiredFieldException
+import pydantic
+from domain.exceptions.auth import InvalidTokenException, TokenExpiredException
+from domain.exceptions.validation import EmptyStringException, MissingRequiredFieldException
 
 APPLICATION_ERROR_CODES: dict[type, tuple[str, int]] = {
     MissingRequiredFieldException: ("MISSING_REQUIRED_FIELD", 400),
+    pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
+    EmptyStringException: ("EMPTY_VALUE_NOT_ALLOWED", 422),
+    TokenExpiredException: ("TOKEN_EXPIRED", 401),
+    InvalidTokenException: ("INVALID_TOKEN", 401),
 }
 SUCCESS = "SUCCESS"
