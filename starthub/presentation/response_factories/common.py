@@ -17,8 +17,8 @@ from domain.exceptions.project_management import (
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
 )
-from domain.exceptions.user import EmailAlreadyExistsException, UserPhoneAlreadyExistException
-from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
+from domain.exceptions.user import EmailAlreadyExistsException, UserPhoneAlreadyExistException, UserNotFoundException
+from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException, UserFavoriteNotFoundException
 from domain.exceptions.validation import (
     DateInFutureException,
     DisallowedSocialLinkException,
@@ -31,7 +31,7 @@ from domain.exceptions.validation import (
     ValidationException, DeadlineInPastException,
 )
 from loguru import logger
-from presentation.constants import APPLICATION_ERROR_CODES
+from presentation.constants import APPLICATION_ERROR_CODES, SUCCESS
 from presentation.ports import ErrorResponseFactory
 from rest_framework.response import Response
 
@@ -107,6 +107,7 @@ class LoginErrorResponseFactory(CommonErrorResponseFactory):
 
 class UserErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
+        UserNotFoundException: ("USER_NOT_FOUND", 404),
         StringIsTooLongException: ("STRING_TOO_LONG", 422),
         NotSupportedImageFormatException: ("UNSUPPORTED_IMAGE_FORMAT", 400),
         pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
@@ -117,6 +118,9 @@ class UserErrorResponseFactory(CommonErrorResponseFactory):
 
 class UserFavoriteErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
+        # UserFavoriteNotFoundException: ("USER_FAVORITE_NOT_FOUND", 404),
+        UserFavoriteNotFoundException: (SUCCESS, 200),  # ignore
+
         ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
         UserFavoriteAlreadyExistsException: ("USER_FAVORITE_ALREADY_EXISTS", 409),
     }
