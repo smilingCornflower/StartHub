@@ -1,4 +1,7 @@
 from dataclasses import asdict
+from json import JSONDecodeError
+
+import pydantic
 
 from application.dto.auth import AccessPayloadDto
 from application.dto.project import ProjectDto
@@ -6,6 +9,7 @@ from application.service_factories.app_service.project import ProjectAppServiceF
 from application.services.gateway import gateway
 from application.services.project import ProjectAppService
 from application.utils.get_access_payload_dto import get_access_payload_dto, get_access_payload_dto_from_headers
+from domain.exceptions import DomainException
 from domain.exceptions.auth import InvalidTokenException
 from domain.exceptions.project_management import ProjectNotFoundException
 from domain.exceptions.validation import ValidationException
@@ -22,9 +26,9 @@ from rest_framework.views import APIView
 
 class ProjectView(APIView):
     parser_classes = [MultiPartParser]
-    error_classes: tuple[type[Exception], ...] = tuple(ProjectErrorResponseFactory.error_codes.keys())
 
-    def get(self, request: Request, project_id: int | None = None) -> Response:
+    @staticmethod
+    def get(request: Request, project_id: int | None = None) -> Response:
         logger.info("GET project request", project_id=project_id, query_params=request.query_params)
 
         try:
@@ -33,38 +37,39 @@ class ProjectView(APIView):
                 return Response(asdict(project), status=status.HTTP_200_OK)
 
             projects: list[ProjectDto] = gateway.project_app_service.get(request.query_params)
-        except self.error_classes as e:
-            logger.error(f"Exception: {e}")
+        except (DomainException, pydantic.ValidationError) as e:
             return ProjectErrorResponseFactory.create_response(e)
 
         return Response(map(asdict, projects), status=status.HTTP_200_OK)
 
-    def post(self, request: Request) -> Response:
+    @staticmethod
+    def post(request: Request) -> Response:
         logger.info(f"request_data = {request.data} \n\t {type(request.data)=}")
         logger.info(f"request files = {request.FILES} \n\t {type(request.FILES)=}")
+
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
+            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(headers=request.headers)
             project: Project = gateway.project_app_service.create(
                 data=request.data, files=request.FILES, user_id=int(access_dto.sub)
             )
-        except self.error_classes as e:
-            logger.error(f"Exception: {e}")
+        except (DomainException, pydantic.ValidationError, JSONDecodeError) as e:
             return ProjectErrorResponseFactory.create_response(e)
 
         return Response({"project_id": project.id, "code": "SUCCESS"}, status=status.HTTP_201_CREATED)
 
-    def patch(self, request: Request, project_id: int) -> Response:
+    @staticmethod
+    def patch(request: Request, project_id: int) -> Response:
         logger.debug(f"request.data = {request.data}")
         try:
             access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
             gateway.project_app_service.update(request.data, request.FILES, project_id, user_id=int(access_dto.sub))
             return Response({"detail": "updated successfully.", "code": SUCCESS}, status=status.HTTP_200_OK)
 
-        except self.error_classes as e:
-            logger.exception(f"Exception: {repr(e)}")
+        except (DomainException, pydantic.ValidationError) as e:
             return ProjectErrorResponseFactory.create_response(e)
 
-    def delete(self, request: Request, project_id: int) -> Response:
+    @staticmethod
+    def delete(request: Request, project_id: int) -> Response:
         try:
             access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
         except (ValidationException, InvalidTokenException) as e:
@@ -74,8 +79,7 @@ class ProjectView(APIView):
         logger.debug("Project service created.")
         try:
             project_service.delete(project_id, int(access_dto.sub))
-        except self.error_classes as e:
-            logger.error(f"Exception: {e}")
+        except (DomainException, pydantic.ValidationError) as e:
             return ProjectErrorResponseFactory.create_response(e)
 
         return Response({"detail": "deleted successfully.", "code": "SUCCESS"}, 200)

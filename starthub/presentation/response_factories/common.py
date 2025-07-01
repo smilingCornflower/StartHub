@@ -1,18 +1,26 @@
+from json import JSONDecodeError
 from typing import cast
 
 import pydantic
+from loguru import logger
+from rest_framework.response import Response
+
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
-from domain.exceptions.file import ImageFileTooLargeException, NotSupportedImageFormatException
+from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
+from domain.exceptions.country import InvalidCountryCodeException, CountryNotFoundException
+from domain.exceptions.file import ImageFileTooLargeException, NotSupportedImageFormatException, NotPdfFileException
 from domain.exceptions.news import NewsContentIsTooLongException, NewsNotFoundException, NewsTitleIsTooLongException
 from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
-from domain.exceptions.project_management import ProjectNotFoundException
+from domain.exceptions.project_management import ProjectNotFoundException, ProjectNameIsTooLongException, \
+    ProjectCategoryNotFoundException, FundingModelNotFoundException, InvalidProjectStageException, \
+    NegativeProjectGoalSumException
 from domain.exceptions.user import EmailAlreadyExistsException, UserPhoneAlreadyExistException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
-from domain.exceptions.validation import InvalidEmailException, StringIsTooLongException, ValidationException
-from loguru import logger
+from domain.exceptions.validation import InvalidEmailException, StringIsTooLongException, ValidationException, \
+    DisallowedSocialLinkException, InvalidSocialLinkException, InvalidPhoneNumberException, \
+    FirstNameIsTooLongException, LastNameIsTooLongException, DateInFutureException
 from presentation.constants import APPLICATION_ERROR_CODES
 from presentation.ports import ErrorResponseFactory
-from rest_framework.response import Response
 
 
 class CommonErrorResponseFactory(ErrorResponseFactory):
@@ -21,36 +29,41 @@ class CommonErrorResponseFactory(ErrorResponseFactory):
     @classmethod
     def create_response(cls, exception: Exception) -> Response:
         logger.exception(repr(exception))
-        exception_type = type(exception)
-        if exception_type in cls.error_codes:
-            app_code, http_code = cls.error_codes[exception_type]
 
-            if exception_type is pydantic.ValidationError:
-                detail: str = cast(pydantic.ValidationError, exception).errors()[0]["msg"]
-            else:
-                detail = str(exception)
+        for exc_type in type(exception).__mro__:
+            if exc_type in cls.error_codes:
+                app_code, http_code = cls.error_codes[exc_type]
 
-            return Response({"detail": detail, "code": app_code}, status=http_code)
-        else:
-            return Response({"detail": "Internal server error", "code": "INTERNAL_ERROR"}, status=500)
+                if exc_type is pydantic.ValidationError:
+                    detail: str = cast(pydantic.ValidationError, exception).errors()[0]["msg"]
+                else:
+                    detail = str(exception)
+
+                return Response({"detail": detail, "code": app_code}, status=http_code)
+
+        return Response({"detail": "Internal server error", "code": "INTERNAL_ERROR"}, status=500)
 
 
 class ProjectErrorResponseFactory(CommonErrorResponseFactory):
-    error_codes = {
-        # KeyError: ("MISSING_REQUIRED_FIELD", 400),
-        # MissingRequiredFieldException: ("MISSING_REQUIRED_FIELD", 400),
-        # BusinessNumberAlreadyExistsException: ("BUSINESS_NUMBER_ALREADY_EXISTS", 409),
-        # JSONDecodeError: ("JSON_DECODE_ERROR", 400),
-        # pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
-        # NotPdfFileException: ("NOT_PDF_FILE", 400),
-        # CompanyNameIsTooLongException: ("COMPANY_NAME_TOO_LONG", 422),
-        # DateInFutureException: ("DATE_IN_FUTURE_NOT_ALLOWED", 422),
-        # ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
-        # PdfFileTooLargeException: ("PDF_FILE_TOO_LARGE", 412),
-        # ProjectImageMaxAmountException: ("PROJECT_IMAGES_LIMIT_REACHED", 409),
-        # UpdateDeniedPermissionException: ("UPDATE_PERMISSION_DENIED", 403),
-        # InvalidProjectStatusException: ("INVALID_STATUS", 422),
-        # InvalidProjectStageException: ("INVALID_STAGE", 422),
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectNameIsTooLongException: ("PROJECT_NAME_TOO_LONG", 422),
+        BusinessNumberAlreadyExistsException: ("BUSINESS_NUMBER_ALREADY_EXISTS", 409),
+        ProjectCategoryNotFoundException: ("PROJECT_CATEGORY_NOT_FOUND", 404),
+        FundingModelNotFoundException: ("FUNDING_MODEL_NOT_FOUND", 404),
+        InvalidProjectStageException: ("INVALID_PROJECT_STAGE", 422),
+        NegativeProjectGoalSumException: ("NEGATIVE_GOAL_SUM", 422),
+        DisallowedSocialLinkException: ("DISALLOWED_SOCIAL_PLATFORM", 422),
+        InvalidSocialLinkException: ("INVALID_SOCIAL_LINK", 422),
+        JSONDecodeError: ("JSON_DECODE_ERROR", 400),
+        InvalidPhoneNumberException: ("INVALID_PHONE_NUMBER", 422),
+        NotPdfFileException: ("NOT_PDF_FILE", 400),
+        StringIsTooLongException: ("STRING_TOO_LONG", 422),
+        FirstNameIsTooLongException: ("FIRST_NAME_TOO_LONG", 422),
+        LastNameIsTooLongException: ("LAST_NAME_TOO_LONG", 422),
+        CompanyNameIsTooLongException: ("COMPANY_NAME_TOO_LONG", 422),
+        InvalidCountryCodeException: ("INVALID_COUNTRY_CODE", 422),
+        CountryNotFoundException: ("COUNTRY_NOT_FOUND", 404),
+        DateInFutureException: ("DATE_IN_FUTURE_NOT_ALLOWED", 422),
     }
 
 
