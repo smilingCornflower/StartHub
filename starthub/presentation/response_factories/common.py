@@ -7,7 +7,8 @@ from domain.exceptions.company import BusinessNumberAlreadyExistsException, Comp
 from domain.exceptions.country import CountryNotFoundException, InvalidCountryCodeException
 from domain.exceptions.file import ImageFileTooLargeException, NotPdfFileException, NotSupportedImageFormatException
 from domain.exceptions.news import NewsContentIsTooLongException, NewsNotFoundException, NewsTitleIsTooLongException
-from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
+from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException, \
+    DeleteDeniedPermissionException
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
     InvalidProjectStageException,
@@ -27,7 +28,7 @@ from domain.exceptions.validation import (
     InvalidSocialLinkException,
     LastNameIsTooLongException,
     StringIsTooLongException,
-    ValidationException,
+    ValidationException, DeadlineInPastException,
 )
 from loguru import logger
 from presentation.constants import APPLICATION_ERROR_CODES
@@ -77,6 +78,9 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         CountryNotFoundException: ("COUNTRY_NOT_FOUND", 404),
         DateInFutureException: ("DATE_IN_FUTURE_NOT_ALLOWED", 422),
         ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+        DeleteDeniedPermissionException: ("DELETE_PERMISSION_DENIED", 403),
+        DeadlineInPastException: ("DEADLINE_IN_PAST", 422),
+        UpdateDeniedPermissionException: ("UPDATE_DENIED", 403),
     }
 
 
