@@ -1,13 +1,10 @@
 from dataclasses import asdict
 
 import pydantic
-
 from application.dto.auth import AccessPayloadDto
 from application.dto.user import UserFavoriteDto, UserProfileDto
 from application.services.gateway import gateway
-from application.utils.get_access_payload_dto import get_access_payload_dto, get_access_payload_dto_from_headers
-from loguru import logger
-
+from application.utils.get_access_payload_dto import get_access_payload_dto_from_headers
 from domain.exceptions import DomainException
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import UserErrorResponseFactory, UserFavoriteErrorResponseFactory

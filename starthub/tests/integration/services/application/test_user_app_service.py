@@ -20,7 +20,6 @@ class TestUserAppService(TestCase):
     def setUp(self):
         self.service = gateway.user_app_service
 
-
     @classmethod
     def setUpTestData(cls) -> None:
         user = User.objects.create_user(

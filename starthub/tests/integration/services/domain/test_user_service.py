@@ -21,6 +21,7 @@ class TestUserService(TestCase):
 
     def setUp(self):
         self.user_service = UserServiceFactory.create_service()
+
     @classmethod
     def setUpTestData(cls) -> None:
         user = User.objects.create_user(

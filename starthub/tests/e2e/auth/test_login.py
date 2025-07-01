@@ -4,7 +4,6 @@ from django.urls import reverse
 from domain.constants import JWT_ALGORITHM
 from domain.enums.token import TokenTypeEnum
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
-from domain.exceptions.user import UserNotFoundException
 from domain.exceptions.validation import EmptyStringException, InvalidEmailException, MissingRequiredFieldException
 from domain.models.user import User
 from loguru import logger

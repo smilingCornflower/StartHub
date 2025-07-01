@@ -7,8 +7,11 @@ from domain.exceptions.company import BusinessNumberAlreadyExistsException, Comp
 from domain.exceptions.country import CountryNotFoundException, InvalidCountryCodeException
 from domain.exceptions.file import ImageFileTooLargeException, NotPdfFileException, NotSupportedImageFormatException
 from domain.exceptions.news import NewsContentIsTooLongException, NewsNotFoundException, NewsTitleIsTooLongException
-from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException, \
-    DeleteDeniedPermissionException
+from domain.exceptions.permissions import (
+    AddDeniedPermissionException,
+    DeleteDeniedPermissionException,
+    UpdateDeniedPermissionException,
+)
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
     InvalidProjectStageException,
@@ -17,10 +20,11 @@ from domain.exceptions.project_management import (
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
 )
-from domain.exceptions.user import EmailAlreadyExistsException, UserPhoneAlreadyExistException, UserNotFoundException
+from domain.exceptions.user import EmailAlreadyExistsException, UserNotFoundException, UserPhoneAlreadyExistException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException, UserFavoriteNotFoundException
 from domain.exceptions.validation import (
     DateInFutureException,
+    DeadlineInPastException,
     DisallowedSocialLinkException,
     FirstNameIsTooLongException,
     InvalidEmailException,
@@ -28,7 +32,7 @@ from domain.exceptions.validation import (
     InvalidSocialLinkException,
     LastNameIsTooLongException,
     StringIsTooLongException,
-    ValidationException, DeadlineInPastException,
+    ValidationException,
 )
 from loguru import logger
 from presentation.constants import APPLICATION_ERROR_CODES, SUCCESS
@@ -120,7 +124,6 @@ class UserFavoriteErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
         # UserFavoriteNotFoundException: ("USER_FAVORITE_NOT_FOUND", 404),
         UserFavoriteNotFoundException: (SUCCESS, 200),  # ignore
-
         ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
         UserFavoriteAlreadyExistsException: ("USER_FAVORITE_ALREADY_EXISTS", 409),
     }

@@ -1,10 +1,9 @@
 from dataclasses import asdict
 
 import pydantic
-
 from application.dto.news import NewsDto
 from application.services.gateway import gateway
-from application.utils.get_access_payload_dto import get_access_payload_dto, get_access_payload_dto_from_headers
+from application.utils.get_access_payload_dto import get_access_payload_dto_from_headers
 from domain.exceptions import DomainException
 from domain.models.news import News
 from loguru import logger
@@ -25,6 +24,7 @@ class NewsView(APIView):
             return Response(list(map(asdict, news)), status=status.HTTP_200_OK)
         except DomainException as e:
             return NewsErrorResponseFactory.create_response(e)
+
     @staticmethod
     def post(request: Request) -> Response:
         logger.info(f"POST /news/ \n\t request.data: {request.data}\n\t request_files: {request.FILES}")

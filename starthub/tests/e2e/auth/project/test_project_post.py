@@ -23,7 +23,6 @@ from domain.exceptions.validation import (
     InvalidSocialLinkException,
     LastNameIsTooLongException,
     MissingRequiredFieldException,
-    StringIsTooLongException,
 )
 from domain.models import Country
 from domain.models.funding_model import FundingModel
