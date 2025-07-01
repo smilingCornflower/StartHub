@@ -7,12 +7,9 @@ from django.test import TestCase
 from domain.constants import StorageLocations
 from domain.exceptions.user import UserNotFoundException, UserPhoneAlreadyExistException
 from domain.models.user import User
-from domain.services.file import ImageService
 from domain.services.user_management import UserService
 from domain.value_objects.common import Description, FirstName, Id, LastName, PhoneNumber
 from domain.value_objects.user import ProfilePictureUploadCommand, RawPassword, UserProfile, UserUpdateCommand
-from infrastructure.cloud_storages.google import google_cloud_storage
-from infrastructure.repositories.user import DjUserReadRepository, DjUserWriteRepository
 from loguru import logger
 
 
@@ -21,6 +18,9 @@ class TestUserService(TestCase):
     user_service: UserService
     image_path: Path
     user_valid_data: dict[str, Any]
+
+    def setUp(self):
+        self.user_service = UserServiceFactory.create_service()
 
     @classmethod
     def setUpTestData(cls) -> None:
@@ -37,7 +37,7 @@ class TestUserService(TestCase):
             "first_name": "name",
             "last_name": "surname",
         }
-        cls.user_service = UserServiceFactory.create_service()
+
         cls.image_path = BASE_DIR / "tests/images/frieren.jpg"
 
     def check_raises(self, exc: type[Exception], func: Callable[[Any], Any]) -> None:

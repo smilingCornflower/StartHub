@@ -4,13 +4,13 @@ from django.urls import reverse
 from domain.constants import JWT_ALGORITHM
 from domain.enums.token import TokenTypeEnum
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
-from domain.exceptions.user import UserNotFoundException
 from domain.exceptions.validation import EmptyStringException, InvalidEmailException, MissingRequiredFieldException
 from domain.models.user import User
 from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import LoginErrorResponseFactory
 from pydantic import ValidationError
+from rest_framework.response import Response
 from rest_framework.test import APIClient
 
 
@@ -36,9 +36,11 @@ class TestLogin(TestCase):
         self.valid_credentials = {"email": "email@example.com", "password": "Pass1234"}
 
     def test_successful_login(self) -> None:
-        response = self.client.post(self.login_url, data=self.valid_credentials, content_type=self.content_type)
+        response: Response = self.client.post(
+            self.login_url, data=self.valid_credentials, content_type=self.content_type
+        )
         logger.debug(f"{response.cookies=}")
-        access: str = response.cookies.get("access_token").value  # type: ignore
+        access: str = response.data["access_token"]
         refresh: str = response.cookies.get("refresh_token").value  # type: ignore
 
         logger.debug(f"access = {access}")
@@ -59,22 +61,19 @@ class TestLogin(TestCase):
 
     def test_successful_logout(self) -> None:
         response = self.client.post(self.login_url, data=self.valid_credentials, content_type=self.content_type)
-        self.client.cookies["access_token"] = response.cookies.get("access_token")
         self.client.cookies["refresh_token"] = response.cookies.get("refresh_token")
 
-        self.assertIn("access_token", self.client.cookies)
         self.assertIn("refresh_token", self.client.cookies)
 
         logout_url = reverse("logout")
         logout_response = self.client.post(logout_url)
 
-        self.assertEqual(logout_response.cookies.get("access_token").value, str())
         self.assertEqual(logout_response.cookies.get("refresh_token").value, str())
 
     def test_another_email(self) -> None:
         self.valid_credentials["email"] = "another-email@example.com"
         response = self.client.post(self.login_url, data=self.valid_credentials, content_type=self.content_type)
-        app_code, http_code = LoginErrorResponseFactory.error_codes[UserNotFoundException]
+        app_code, http_code = LoginErrorResponseFactory.error_codes[InvalidCredentialsException]
         logger.info(f"Expecting app_code: {app_code} and http_code: {http_code}")
 
         self.assertEqual(response.status_code, http_code)
@@ -105,20 +104,6 @@ class TestLogin(TestCase):
         app_code, http_code = LoginErrorResponseFactory.error_codes[PasswordValidationException]
         logger.info(f"Expecting app_code: {app_code} and http_code: {http_code}")
 
-        self.assertEqual(response.status_code, http_code)
-        self.assertEqual(response.json()["code"], app_code)
-
-    def test_login_with_nonexistent_email_returns_user_not_found_error(self) -> None:
-        """
-        Tests that attempting to log in with a non-existent email returns a UserNotFound error, regardless of the provided password.
-        """
-        response = self.client.post(
-            self.login_url,
-            data={"email": "another.email@example.com", "password": "invalid-pass"},
-            content_type=self.content_type,
-        )
-        app_code, http_code = LoginErrorResponseFactory.error_codes[UserNotFoundException]
-        logger.info(f"Expecting app_code: {app_code} and http_code: {http_code}")
         self.assertEqual(response.status_code, http_code)
         self.assertEqual(response.json()["code"], app_code)
 

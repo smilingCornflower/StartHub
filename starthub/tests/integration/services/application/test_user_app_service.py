@@ -17,6 +17,9 @@ class TestUserAppService(TestCase):
     service: UserAppService
     user_id: int
 
+    def setUp(self):
+        self.service = gateway.user_app_service
+
     @classmethod
     def setUpTestData(cls) -> None:
         user = User.objects.create_user(
@@ -26,7 +29,6 @@ class TestUserAppService(TestCase):
             password="Pass1234",
         )
         cls.user_id = user.id
-        cls.service = gateway.user_app_service
 
     def test_success_update_first_name(self) -> None:
         self.service.update_user(

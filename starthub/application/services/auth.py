@@ -1,9 +1,9 @@
 from application.converters.request_converters.auth import (
     request_cookies_to_access_token,
     request_cookies_to_refresh_token,
-    request_data_to_email,
     request_data_to_login_credentials,
     request_data_to_user_create_payload,
+    request_headers_to_access_token,
 )
 from application.converters.resposne_converters.auth import (
     access_payload_to_dto,
@@ -16,7 +16,7 @@ from domain.models.user import User
 from domain.services.auth import AuthService, RegistrationService, TokenService
 from domain.value_objects.auth import LoginCredentials
 from domain.value_objects.token import AccessPayload, AccessTokenVo, RefreshTokenVo, TokenPairVo
-from domain.value_objects.user import Email, UserCreatePayload
+from domain.value_objects.user import UserCreatePayload
 from loguru import logger
 
 
@@ -44,14 +44,6 @@ class AuthAppService(AbstractAppService):
         self._auth_service = auth_service
         self._token_service = token_service
 
-    def _check_user_existence(self, credentials_raw: dict[str, str]) -> None:
-        """
-        :raises KeyError: If missing email field.
-        :raises UserNotFoundException:
-        """
-        email: Email = request_data_to_email(credentials_raw)
-        self._auth_service.check_user_existence(email)
-
     def login(self, credentials_raw: dict[str, str]) -> TokenPairDto:
         """
         :raises MissingRequiredFieldException: If required fields missing.
@@ -62,8 +54,6 @@ class AuthAppService(AbstractAppService):
         :raises pydantic.ValidationError: If fields has incorrect types
         :raises InvalidCredentialsException:
         """
-        self._check_user_existence(credentials_raw=credentials_raw)
-
         credentials: LoginCredentials = request_data_to_login_credentials(data=credentials_raw)
         logger.info("Credentials parsed successfully")
 
@@ -74,6 +64,7 @@ class AuthAppService(AbstractAppService):
 
     def reissue_access(self, cookies: dict[str, str]) -> AccessTokenDto:
         """
+        :raises MissingRequiredFieldException:
         :raises ValidationException:
         :raises InvalidTokenException:
         """
@@ -96,3 +87,14 @@ class AuthAppService(AbstractAppService):
 
         access_payload_dto: AccessPayloadDto = access_payload_to_dto(access_payload)
         return access_payload_dto
+
+    def verify_access_from_headers(self, headers: dict[str, str]) -> AccessPayloadDto:
+        """
+        :raises MissingRequiredFieldException:
+        :raises pydantic.ValidationError:
+        :raises InvalidTokenException:
+        :raises TokenExpiredException:
+        """
+        access_token: AccessTokenVo = request_headers_to_access_token(headers=headers)
+        access_payload: AccessPayload = self._token_service.verify_access(access_token)
+        return access_payload_to_dto(access_payload)
