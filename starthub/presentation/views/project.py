@@ -2,7 +2,6 @@ from dataclasses import asdict
 from json import JSONDecodeError
 
 import pydantic
-
 from application.dto.auth import AccessPayloadDto
 from application.dto.project import ProjectDto
 from application.service_factories.app_service.project import ProjectAppServiceFactory
@@ -37,7 +36,7 @@ class ProjectView(APIView):
                 return Response(asdict(project), status=status.HTTP_200_OK)
 
             projects: list[ProjectDto] = gateway.project_app_service.get(request.query_params)
-        except (DomainException, pydantic.ValidationError) as e:
+        except DomainException as e:
             return ProjectErrorResponseFactory.create_response(e)
 
         return Response(map(asdict, projects), status=status.HTTP_200_OK)

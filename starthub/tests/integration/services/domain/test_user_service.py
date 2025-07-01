@@ -19,6 +19,8 @@ class TestUserService(TestCase):
     image_path: Path
     user_valid_data: dict[str, Any]
 
+    def setUp(self):
+        self.user_service = UserServiceFactory.create_service()
     @classmethod
     def setUpTestData(cls) -> None:
         user = User.objects.create_user(
@@ -34,7 +36,7 @@ class TestUserService(TestCase):
             "first_name": "name",
             "last_name": "surname",
         }
-        cls.user_service = UserServiceFactory.create_service()
+
         cls.image_path = BASE_DIR / "tests/images/frieren.jpg"
 
     def check_raises(self, exc: type[Exception], func: Callable[[Any], Any]) -> None:

@@ -91,8 +91,11 @@ def _request_data_to_company_founder_create_command(data: dict[str, Any]) -> Com
 
 def _request_files_to_project_plan(files: MultiValueDict[str, UploadedFile]) -> PdfFile:
     project_plan_file: UploadedFile = get_required_field(cast(dict[str, UploadedFile], files), field="project_plan")
+    logger.debug(f"{project_plan_file=}")
     project_plan_file.seek(0)
-    return PdfFile(value=project_plan_file.read())
+    pdf_file = PdfFile(value=project_plan_file.read())
+    logger.debug(f"{pdf_file=}")
+    return pdf_file
 
 
 def request_data_to_project_create_command(

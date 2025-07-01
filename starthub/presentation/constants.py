@@ -1,7 +1,10 @@
 import pydantic
 from domain.exceptions.auth import InvalidTokenException, TokenExpiredException
-from domain.exceptions.validation import EmptyStringException, MissingRequiredFieldException, \
-    DateIsNotIsoFormatException
+from domain.exceptions.validation import (
+    DateIsNotIsoFormatException,
+    EmptyStringException,
+    MissingRequiredFieldException,
+)
 
 APPLICATION_ERROR_CODES: dict[type, tuple[str, int]] = {
     MissingRequiredFieldException: ("MISSING_REQUIRED_FIELD", 400),

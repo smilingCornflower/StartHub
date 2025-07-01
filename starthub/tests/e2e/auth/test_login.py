@@ -11,8 +11,9 @@ from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import LoginErrorResponseFactory
 from pydantic import ValidationError
-from rest_framework.test import APIClient
 from rest_framework.response import Response
+from rest_framework.test import APIClient
+
 
 class TestLogin(TestCase):
     user: User
@@ -36,7 +37,9 @@ class TestLogin(TestCase):
         self.valid_credentials = {"email": "email@example.com", "password": "Pass1234"}
 
     def test_successful_login(self) -> None:
-        response: Response = self.client.post(self.login_url, data=self.valid_credentials, content_type=self.content_type)
+        response: Response = self.client.post(
+            self.login_url, data=self.valid_credentials, content_type=self.content_type
+        )
         logger.debug(f"{response.cookies=}")
         access: str = response.data["access_token"]
         refresh: str = response.cookies.get("refresh_token").value  # type: ignore

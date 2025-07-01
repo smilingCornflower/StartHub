@@ -2,25 +2,37 @@ from json import JSONDecodeError
 from typing import cast
 
 import pydantic
-from loguru import logger
-from rest_framework.response import Response
-
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
-from domain.exceptions.country import InvalidCountryCodeException, CountryNotFoundException
-from domain.exceptions.file import ImageFileTooLargeException, NotSupportedImageFormatException, NotPdfFileException
+from domain.exceptions.country import CountryNotFoundException, InvalidCountryCodeException
+from domain.exceptions.file import ImageFileTooLargeException, NotPdfFileException, NotSupportedImageFormatException
 from domain.exceptions.news import NewsContentIsTooLongException, NewsNotFoundException, NewsTitleIsTooLongException
 from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
-from domain.exceptions.project_management import ProjectNotFoundException, ProjectNameIsTooLongException, \
-    ProjectCategoryNotFoundException, FundingModelNotFoundException, InvalidProjectStageException, \
-    NegativeProjectGoalSumException
+from domain.exceptions.project_management import (
+    FundingModelNotFoundException,
+    InvalidProjectStageException,
+    NegativeProjectGoalSumException,
+    ProjectCategoryNotFoundException,
+    ProjectNameIsTooLongException,
+    ProjectNotFoundException,
+)
 from domain.exceptions.user import EmailAlreadyExistsException, UserPhoneAlreadyExistException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
-from domain.exceptions.validation import InvalidEmailException, StringIsTooLongException, ValidationException, \
-    DisallowedSocialLinkException, InvalidSocialLinkException, InvalidPhoneNumberException, \
-    FirstNameIsTooLongException, LastNameIsTooLongException, DateInFutureException
+from domain.exceptions.validation import (
+    DateInFutureException,
+    DisallowedSocialLinkException,
+    FirstNameIsTooLongException,
+    InvalidEmailException,
+    InvalidPhoneNumberException,
+    InvalidSocialLinkException,
+    LastNameIsTooLongException,
+    StringIsTooLongException,
+    ValidationException,
+)
+from loguru import logger
 from presentation.constants import APPLICATION_ERROR_CODES
 from presentation.ports import ErrorResponseFactory
+from rest_framework.response import Response
 
 
 class CommonErrorResponseFactory(ErrorResponseFactory):
@@ -64,6 +76,7 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         InvalidCountryCodeException: ("INVALID_COUNTRY_CODE", 422),
         CountryNotFoundException: ("COUNTRY_NOT_FOUND", 404),
         DateInFutureException: ("DATE_IN_FUTURE_NOT_ALLOWED", 422),
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
     }
 
 
