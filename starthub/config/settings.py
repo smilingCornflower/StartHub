@@ -174,3 +174,10 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "domain.User"
+
+
+class CookiesPolicy:
+    class RefreshToken:
+        SAMESITE = "Lax"
+        HTTPONLY = True
+        SECURE = True

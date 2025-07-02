@@ -12,10 +12,6 @@ class CookiesResponseProtocol(Protocol):
 
 class AbstractCookieService(ABC):
     @abstractmethod
-    def set_access_token_to_cookies(self, response: CookiesResponseProtocol, token: str) -> None:
-        pass
-
-    @abstractmethod
     def set_refresh_token_to_cookies(self, response: CookiesResponseProtocol, token: str) -> None:
         pass
 
