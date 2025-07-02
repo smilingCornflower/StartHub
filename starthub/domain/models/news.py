@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from django.db import models
+
 from domain.constants import CHAR_FIELD_MAX_LENGTH
 from domain.models.base import BaseModel
 
@@ -12,7 +13,6 @@ def get_default_datetime_now() -> datetime:
 
 class News(BaseModel):
     title = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
-    image = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
     content = models.TextField()
     author = models.ForeignKey("domain.User", on_delete=models.CASCADE)
     published_at = models.DateTimeField(default=get_default_datetime_now)
@@ -31,3 +31,8 @@ class News(BaseModel):
     @classmethod
     def get_permission_key(cls) -> str:
         return "news"
+
+
+class NewsImage(BaseModel):
+    news = models.ForeignKey("domain.News", on_delete=models.CASCADE)
+    image = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
