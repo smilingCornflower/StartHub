@@ -1,15 +1,17 @@
 from datetime import date
-from typing import Any
+from typing import cast
 
+from django.http import QueryDict
 from domain.exceptions.validation import DateIsNotIsoFormatException, MissingRequiredFieldException
 from domain.value_objects.common import Pagination
 from loguru import logger
 
 
-def request_to_pagination(request_data: dict[str, Any]) -> Pagination:
+def request_to_pagination(query_params: QueryDict) -> Pagination:
+    logger.debug(f"request_data = {query_params}")
     return Pagination(
-        last_id=request_data["last_id"] if "last_id" in request_data else None,
-        limit=get_required_field(request_data, "limit"),
+        last_id=int(cast(str, query_params.get("last_id"))) if "last_id" in query_params else None,
+        limit=int(get_required_field(query_params, "limit")),
     )
 
 

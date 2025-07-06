@@ -6,7 +6,14 @@ from domain.exceptions.auth import InvalidCredentialsException, PasswordValidati
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
 from domain.exceptions.country import CountryNotFoundException, InvalidCountryCodeException
 from domain.exceptions.file import ImageFileTooLargeException, NotPdfFileException, NotSupportedImageFormatException
-from domain.exceptions.news import NewsContentIsTooLongException, NewsNotFoundException, NewsTitleIsTooLongException
+from domain.exceptions.news import (
+    NewsContentIsTooLongException,
+    NewsImageContentAndFileMismatchException,
+    NewsImagesMaxAmountException,
+    NewsNotFoundException,
+    NewsTitleIsTooLongException,
+)
+from domain.exceptions.pagination import PaginationMaxLimitException
 from domain.exceptions.permissions import (
     AddDeniedPermissionException,
     DeleteDeniedPermissionException,
@@ -17,6 +24,7 @@ from domain.exceptions.project_management import (
     InvalidProjectStageException,
     NegativeProjectGoalSumException,
     ProjectCategoryNotFoundException,
+    ProjectImageMaxAmountException,
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
 )
@@ -31,6 +39,7 @@ from domain.exceptions.validation import (
     InvalidPhoneNumberException,
     InvalidSocialLinkException,
     LastNameIsTooLongException,
+    MissingFileExcpetion,
     StringIsTooLongException,
     ValidationException,
 )
@@ -85,6 +94,8 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         DeleteDeniedPermissionException: ("DELETE_PERMISSION_DENIED", 403),
         DeadlineInPastException: ("DEADLINE_IN_PAST", 422),
         UpdateDeniedPermissionException: ("UPDATE_DENIED", 403),
+        ProjectImageMaxAmountException: ("TOO_MANY_IMAGES", 422),
+        ImageFileTooLargeException: ("IMAGE_TOO_LARGE", 422),
     }
 
 
@@ -139,4 +150,9 @@ class NewsErrorResponseFactory(CommonErrorResponseFactory):
         NewsContentIsTooLongException: ("NEWS_CONTENT_TOO_LONG", 422),
         pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
         NewsNotFoundException: ("NEWS_NOT_FOUND", 404),
+        PaginationMaxLimitException: ("PAGINATION_LIMIT_EXCEEDED", 422),
+        MissingFileExcpetion: ("MISSING_FILE", 400),
+        NewsImagesMaxAmountException: ("TOO_MANY_IMAGES", 422),
+        DeleteDeniedPermissionException: ("DELETE_PERMISSION_DENIED", 403),
+        NewsImageContentAndFileMismatchException: ("IMAGE_CONTENT_FILE_MISMATCH", 422),
     }

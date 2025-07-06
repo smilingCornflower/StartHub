@@ -1,8 +1,11 @@
 from application.ports.domain_service_factory import AbstractDomainServiceFactory
-from domain.services.file import ImageService
-from domain.services.news import NewsService
-from infrastructure.cloud_storages.google import google_cloud_storage
-from infrastructure.repositories.news import DjNewsReadRepository, DjNewsWriteRepository
+from domain.services.news import NewsImageService, NewsService
+from infrastructure.repositories.news import (
+    DjNewsImageReadRepository,
+    DjNewsImageWriteRepository,
+    DjNewsReadRepository,
+    DjNewsWriteRepository,
+)
 
 
 class NewsServiceFactory(AbstractDomainServiceFactory[NewsService]):
@@ -11,6 +14,13 @@ class NewsServiceFactory(AbstractDomainServiceFactory[NewsService]):
         return NewsService(
             news_read_repository=DjNewsReadRepository(),
             news_write_repository=DjNewsWriteRepository(),
-            cloud_storage=google_cloud_storage,
-            image_service=ImageService(),
+        )
+
+
+class NewsImageServiceFactory(AbstractDomainServiceFactory[NewsImageService]):
+    @staticmethod
+    def create_service() -> NewsImageService:
+        return NewsImageService(
+            news_image_read_repository=DjNewsImageReadRepository(),
+            news_image_write_repository=DjNewsImageWriteRepository(),
         )

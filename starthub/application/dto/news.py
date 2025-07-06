@@ -2,9 +2,20 @@ from dataclasses import dataclass
 
 
 @dataclass
-class NewsDto:
+class NewsImageDto:
+    image_name: str
+    image_url: str
+
+
+@dataclass
+class NewsShortDto:
     id: int
     author_id: int
     title: str
     content: str
-    image_url: str
+    cover: str
+
+
+@dataclass
+class NewsFullDto(NewsShortDto):
+    images: list[NewsImageDto]

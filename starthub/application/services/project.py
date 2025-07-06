@@ -80,7 +80,7 @@ class ProjectAppService(AbstractAppService):
 
     def get(self, data: QueryDict) -> list[ProjectDto]:
         project_filter: ProjectFilter = request_data_to_project_filter(data)
-        pagination: Pagination = request_to_pagination(request_data=data)
+        pagination: Pagination = request_to_pagination(query_params=data)
         logger.debug(f"pagination = {pagination}")
         logger.debug(f"project_filter = {project_filter}")
 

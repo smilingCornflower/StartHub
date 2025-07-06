@@ -7,18 +7,17 @@ from domain.value_objects.cloud_storage import (
 )
 
 
-class CloudService(AbstractDomainService):
+class StorageService(AbstractDomainService):
     def __init__(self, cloud_storage: AbstractCloudStorage):
         self._cloud_storage = cloud_storage
 
     def upload_file(self, payload: CloudStorageUploadPayload) -> str:
-        file_path: str = self._cloud_storage.upload_file(payload=payload)
-        return file_path
+        return self._cloud_storage.upload_file(payload=payload)
 
     def delete_file(self, payload: CloudStorageDeletePayload) -> None:
         """:raises NotImplementedError:"""
-        raise NotImplementedError("The method delete_file() is not implemented yet.")
+        return self._cloud_storage.delete_file(payload=payload)
 
     def create_url(self, payload: CloudStorageCreateUrlPayload) -> str:
         """:raises NotImplementedError:"""
-        raise NotImplementedError("The method update_file() is not implemented yet.")
+        return self._cloud_storage.create_url(payload=payload)

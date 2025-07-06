@@ -2,8 +2,9 @@ import re
 from datetime import date
 
 import phonenumbers
-from domain.constants import CHAR_FIELD_SHORT_LENGTH, DESCRIPTION_MAX_LENGTH
+from domain.constants import CHAR_FIELD_SHORT_LENGTH, DESCRIPTION_MAX_LENGTH, PAGINNATION_MAX_LMIT
 from domain.enums.social_links import SocialPlatform
+from domain.exceptions.pagination import PaginationMaxLimitException
 from domain.exceptions.validation import (
     DeadlineInPastException,
     DisallowedSocialLinkException,
@@ -129,3 +130,11 @@ class Order(BaseVo):
 class Pagination(BaseVo):
     last_id: int | None = None
     limit: int
+
+    @field_validator("limit", mode="after")
+    @classmethod
+    def validate_limit_max_value(cls, limit: int) -> int:
+        """:raises PaginationMaxLimitException:"""
+        if limit > PAGINNATION_MAX_LMIT:
+            raise PaginationMaxLimitException(f"limit must not exceed {PAGINNATION_MAX_LMIT}.")
+        return limit

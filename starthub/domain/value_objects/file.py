@@ -1,9 +1,16 @@
 from io import BytesIO
 
 from domain.constants import IMAGE_MAX_SIZE_IN_BYTES, MEGABYTE, PDF_MAX_SIZE_IN_BYTES
-from domain.exceptions.file import ImageFileTooLargeException, PdfFileTooLargeException
+from domain.enums.image_kind import ImageKindEnum
+from domain.exceptions.file import (
+    ImageFileTooLargeException,
+    NotSupportedImageFormatException,
+    PdfFileTooLargeException,
+)
 from domain.services.file import ImageService, PdfService
 from domain.value_objects import BaseVo
+from filetype import guess
+from loguru import logger
 from pydantic import field_validator
 
 
@@ -30,6 +37,23 @@ class ImageFile(BaseVo):
 
     def __repr__(self) -> str:
         return f"ImageFile(bytes_len={len(self.value)})"
+
+
+class Image(BaseVo):
+    name: str
+    file: ImageFile
+
+
+class JpgImage(Image):
+    # noinspection PyNestedDecorators
+    @field_validator("file", mode="after")
+    @classmethod
+    def is_jpg_file(cls, file: ImageFile) -> ImageFile:
+        kind = guess(file.value)
+        if kind != ImageKindEnum.JPEG:
+            logger.exception("Not a jpeg file")
+            raise NotSupportedImageFormatException("Only jpeg image allowed.")
+        return file
 
 
 class PdfFile(BaseVo):

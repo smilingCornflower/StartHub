@@ -51,3 +51,7 @@ class MissingRequiredFieldException(ValidationException):
 
 class DeadlineInPastException(ValidationException):
     pass
+
+
+class MissingFileExcpetion(ValidationException):
+    pass
