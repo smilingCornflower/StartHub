@@ -22,7 +22,7 @@ class ImageService(AbstractDomainService):
             logger.debug("Failed to identify file type.")
             raise NotSupportedImageFormatException(f"Unrecognized file type. Expected: {', '.join(self.IMAGE_FORMATS)}")
 
-        logger.debug(f"king.mime = {kind.mime}")
+        logger.debug(f"kind.mime = {kind.mime}")
         if kind.mime not in self.IMAGE_FORMATS:
             raise NotSupportedImageFormatException(
                 f"The image format {kind.mime} is not supported. "
@@ -39,6 +39,7 @@ class ImageService(AbstractDomainService):
         with Image(file=file_obj) as img:
             with img.convert("jpg") as converted:
                 converted.save(file=result)
+        result.seek(0)
         return result
 
 

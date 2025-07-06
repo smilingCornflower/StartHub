@@ -81,3 +81,7 @@ class NewsFilter(AbstractFilter, BaseVo):
 class UserPhoneFilter(AbstractFilter, BaseVo):
     user_id: Id | None = None
     phone: PhoneNumber | None = None
+
+
+class NewsImageFilter(AbstractFilter, BaseVo):
+    news_id: Id | None = None

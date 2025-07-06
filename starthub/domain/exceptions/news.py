@@ -17,3 +17,11 @@ class NewsContentIsTooLongException(StringIsTooLongException, NewsException):
 
 class NewsNotFoundException(NotFoundException, NewsException):
     pass
+
+
+class NewsImagesMaxAmountException(NewsException):
+    pass
+
+
+class NewsImageContentAndFileMismatchException(ValidationException, NewsException):
+    pass

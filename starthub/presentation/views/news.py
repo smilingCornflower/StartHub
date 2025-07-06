@@ -1,7 +1,7 @@
 from dataclasses import asdict
 
 import pydantic
-from application.dto.news import NewsDto
+from application.dto.news import NewsFullDto, NewsShortDto
 from application.services.gateway import gateway
 from application.utils.get_access_payload_dto import get_access_payload_dto_from_headers
 from domain.exceptions import DomainException
@@ -20,8 +20,13 @@ class NewsView(APIView):
     def get(request: Request, news_id: int | None = None) -> Response:
         logger.debug(f"GET /news/<news_id>/ \t news_id = {news_id}")
         try:
-            news: list[NewsDto] = gateway.news_app_service.get(request_data=request.data, news_id=news_id)
+            news: NewsFullDto | list[NewsShortDto] = gateway.news_app_service.get(
+                query_params=request.query_params, news_id=news_id
+            )
+            if isinstance(news, NewsFullDto):
+                return Response(asdict(news), status=status.HTTP_200_OK)
             return Response(list(map(asdict, news)), status=status.HTTP_200_OK)
+
         except DomainException as e:
             return NewsErrorResponseFactory.create_response(e)
 
@@ -43,7 +48,7 @@ class NewsView(APIView):
 
     @staticmethod
     def patch(request: Request, news_id: int) -> Response:
-        logger.info(f"PATCH /news/{news_id}/ \n\t request.data = {request.data}")
+        logger.debug("PATCH /news/{news_id}/ \n\t request.data = {request.data}")
 
         try:
             access_dto = get_access_payload_dto_from_headers(request.headers)

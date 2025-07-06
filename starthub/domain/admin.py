@@ -2,6 +2,7 @@ from django.contrib import admin
 from django_stubs_ext import monkeypatch
 from domain.models.country import Country
 from domain.models.funding_model import FundingModel
+from domain.models.news import News, NewsImage
 from domain.models.project import Project, ProjectPhone, ProjectSocialLink, TeamMember
 from domain.models.project_category import ProjectCategory
 from domain.models.user import User
@@ -52,4 +53,14 @@ class CountryAdmin(admin.ModelAdmin[Country]):
 
 @admin.register(UserFavorite)
 class UserFavoriteAdmin(admin.ModelAdmin[UserFavorite]):
+    pass
+
+
+@admin.register(News)
+class NewsAdmin(admin.ModelAdmin[News]):
+    pass
+
+
+@admin.register(NewsImage)
+class NewsImageAdmin(admin.ModelAdmin[NewsImage]):
     pass
