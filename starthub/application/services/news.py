@@ -120,7 +120,6 @@ class NewsAppService(AbstractAppService):
             logger.exception("User does not have permission to add news")
             raise AddDeniedPermissionException("User does not have permission to add news")
 
-    # TODO: Move check permissions in domain layer since it is business rule
     def _check_permission_to_delete_news(self, user_id: Id) -> None:
         """:raises DeleteDeniedPermissionException:"""
         delete_news_permission: PermissionVo = self._permission_service.create_permission_vo(
@@ -159,7 +158,7 @@ class NewsAppService(AbstractAppService):
 
     def create(
         self, request_data: dict[str, Any], request_files: MultiValueDict[str, UploadedFile], user_id: int
-    ) -> News:
+    ) -> int:
         """:raises MissingFileExcpetion:"""
 
         self._check_permission_to_add_news(user_id=Id(value=user_id))
@@ -192,7 +191,7 @@ class NewsAppService(AbstractAppService):
             for img in news_create_command.images:
                 self.upload_image(image=img, news_id=Id(value=news.id), id_map=id_map)
             logger.info("All images uploaded successfully.")
-        return news
+        return news.id
 
     def _validate_images_amount_in_content(self, command: NewsUpdateCommand) -> None:
         """:raises NewsImagesMaxAmountException:"""
