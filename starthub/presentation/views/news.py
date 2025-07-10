@@ -5,7 +5,6 @@ from application.dto.news import NewsFullDto, NewsShortDto
 from application.services.gateway import gateway
 from application.utils.get_access_payload_dto import get_access_payload_dto_from_headers
 from domain.exceptions import DomainException
-from domain.models.news import News
 from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import NewsErrorResponseFactory
@@ -37,14 +36,14 @@ class NewsView(APIView):
         try:
             access_dto = get_access_payload_dto_from_headers(request.headers)
             logger.debug(f"user_id = {int(access_dto.sub)}")
-            news: News = gateway.news_app_service.create(
+            news_id: int = gateway.news_app_service.create(
                 request_data=request.data, request_files=request.FILES, user_id=int(access_dto.sub)
             )
 
         except (DomainException, pydantic.ValidationError) as e:
             return NewsErrorResponseFactory.create_response(e)
 
-        return Response({"news_id": news.id, "code": "SUCCESS"}, status=status.HTTP_201_CREATED)
+        return Response({"news_id": news_id, "code": "SUCCESS"}, status=status.HTTP_201_CREATED)
 
     @staticmethod
     def patch(request: Request, news_id: int) -> Response:

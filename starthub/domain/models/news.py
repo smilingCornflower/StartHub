@@ -34,7 +34,7 @@ class News(BaseModel):
 
 
 class NewsImage(BaseModel):
-    news = models.ForeignKey("domain.News", on_delete=models.CASCADE)
+    news = models.ForeignKey("domain.News", on_delete=models.CASCADE, related_name="images")
     image = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
 
     class Meta:

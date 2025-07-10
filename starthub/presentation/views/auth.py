@@ -26,6 +26,10 @@ class LoginView(APIView):
 
     @staticmethod
     def post(request: Request) -> Response:
+        origin = request.headers.get("Origin")
+        referer = request.headers.get("Referer")
+        logger.info(f"POST /auth/login/ Origin: {origin}, Referer: {referer}")
+
         logger.info("POST /auth/login/")
         try:
             tokens_pair_dto: TokenPairDto = gateway.auth_app_service.login(request.data)
