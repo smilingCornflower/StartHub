@@ -104,6 +104,7 @@ INSTALLED_APPS = [
     "setup",
     "rest_framework",
     "domain",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -114,6 +115,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -180,4 +182,7 @@ class CookiesPolicy:
     class RefreshToken:
         SAMESITE = "Lax"
         HTTPONLY = True
-        SECURE = True
+        SECURE = False
+
+
+CORS_ALLOWED_ORIGINS = ALLOWED_HOSTS
