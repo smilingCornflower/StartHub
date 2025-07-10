@@ -49,8 +49,11 @@ _db_user = os.getenv("DB_USER")
 _db_password = os.getenv("DB_PASSWORD")
 _db_host = os.getenv("DB_HOST")
 _db_port = os.getenv("DB_PORT")
+
 _allowed_hosts = os.getenv("ALLOWED_HOSTS")
+_cors_allowed_origins = os.getenv("CORS_ALLOWED_ORIGINS")
 _csrf_trusted_origins = os.getenv("CSRF_TRUSTED_ORIGINS")
+
 _google_cloud_bucket_name = os.getenv("GOOGLE_CLOUD_BUCKET_NAME")
 
 if not (
@@ -64,6 +67,7 @@ if not (
     and _db_port
     and _allowed_hosts
     and _csrf_trusted_origins
+    and _cors_allowed_origins
     and _google_cloud_bucket_name
 ):
     logger.warning(f"{bool(_mode)=}")
@@ -76,6 +80,7 @@ if not (
     logger.warning(f"{bool(_db_port)=}")
     logger.warning(f"{bool(_allowed_hosts)=}")
     logger.warning(f"{bool(_csrf_trusted_origins)=}")
+    logger.warning(f"{bool(_cors_allowed_origins)=}")
     logger.warning(f"{bool(_google_cloud_bucket_name)=}")
 
     raise ValueError("Missing required environment variables.")
@@ -90,6 +95,7 @@ else:
     DB_PORT: str = _db_port
     ALLOWED_HOSTS: list[str] = _allowed_hosts.split(",")
     CSRF_TRUSTED_ORIGINS: list[str] = _csrf_trusted_origins.split(",")
+    CORS_ALLOWED_ORIGINS: list[str] = _cors_allowed_origins.split(",")
     GOOGLE_CLOUD_BUCKET_NAME: str = _google_cloud_bucket_name
 logger.warning(f"{DEBUG=}")
 # =====================================================================================================================
@@ -183,6 +189,3 @@ class CookiesPolicy:
         SAMESITE = "Lax"
         HTTPONLY = True
         SECURE = False
-
-
-CORS_ALLOWED_ORIGINS = ALLOWED_HOSTS
