@@ -35,8 +35,11 @@ jobs:
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
           echo "LOGURU_LOG_LEVEL=${{ secrets.LOGURU_LOG_LEVEL }}" >> .env
           echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
-          echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env
+          
           echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
+          echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env
+          echo "CORS_ALLOWED_ORIGINS=${{secrets.CORS_ALLOWED_ORIGINS}}" >> .env
+          
           echo "GOOGLE_CLOUD_BUCKET_NAME=${{ secrets.GOOGLE_CLOUD_BUCKET_NAME }}" >> .env
       - name: Decode JSON secret to file
         run: echo "${{ secrets.STARTHUB_BUCKET_CREDENTIALS }}" | base64 -d > starthub-bucket-credentials.json
@@ -84,8 +87,11 @@ jobs:
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
           echo "LOGURU_LOG_LEVEL=CRITICAL" >> .env
           echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
-          echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env
+          
           echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
+          echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env
+          echo "CORS_ALLOWED_ORIGINS=${{secrets.CORS_ALLOWED_ORIGINS}}" >> .env
+          
           echo "GOOGLE_CLOUD_BUCKET_NAME=${{ secrets.GOOGLE_CLOUD_BUCKET_NAME }}" >> .env
       - name: Decode JSON secret to file
         run: echo "${{ secrets.STARTHUB_BUCKET_CREDENTIALS }}" | base64 -d > starthub-bucket-credentials.json
@@ -117,8 +123,11 @@ jobs:
           echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
           echo "LOGURU_LOG_LEVEL=${{ secrets.LOGURU_LOG_LEVEL }}" >> .env
           echo "DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}" >> .env
-          echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env
+          
           echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
+          echo "CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}" >> .env
+          echo "CORS_ALLOWED_ORIGINS=${{secrets.CORS_ALLOWED_ORIGINS}}" >> .env
+          
           echo "GOOGLE_CLOUD_BUCKET_NAME=${{ secrets.GOOGLE_CLOUD_BUCKET_NAME }}" >> .env
       - name: Decode JSON secret to file
         run: echo "${{ secrets.STARTHUB_BUCKET_CREDENTIALS }}" | base64 -d > starthub-bucket-credentials.json
