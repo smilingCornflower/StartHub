@@ -23,6 +23,7 @@ from rest_framework.views import APIView
 
 class LoginView(APIView):
     parser_classes = [JSONParser]
+
     @staticmethod
     def post(request: Request) -> Response:
         origin = request.headers.get("Origin")
