@@ -13,6 +13,11 @@ from loguru import logger
 def request_to_news_create_command(
     request_data: dict[str, Any], request_files: MultiValueDict[str, UploadedFile], user_id: int
 ) -> NewsCreateCommand:
+    """
+    :raises MissingRequiredFieldException:
+    :raises NotSupportedImageFormatException:
+    """
+
     cover_file: UploadedFile = get_required_field(request_files, "cover")
     cover_file.seek(0)
     cover = Image(

@@ -22,3 +22,7 @@ class AbstractCloudStorage(ABC):
     def create_url(self, payload: CloudStorageCreateUrlPayload) -> str:
         """:return: A url that can be used to access the file."""
         pass
+
+    @abstractmethod
+    def check_url_exists(self, url: str) -> bool:
+        pass

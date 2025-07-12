@@ -18,7 +18,11 @@ from django.utils.datastructures import MultiValueDict
 from domain.constants import NEWS_IMAGES_MAX_AMOUNT
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.cloud_storage import FileNotFoundCloudStorageException
-from domain.exceptions.news import NewsImageContentAndFileMismatchException, NewsImagesMaxAmountException
+from domain.exceptions.news import (
+    NewsImageContentAndFileMismatchException,
+    NewsImagesMaxAmountException,
+    NewsNotFoundException,
+)
 from domain.exceptions.permissions import (
     AddDeniedPermissionException,
     DeleteDeniedPermissionException,
@@ -159,7 +163,12 @@ class NewsAppService(AbstractAppService):
     def create(
         self, request_data: dict[str, Any], request_files: MultiValueDict[str, UploadedFile], user_id: int
     ) -> int:
-        """:raises MissingFileExcpetion:"""
+        """
+        :raises MissingRequiredFieldException:
+        :raises MissingFileExcpetion: If an image provided in the content but lacks in files
+        :raises NotSupportedImageFormatException:
+        :raises ValidationError: if fields has invalid data types (pydantic.ValidationError)
+        """
 
         self._check_permission_to_add_news(user_id=Id(value=user_id))
         logger.info("User has permissions to add news.")
@@ -211,9 +220,16 @@ class NewsAppService(AbstractAppService):
             if command.images is not None:
                 for i in command.images:
                     if i.name not in all_image_names_in_content:
+                        logger.exception(
+                            f"Each image file must be referenced in the content. Missing reference for: {i.name}"
+                        )
                         raise NewsImageContentAndFileMismatchException(
                             f"Each image file must be referenced in the content. Missing reference for: {i.name}"
                         )
+
+            logger.info("All images in files are used in content")
+        else:
+            logger.debug("Content does not provided")
 
     def _validate_images_in_content_exist_in_files_or_database(self, command: NewsUpdateCommand) -> None:
         """:raises NewsImageContentAndFileMismatchException:"""
@@ -222,12 +238,15 @@ class NewsAppService(AbstractAppService):
             content_image_names: list[str] = self._news_service.get_all_image_names_from_content(
                 content=command.content
             )
+            logger.debug(f"content_image_names: {pformat(content_image_names)}")
             news_current_images: list[NewsImage] = self._news_image_service.get(
                 filter_=NewsImageFilter(news_id=command.news_id)
             )
             news_current_image_names: list[str] = [Path(i.image).name for i in news_current_images]
-            image_names_in_files: list[str] = [i.name for i in command.images] if command.images else list()
+            logger.debug(f"news_current_image_names: {pformat(news_current_image_names)}")
 
+            image_names_in_files: list[str] = [i.name for i in command.images] if command.images else list()
+            logger.debug(f"image_names_in_files: {pformat(image_names_in_files)}")
             for img in content_image_names:
                 if img not in news_current_image_names and img not in image_names_in_files:
                     logger.debug(f"{content_image_names=}")
@@ -240,6 +259,7 @@ class NewsAppService(AbstractAppService):
                     raise NewsImageContentAndFileMismatchException(
                         f"Content references image '{img}', but it's missing in both uploaded files and existing records."
                     )
+            logger.debug("All images in content exist in files or in database")
 
     def _get_images_to_remove(self, command: NewsUpdateCommand) -> list[str]:
         logger.debug("_get_images_to_remove()")
@@ -263,6 +283,8 @@ class NewsAppService(AbstractAppService):
         """
         :raises UpdateDeniedPermissionException:
         :raises NewsImagesMaxAmountException:
+        :raises ValidationError:
+        :raises NewsImageContentAndFileMismatchException:
         """
         logger.info("Started news update()")
         self._check_permission_to_update_news(user_id=Id(value=user_id))
@@ -287,6 +309,8 @@ class NewsAppService(AbstractAppService):
                 self._validate_images_in_content_exist_in_files_or_database(command=update_command)
 
                 image_names_to_remove: list[str] = self._get_images_to_remove(command=update_command)
+                logger.info(f"{image_names_to_remove=}")
+
                 for img in image_names_to_remove:
                     try:
                         self._storage_service.delete_file(payload=CloudStorageDeletePayload(file_path=img))
@@ -302,9 +326,16 @@ class NewsAppService(AbstractAppService):
                 if update_command.images:
                     for image in update_command.images:
                         self.upload_image(image=image, news_id=update_command.news_id, id_map=images_id_map)
-                self._news_service.update(
-                    payload=NewsUpdatePayload(news_id=update_command.news_id, content=NewsContent(value=new_content))
-                )
+
+                    self._news_service.update(
+                        payload=NewsUpdatePayload(
+                            news_id=update_command.news_id, content=NewsContent(value=new_content)
+                        )
+                    )
+                else:  # It means no images to remove or upload, then updating only text part of the content
+                    self._news_service.update(
+                        payload=NewsUpdatePayload(news_id=update_command.news_id, content=update_command.content)
+                    )
 
     def upload_image(self, image: Image, news_id: Id, id_map: dict[str, str]) -> None:
         logger.info(f"Uploading image {image}")
@@ -320,6 +351,19 @@ class NewsAppService(AbstractAppService):
     def delete(self, news_id: int, user_id: int) -> None:
         """:raises DeleteDeniedPermissionException:"""
         self._check_permission_to_delete_news(user_id=Id(value=user_id))
+        try:
+            news = self._news_service.get_one(id_=Id(value=news_id))
+
+            self._storage_service.delete_file(payload=CloudStorageDeletePayload(file_path=cast(str, news.cover)))
+            logger.info(f"Cover deleted: {news.cover}")
+
+            for img in self._news_image_service.get(filter_=NewsImageFilter(news_id=Id(value=news_id))):
+                self._storage_service.delete_file(payload=CloudStorageDeletePayload(file_path=img.image))
+                logger.info(f"Image deleted: {img.image}")
+
+        except NewsNotFoundException:
+            logger.exception("news not found, skipping this exception")
 
         self._news_service.delete_by_id(Id(value=news_id))
+
         logger.debug("News deleted.")

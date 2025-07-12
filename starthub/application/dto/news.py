@@ -12,10 +12,10 @@ class NewsShortDto:
     id: int
     author_id: int
     title: str
-    content: str
     cover: str
 
 
 @dataclass
 class NewsFullDto(NewsShortDto):
+    content: str
     images: list[NewsImageDto]
