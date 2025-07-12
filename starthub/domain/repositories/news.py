@@ -17,6 +17,7 @@ from domain.value_objects.news import (
 class NewsReadRepository(AbstractReadRepository[News, NewsFilter], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> News:
+        """:raises NewsNotFoundException:"""
         pass
 
     @abstractmethod

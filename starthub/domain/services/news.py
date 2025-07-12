@@ -37,6 +37,7 @@ class NewsService(AbstractDomainService):
         self._news_write_repository = news_write_repository
 
     def get_one(self, id_: Id) -> News:
+        """:raises NewsNotFoundException:"""
         return self._news_read_repository.get_by_id(id_=id_)
 
     def get_many(self, filter_: NewsFilter, pagination: Pagination) -> list[News]:

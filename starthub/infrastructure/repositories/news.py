@@ -19,6 +19,7 @@ from domain.value_objects.news import (
 
 class DjNewsReadRepository(NewsReadRepository):
     def get_by_id(self, id_: Id) -> News:
+        """:raises NewsNotFoundException:"""
         news: News | None = News.objects.filter(id=id_.value).first()
         if news is None:
             raise NewsNotFoundException(f"News with id = {id_.value} not found.")

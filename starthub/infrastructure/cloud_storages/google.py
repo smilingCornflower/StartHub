@@ -16,6 +16,7 @@ from google.cloud.storage.blob import Blob
 from loguru import logger
 
 
+# TODO: write tests for CloudStorage
 class GoogleCloudStorage(AbstractCloudStorage):
     def __init__(self, bucket_name: str):
         self._bucket_name = bucket_name
@@ -93,6 +94,11 @@ class GoogleCloudStorage(AbstractCloudStorage):
         except GoogleCloudError as e:
             logger.error(f"Google Cloud error during generating url for {payload.file_path}: {e}")
             raise e
+
+    def check_url_exists(self, url: str) -> bool:
+        blob: Blob = self.bucket.blob(blob_name=url)
+        blob_exists: bool = blob.exists()
+        return blob_exists
 
 
 google_cloud_storage = GoogleCloudStorage(bucket_name=settings.GOOGLE_CLOUD_BUCKET_NAME)
