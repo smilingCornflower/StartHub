@@ -18,6 +18,5 @@ def news_to_short_dto(news: News, cover_url: str) -> NewsShortDto:
         id=news.id,
         author_id=news.author_id,
         title=news.title,
-        content=news.content,
         cover=cover_url,
     )
