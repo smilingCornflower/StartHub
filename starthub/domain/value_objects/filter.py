@@ -16,6 +16,8 @@ class UserFilter(AbstractFilter, BaseVo):
 
 class ProjectFilter(AbstractFilter, BaseVo):
     id_: Id | None = None
+    id_list: list[Id] | None = None
+
     user_id: Id | None = None
     category_slug: Slug | None = None
     funding_model_slug: Slug | None = None

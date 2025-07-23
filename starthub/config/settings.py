@@ -97,12 +97,13 @@ else:
     CSRF_TRUSTED_ORIGINS: list[str] = _csrf_trusted_origins.split(",")
     CORS_ALLOWED_ORIGINS: list[str] = _cors_allowed_origins.split(",")
     GOOGLE_CLOUD_BUCKET_NAME: str = _google_cloud_bucket_name
-logger.warning(f"{DEBUG=}")
 # =====================================================================================================================
 
-logger.warning(f"{ALLOWED_HOSTS=}")
-logger.warning(f"{CSRF_TRUSTED_ORIGINS=}")
-logger.warning(f"{CORS_ALLOWED_ORIGINS=}")
+if os.getenv("RUN_MAIN") == "true":
+    logger.warning(f"{DEBUG=}")
+    logger.warning(f"{ALLOWED_HOSTS=}")
+    logger.warning(f"{CSRF_TRUSTED_ORIGINS=}")
+    logger.warning(f"{CORS_ALLOWED_ORIGINS=}")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
