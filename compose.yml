@@ -15,7 +15,11 @@ services:
       - postgresql-data:/var/lib/postgresql/data
     networks:
       - starthub_network
-
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "20"
 
   starthub-api:
     image: smilekundev/starthub-api
@@ -29,6 +33,11 @@ services:
       - .env
     networks:
       - starthub_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "20"
   proxy:
     image: nginx:latest
     container_name: proxy
@@ -42,6 +51,11 @@ services:
       - starthub-api
     networks:
       - starthub_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "20"
 volumes:
   static_volume:
   postgresql-data:
