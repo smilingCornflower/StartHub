@@ -156,7 +156,7 @@ class UserFavoriteService(AbstractDomainService):
         """
         :raises UserNotFoundException:
         :raises ProjectNotFoundException:
-        :raises UserFavoriteNotFoundException:
+        :raises UserFavoriteAlreadyExistsException:
         """
 
         self._user_read_repository.get_by_id(payload.user_id)

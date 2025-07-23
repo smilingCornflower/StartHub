@@ -2,7 +2,8 @@ from dataclasses import asdict
 
 import pydantic
 from application.dto.auth import AccessPayloadDto
-from application.dto.user import UserFavoriteDto, UserProfileDto
+from application.dto.project import ProjectDto
+from application.dto.user import UserProfileDto
 from application.services.gateway import gateway
 from application.utils.get_access_payload_dto import get_access_payload_dto_from_headers
 from domain.exceptions import DomainException
@@ -53,10 +54,10 @@ class MeFavoriteProjectsView(APIView):
     def get(request: Request) -> Response:
         try:
             access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
-            user_favorites: list[UserFavoriteDto] = gateway.user_favorite_app_service.get_user_favorites(
+            user_favorite_projects: list[ProjectDto] = gateway.user_favorite_app_service.get_user_favorite_projects(
                 user_id=int(access_dto.sub)
             )
-            return Response(map(asdict, user_favorites), status=status.HTTP_200_OK)
+            return Response(map(asdict, user_favorite_projects), status=status.HTTP_200_OK)
         except (DomainException, pydantic.ValidationError) as e:
             return UserErrorResponseFactory.create_response(e)
 
@@ -84,9 +85,9 @@ class UserFavoriteProjectsView(APIView):
     @staticmethod
     def get(request: Request, user_id: int) -> Response:
         try:
-            user_favorites: list[UserFavoriteDto] = gateway.user_favorite_app_service.get_user_favorites(
+            user_favorite_projects: list[ProjectDto] = gateway.user_favorite_app_service.get_user_favorite_projects(
                 user_id=user_id
             )
-            return Response(map(asdict, user_favorites), status=status.HTTP_200_OK)
+            return Response(map(asdict, user_favorite_projects), status=status.HTTP_200_OK)
         except DomainException as e:
             return UserErrorResponseFactory.create_response(e)

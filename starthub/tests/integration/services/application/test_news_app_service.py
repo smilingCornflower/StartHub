@@ -64,7 +64,7 @@ class TestCreateNewsAppService(TestCase):
             }
         )
 
-    def check_raises(self, exc: type[Exception], func: Callable[[Any], Any]) -> None:
+    def check_raises(self, exc: type[Exception], func: Callable[..., Any]) -> None:
         self.assertTrue(f":raises {exc.__name__}:" in func.__doc__)
 
     def test_create_success(self):
