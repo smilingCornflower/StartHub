@@ -84,6 +84,20 @@ class ProjectView(APIView):
         return Response({"detail": "deleted successfully.", "code": "SUCCESS"}, 200)
 
 
+class MeProjectView(APIView):
+    @staticmethod
+    def get(request: Request) -> Response:
+        logger.info(f"GET /my/projects/ request.query_params: {request.query_params}")
+        try:
+            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
+            projects: list[ProjectDto] = gateway.project_app_service.get_my(
+                request.query_params, user_id=int(access_dto.sub)
+            )
+            return Response(map(asdict, projects), status=status.HTTP_200_OK)
+        except DomainException as e:
+            return ProjectErrorResponseFactory.create_response(e)
+
+
 class ProjectPlanView(APIView):
     parser_classes = [MultiPartParser]
     error_classes: tuple[type[Exception], ...] = tuple(ProjectErrorResponseFactory.error_codes.keys())

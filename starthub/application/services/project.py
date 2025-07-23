@@ -102,6 +102,11 @@ class ProjectAppService(AbstractAppService):
         logger.debug(f"project_dtos amount: {len(project_dtos)}")
         return project_dtos
 
+    def get_my(self, data: QueryDict, user_id: int) -> list[ProjectDto]:
+        data_copy = data.copy()
+        data_copy.update({"user_id": str(user_id)})
+        return self.get(data=data_copy)
+
     def create(self, data: dict[str, Any], files: MultiValueDict[str, UploadedFile], user_id: int) -> Project:
         logger.warning("Started creating project.")
         logger.debug(f"{data=}")
