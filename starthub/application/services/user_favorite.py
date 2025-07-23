@@ -6,7 +6,6 @@ from application.ports.service import AbstractAppService
 from domain.models import Project
 from domain.models.user_favorite import UserFavorite
 from domain.repositories.project_management import ProjectReadRepository
-from domain.services.project_management import ProjectService
 from domain.services.user_management import UserFavoriteService
 from domain.value_objects.common import Id
 from domain.value_objects.filter import ProjectFilter
@@ -61,4 +60,3 @@ class UserFavoriteAppService(AbstractAppService):
         logger.info(f"Deleting favorite: user_id={user_id}, project_id={project_id}")
 
         self._user_favorite_service.delete_by_association_ids(Id(value=user_id), Id(value=project_id))
-

@@ -33,5 +33,5 @@ def create_project_instance(user_id: Id) -> Project:
         business_id="1" * 12,
         established_date=date.today() - timedelta(days=1),
     )
-    company_founder, _ = CompanyFounder.objects.get_or_create(name='Name', surname='Surname', company_id=company.id)
+    company_founder, _ = CompanyFounder.objects.get_or_create(name="Name", surname="Surname", company_id=company.id)
     return project

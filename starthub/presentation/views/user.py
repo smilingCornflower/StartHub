@@ -3,7 +3,7 @@ from dataclasses import asdict
 import pydantic
 from application.dto.auth import AccessPayloadDto
 from application.dto.project import ProjectDto
-from application.dto.user import UserFavoriteDto, UserProfileDto
+from application.dto.user import UserProfileDto
 from application.services.gateway import gateway
 from application.utils.get_access_payload_dto import get_access_payload_dto_from_headers
 from domain.exceptions import DomainException
