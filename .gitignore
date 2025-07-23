@@ -2,6 +2,7 @@
 paypal.py
 bar.py
 foo.py
+tests/load/
 
 # credentials
 starthub-bucket-credentials.json
