@@ -100,6 +100,10 @@ else:
 logger.warning(f"{DEBUG=}")
 # =====================================================================================================================
 
+logger.warning(f"{ALLOWED_HOSTS=}")
+logger.warning(f"{CSRF_TRUSTED_ORIGINS=}")
+logger.warning(f"{CORS_ALLOWED_ORIGINS=}")
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",

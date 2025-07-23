@@ -1,8 +1,9 @@
 # unnecessary project files
+load_tests
+
 paypal.py
 bar.py
 foo.py
-tests/load/
 
 # credentials
 starthub-bucket-credentials.json
