@@ -125,7 +125,7 @@ class ProjectService(AbstractDomainService):
         cloud_storage: AbstractCloudStorage,
         pdf_service: PdfService,
     ):
-        # TODO: cloud service and pdf_service violates domain & application logic. It is need to move these services to application layer
+        # TODO: cloud storage violates domain & application logic. It is need to move these services to application layer
         self._project_read_repository = project_read_repository
         self._project_write_repository = project_write_repository
         self._project_category_read_repository = project_category_read_repository

@@ -49,3 +49,4 @@ class ProjectDto:
     deadline: date
     stage: str
     status: str
+    is_favorite: bool = False
