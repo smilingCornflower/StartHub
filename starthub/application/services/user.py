@@ -1,14 +1,15 @@
 from typing import Any
 
+from django.core.files.uploadedfile import UploadedFile
+from loguru import logger
+
 from application.converters.request_converters.user import request_to_user_update_command
 from application.converters.resposne_converters.user import user_profile_to_dto
 from application.dto.user import UserProfileDto
 from application.ports.service import AbstractAppService
-from django.core.files.uploadedfile import UploadedFile
 from domain.services.user_management import UserService
 from domain.value_objects.common import Id
 from domain.value_objects.user import UserProfile, UserUpdateCommand
-from loguru import logger
 
 
 class UserAppService(AbstractAppService):

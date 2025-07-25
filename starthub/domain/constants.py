@@ -20,7 +20,7 @@ PASSWORD_PATTERN = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$")
 
 ACCESS_TOKEN_LIFETIME = 15 * 60  # 15 minutes
 REFRESH_TOKEN_LIFETIME = 15 * 24 * 3600  # 15 days
-
+ANONYMOUS_TOKEN_LIFETIME = 30 * 24 * 3600  # 30 days
 
 JWT_ALGORITHM = "HS256"
 ACCESS_DECODE_OPTIONS = {
@@ -28,6 +28,10 @@ ACCESS_DECODE_OPTIONS = {
     "require": ["sub", "email", "iat", "exp", "type"],
 }
 REFRESH_DECODE_OPTIONS = {
+    "verify_signature": True,
+    "require": ["sub", "iat", "exp", "type"],
+}
+ANONYMOUS_DECODE_OPTIONS = {
     "verify_signature": True,
     "require": ["sub", "iat", "exp", "type"],
 }

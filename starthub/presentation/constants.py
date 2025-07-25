@@ -1,4 +1,5 @@
 import pydantic
+
 from domain.exceptions.auth import InvalidTokenException, TokenExpiredException
 from domain.exceptions.validation import (
     DateIsNotIsoFormatException,

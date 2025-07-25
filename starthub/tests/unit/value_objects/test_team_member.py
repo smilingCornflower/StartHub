@@ -1,9 +1,10 @@
 from typing import Any
 
 from django.test import SimpleTestCase
+from pydantic import ValidationError
+
 from domain.value_objects.common import Description, FirstName, Id, LastName
 from domain.value_objects.project_management import TeamMemberCreateCommand, TeamMemberCreatePayload
-from pydantic import ValidationError
 
 
 class TeamMemberPayloadTest(SimpleTestCase):

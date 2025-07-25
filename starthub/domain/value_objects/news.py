@@ -1,3 +1,5 @@
+from pydantic import field_validator
+
 from domain.constants import CHAR_FIELD_MAX_LENGTH, NEWS_CONTENT_MAX_LENGTH, NEWS_IMAGES_MAX_AMOUNT
 from domain.exceptions.news import (
     NewsContentIsTooLongException,
@@ -10,7 +12,6 @@ from domain.ports.payload import AbstractCreatePayload, AbstractDeletePayload, A
 from domain.value_objects import BaseVo
 from domain.value_objects.common import Id
 from domain.value_objects.file import Image, ImageFile
-from pydantic import field_validator
 
 
 class NewsTitle(BaseVo):

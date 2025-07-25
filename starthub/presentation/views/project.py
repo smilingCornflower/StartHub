@@ -2,25 +2,26 @@ from dataclasses import asdict
 from json import JSONDecodeError
 
 import pydantic
-from application.dto.auth import AccessPayloadDto
-from application.dto.project import ProjectDto
-from application.service_factories.app_service.project import ProjectAppServiceFactory
-from application.services.gateway import gateway
-from application.services.project import ProjectAppService
-from application.utils.get_access_payload_dto import get_access_payload_dto_from_headers
-from domain.exceptions import DomainException
-from domain.exceptions.auth import InvalidTokenException
-from domain.exceptions.project_management import ProjectNotFoundException
-from domain.exceptions.validation import ValidationException
-from domain.models.project import Project
 from loguru import logger
-from presentation.constants import SUCCESS
-from presentation.response_factories.common import ProjectErrorResponseFactory
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from application.dto.auth import AccessPayloadDto
+from application.dto.project import ProjectDto
+from application.service_factories.app_service.project import ProjectAppServiceFactory
+from application.services.gateway import gateway
+from application.services.project import ProjectAppService
+from application.utils.token import get_access_payload_dto_from_headers
+from domain.exceptions import DomainException
+from domain.exceptions.auth import InvalidTokenException
+from domain.exceptions.project_management import ProjectNotFoundException
+from domain.exceptions.validation import ValidationException
+from domain.models.project import Project
+from presentation.constants import SUCCESS
+from presentation.response_factories.common import ProjectErrorResponseFactory
 
 
 class ProjectView(APIView):

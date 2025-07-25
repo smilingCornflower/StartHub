@@ -14,6 +14,11 @@ class RefreshTokenVo:
 
 
 @dataclass(frozen=True)
+class AnonymousTokenVo:
+    value: str
+
+
+@dataclass(frozen=True)
 class TokenPairVo:
     access: AccessTokenVo
     refresh: RefreshTokenVo
@@ -44,3 +49,16 @@ class RefreshPayload:
         """:raises ValueError:"""
         if self.type != TokenTypeEnum.REFRESH:
             raise ValueError("Token type must be refresh.")
+
+
+@dataclass(frozen=True)
+class AnonymousPayload:
+    sub: str
+    iat: int
+    exp: int
+    type: str = TokenTypeEnum.ANONYMOUS
+
+    def __post_init__(self) -> None:
+        """:raises ValueError:"""
+        if self.type != TokenTypeEnum.ANONYMOUS:
+            raise ValueError("Token type must be anonymous.")
