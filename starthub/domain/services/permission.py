@@ -1,5 +1,3 @@
-from loguru import logger
-
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.models.base import BaseModel
 from domain.models.permission import Permission
@@ -9,6 +7,7 @@ from domain.repositories.user import UserReadRepository
 from domain.value_objects.common import Id
 from domain.value_objects.filter import PermissionFilter
 from domain.value_objects.user import PermissionVo
+from loguru import logger
 
 
 class PermissionService(AbstractDomainService):

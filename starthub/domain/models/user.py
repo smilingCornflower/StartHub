@@ -4,7 +4,6 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.core.validators import EmailValidator, MaxLengthValidator, MinLengthValidator, RegexValidator
 from django.db import models
 from django.utils import timezone
-
 from domain.constants import (
     CHAR_FIELD_MAX_LENGTH,
     CHAR_FIELD_SHORT_LENGTH,

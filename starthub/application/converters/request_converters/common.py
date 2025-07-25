@@ -2,10 +2,9 @@ from datetime import date
 from typing import cast
 
 from django.http import QueryDict
-from loguru import logger
-
 from domain.exceptions.validation import DateIsNotIsoFormatException, MissingRequiredFieldException
 from domain.value_objects.common import Pagination
+from loguru import logger
 
 
 def request_to_pagination(query_params: QueryDict) -> Pagination:

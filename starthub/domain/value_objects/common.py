@@ -2,8 +2,6 @@ import re
 from datetime import date
 
 import phonenumbers
-from pydantic import ValidationInfo, field_validator
-
 from domain.constants import CHAR_FIELD_SHORT_LENGTH, DESCRIPTION_MAX_LENGTH, PAGINNATION_MAX_LMIT
 from domain.enums.social_links import SocialPlatform
 from domain.exceptions.pagination import PaginationMaxLimitException
@@ -18,6 +16,7 @@ from domain.exceptions.validation import (
     StringIsTooLongException,
 )
 from domain.value_objects import BaseVo
+from pydantic import ValidationInfo, field_validator
 
 
 class Id(BaseVo):

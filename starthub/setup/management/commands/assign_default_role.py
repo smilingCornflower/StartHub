@@ -3,7 +3,6 @@ from typing import Any
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.db.models import QuerySet
-
 from domain.enums.role import RoleEnum
 from domain.models.role import Role
 from domain.models.user import User

@@ -1,5 +1,3 @@
-from loguru import logger
-
 from application.converters.resposne_converters.project import projects_to_dtos
 from application.converters.resposne_converters.user import user_favorite_to_dto
 from application.dto.project import ProjectDto
@@ -12,6 +10,7 @@ from domain.services.user_management import UserFavoriteService
 from domain.value_objects.common import Id
 from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.user_favorite import UserFavoriteCreatePayload
+from loguru import logger
 
 
 class UserFavoriteAppService(AbstractAppService):

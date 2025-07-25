@@ -1,13 +1,12 @@
 import re
 
-from loguru import logger
-
 from application.converters.request_converters.common import get_required_field
 from domain.exceptions.auth import MissingAccessTokenException
 from domain.exceptions.validation import MissingRequiredFieldException
 from domain.value_objects.auth import LoginCredentials
 from domain.value_objects.token import AccessTokenVo, AnonymousTokenVo, RefreshTokenVo
 from domain.value_objects.user import Email, RawPassword, UserCreatePayload
+from loguru import logger
 
 
 def request_data_to_user_create_payload(data: dict[str, str]) -> UserCreatePayload:

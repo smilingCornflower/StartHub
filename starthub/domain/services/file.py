@@ -3,11 +3,10 @@ from io import BytesIO
 from typing import BinaryIO
 
 import filetype
-from loguru import logger
-from wand.image import Image
-
 from domain.exceptions.file import NotPdfFileException, NotSupportedImageFormatException
 from domain.ports.service import AbstractDomainService
+from loguru import logger
+from wand.image import Image
 
 
 class ImageService(AbstractDomainService):

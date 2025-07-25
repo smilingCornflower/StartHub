@@ -1,5 +1,4 @@
 from django.urls import path
-
 from presentation.views.project import MeProjectView, ProjectImageView, ProjectPlanView, ProjectView
 
 urlpatterns = [

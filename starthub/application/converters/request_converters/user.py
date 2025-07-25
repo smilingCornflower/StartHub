@@ -1,10 +1,9 @@
 from typing import Any
 
 from django.core.files.uploadedfile import UploadedFile
-from loguru import logger
-
 from domain.value_objects.common import Description, FirstName, Id, LastName, PhoneNumber
 from domain.value_objects.user import RawPassword, UserUpdateCommand
+from loguru import logger
 
 
 def request_to_user_update_command(

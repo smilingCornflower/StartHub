@@ -2,8 +2,6 @@ import re
 
 from django.core.exceptions import ValidationError as DjValidationError
 from django.core.validators import EmailValidator
-from pydantic import field_validator
-
 from domain.constants import PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_PATTERN
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.auth import PasswordValidationException
@@ -12,6 +10,7 @@ from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
 from domain.value_objects.common import Description, FirstName, Id, LastName, PhoneNumber
+from pydantic import field_validator
 
 
 class RawPassword(BaseVo):

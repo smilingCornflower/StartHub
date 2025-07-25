@@ -4,14 +4,13 @@ from unittest.mock import MagicMock
 
 import jwt
 from django.test import SimpleTestCase
-from loguru import logger
-
 from domain.constants import ACCESS_TOKEN_LIFETIME, JWT_ALGORITHM, REFRESH_TOKEN_LIFETIME
 from domain.enums.token import TokenTypeEnum
 from domain.exceptions.auth import InvalidTokenException, TokenExpiredException
 from domain.models.user import User
 from domain.services.auth import TokenService
 from domain.value_objects.token import AccessPayload, AccessTokenVo, RefreshPayload, RefreshTokenVo
+from loguru import logger
 
 
 class TokenServiceTestCase(SimpleTestCase):

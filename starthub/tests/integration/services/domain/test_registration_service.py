@@ -1,5 +1,4 @@
 from django.test import TestCase
-
 from domain.exceptions.user import EmailAlreadyExistsException
 from domain.models.user import User
 from domain.services.auth import RegistrationService
