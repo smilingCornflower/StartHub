@@ -1,17 +1,18 @@
 import jwt
 from django.test import TestCase
 from django.urls import reverse
+from loguru import logger
+from pydantic import ValidationError
+from rest_framework.response import Response
+from rest_framework.test import APIClient
+
 from domain.constants import JWT_ALGORITHM
 from domain.enums.token import TokenTypeEnum
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
 from domain.exceptions.validation import EmptyStringException, InvalidEmailException, MissingRequiredFieldException
 from domain.models.user import User
-from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import LoginErrorResponseFactory
-from pydantic import ValidationError
-from rest_framework.response import Response
-from rest_framework.test import APIClient
 
 
 class TestLogin(TestCase):

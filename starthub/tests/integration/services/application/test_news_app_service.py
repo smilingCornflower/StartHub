@@ -5,14 +5,16 @@ from pprint import pformat
 from typing import Any, Callable
 
 import pydantic
-from application.dto.news import NewsShortDto
-from application.service_factories.app_service.news import NewsAppServiceFactory, NewsServiceFactory
-from application.services.news import NewsAppService
-from config.settings import BASE_DIR
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import QueryDict
 from django.test import TestCase
 from django.utils.datastructures import MultiValueDict
+from loguru import logger
+
+from application.dto.news import NewsShortDto
+from application.service_factories.app_service.news import NewsAppServiceFactory, NewsServiceFactory
+from application.services.news import NewsAppService
+from config.settings import BASE_DIR
 from domain.exceptions.file import NotSupportedImageFormatException
 from domain.exceptions.news import NewsImageContentAndFileMismatchException
 from domain.exceptions.permissions import (
@@ -27,7 +29,6 @@ from domain.models.user import User
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload
 from domain.value_objects.news import NewsContent
 from infrastructure.cloud_storages.google import google_cloud_storage
-from loguru import logger
 
 
 class TestCreateNewsAppService(TestCase):

@@ -1,3 +1,5 @@
+from loguru import logger
+
 from application.converters.request_converters.auth import (
     request_cookies_to_refresh_token,
     request_data_to_login_credentials,
@@ -25,7 +27,6 @@ from domain.value_objects.token import (
     TokenPairVo,
 )
 from domain.value_objects.user import UserCreatePayload
-from loguru import logger
 
 
 class RegistrationAppService(AbstractAppService):

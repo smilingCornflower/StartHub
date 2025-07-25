@@ -1,5 +1,7 @@
 from datetime import UTC, datetime
 
+from loguru import logger
+
 from domain.exceptions.user import UserNotFoundException
 from domain.models.user import User, UserPhone
 from domain.repositories.user import (
@@ -17,7 +19,6 @@ from domain.value_objects.user import (
     UserPhoneUpdatePayload,
     UserUpdatePayload,
 )
-from loguru import logger
 
 
 class DjUserReadRepository(UserReadRepository):

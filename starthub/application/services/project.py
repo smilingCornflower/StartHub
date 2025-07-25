@@ -1,6 +1,12 @@
 from dataclasses import replace
 from typing import Any
 
+from django.core.files.uploadedfile import UploadedFile
+from django.db import transaction
+from django.http import QueryDict
+from django.utils.datastructures import MultiValueDict
+from loguru import logger
+
 from application.converters.inner.company_founder_command_to_payload import convert_company_founder_command_to_payload
 from application.converters.inner.project_command_to_company_create_command import (
     convert_project_create_command_to_company_create_command,
@@ -19,10 +25,6 @@ from application.converters.request_converters.project import (
 from application.converters.resposne_converters.project import project_to_dto
 from application.dto.project import ProjectDto
 from application.ports.service import AbstractAppService
-from django.core.files.uploadedfile import UploadedFile
-from django.db import transaction
-from django.http import QueryDict
-from django.utils.datastructures import MultiValueDict
 from domain.models.company import Company, CompanyFounder
 from domain.models.project import Project, ProjectPhone, TeamMember
 from domain.services.company import CompanyFounderService, CompanyService
@@ -47,7 +49,6 @@ from domain.value_objects.project_management import (
     ProjectUpdateCommand,
 )
 from infrastructure.cloud_storages.google import GoogleCloudStorage
-from loguru import logger
 
 
 class ProjectAppService(AbstractAppService):
