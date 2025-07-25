@@ -8,6 +8,7 @@ from application.service_factories.domain_service.project_management import (
     ProjectSocialLinkServiceFactory,
     TeamMemberServiceFactory,
 )
+from application.service_factories.domain_service.user_favorite import UserFavoriteServiceFactory
 from application.services.project import ProjectAppService
 from infrastructure.cloud_storages.google import google_cloud_storage
 
@@ -24,4 +25,5 @@ class ProjectAppServiceFactory(AbstractAppServiceFactory[ProjectAppService]):
             company_founder_service=CompanyFounderServiceFactory.create_service(),
             project_image_service=ProjectImageServiceFactory.create_service(),
             google_cloud_storage=google_cloud_storage,
+            user_favorite_service=UserFavoriteServiceFactory.create_service(),
         )
