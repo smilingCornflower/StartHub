@@ -1,9 +1,8 @@
-from django.test import TestCase
-
 from application.dto.project import ProjectDto
 from application.dto.user import UserFavoriteDto
 from application.service_factories.app_service.user_favorite import UserFavoriteAppAppServiceFactory
 from application.services.user_favorite import UserFavoriteAppService
+from django.test import TestCase
 from domain.exceptions.project_management import ProjectNotFoundException
 from domain.exceptions.user import UserNotFoundException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException, UserFavoriteNotFoundException

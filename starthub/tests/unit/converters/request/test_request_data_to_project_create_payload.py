@@ -4,13 +4,11 @@ from pathlib import Path
 from typing import Any
 
 import pydantic
+from application.converters.request_converters.project import request_data_to_project_create_command
+from config.settings import BASE_DIR
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase
 from django.utils.datastructures import MultiValueDict
-from loguru import logger
-
-from application.converters.request_converters.project import request_data_to_project_create_command
-from config.settings import BASE_DIR
 from domain.exceptions.project_management import InvalidProjectStageException, NegativeProjectGoalSumException
 from domain.exceptions.validation import (
     DateInFutureException,
@@ -26,6 +24,7 @@ from domain.exceptions.validation import (
 )
 from domain.value_objects.file import ImageFile
 from domain.value_objects.project_management import ProjectCreateCommand
+from loguru import logger
 
 
 class TestProjectCreateCommandConversion(SimpleTestCase):

@@ -1,5 +1,4 @@
 from django.test import SimpleTestCase
-
 from domain.exceptions.validation import StringIsTooLongException
 from domain.value_objects.common import Description
 

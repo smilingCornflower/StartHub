@@ -1,5 +1,4 @@
 from django.test import SimpleTestCase
-
 from domain.enums.project_stage import ProjectStageEnum
 from domain.exceptions.project_management import InvalidProjectStageException
 from domain.value_objects.project_management import ProjectStage

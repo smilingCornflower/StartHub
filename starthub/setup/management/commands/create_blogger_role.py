@@ -1,7 +1,6 @@
 from typing import Any
 
 from django.core.management.base import BaseCommand
-
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.enums.role import RoleEnum
 from domain.models.news import News

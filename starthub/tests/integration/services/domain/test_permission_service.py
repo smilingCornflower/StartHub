@@ -1,7 +1,5 @@
-from django.test import TestCase
-from loguru import logger
-
 from application.service_factories.domain_service.permission import PermissionServiceFactory
+from django.test import TestCase
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.models import Project
 from domain.models.permission import Permission
@@ -9,6 +7,7 @@ from domain.models.role import Role
 from domain.models.user import User
 from domain.value_objects.common import Id
 from domain.value_objects.user import PermissionVo
+from loguru import logger
 
 
 class TestPermissionService(TestCase):

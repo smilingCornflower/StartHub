@@ -1,15 +1,14 @@
 from django.test import TestCase
 from django.urls import reverse
-from loguru import logger
-from pydantic import ValidationError
-from rest_framework.test import APIClient
-
 from domain.exceptions.auth import PasswordValidationException
 from domain.exceptions.user import EmailAlreadyExistsException
 from domain.exceptions.validation import InvalidEmailException, MissingRequiredFieldException
 from domain.models.user import User
+from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import RegistrationErrorResponseFactory
+from pydantic import ValidationError
+from rest_framework.test import APIClient
 
 
 class TestRegister(TestCase):
