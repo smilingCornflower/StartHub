@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django_stubs_ext import monkeypatch
+
 from domain.models.country import Country
 from domain.models.funding_model import FundingModel
 from domain.models.news import News, NewsImage

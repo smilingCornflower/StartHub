@@ -1,17 +1,18 @@
 from dataclasses import asdict
 
 import pydantic
-from application.dto.news import NewsFullDto, NewsShortDto
-from application.services.gateway import gateway
-from application.utils.get_access_payload_dto import get_access_payload_dto_from_headers
-from domain.exceptions import DomainException
 from loguru import logger
-from presentation.constants import SUCCESS
-from presentation.response_factories.common import NewsErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from application.dto.news import NewsFullDto, NewsShortDto
+from application.services.gateway import gateway
+from application.utils.token import get_access_payload_dto_from_headers
+from domain.exceptions import DomainException
+from presentation.constants import SUCCESS
+from presentation.response_factories.common import NewsErrorResponseFactory
 
 
 class NewsView(APIView):

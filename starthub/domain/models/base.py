@@ -1,6 +1,7 @@
 from abc import abstractmethod
 
 from django.db import models
+
 from domain.ports.model import AbstractModel
 
 

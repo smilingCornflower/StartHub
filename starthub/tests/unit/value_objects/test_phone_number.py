@@ -1,7 +1,8 @@
 from django.test import SimpleTestCase
+from pydantic import ValidationError
+
 from domain.exceptions.validation import InvalidPhoneNumberException
 from domain.value_objects.common import PhoneNumber
-from pydantic import ValidationError
 
 
 class PhoneNumberTestCase(SimpleTestCase):

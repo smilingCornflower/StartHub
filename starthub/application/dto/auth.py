@@ -18,9 +18,22 @@ class RefreshTokenDto:
 
 
 @dataclass(frozen=True)
+class AnonymousTokenDto:
+    anonymous_token: str
+
+
+@dataclass(frozen=True)
 class AccessPayloadDto:
     sub: str
     email: str
+    iat: int
+    exp: int
+    type: str
+
+
+@dataclass(frozen=True)
+class AnonymousPayloadDto:
+    sub: str
     iat: int
     exp: int
     type: str

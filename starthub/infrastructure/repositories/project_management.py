@@ -1,4 +1,6 @@
 from django.db.models import Q, QuerySet
+from loguru import logger
+
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
     ProjectCategoryNotFoundException,
@@ -49,7 +51,6 @@ from domain.value_objects.project_management import (
     TeamMemberCreatePayload,
     TeamMemberUpdatePayload,
 )
-from loguru import logger
 
 
 class DjProjectReadRepository(ProjectReadRepository):

@@ -1,5 +1,5 @@
-from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
-from domain.value_objects.token import AccessPayload, AccessTokenVo, TokenPairVo
+from application.dto.auth import AccessPayloadDto, AccessTokenDto, AnonymousPayloadDto, TokenPairDto
+from domain.value_objects.token import AccessPayload, AccessTokenVo, AnonymousPayload, TokenPairVo
 
 
 def token_pair_to_dto(token_pair: TokenPairVo) -> TokenPairDto:
@@ -20,4 +20,13 @@ def access_payload_to_dto(access_payload: AccessPayload) -> AccessPayloadDto:
         iat=access_payload.iat,
         exp=access_payload.exp,
         type=access_payload.type,
+    )
+
+
+def anonymous_payload_to_dto(anonymous_payload: AnonymousPayload) -> AnonymousPayloadDto:
+    return AnonymousPayloadDto(
+        sub=anonymous_payload.sub,
+        iat=anonymous_payload.iat,
+        exp=anonymous_payload.exp,
+        type=anonymous_payload.type,
     )

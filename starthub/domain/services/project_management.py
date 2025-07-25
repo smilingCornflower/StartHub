@@ -1,3 +1,5 @@
+from loguru import logger
+
 from domain.constants import PROJECT_IMAGES_MAX_AMOUNT
 from domain.enums.project_status import ProjectStatusEnum
 from domain.exceptions import BusinessRuleException
@@ -52,7 +54,6 @@ from domain.value_objects.project_management import (
     ProjectUpdatePayload,
     TeamMemberCreatePayload,
 )
-from loguru import logger
 
 
 class ProjectPhoneService(AbstractDomainService):

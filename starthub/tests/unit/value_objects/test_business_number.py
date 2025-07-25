@@ -1,8 +1,9 @@
 from django.test import SimpleTestCase
+from pydantic import ValidationError
+
 from domain.exceptions.validation import ValidationException
 from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode
-from pydantic import ValidationError
 
 
 class BusinessNumberValidationTest(SimpleTestCase):
