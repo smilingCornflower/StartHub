@@ -1,10 +1,13 @@
 from dataclasses import asdict
 from datetime import UTC, datetime
+from uuid import uuid4
 
 import jwt
 from domain.constants import (
     ACCESS_DECODE_OPTIONS,
     ACCESS_TOKEN_LIFETIME,
+    ANONYMOUS_DECODE_OPTIONS,
+    ANONYMOUS_TOKEN_LIFETIME,
     JWT_ALGORITHM,
     REFRESH_DECODE_OPTIONS,
     REFRESH_TOKEN_LIFETIME,
@@ -17,7 +20,15 @@ from domain.repositories.user import UserReadRepository, UserWriteRepository
 from domain.value_objects.auth import LoginCredentials
 from domain.value_objects.common import Id
 from domain.value_objects.filter import UserFilter
-from domain.value_objects.token import AccessPayload, AccessTokenVo, RefreshPayload, RefreshTokenVo, TokenPairVo
+from domain.value_objects.token import (
+    AccessPayload,
+    AccessTokenVo,
+    AnonymousPayload,
+    AnonymousTokenVo,
+    RefreshPayload,
+    RefreshTokenVo,
+    TokenPairVo,
+)
 from domain.value_objects.user import Email, UserCreatePayload
 from loguru import logger
 
@@ -28,10 +39,12 @@ class TokenService(AbstractDomainService):
         secret_key: str,
         access_token_lifetime: int = ACCESS_TOKEN_LIFETIME,
         refresh_token_lifetime: int = REFRESH_TOKEN_LIFETIME,
+        anonymous_token_lifetime: int = ANONYMOUS_TOKEN_LIFETIME,
     ):
         self.__secret_key = secret_key
         self.access_token_lifetime = access_token_lifetime
         self.refresh_token_lifetime = refresh_token_lifetime
+        self.anonymous_token_lifetime = anonymous_token_lifetime
 
     def generate_access(self, user: User) -> AccessTokenVo:
         """Generate a new access token for a user."""
@@ -51,6 +64,18 @@ class TokenService(AbstractDomainService):
         token: str = jwt.encode(asdict(payload), key=self.__secret_key, algorithm=JWT_ALGORITHM)
         return RefreshTokenVo(value=token)
 
+    def generate_anonymous(self) -> AnonymousTokenVo:
+        """Generate a new anonymous token for a user."""
+        issued_at = int(datetime.now(UTC).timestamp())
+        expires_at = issued_at + self.anonymous_token_lifetime
+        payload = AnonymousPayload(sub=self._generate_anonymous_id(), iat=issued_at, exp=expires_at)
+        token: str = jwt.encode(asdict(payload), key=self.__secret_key, algorithm=JWT_ALGORITHM)
+
+        return AnonymousTokenVo(value=token)
+
+    def _generate_anonymous_id(self) -> str:
+        return "anon:" + str(uuid4())
+
     def _verify_access(self, token: AccessTokenVo) -> AccessPayload:
         """
         Verify access token and return its payload.
@@ -58,7 +83,7 @@ class TokenService(AbstractDomainService):
         :raises ExpiredSignatureError: If the token has expired.
         :raises PyJWTError: If the token is invalid for any other reason
                             (e.g., malformed, invalid signature, or missing required claims).
-        :raises ValueError: If payload['type'] is not 'refresh'.
+        :raises ValueError: If payload['type'] is not TokenTypeEnum.ACCESS
         """
         payload = jwt.decode(
             token.value,
@@ -70,29 +95,6 @@ class TokenService(AbstractDomainService):
         return AccessPayload(
             sub=payload["sub"],
             email=payload["email"],
-            iat=payload["iat"],
-            exp=payload["exp"],
-            type=payload["type"],
-        )
-
-    def _verify_refresh(self, token: RefreshTokenVo) -> RefreshPayload:
-        """
-        Verify refresh token and return its payload.
-
-        :raises ExpiredSignatureError: If the token has expired.
-        :raises PyJWTError: If the token is invalid for any other reason
-                            (e.g., malformed, invalid signature, or missing required claims).
-        :raises ValueError: If payload['type'] is not 'refresh'.
-        """
-        payload = jwt.decode(
-            token.value,
-            self.__secret_key,
-            algorithms=[JWT_ALGORITHM],
-            options=REFRESH_DECODE_OPTIONS,
-        )
-
-        return RefreshPayload(
-            sub=payload["sub"],
             iat=payload["iat"],
             exp=payload["exp"],
             type=payload["type"],
@@ -113,6 +115,29 @@ class TokenService(AbstractDomainService):
         except (jwt.PyJWTError, ValueError):
             raise InvalidTokenException("Invalid access token.")
 
+    def _verify_refresh(self, token: RefreshTokenVo) -> RefreshPayload:
+        """
+        Verify refresh token and return its payload.
+
+        :raises ExpiredSignatureError: If the token has expired.
+        :raises PyJWTError: If the token is invalid for any other reason
+                            (e.g., malformed, invalid signature, or missing required claims).
+        :raises ValueError: If payload['type'] is not TokenTypeEnum.REFRESH
+        """
+        payload = jwt.decode(
+            token.value,
+            self.__secret_key,
+            algorithms=[JWT_ALGORITHM],
+            options=REFRESH_DECODE_OPTIONS,
+        )
+
+        return RefreshPayload(
+            sub=payload["sub"],
+            iat=payload["iat"],
+            exp=payload["exp"],
+            type=payload["type"],
+        )
+
     def verify_refresh(self, token: RefreshTokenVo) -> RefreshPayload:
         """
         Verify refresh token and return its payload.
@@ -126,6 +151,42 @@ class TokenService(AbstractDomainService):
             raise TokenExpiredException("Refresh token has expired.")
         except (jwt.PyJWTError, ValueError):
             raise InvalidTokenException("Invalid refresh token.")
+
+    def _verify_anonymous(self, token: AnonymousTokenVo) -> AnonymousPayload:
+        """
+        Verify anonymous token and return its payload.
+
+        :raises ExpiredSignatureError: If the token has expired.
+        :raises PyJWTError: If the token is invalid for any other reason
+                            (e.g., malformed, invalid signature, or missing required claims).
+        :raises ValueError: If payload['type'] is not TokenTypeEnum.ANONYMOUS
+        """
+        payload = jwt.decode(
+            token.value,
+            self.__secret_key,
+            algorithms=[JWT_ALGORITHM],
+            options=ANONYMOUS_DECODE_OPTIONS,
+        )
+        return AnonymousPayload(
+            sub=payload["sub"],
+            iat=payload["iat"],
+            exp=payload["exp"],
+            type=payload["type"],
+        )
+
+    def verify_anonymous(self, token: AnonymousTokenVo) -> AnonymousPayload:
+        """
+        Verify anonymous token and return its payload.
+        :raises TokenExpiredException:
+        :raises InvalidTokenException: If token verification fails.
+        """
+        try:
+            return self._verify_anonymous(token=token)
+        except jwt.ExpiredSignatureError as e:
+            logger.exception(e)
+            raise TokenExpiredException("Anonymous token has expired.")
+        except (jwt.PyJWTError, ValueError):
+            raise InvalidTokenException("Invalid anonymous token.")
 
 
 class AuthService(AbstractDomainService):

@@ -1,21 +1,29 @@
 from application.converters.request_converters.auth import (
-    request_cookies_to_access_token,
     request_cookies_to_refresh_token,
     request_data_to_login_credentials,
     request_data_to_user_create_payload,
     request_headers_to_access_token,
+    request_headers_to_anonymous_token,
 )
 from application.converters.resposne_converters.auth import (
     access_payload_to_dto,
     access_token_to_dto,
+    anonymous_payload_to_dto,
     token_pair_to_dto,
 )
-from application.dto.auth import AccessPayloadDto, AccessTokenDto, TokenPairDto
+from application.dto.auth import AccessPayloadDto, AccessTokenDto, AnonymousPayloadDto, AnonymousTokenDto, TokenPairDto
 from application.ports.service import AbstractAppService
 from domain.models.user import User
 from domain.services.auth import AuthService, RegistrationService, TokenService
 from domain.value_objects.auth import LoginCredentials
-from domain.value_objects.token import AccessPayload, AccessTokenVo, RefreshTokenVo, TokenPairVo
+from domain.value_objects.token import (
+    AccessPayload,
+    AccessTokenVo,
+    AnonymousPayload,
+    AnonymousTokenVo,
+    RefreshTokenVo,
+    TokenPairVo,
+)
 from domain.value_objects.user import UserCreatePayload
 from loguru import logger
 
@@ -75,19 +83,6 @@ class AuthAppService(AbstractAppService):
         access_token_dto = access_token_to_dto(access_token)
         return access_token_dto
 
-    def verify_access(self, cookies: dict[str, str]) -> AccessPayloadDto:
-        """
-        :raises MissingAccessTokenException:
-        :raises InvalidTokenException:
-        :raises TokenExpiredException:
-        """
-        access_token: AccessTokenVo = request_cookies_to_access_token(cookies)
-        access_payload: AccessPayload = self._token_service.verify_access(access_token)
-        logger.debug("Access token verified successfully.")
-
-        access_payload_dto: AccessPayloadDto = access_payload_to_dto(access_payload)
-        return access_payload_dto
-
     def verify_access_from_headers(self, headers: dict[str, str]) -> AccessPayloadDto:
         """
         :raises MissingRequiredFieldException:
@@ -96,5 +91,20 @@ class AuthAppService(AbstractAppService):
         :raises TokenExpiredException:
         """
         access_token: AccessTokenVo = request_headers_to_access_token(headers=headers)
-        access_payload: AccessPayload = self._token_service.verify_access(access_token)
+        access_payload: AccessPayload = self._token_service.verify_access(token=access_token)
         return access_payload_to_dto(access_payload)
+
+    def generate_anonymous(self) -> AnonymousTokenDto:
+        token: AnonymousTokenVo = self._token_service.generate_anonymous()
+        return AnonymousTokenDto(anonymous_token=token.value)
+
+    def verify_anonymous_from_headers(self, headers: dict[str, str]) -> AnonymousPayloadDto:
+        """
+        :raises MissingRequiredFieldException:
+        :raises pydantic.ValidationError:
+        :raises InvalidTokenException:
+        :raises TokenExpiredException:
+        """
+        anonymous_token: AnonymousTokenVo = request_headers_to_anonymous_token(headers=headers)
+        anonymous_payload: AnonymousPayload = self._token_service.verify_anonymous(token=anonymous_token)
+        return anonymous_payload_to_dto(anonymous_payload=anonymous_payload)

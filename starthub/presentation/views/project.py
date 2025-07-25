@@ -7,7 +7,7 @@ from application.dto.project import ProjectDto
 from application.service_factories.app_service.project import ProjectAppServiceFactory
 from application.services.gateway import gateway
 from application.services.project import ProjectAppService
-from application.utils.get_access_payload_dto import get_access_payload_dto_from_headers
+from application.utils.token import get_access_payload_dto_from_headers
 from domain.exceptions import DomainException
 from domain.exceptions.auth import InvalidTokenException
 from domain.exceptions.project_management import ProjectNotFoundException

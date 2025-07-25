@@ -4,7 +4,7 @@ from application.converters.request_converters.common import get_required_field
 from domain.exceptions.auth import MissingAccessTokenException
 from domain.exceptions.validation import MissingRequiredFieldException
 from domain.value_objects.auth import LoginCredentials
-from domain.value_objects.token import AccessTokenVo, RefreshTokenVo
+from domain.value_objects.token import AccessTokenVo, AnonymousTokenVo, RefreshTokenVo
 from domain.value_objects.user import Email, RawPassword, UserCreatePayload
 from loguru import logger
 
@@ -77,18 +77,32 @@ def request_data_to_email(data: dict[str, str]) -> Email:
         raise MissingRequiredFieldException("Missing required fields: email must be provided.")
 
 
-def request_headers_to_access_token(headers: dict[str, str]) -> AccessTokenVo:
+def extract_token_from_headers(headers: dict[str, str]) -> str:
     """
     :raises MissingRequiredFieldException:
-    :raises pydantic.ValidationError:
     """
-
     auth_header: str = get_required_field(headers, "Authorization")
     bearer_token_regex = r"^Bearer\s(.+)$"
     match: re.Match[str] | None = re.match(bearer_token_regex, auth_header)
     if match:
         logger.debug("Bearer Token provided.")
         token: str = match.group(1)
-        return AccessTokenVo(value=token)
+        return token
     logger.exception("Failed to get Bearer token from Authorization headers.")
     raise MissingRequiredFieldException("Failed to get Bearer token from Authorization headers.")
+
+
+def request_headers_to_access_token(headers: dict[str, str]) -> AccessTokenVo:
+    """
+    :raises MissingRequiredFieldException:
+    :raises pydantic.ValidationError:
+    """
+    return AccessTokenVo(value=extract_token_from_headers(headers=headers))
+
+
+def request_headers_to_anonymous_token(headers: dict[str, str]) -> AnonymousTokenVo:
+    """
+    :raises MissingRequiredFieldException:
+    :raises pydantic.ValidationError:
+    """
+    return AnonymousTokenVo(value=extract_token_from_headers(headers=headers))
