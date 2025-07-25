@@ -1,12 +1,6 @@
 from dataclasses import replace
 from typing import Any
 
-from django.core.files.uploadedfile import UploadedFile
-from django.db import transaction
-from django.http import QueryDict
-from django.utils.datastructures import MultiValueDict
-from loguru import logger
-
 from application.converters.inner.company_founder_command_to_payload import convert_company_founder_command_to_payload
 from application.converters.inner.project_command_to_company_create_command import (
     convert_project_create_command_to_company_create_command,
@@ -25,6 +19,10 @@ from application.converters.request_converters.project import (
 from application.converters.resposne_converters.project import project_to_dto
 from application.dto.project import ProjectDto
 from application.ports.service import AbstractAppService
+from django.core.files.uploadedfile import UploadedFile
+from django.db import transaction
+from django.http import QueryDict
+from django.utils.datastructures import MultiValueDict
 from domain.models.company import Company, CompanyFounder
 from domain.models.project import Project, ProjectPhone, TeamMember
 from domain.services.company import CompanyFounderService, CompanyService
@@ -49,20 +47,21 @@ from domain.value_objects.project_management import (
     ProjectUpdateCommand,
 )
 from infrastructure.cloud_storages.google import GoogleCloudStorage
+from loguru import logger
 
 
 class ProjectAppService(AbstractAppService):
     def __init__(
-            self,
-            project_service: ProjectService,
-            team_member_service: TamMemberService,
-            project_phone_service: ProjectPhoneService,
-            project_social_link_service: ProjectSocialLinkService,
-            company_service: CompanyService,
-            company_founder_service: CompanyFounderService,
-            project_image_service: ProjectImageService,
-            google_cloud_storage: GoogleCloudStorage,
-            user_favorite_service: UserFavoriteService,
+        self,
+        project_service: ProjectService,
+        team_member_service: TamMemberService,
+        project_phone_service: ProjectPhoneService,
+        project_social_link_service: ProjectSocialLinkService,
+        company_service: CompanyService,
+        company_founder_service: CompanyFounderService,
+        project_image_service: ProjectImageService,
+        google_cloud_storage: GoogleCloudStorage,
+        user_favorite_service: UserFavoriteService,
     ):
         self._project_service = project_service
         self._team_member_service = team_member_service
@@ -139,7 +138,7 @@ class ProjectAppService(AbstractAppService):
                 logger.debug("ProjectImage uploaded successfully.")
 
             for member_payload in convert_team_members_create_command_to_payload(
-                    command.team_members, Id(value=project.id)
+                command.team_members, Id(value=project.id)
             ):
                 team_member: TeamMember = self._team_member_service.create(member_payload)
                 logger.debug(f"Team member with id = {team_member.id} is attached to the project successfully.")

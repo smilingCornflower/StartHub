@@ -1,9 +1,8 @@
 from typing import cast
 
-from django.http import HttpHeaders
-
 from application.dto.auth import AccessPayloadDto
 from application.services.gateway import gateway
+from django.http import HttpHeaders
 
 
 def get_access_payload_dto_from_headers(headers: HttpHeaders) -> AccessPayloadDto:
