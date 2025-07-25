@@ -1,7 +1,7 @@
 from io import BytesIO
 
 from domain.exceptions.user import ProfilePictureNotFoundException, UserPhoneAlreadyExistException
-from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException
+from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException, UserFavoriteNotFoundException
 from domain.models.user import User, UserPhone
 from domain.models.user_favorite import UserFavorite
 from domain.ports.cloud_storage import AbstractCloudStorage
@@ -189,3 +189,10 @@ class UserFavoriteService(AbstractDomainService):
     def delete_by_association_ids(self, user_id: Id, project_id: Id) -> None:
         """:raises UserFavoriteNotFoundException:"""
         self._user_favorite_write_repository.delete_by_association_ids(user_id, project_id)
+
+    def is_favorite(self, user_id: Id, project_id: Id) -> bool:
+        try:
+            self._user_favorite_read_repository.get_by_association_ids(user_id=user_id, project_id=project_id)
+            return True
+        except UserFavoriteNotFoundException:
+            return False

@@ -1,3 +1,4 @@
+from dataclasses import replace
 from typing import Any
 
 from application.converters.inner.company_founder_command_to_payload import convert_company_founder_command_to_payload
@@ -32,6 +33,7 @@ from domain.services.project_management import (
     ProjectSocialLinkService,
     TamMemberService,
 )
+from domain.services.user_management import UserFavoriteService
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload
 from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import ProjectFilter
@@ -59,6 +61,7 @@ class ProjectAppService(AbstractAppService):
         company_founder_service: CompanyFounderService,
         project_image_service: ProjectImageService,
         google_cloud_storage: GoogleCloudStorage,
+        user_favorite_service: UserFavoriteService,
     ):
         self._project_service = project_service
         self._team_member_service = team_member_service
@@ -68,6 +71,7 @@ class ProjectAppService(AbstractAppService):
         self._company_founder_service = company_founder_service
         self._project_image_service = project_image_service
         self._google_cloud_storage = google_cloud_storage
+        self._user_favorite_service = user_favorite_service
 
     def get_by_id(self, project_id: int) -> ProjectDto:
         """:raises ProjectNotFoundException:"""
@@ -200,3 +204,7 @@ class ProjectAppService(AbstractAppService):
         )
         logger.debug(f"{image_update_command=}")
         self._project_image_service.update(image_update_command)
+
+    def _wtih_favorite_flag(self, user_id: Id, project_id: Id, project_dto: ProjectDto) -> ProjectDto:
+        is_favorite: bool = self._user_favorite_service.is_favorite(user_id=user_id, project_id=project_id)
+        return replace(project_dto, is_favorite=is_favorite)

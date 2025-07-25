@@ -7,7 +7,7 @@ from application.dto.project import ProjectDto
 from application.service_factories.app_service.project import ProjectAppServiceFactory
 from application.services.gateway import gateway
 from application.services.project import ProjectAppService
-from application.utils.get_access_payload_dto import get_access_payload_dto, get_access_payload_dto_from_headers
+from application.utils.get_access_payload_dto import get_access_payload_dto_from_headers
 from domain.exceptions import DomainException
 from domain.exceptions.auth import InvalidTokenException
 from domain.exceptions.project_management import ProjectNotFoundException
@@ -118,7 +118,7 @@ class ProjectImageView(APIView):
         logger.info(f"POST project photo request.\n\t {project_id=}")
 
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto(request.COOKIES)
+            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
             gateway.project_app_service.upload_project_image(
                 files=request.FILES, project_id=project_id, user_id=int(access_dto.sub)
             )
@@ -141,7 +141,7 @@ class ProjectImageView(APIView):
         logger.info(f"GET /projects/images/ \n\t {project_id=}\n\t {image_order=}")
 
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto(request.COOKIES)
+            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
             gateway.project_app_service.delete_image(
                 project_id=project_id,
                 image_order=image_order,
@@ -155,7 +155,7 @@ class ProjectImageView(APIView):
     def patch(self, request: Request, project_id: int) -> Response:
         logger.info(f"PATCH /projects/images/ \n\t {request.data=}")
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto(request.COOKIES)
+            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
             gateway.project_app_service.update_project_images(
                 request.data, project_id=project_id, user_id=int(access_dto.sub)
             )
