@@ -73,16 +73,24 @@ class ProjectAppService(AbstractAppService):
         self._google_cloud_storage = google_cloud_storage
         self._user_favorite_service = user_favorite_service
 
-    def get_by_id(self, project_id: int) -> ProjectDto:
+    def get_by_id(self, project_id: int, user_id: int | None = None) -> ProjectDto:
         """:raises ProjectNotFoundException:"""
         project: Project = self._project_service.get_by_id(Id(value=project_id))
         images: list[str] = self._project_image_service.get_paths(project_id=Id(value=project.id))
         image_links: list[str] = list()
         for i in images:
             image_links.append(self._google_cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=i)))
-        return project_to_dto(project=project, image_links=image_links)
 
-    def get(self, data: QueryDict) -> list[ProjectDto]:
+        project_dto: ProjectDto = project_to_dto(project=project, image_links=image_links)
+
+        if user_id:
+            return self._wtih_favorite_flag(
+                user_id=Id(value=user_id), project_id=Id(value=project_id), project_dto=project_dto
+            )
+
+        return project_dto
+
+    def get(self, data: QueryDict, user_id: int | None = None) -> list[ProjectDto]:
         project_filter: ProjectFilter = request_data_to_project_filter(data)
         pagination: Pagination = request_to_pagination(query_params=data)
         logger.debug(f"pagination = {pagination}")
@@ -104,6 +112,11 @@ class ProjectAppService(AbstractAppService):
             project_dtos.append(project_to_dto(project=project, image_links=images_links))
 
         logger.debug(f"project_dtos amount: {len(project_dtos)}")
+        if user_id:
+            return [
+                self._wtih_favorite_flag(user_id=Id(value=user_id), project_id=Id(value=i.id), project_dto=i)
+                for i in project_dtos
+            ]
         return project_dtos
 
     def get_my(self, data: QueryDict, user_id: int) -> list[ProjectDto]:

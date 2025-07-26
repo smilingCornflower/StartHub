@@ -1,4 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+from domain.enums.token import TokenTypeEnum
 
 
 @dataclass(frozen=True)
@@ -23,17 +25,22 @@ class AnonymousTokenDto:
 
 
 @dataclass(frozen=True)
-class AccessPayloadDto:
-    sub: str
-    email: str
-    iat: int
-    exp: int
+class PayloadDto:
     type: str
 
 
 @dataclass(frozen=True)
-class AnonymousPayloadDto:
+class AccessPayloadDto(PayloadDto):
+    sub: str
+    email: str
+    iat: int
+    exp: int
+    type: str = field(default=TokenTypeEnum.ACCESS, init=False)
+
+
+@dataclass(frozen=True)
+class AnonymousPayloadDto(PayloadDto):
     sub: str
     iat: int
     exp: int
-    type: str
+    type: str = field(default=TokenTypeEnum.ANONYMOUS, init=False)

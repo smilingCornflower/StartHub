@@ -1,6 +1,8 @@
 import re
 
+import jwt
 from application.converters.request_converters.common import get_required_field
+from domain.enums.token import TokenTypeEnum
 from domain.exceptions.auth import MissingAccessTokenException
 from domain.exceptions.validation import MissingRequiredFieldException
 from domain.value_objects.auth import LoginCredentials
@@ -106,3 +108,18 @@ def request_headers_to_anonymous_token(headers: dict[str, str]) -> AnonymousToke
     :raises pydantic.ValidationError:
     """
     return AnonymousTokenVo(value=extract_token_from_headers(headers=headers))
+
+
+def request_headers_to_access_or_anonymous_token(headers: dict[str, str]) -> AccessTokenVo | AnonymousTokenVo:
+    """
+    :raises MissingRequiredFieldException:
+    :raises pydantic.ValidationError:
+    """
+    token: str = extract_token_from_headers(headers=headers)
+    decoded: dict[str, str] = jwt.decode(token, options={"verify_signature": False})
+    logger.debug(f"{decoded=}")
+
+    if get_required_field(decoded, "type", "token['type']") == TokenTypeEnum.ANONYMOUS:
+        anonymous_token: str = token.replace("anon:", "")
+        return AnonymousTokenVo(value=anonymous_token)
+    return AccessTokenVo(value=token)

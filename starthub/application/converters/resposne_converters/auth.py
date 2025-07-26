@@ -19,7 +19,6 @@ def access_payload_to_dto(access_payload: AccessPayload) -> AccessPayloadDto:
         email=access_payload.email,
         iat=access_payload.iat,
         exp=access_payload.exp,
-        type=access_payload.type,
     )
 
 
@@ -28,5 +27,4 @@ def anonymous_payload_to_dto(anonymous_payload: AnonymousPayload) -> AnonymousPa
         sub=anonymous_payload.sub,
         iat=anonymous_payload.iat,
         exp=anonymous_payload.exp,
-        type=anonymous_payload.type,
     )
