@@ -2,12 +2,16 @@ from dataclasses import asdict
 from json import JSONDecodeError
 
 import pydantic
-from application.dto.auth import AccessPayloadDto
+from application.dto.auth import AccessPayloadDto, AnonymousPayloadDto
 from application.dto.project import ProjectDto
 from application.service_factories.app_service.project import ProjectAppServiceFactory
 from application.services.gateway import gateway
 from application.services.project import ProjectAppService
-from application.utils.token import get_access_payload_dto_from_headers
+from application.utils.token import (
+    get_access_or_anonymous_payload_dto_from_headers,
+    get_access_payload_dto_from_headers,
+)
+from domain.enums.token import TokenTypeEnum
 from domain.exceptions import DomainException
 from domain.exceptions.auth import InvalidTokenException
 from domain.exceptions.project_management import ProjectNotFoundException
@@ -29,16 +33,22 @@ class ProjectView(APIView):
     @staticmethod
     def get(request: Request, project_id: int | None = None) -> Response:
         logger.info("GET project request", project_id=project_id, query_params=request.query_params)
-
         try:
+            token: AccessPayloadDto | AnonymousPayloadDto = get_access_or_anonymous_payload_dto_from_headers(
+                headers=request.headers
+            )
+            logger.info(f"Received token type = {type(token)}")
+            user_id: int | None = None
+            if token.type == TokenTypeEnum.ACCESS:
+                user_id = int(token.sub)
+
             if project_id:
-                project: ProjectDto = gateway.project_app_service.get_by_id(project_id=project_id)
+                project: ProjectDto = gateway.project_app_service.get_by_id(project_id=project_id, user_id=user_id)
                 return Response(asdict(project), status=status.HTTP_200_OK)
 
-            projects: list[ProjectDto] = gateway.project_app_service.get(request.query_params)
+            projects: list[ProjectDto] = gateway.project_app_service.get(request.query_params, user_id=user_id)
         except DomainException as e:
             return ProjectErrorResponseFactory.create_response(e)
-
         return Response(map(asdict, projects), status=status.HTTP_200_OK)
 
     @staticmethod

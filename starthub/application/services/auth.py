@@ -2,6 +2,7 @@ from application.converters.request_converters.auth import (
     request_cookies_to_refresh_token,
     request_data_to_login_credentials,
     request_data_to_user_create_payload,
+    request_headers_to_access_or_anonymous_token,
     request_headers_to_access_token,
     request_headers_to_anonymous_token,
 )
@@ -108,3 +109,21 @@ class AuthAppService(AbstractAppService):
         anonymous_token: AnonymousTokenVo = request_headers_to_anonymous_token(headers=headers)
         anonymous_payload: AnonymousPayload = self._token_service.verify_anonymous(token=anonymous_token)
         return anonymous_payload_to_dto(anonymous_payload=anonymous_payload)
+
+    def verify_access_or_anonymous_from_headers(
+        self, headers: dict[str, str]
+    ) -> AccessPayloadDto | AnonymousPayloadDto:
+        """
+        :raises MissingRequiredFieldException:
+        :raises pydantic.ValidationError:
+        :raises InvalidTokenException:
+        :raises TokenExpiredException:
+        """
+        token: AccessTokenVo | AnonymousTokenVo = request_headers_to_access_or_anonymous_token(headers=headers)
+
+        if isinstance(token, AccessTokenVo):
+            access_payload: AccessPayload = self._token_service.verify_access(token=token)
+            return access_payload_to_dto(access_payload)
+        else:
+            anonymous_payload: AnonymousPayload = self._token_service.verify_anonymous(token=token)
+            return anonymous_payload_to_dto(anonymous_payload)
