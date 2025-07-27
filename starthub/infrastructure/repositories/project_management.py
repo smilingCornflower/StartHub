@@ -73,6 +73,8 @@ class DjProjectReadRepository(ProjectReadRepository):
             queryset = queryset.filter(status=filter_.status.value)
         if filter_.stage:
             queryset = queryset.filter(stage=filter_.stage.value)
+        if filter_.user_id:
+            queryset = queryset.filter(creator_id=filter_.user_id.value)
 
         if pagination and pagination.last_id is not None:
             queryset = queryset.filter(id__lt=pagination.last_id)
