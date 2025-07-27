@@ -89,6 +89,7 @@ class GoogleCloudStorage(AbstractCloudStorage):
         :raises GoogleCloudError: If URL generation fails
         """
         blob: Blob = self.bucket.blob(blob_name=payload.file_path)
+        blob.reload()
         try:
             return cast(str, blob.generate_signed_url(version="v4", expiration=timedelta(minutes=15)))
         except GoogleCloudError as e:
