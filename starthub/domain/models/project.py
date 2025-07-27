@@ -16,7 +16,7 @@ class Project(BaseModel):
     name = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
     slug = AutoSlugField(populate_from="name", unique=True, max_length=CHAR_FIELD_MAX_LENGTH)
     description = models.TextField()
-    category = models.ForeignKey("domain.ProjectCategory", on_delete=models.PROTECT)
+    categories = models.ManyToManyField("domain.ProjectCategory", related_name="projects")
     creator = models.ForeignKey("domain.User", on_delete=models.PROTECT, related_name="created_projects")
     funding_model = models.ForeignKey("domain.FundingModel", on_delete=models.PROTECT)
 

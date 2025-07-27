@@ -1,8 +1,11 @@
 from application.dto.project import CategoryDto, CompanyDto, CompanyFounderDto, FundingModelDto, ProjectDto
 from domain.models.project import Project
+from domain.models.project_category import ProjectCategory
 
 
-def project_to_dto(project: Project, image_links: list[str] | None = None) -> ProjectDto:
+def project_to_dto(
+    project: Project, categories: list[ProjectCategory], image_links: list[str] | None = None
+) -> ProjectDto:
     return ProjectDto(
         id=project.id,
         name=project.name,
@@ -22,11 +25,14 @@ def project_to_dto(project: Project, image_links: list[str] | None = None) -> Pr
             ),
         ),
         images=list() if image_links is None else image_links,
-        category=CategoryDto(
-            id=project.category.id,
-            name=project.category.name,
-            slug=project.category.slug,
-        ),
+        categories=[
+            CategoryDto(
+                id=category.id,
+                name=category.name,
+                slug=category.slug,
+            )
+            for category in categories
+        ],
         funding_model=FundingModelDto(
             id=project.funding_model.id,
             name=project.funding_model.name,
@@ -38,7 +44,3 @@ def project_to_dto(project: Project, image_links: list[str] | None = None) -> Pr
         current_sum=float(project.current_sum),
         deadline=project.deadline,
     )
-
-
-def projects_to_dtos(projects: list[Project]) -> list[ProjectDto]:
-    return [project_to_dto(project) for project in projects]

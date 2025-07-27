@@ -1,11 +1,13 @@
-from application.converters.resposne_converters.project import projects_to_dtos
+from application.converters.resposne_converters.project import project_to_dto
 from application.converters.resposne_converters.user import user_favorite_to_dto
 from application.dto.project import ProjectDto
 from application.dto.user import UserFavoriteDto
 from application.ports.service import AbstractAppService
 from domain.models import Project
+from domain.models.project_category import ProjectCategory
 from domain.models.user_favorite import UserFavorite
 from domain.repositories.project_management import ProjectReadRepository
+from domain.services.project_management import ProjectService
 from domain.services.user_management import UserFavoriteService
 from domain.value_objects.common import Id
 from domain.value_objects.filter import ProjectFilter
@@ -18,9 +20,11 @@ class UserFavoriteAppService(AbstractAppService):
         self,
         user_favorite_service: UserFavoriteService,
         project_read_repository: ProjectReadRepository,
+        project_service: ProjectService,
     ):
         self._user_favorite_service = user_favorite_service
         self._project_read_repository = project_read_repository
+        self._project_service = project_service
 
     def add_favorite(self, user_id: int, project_id: int) -> None:
         """
@@ -53,7 +57,11 @@ class UserFavoriteAppService(AbstractAppService):
             filter_=ProjectFilter(id_list=project_id_list)
         )
 
-        return projects_to_dtos(favorite_projects)
+        project_dtos: list[ProjectDto] = list()
+        for project in favorite_projects:
+            categories: list[ProjectCategory] = self._project_service.get_categories(project_id=Id(value=project.id))
+            project_dtos.append(project_to_dto(project=project, categories=categories))
+        return project_dtos
 
     def delete_by_association_ids(self, user_id: int, project_id: int) -> None:
         """:raises UserFavoriteNotFoundException:"""

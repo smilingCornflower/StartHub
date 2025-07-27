@@ -1,4 +1,5 @@
 from dataclasses import replace
+from pprint import pformat
 from typing import Any
 
 from application.converters.inner.company_founder_command_to_payload import convert_company_founder_command_to_payload
@@ -25,6 +26,7 @@ from django.http import QueryDict
 from django.utils.datastructures import MultiValueDict
 from domain.models.company import Company, CompanyFounder
 from domain.models.project import Project, ProjectPhone, TeamMember
+from domain.models.project_category import ProjectCategory
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management import (
     ProjectImageService,
@@ -81,7 +83,8 @@ class ProjectAppService(AbstractAppService):
         for i in images:
             image_links.append(self._google_cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=i)))
 
-        project_dto: ProjectDto = project_to_dto(project=project, image_links=image_links)
+        categories: list[ProjectCategory] = self._project_service.get_categories(project_id=Id(value=project_id))
+        project_dto: ProjectDto = project_to_dto(project=project, categories=categories, image_links=image_links)
 
         if user_id:
             return self._wtih_favorite_flag(
@@ -109,7 +112,8 @@ class ProjectAppService(AbstractAppService):
                 images_links = [
                     self._google_cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=first_image))
                 ]
-            project_dtos.append(project_to_dto(project=project, image_links=images_links))
+            categories: list[ProjectCategory] = self._project_service.get_categories(project_id=Id(value=project.id))
+            project_dtos.append(project_to_dto(project=project, categories=categories, image_links=images_links))
 
         logger.debug(f"project_dtos amount: {len(project_dtos)}")
         if user_id:
@@ -129,7 +133,8 @@ class ProjectAppService(AbstractAppService):
         logger.debug(f"{data=}")
 
         command: ProjectCreateCommand = request_data_to_project_create_command(data, files, user_id)
-        logger.debug(f"Command = {command}")
+        logger.debug(f"Command: \n{pformat(command.__dict__)}")
+
         with transaction.atomic():
             project: Project = self._project_service.create(command=command)
             company: Company = self._company_service.create(

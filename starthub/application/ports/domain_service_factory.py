@@ -6,7 +6,7 @@ from domain.ports.service import AbstractDomainService
 S = TypeVar("S", bound=AbstractDomainService)
 
 
-class AbstractDomainServiceFactory(ABC, Generic[S]):
+class AbstractDomainServiceBuilder(ABC, Generic[S]):
     @staticmethod
     @abstractmethod
     def create_service() -> S:

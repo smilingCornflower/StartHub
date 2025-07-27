@@ -1,4 +1,4 @@
-from application.ports.domain_service_factory import AbstractDomainServiceFactory
+from application.ports.domain_service_factory import AbstractDomainServiceBuilder
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.file import PdfService
 from domain.services.project_management import (
@@ -33,7 +33,7 @@ from infrastructure.repositories.project_management import (
 from infrastructure.repositories.user import DjUserReadRepository
 
 
-class ProjectServiceFactory(AbstractDomainServiceFactory[ProjectService]):
+class ProjectServiceBuilder(AbstractDomainServiceBuilder[ProjectService]):
     @staticmethod
     def create_service() -> ProjectService:
         return ProjectService(
@@ -49,7 +49,7 @@ class ProjectServiceFactory(AbstractDomainServiceFactory[ProjectService]):
         )
 
 
-class TeamMemberServiceFactory(AbstractDomainServiceFactory[TamMemberService]):
+class TeamMemberServiceBuilder(AbstractDomainServiceBuilder[TamMemberService]):
     @staticmethod
     def create_service() -> TamMemberService:
         return TamMemberService(
@@ -58,7 +58,7 @@ class TeamMemberServiceFactory(AbstractDomainServiceFactory[TamMemberService]):
         )
 
 
-class ProjectPhoneServiceFactory(AbstractDomainServiceFactory[ProjectPhoneService]):
+class ProjectPhoneServiceBuilder(AbstractDomainServiceBuilder[ProjectPhoneService]):
     @staticmethod
     def create_service() -> ProjectPhoneService:
         return ProjectPhoneService(
@@ -67,7 +67,7 @@ class ProjectPhoneServiceFactory(AbstractDomainServiceFactory[ProjectPhoneServic
         )
 
 
-class ProjectSocialLinkServiceFactory(AbstractDomainServiceFactory[ProjectSocialLinkService]):
+class ProjectSocialLinkServiceBuilder(AbstractDomainServiceBuilder[ProjectSocialLinkService]):
     @staticmethod
     def create_service() -> ProjectSocialLinkService:
         return ProjectSocialLinkService(
@@ -76,7 +76,7 @@ class ProjectSocialLinkServiceFactory(AbstractDomainServiceFactory[ProjectSocial
         )
 
 
-class CompanyServiceFactory(AbstractDomainServiceFactory[CompanyService]):
+class CompanyServiceBuilder(AbstractDomainServiceBuilder[CompanyService]):
     @staticmethod
     def create_service() -> CompanyService:
         return CompanyService(
@@ -86,7 +86,7 @@ class CompanyServiceFactory(AbstractDomainServiceFactory[CompanyService]):
         )
 
 
-class CompanyFounderServiceFactory(AbstractDomainServiceFactory[CompanyFounderService]):
+class CompanyFounderServiceBuilder(AbstractDomainServiceBuilder[CompanyFounderService]):
     @staticmethod
     def create_service() -> CompanyFounderService:
         return CompanyFounderService(
@@ -95,7 +95,7 @@ class CompanyFounderServiceFactory(AbstractDomainServiceFactory[CompanyFounderSe
         )
 
 
-class ProjectImageServiceFactory(AbstractDomainServiceFactory[ProjectImageService]):
+class ProjectImageServiceBuilder(AbstractDomainServiceBuilder[ProjectImageService]):
     @staticmethod
     def create_service() -> ProjectImageService:
         return ProjectImageService(

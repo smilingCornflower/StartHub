@@ -1,4 +1,4 @@
-from application.ports.domain_service_factory import AbstractDomainServiceFactory
+from application.ports.domain_service_factory import AbstractDomainServiceBuilder
 from domain.services.news import NewsImageService, NewsService
 from infrastructure.repositories.news import (
     DjNewsImageReadRepository,
@@ -8,7 +8,7 @@ from infrastructure.repositories.news import (
 )
 
 
-class NewsServiceFactory(AbstractDomainServiceFactory[NewsService]):
+class NewsServiceBuilder(AbstractDomainServiceBuilder[NewsService]):
     @staticmethod
     def create_service() -> NewsService:
         return NewsService(
@@ -17,7 +17,7 @@ class NewsServiceFactory(AbstractDomainServiceFactory[NewsService]):
         )
 
 
-class NewsImageServiceFactory(AbstractDomainServiceFactory[NewsImageService]):
+class NewsImageServiceBuilder(AbstractDomainServiceBuilder[NewsImageService]):
     @staticmethod
     def create_service() -> NewsImageService:
         return NewsImageService(

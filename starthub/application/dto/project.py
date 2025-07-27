@@ -40,7 +40,7 @@ class ProjectDto:
     slug: str
     description: str
     images: list[str]
-    category: CategoryDto
+    categories: list[CategoryDto]
     company: CompanyDto
     creator_id: int
     funding_model: FundingModelDto

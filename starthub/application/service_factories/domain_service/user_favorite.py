@@ -1,11 +1,11 @@
-from application.ports.domain_service_factory import AbstractDomainServiceFactory
+from application.ports.domain_service_factory import AbstractDomainServiceBuilder
 from domain.services.user_management import UserFavoriteService
 from infrastructure.repositories.project_management import DjProjectReadRepository
 from infrastructure.repositories.user import DjUserReadRepository
 from infrastructure.repositories.user_favorite import DjUserFavoriteReadRepository, DjUserFavoriteWriteRepository
 
 
-class UserFavoriteServiceFactory(AbstractDomainServiceFactory[UserFavoriteService]):
+class UserFavoriteServiceBuilder(AbstractDomainServiceBuilder[UserFavoriteService]):
     @staticmethod
     def create_service() -> UserFavoriteService:
         return UserFavoriteService(

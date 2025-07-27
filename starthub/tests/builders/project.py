@@ -12,13 +12,13 @@ from domain.value_objects.common import Id
 
 def create_project_instance(user_id: Id) -> Project:
     funding_model, _ = FundingModel.objects.get_or_create(name="Funding Model")
-    category, _ = ProjectCategory.objects.get_or_create(name="Category")
+    category_1, _ = ProjectCategory.objects.get_or_create(name="Category 1")
+    category_2, _ = ProjectCategory.objects.get_or_create(name="Category 2")
     country, _ = Country.objects.get_or_create(code="KZ")
     project, _ = Project.objects.get_or_create(
         name="Project Name",
         description="Description",
         funding_model_id=funding_model.id,
-        category_id=category.id,
         goal_sum=10_000,
         deadline=date.today() + timedelta(days=1),
         plan="plan_path",
@@ -26,6 +26,7 @@ def create_project_instance(user_id: Id) -> Project:
         status=ProjectStatusEnum.ACTIVE,
         creator_id=user_id.value,
     )
+    project.categories.set([category_1.id, category_2.id])
     company, _ = Company.objects.get_or_create(
         name="Company",
         project_id=project.id,

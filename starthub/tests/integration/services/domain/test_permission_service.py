@@ -1,4 +1,4 @@
-from application.service_factories.domain_service.permission import PermissionServiceFactory
+from application.service_factories.domain_service.permission import PermissionServiceBuilder
 from django.test import TestCase
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.models import Project
@@ -13,7 +13,7 @@ from loguru import logger
 class TestPermissionService(TestCase):
     @classmethod
     def setUpTestData(cls):
-        cls.service = PermissionServiceFactory.create_service()
+        cls.service = PermissionServiceBuilder.create_service()
         logger.info(f"all_roles: {Role.objects.all()}")
         logger.info(f"all_permissions: {Permission.objects.all()}")
         cls.blogger = User.objects.create_user(

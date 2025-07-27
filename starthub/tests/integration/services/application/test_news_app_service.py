@@ -6,7 +6,7 @@ from typing import Any, Callable
 
 import pydantic
 from application.dto.news import NewsShortDto
-from application.service_factories.app_service.news import NewsAppServiceFactory, NewsServiceFactory
+from application.service_factories.app_service.news import NewsAppServiceFactory, NewsServiceBuilder
 from application.services.news import NewsAppService
 from config.settings import BASE_DIR
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -270,7 +270,7 @@ class TestUploadNewsAppService(TestCase):
         news_content = News.objects.get(id=self.news_id).content
         logger.info(f"news_images:\n {pformat(news_images)}")
         logger.info(f"news_content:\n {pformat(news_content)}")
-        news_service = NewsServiceFactory.create_service()
+        news_service = NewsServiceBuilder.create_service()
 
         all_images = news_service.get_all_image_names_from_content(content=NewsContent(value=news_content))
         logger.info(f"all_images: \n {pformat(all_images)}")

@@ -1,4 +1,4 @@
-from application.ports.domain_service_factory import AbstractDomainServiceFactory
+from application.ports.domain_service_factory import AbstractDomainServiceBuilder
 from domain.services.file import ImageService
 from domain.services.user_management import UserService
 from infrastructure.cloud_storages.google import google_cloud_storage
@@ -10,7 +10,7 @@ from infrastructure.repositories.user import (
 )
 
 
-class UserServiceFactory(AbstractDomainServiceFactory[UserService]):
+class UserServiceBuilder(AbstractDomainServiceBuilder[UserService]):
     @staticmethod
     def create_service() -> UserService:
         return UserService(

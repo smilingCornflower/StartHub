@@ -22,6 +22,7 @@ from domain.exceptions.validation import (
     LastNameIsTooLongException,
     MissingRequiredFieldException,
 )
+from domain.value_objects.common import Id
 from domain.value_objects.file import ImageFile
 from domain.value_objects.project_management import ProjectCreateCommand
 from loguru import logger
@@ -44,7 +45,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
             "project": {
                 "name": "AI Startup Project",
                 "description": "Innovative AI solution for small businesses",
-                "category_id": 1,
+                "category_ids": [1, 2, 3],
                 "funding_model_id": 2,
                 "deadline": (date.today() + timedelta(days=90)).isoformat(),
                 "stage": "idea",
@@ -83,7 +84,8 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
         self.assertEqual(type(command), ProjectCreateCommand)
         self.assertEqual(command.name.value, self.valid_data["project"]["name"])
         self.assertEqual(command.description.value, self.valid_data["project"]["description"])
-        self.assertEqual(command.category_id.value, self.valid_data["project"]["category_id"])
+        self.assertEqual(command.category_ids, [Id(value=i) for i in self.valid_data["project"]["category_ids"]])
+
         self.assertEqual(command.creator_id.value, self.user_id)
         self.assertEqual(command.funding_model_id.value, self.valid_data["project"]["funding_model_id"])
         self.assertEqual(command.stage.value, self.valid_data["project"]["stage"])
@@ -125,7 +127,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
         project_required_fields = [
             "name",
             "description",
-            "category_id",
+            "category_ids",
             "funding_model_id",
             "stage",
             "goal_sum",
@@ -274,7 +276,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
 
     def test_invalid_category_id_type(self) -> None:
 
-        self.valid_data["project"]["category_id"] = "not-an-integer"
+        self.valid_data["project"]["category_ids"] = ["not-an-integer", 3.14]
 
         with self.assertRaises(pydantic.ValidationError):
             request_data_to_project_create_command(self.prepare_data(self.valid_data), self.files, self.user_id)

@@ -4,11 +4,13 @@ from domain.exceptions import BusinessRuleException
 from domain.exceptions.cloud_storage import FileNotFoundCloudStorageException
 from domain.exceptions.permissions import DeleteDeniedPermissionException, UpdateDeniedPermissionException
 from domain.exceptions.project_management import (
+    ProjectCategoryNotFoundException,
     ProjectImageMaxAmountException,
     ProjectPhoneAlreadyExistsException,
     ProjectSocialLinkAlreadyExistsException,
 )
 from domain.models.project import Project, ProjectImage, ProjectPhone, ProjectSocialLink, TeamMember
+from domain.models.project_category import ProjectCategory
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.ports.service import AbstractDomainService
 from domain.repositories.company import CompanyReadRepository, CompanyWriteRepository
@@ -35,7 +37,13 @@ from domain.value_objects.cloud_storage import (
     CloudStorageUploadPayload,
 )
 from domain.value_objects.common import Id, Order, Pagination
-from domain.value_objects.filter import ProjectFilter, ProjectImageFilter, ProjectPhoneFilter, ProjectSocialLinkFilter
+from domain.value_objects.filter import (
+    ProjectCategoryFilter,
+    ProjectFilter,
+    ProjectImageFilter,
+    ProjectPhoneFilter,
+    ProjectSocialLinkFilter,
+)
 from domain.value_objects.project_management import (
     ProjectCreateCommand,
     ProjectCreatePayload,
@@ -125,7 +133,6 @@ class ProjectService(AbstractDomainService):
         cloud_storage: AbstractCloudStorage,
         pdf_service: PdfService,
     ):
-        # TODO: cloud storage violates domain & application logic. It is need to move these services to application layer
         self._project_read_repository = project_read_repository
         self._project_write_repository = project_write_repository
         self._project_category_read_repository = project_category_read_repository
@@ -158,7 +165,7 @@ class ProjectService(AbstractDomainService):
         payload = ProjectCreatePayload(
             name=command.name,
             description=command.description,
-            category_id=command.category_id,
+            category_ids=command.category_ids,
             creator_id=command.creator_id,
             funding_model_id=command.funding_model_id,
             stage=command.stage,
@@ -168,15 +175,13 @@ class ProjectService(AbstractDomainService):
             plan_file=command.plan_file,
         )
 
-        self._project_category_read_repository.get_by_id(payload.category_id)
+        self.check_category_ids(payload.category_ids)
         self._user_read_repository.get_by_id(payload.creator_id)
         self._funding_model_read_repository.get_by_id(payload.funding_model_id)
 
         project: Project = self._project_write_repository.create(payload)
-
         logger.info("Project created successfully.")
         project_plan_path: str = PathProvider.get_project_plan_path(Id(value=project.id))
-
         uploaded_path: str = self._cloud_storage.upload_file(
             CloudStorageUploadPayload(file_data=payload.plan_file.value, file_path=project_plan_path)
         )
@@ -190,6 +195,16 @@ class ProjectService(AbstractDomainService):
 
         return project
 
+    def check_category_ids(self, category_ids: list[Id]) -> None:
+        """:raises ProjectCategoryNotFoundException:"""
+        categories: list[ProjectCategory] = self._project_category_read_repository.get_all(
+            filter_=ProjectCategoryFilter(category_ids=category_ids)
+        )
+        existing_category_ids: list[Id] = [Id(value=i.id) for i in categories]
+        for i in category_ids:
+            if i not in existing_category_ids:
+                raise ProjectCategoryNotFoundException(f"Category with id {i.value} not found.")
+
     def update(self, update_command: ProjectUpdateCommand) -> Project:
         """
         :raises ProjectNotFoundException:
@@ -201,9 +216,9 @@ class ProjectService(AbstractDomainService):
         if update_command.user_id.value != project.creator_id:
             raise UpdateDeniedPermissionException("User is not the creator of the project and cannot update it")
 
-        if update_command.category_id:
+        if update_command.category_ids:
             logger.debug("Checking category exists.")
-            self._project_category_read_repository.get_by_id(update_command.category_id)
+            self.check_category_ids(update_command.category_ids)
 
         if update_command.funding_model_id:
             logger.debug("Checking funding model exists.")
@@ -226,7 +241,7 @@ class ProjectService(AbstractDomainService):
             ProjectUpdatePayload(
                 id_=update_command.project_id,
                 name=update_command.name,
-                category_id=update_command.category_id,
+                category_ids=update_command.category_ids,
                 funding_model_id=update_command.funding_model_id,
                 stage=update_command.stage,
                 goal_sum=update_command.goal_sum,
@@ -244,6 +259,13 @@ class ProjectService(AbstractDomainService):
             raise DeleteDeniedPermissionException("Permission denied: Only project owners can delete projects")
 
         self._project_write_repository.delete_by_id(id_=project_id)
+
+    def get_categories(self, project_id: Id) -> list[ProjectCategory]:
+        return self._project_category_read_repository.get_all(
+            filter_=ProjectCategoryFilter(
+                project_id=project_id,
+            )
+        )
 
 
 class ProjectImageService(AbstractDomainService):
