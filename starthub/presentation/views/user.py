@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from venv import logger
 
 import pydantic
 from application.dto.auth import AccessPayloadDto
@@ -30,6 +31,10 @@ class MeView(APIView):
 
     @staticmethod
     def patch(request: Request) -> Response:
+        print()
+        logger.info("PATCH /users/me")
+        logger.debug(f"{request.data}")
+        logger.debug(f"{request.FILES}")
         try:
             access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
             gateway.user_app_service.update_user(request.data, request.FILES, int(access_dto.sub))
