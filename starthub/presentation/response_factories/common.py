@@ -128,6 +128,7 @@ class UserErrorResponseFactory(CommonErrorResponseFactory):
         pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
         PasswordValidationException: ("WEAK_PASSWORD", 422),
         UserPhoneAlreadyExistException: ("USER_PHONE_ALREADY_EXISTS", 409),
+        InvalidPhoneNumberException: ("INVALID_PHONE_NUMBER", 422),
     }
 
 
