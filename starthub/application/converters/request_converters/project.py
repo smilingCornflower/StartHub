@@ -51,7 +51,8 @@ def request_data_to_project_filter(data: QueryDict) -> ProjectFilter:
         filter_.status = ProjectStatus(value=cast(str, data.get("status")))
     if data.get("stage"):
         filter_.stage = ProjectStage(value=cast(str, data.get("stage")))
-
+    if data.get("user_id"):
+        filter_.user_id = Id(value=int(cast(str, data["user_id"])))
     return filter_
 
 
