@@ -1,10 +1,10 @@
-from application.ports.domain_service_factory import AbstractDomainServiceFactory
+from application.ports.domain_service_factory import AbstractDomainServiceBuilder
 from config import settings
 from domain.services.auth import AuthService, RegistrationService, TokenService
 from infrastructure.repositories.user import DjUserReadRepository, DjUserWriteRepository
 
 
-class AuthServiceFactory(AbstractDomainServiceFactory[AuthService]):
+class AuthServiceBuilder(AbstractDomainServiceBuilder[AuthService]):
     @staticmethod
     def create_service() -> AuthService:
         return AuthService(
@@ -14,13 +14,13 @@ class AuthServiceFactory(AbstractDomainServiceFactory[AuthService]):
         )
 
 
-class TokenServiceFactory(AbstractDomainServiceFactory[TokenService]):
+class TokenServiceBuilder(AbstractDomainServiceBuilder[TokenService]):
     @staticmethod
     def create_service() -> TokenService:
         return TokenService(secret_key=settings.SECRET_KEY)
 
 
-class RegistrationServiceFactory(AbstractDomainServiceFactory[RegistrationService]):
+class RegistrationServiceBuilder(AbstractDomainServiceBuilder[RegistrationService]):
     @staticmethod
     def create_service() -> RegistrationService:
         return RegistrationService(

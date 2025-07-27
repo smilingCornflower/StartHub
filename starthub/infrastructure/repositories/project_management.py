@@ -49,6 +49,7 @@ from domain.value_objects.project_management import (
     TeamMemberCreatePayload,
     TeamMemberUpdatePayload,
 )
+from infrastructure.repositories.pagination import apply_pagination
 from loguru import logger
 
 
@@ -65,7 +66,7 @@ class DjProjectReadRepository(ProjectReadRepository):
         queryset = Project.objects.all().order_by("-id")
 
         if filter_.category_slug:
-            queryset = queryset.filter(category__slug=filter_.category_slug.value)
+            queryset = queryset.filter(categories__slug=filter_.category_slug.value)
         if filter_.funding_model_slug:
             queryset = queryset.filter(funding_model__slug=filter_.funding_model_slug.value)
         if filter_.status:
@@ -97,7 +98,6 @@ class DjProjectWriteRepository(ProjectWriteRepository):
         project = Project.objects.create(
             name=data.name.value,
             description=data.description.value,
-            category_id=data.category_id.value,
             creator_id=data.creator_id.value,
             funding_model_id=data.funding_model_id.value,
             stage=data.stage.value,
@@ -105,6 +105,7 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             goal_sum=data.goal_sum.value,
             deadline=data.deadline,
         )
+        project.categories.set([i.value for i in data.category_ids])
         return project
 
     def update(self, data: ProjectUpdatePayload) -> Project:
@@ -122,8 +123,9 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             project.deadline = data.deadline.value
         if data.stage is not None:
             project.stage = data.stage.value
-        if data.category_id is not None:
-            project.category_id = data.category_id.value
+        if data.category_ids is not None:
+
+            project.categories.set([i.value for i in data.category_ids])
         if data.funding_model_id is not None:
             project.funding_model_id = data.funding_model_id.value
         if data.plan_path is not None:
@@ -162,7 +164,17 @@ class DjProjectCategoryReadRepository(ProjectCategoryReadRepository):
         return project_category
 
     def get_all(self, filter_: ProjectCategoryFilter, pagination: Pagination | None = None) -> list[ProjectCategory]:
-        return list(ProjectCategory.objects.all())
+        queryset = ProjectCategory.objects.all()
+
+        if filter_.project_id is not None:
+            queryset = queryset.filter(projects__id=filter_.project_id.value)
+        if filter_.category_ids is not None:
+            queryset = queryset.filter(id__in=[i.value for i in filter_.category_ids])
+
+        if pagination:
+            return apply_pagination(queryset, pagination=pagination)
+
+        return list(queryset.distinct())
 
 
 class DjProjectPhoneReadRepository(ProjectPhoneReadRepository):

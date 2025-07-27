@@ -134,7 +134,7 @@ def request_data_to_project_create_command(
         name=ProjectName(value=get_required_field(project_data, field="name")),
         creator_id=Id(value=user_id),
         description=Description(value=get_required_field(project_data, field="description")),
-        category_id=Id(value=get_required_field(project_data, field="category_id")),
+        category_ids=[Id(value=i) for i in get_required_field(project_data, "category_ids")],
         funding_model_id=Id(value=get_required_field(project_data, field="funding_model_id")),
         stage=ProjectStage(value=get_required_field(project_data, field="stage")),
         goal_sum=GoalSum(value=get_required_field(project_data, field="goal_sum")),
@@ -170,6 +170,11 @@ def request_data_to_the_project_update_command(
         project_data = json.loads(data["project"])
         logger.debug(f"{project_data=}")
 
+    category_ids: list[Id] | None = None
+    if "category_ids" in project_data:
+        logger.debug(f"{project_data.get("category_ids")=}")
+        category_ids = [Id(value=i) for i in project_data["category_ids"]]
+
     company_update_command: CompanyUpdatePayload | None = None
     if "company" in data:
         company_data = json.loads(data["company"])
@@ -196,7 +201,7 @@ def request_data_to_the_project_update_command(
         user_id=Id(value=user_id),
         company=company_update_command,
         name=ProjectName(value=project_data["name"]) if "name" in project_data else None,
-        category_id=Id(value=project_data["category_id"]) if "category_id" in project_data else None,
+        category_ids=category_ids,
         funding_model_id=Id(value=project_data["funding_model_id"]) if "funding_model_id" in project_data else None,
         stage=ProjectStage(value=project_data["stage"]) if "stage" in project_data else None,
         goal_sum=GoalSum(value=project_data["goal_sum"]) if "goal_sum" in project_data else None,

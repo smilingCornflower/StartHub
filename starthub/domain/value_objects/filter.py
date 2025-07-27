@@ -26,7 +26,8 @@ class ProjectFilter(AbstractFilter, BaseVo):
 
 
 class ProjectCategoryFilter(AbstractFilter, BaseVo):
-    pass
+    project_id: Id | None = None
+    category_ids: list[Id] | None = None
 
 
 class FundingModelFilter(AbstractFilter, BaseVo):

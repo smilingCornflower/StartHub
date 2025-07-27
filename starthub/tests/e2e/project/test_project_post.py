@@ -43,7 +43,8 @@ class TestProjectPost(TestCase):
 
         cls.user = User.objects.create_user(email="test@email.com", password="ValidPass1234")
         cls.funding_model = FundingModel.objects.create(name="Funding Model 1")
-        cls.category = ProjectCategory.objects.create(name="Category 1")
+        cls.category_1 = ProjectCategory.objects.create(name="Category 1")
+        cls.category_2 = ProjectCategory.objects.create(name="Category 2")
         cls.country = Country.objects.create(code="KZ")
 
         response = cls.client.post(
@@ -59,8 +60,8 @@ class TestProjectPost(TestCase):
                 "project": {
                     "name": "My Project",
                     "description": "Project description",
-                    "category_id": 1,
-                    "funding_model_id": 1,
+                    "category_ids": [self.category_1.id, self.category_2.id],
+                    "funding_model_id": self.funding_model.id,
                     "stage": "idea",
                     "goal_sum": 100000,
                     "deadline": "2025-12-31",
@@ -135,7 +136,7 @@ class TestProjectPost(TestCase):
         )
 
     def test_category_not_found(self):
-        self.valid_data["project"]["category_id"] = -1
+        self.valid_data["project"]["category_ids"] = [-1]
         self._check_response(
             self.client.post(self.project_url, data=self._get_prepared_data(), headers=self.headers),
             ProjectCategoryNotFoundException,
