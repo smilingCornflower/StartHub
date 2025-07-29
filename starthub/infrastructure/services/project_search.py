@@ -12,7 +12,7 @@ class ProjectSearchService(Search[ProjectSearchParams, Project]):
             qs = (
                 qs.annotate(similarity=TrigramWordSimilarity(search_params.name.value, "name"))
                 .filter(similarity__gt=0.3)
-                .order_by("similarity")
+                .order_by("-similarity")
             )
         qs = qs[pagination.offset : pagination.offset + pagination.limit]
         return list(qs)
