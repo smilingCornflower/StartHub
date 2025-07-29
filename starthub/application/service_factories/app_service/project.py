@@ -1,4 +1,4 @@
-from application.ports.app_service_factory import AbstractAppServiceFactory
+from application.ports.app_service_factory import AbstractAppServiceBuilder
 from application.service_factories.domain_service.project_management import (
     CompanyFounderServiceBuilder,
     CompanyServiceBuilder,
@@ -11,9 +11,10 @@ from application.service_factories.domain_service.project_management import (
 from application.service_factories.domain_service.user_favorite import UserFavoriteServiceBuilder
 from application.services.project import ProjectAppService
 from infrastructure.cloud_storages.google import google_cloud_storage
+from infrastructure.services.project_search import ProjectSearchService
 
 
-class ProjectAppServiceFactory(AbstractAppServiceFactory[ProjectAppService]):
+class ProjectAppServiceBuilder(AbstractAppServiceBuilder[ProjectAppService]):
     @staticmethod
     def create_service() -> ProjectAppService:
         return ProjectAppService(
@@ -26,4 +27,5 @@ class ProjectAppServiceFactory(AbstractAppServiceFactory[ProjectAppService]):
             project_image_service=ProjectImageServiceBuilder.create_service(),
             google_cloud_storage=google_cloud_storage,
             user_favorite_service=UserFavoriteServiceBuilder.create_service(),
+            project_search_service=ProjectSearchService(),
         )

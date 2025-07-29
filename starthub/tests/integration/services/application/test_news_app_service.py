@@ -6,7 +6,7 @@ from typing import Any, Callable
 
 import pydantic
 from application.dto.news import NewsShortDto
-from application.service_factories.app_service.news import NewsAppServiceFactory, NewsServiceBuilder
+from application.service_factories.app_service.news import NewsAppServiceBuilder, NewsServiceBuilder
 from application.services.news import NewsAppService
 from config.settings import BASE_DIR
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -46,7 +46,7 @@ class TestCreateNewsAppService(TestCase):
         cls.blogger_id = blogger.id
 
     def setUp(self):
-        self.service = NewsAppServiceFactory.create_service()
+        self.service = NewsAppServiceBuilder.create_service()
         self.cloud_service = google_cloud_storage
 
         image = BASE_DIR / "tests/images/miku.jpg"
@@ -193,14 +193,14 @@ class TestUploadNewsAppService(TestCase):
                 "cover": [upload_image],
             }
         )
-        service = NewsAppServiceFactory.create_service()
+        service = NewsAppServiceBuilder.create_service()
         cls.news_id = service.create(request_data=valid_data, request_files=files, user_id=cls.blogger_id)
 
     def check_raises(self, exc: type[Exception], func: Callable[[Any], Any]) -> None:
         self.assertTrue(f":raises {exc.__name__}:" in func.__doc__)
 
     def setUp(self):
-        self.service = NewsAppServiceFactory.create_service()
+        self.service = NewsAppServiceBuilder.create_service()
 
     def test_update_title(self):
         anther_title = "Another Title"
@@ -334,7 +334,7 @@ class TestUploadNewsAppService(TestCase):
 
 class TestGetNewsAppService(TestCase):
     def setUp(self):
-        self.service = NewsAppServiceFactory.create_service()
+        self.service = NewsAppServiceBuilder.create_service()
 
     @classmethod
     def setUpTestData(cls):
@@ -355,7 +355,7 @@ class TestGetNewsAppService(TestCase):
 
         cls.amount = 5
 
-        service = NewsAppServiceFactory.create_service()
+        service = NewsAppServiceBuilder.create_service()
         img1_path = BASE_DIR / "tests/images/frieren.jpg"
         img2_path = BASE_DIR / "tests/images/miku.jpg"
 
@@ -436,7 +436,7 @@ class TestDeleteNewsAppService(TestCase):
         with open(img_path, mode="rb") as f:
             image1 = SimpleUploadedFile(name=f.name, content=f.read())
 
-        service = NewsAppServiceFactory.create_service()
+        service = NewsAppServiceBuilder.create_service()
         news_id = service.create(
             request_data={"title": f"News Title", "content": f"Content\nimage1: ![image1](frieren.jpg)"},
             request_files=MultiValueDict(
@@ -450,7 +450,7 @@ class TestDeleteNewsAppService(TestCase):
         cls.news_id = news_id
 
     def setUp(self):
-        self.service = NewsAppServiceFactory.create_service()
+        self.service = NewsAppServiceBuilder.create_service()
         self.cloud_storage = google_cloud_storage
 
     def check_raises(self, exc: type[Exception], func: Callable[[Any], Any]) -> None:

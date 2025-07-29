@@ -1,8 +1,8 @@
-from application.service_factories.app_service.auth import AuthAppServiceFactory, RegistrationAppServiceFactory
-from application.service_factories.app_service.news import NewsAppServiceFactory
-from application.service_factories.app_service.project import ProjectAppServiceFactory
-from application.service_factories.app_service.user import UserAppServiceFactory
-from application.service_factories.app_service.user_favorite import UserFavoriteAppAppServiceFactory
+from application.service_factories.app_service.auth import AuthAppServiceBuilder, RegistrationAppServiceBuilder
+from application.service_factories.app_service.news import NewsAppServiceBuilder
+from application.service_factories.app_service.project import ProjectAppServiceBuilder
+from application.service_factories.app_service.user import UserAppServiceBuilder
+from application.service_factories.app_service.user_favorite import UserFavoriteAppAppServiceBuilder
 from application.services.auth import AuthAppService, RegistrationAppService
 from application.services.news import NewsAppService
 from application.services.project import ProjectAppService
@@ -25,37 +25,37 @@ class Gateway:
     @property
     def auth_app_service(self) -> AuthAppService:
         if self._auth_app_service is None:
-            self._auth_app_service = AuthAppServiceFactory.create_service()
+            self._auth_app_service = AuthAppServiceBuilder.create_service()
         return self._auth_app_service
 
     @property
     def registration_app_service(self) -> RegistrationAppService:
         if self._registration_app_service is None:
-            self._registration_app_service = RegistrationAppServiceFactory.create_service()
+            self._registration_app_service = RegistrationAppServiceBuilder.create_service()
         return self._registration_app_service
 
     @property
     def user_app_service(self) -> UserAppService:
         if self._user_app_service is None:
-            self._user_app_service = UserAppServiceFactory.create_service()
+            self._user_app_service = UserAppServiceBuilder.create_service()
         return self._user_app_service
 
     @property
     def project_app_service(self) -> ProjectAppService:
         if self._project_app_service is None:
-            self._project_app_service = ProjectAppServiceFactory.create_service()
+            self._project_app_service = ProjectAppServiceBuilder.create_service()
         return self._project_app_service
 
     @property
     def user_favorite_app_service(self) -> UserFavoriteAppService:
         if self._user_favorite_app_service is None:
-            self._user_favorite_app_service = UserFavoriteAppAppServiceFactory.create_service()
+            self._user_favorite_app_service = UserFavoriteAppAppServiceBuilder.create_service()
         return self._user_favorite_app_service
 
     @property
     def news_app_service(self) -> NewsAppService:
         if self._news_app_service is None:
-            self._news_app_service = NewsAppServiceFactory.create_service()
+            self._news_app_service = NewsAppServiceBuilder.create_service()
         return self._news_app_service
 
     @property

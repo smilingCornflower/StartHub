@@ -1,3 +1,4 @@
+from pprint import pformat
 from typing import Any
 
 from application.converters.request_converters.user import request_to_user_update_command
@@ -26,6 +27,7 @@ class UserAppService(AbstractAppService):
         :raises NotSupportedImageFormat:
         """
         command: UserUpdateCommand = request_to_user_update_command(request_data, request_files, user_id=user_id)
+        logger.debug(f"command = {pformat(command.__dict__)}")
         logger.warning("Started user updating.")
 
         self._user_service.update_user(command)

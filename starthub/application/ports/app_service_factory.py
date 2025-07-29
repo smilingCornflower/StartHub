@@ -6,7 +6,7 @@ from application.ports.service import AbstractAppService
 S = TypeVar("S", bound=AbstractAppService)
 
 
-class AbstractAppServiceFactory(ABC, Generic[S]):
+class AbstractAppServiceBuilder(ABC, Generic[S]):
     @staticmethod
     @abstractmethod
     def create_service() -> S:

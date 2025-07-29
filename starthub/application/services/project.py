@@ -9,7 +9,7 @@ from application.converters.inner.project_command_to_company_create_command impo
 from application.converters.inner.team_members_create_command_to_payload import (
     convert_team_members_create_command_to_payload,
 )
-from application.converters.request_converters.common import request_to_pagination
+from application.converters.request_converters.common import request_to_offset_pagination, request_to_pagination
 from application.converters.request_converters.project import (
     request_data_to_project_create_command,
     request_data_to_project_filter,
@@ -17,6 +17,7 @@ from application.converters.request_converters.project import (
     request_files_to_project_image_create_command,
     request_project_data_to_project_images_update_command,
 )
+from application.converters.request_converters.search import request_data_to_project_search_params
 from application.converters.resposne_converters.project import project_to_dto
 from application.dto.project import ProjectDto
 from application.ports.service import AbstractAppService
@@ -37,7 +38,7 @@ from domain.services.project_management import (
 )
 from domain.services.user_management import UserFavoriteService
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import Id, OffsetPagination, Pagination
 from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project_management import (
     ProjectCreateCommand,
@@ -48,7 +49,9 @@ from domain.value_objects.project_management import (
     ProjectSocialLinkCreatePayload,
     ProjectUpdateCommand,
 )
+from domain.value_objects.search import ProjectSearchParams
 from infrastructure.cloud_storages.google import GoogleCloudStorage
+from infrastructure.services.project_search import ProjectSearchService
 from loguru import logger
 
 
@@ -64,6 +67,7 @@ class ProjectAppService(AbstractAppService):
         project_image_service: ProjectImageService,
         google_cloud_storage: GoogleCloudStorage,
         user_favorite_service: UserFavoriteService,
+        project_search_service: ProjectSearchService,
     ):
         self._project_service = project_service
         self._team_member_service = team_member_service
@@ -74,6 +78,7 @@ class ProjectAppService(AbstractAppService):
         self._project_image_service = project_image_service
         self._google_cloud_storage = google_cloud_storage
         self._user_favorite_service = user_favorite_service
+        self._project_search_service = project_search_service
 
     def get_by_id(self, project_id: int, user_id: int | None = None) -> ProjectDto:
         """:raises ProjectNotFoundException:"""
@@ -92,6 +97,8 @@ class ProjectAppService(AbstractAppService):
             )
 
         return project_dto
+
+    # TODO: write _convert_to_dto() method
 
     def get(self, data: QueryDict, user_id: int | None = None) -> list[ProjectDto]:
         project_filter: ProjectFilter = request_data_to_project_filter(data)
@@ -226,3 +233,30 @@ class ProjectAppService(AbstractAppService):
     def _wtih_favorite_flag(self, user_id: Id, project_id: Id, project_dto: ProjectDto) -> ProjectDto:
         is_favorite: bool = self._user_favorite_service.is_favorite(user_id=user_id, project_id=project_id)
         return replace(project_dto, is_favorite=is_favorite)
+
+    def _search(self, query: QueryDict) -> list[Project]:
+        search_params: ProjectSearchParams = request_data_to_project_search_params(query=query)
+        offset_pagination: OffsetPagination = request_to_offset_pagination(query_params=query)
+
+        logger.debug(f"search_params = {search_params}")
+        logger.debug(f"offset_pagination = {offset_pagination}")
+
+        projects: list[Project] = self._project_search_service.search(
+            search_params=search_params, pagination=offset_pagination
+        )
+        logger.info(f"found {len(projects)} projects")
+        return projects
+
+    # TODO: Write method convert_to_dtos()
+    def search(self, query: QueryDict, user_id: int | None = None) -> list[ProjectDto]:
+        projects: list[Project] = self._search(query=query)
+        result = list()
+        for project in projects:
+            categories: list[ProjectCategory] = self._project_service.get_categories(project_id=Id(value=project.id))
+            project_dto: ProjectDto = project_to_dto(project=project, categories=categories)
+            if user_id:
+                project_dto = self._wtih_favorite_flag(
+                    user_id=Id(value=user_id), project_id=Id(value=project.id), project_dto=project_dto
+                )
+            result.append(project_dto)
+        return result

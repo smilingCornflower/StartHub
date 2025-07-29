@@ -1,4 +1,4 @@
-from application.ports.app_service_factory import AbstractAppServiceFactory
+from application.ports.app_service_factory import AbstractAppServiceBuilder
 from application.service_factories.domain_service.auth import (
     AuthServiceBuilder,
     RegistrationServiceBuilder,
@@ -7,7 +7,7 @@ from application.service_factories.domain_service.auth import (
 from application.services.auth import AuthAppService, RegistrationAppService
 
 
-class AuthAppServiceFactory(AbstractAppServiceFactory[AuthAppService]):
+class AuthAppServiceBuilder(AbstractAppServiceBuilder[AuthAppService]):
     @staticmethod
     def create_service() -> AuthAppService:
         return AuthAppService(
@@ -16,11 +16,11 @@ class AuthAppServiceFactory(AbstractAppServiceFactory[AuthAppService]):
         )
 
 
-class RegistrationAppServiceFactory(AbstractAppServiceFactory[RegistrationAppService]):
+class RegistrationAppServiceBuilder(AbstractAppServiceBuilder[RegistrationAppService]):
     @staticmethod
     def create_service() -> RegistrationAppService:
         return RegistrationAppService(registration_service=RegistrationServiceBuilder.create_service())
 
 
-auth_app_service: AuthAppService = AuthAppServiceFactory.create_service()
-registration_app_service: RegistrationAppService = RegistrationAppServiceFactory.create_service()
+auth_app_service: AuthAppService = AuthAppServiceBuilder.create_service()
+registration_app_service: RegistrationAppService = RegistrationAppServiceBuilder.create_service()

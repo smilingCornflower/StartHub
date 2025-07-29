@@ -4,7 +4,7 @@ from json import JSONDecodeError
 import pydantic
 from application.dto.auth import AccessPayloadDto, AnonymousPayloadDto
 from application.dto.project import ProjectDto
-from application.service_factories.app_service.project import ProjectAppServiceFactory
+from application.service_factories.app_service.project import ProjectAppServiceBuilder
 from application.services.gateway import gateway
 from application.services.project import ProjectAppService
 from application.utils.token import (
@@ -84,7 +84,7 @@ class ProjectView(APIView):
         except (ValidationException, InvalidTokenException) as e:
             return Response({"detail": str(e), "code": "UNAUTHORIZED"}, status=status.HTTP_400_BAD_REQUEST)
 
-        project_service: ProjectAppService = ProjectAppServiceFactory.create_service()
+        project_service: ProjectAppService = ProjectAppServiceBuilder.create_service()
         logger.debug("Project service created.")
         try:
             project_service.delete(project_id, int(access_dto.sub))
@@ -172,4 +172,26 @@ class ProjectImageView(APIView):
             return Response({"detail": "image deleted successfully", "code": SUCCESS}, status=status.HTTP_200_OK)
         except self.error_classes as e:
             logger.exception(f"Exception: {repr(e)}")
+            return ProjectErrorResponseFactory.create_response(e)
+
+
+class ProjectSearchView(APIView):
+    @staticmethod
+    def get(request: Request) -> Response:
+        print()
+        logger.info("GET /project/search/")
+        logger.debug(f"query_params = {request.query_params}")
+        try:
+            # TODO: Write method get_user_id() instead of get_token()
+            token: AccessPayloadDto | AnonymousPayloadDto = get_access_or_anonymous_payload_dto_from_headers(
+                headers=request.headers
+            )
+            logger.info(f"Received token type = {type(token)}")
+            user_id: int | None = None
+            if token.type == TokenTypeEnum.ACCESS:
+                user_id = int(token.sub)
+            projects: list[ProjectDto] = gateway.project_app_service.search(query=request.query_params, user_id=user_id)
+            return Response(map(asdict, projects), status=status.HTTP_200_OK)
+
+        except DomainException as e:
             return ProjectErrorResponseFactory.create_response(e)
