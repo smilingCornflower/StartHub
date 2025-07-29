@@ -138,3 +138,8 @@ class Pagination(BaseVo):
         if limit > PAGINNATION_MAX_LMIT:
             raise PaginationMaxLimitException(f"limit must not exceed {PAGINNATION_MAX_LMIT}.")
         return limit
+
+
+class OffsetPagination(BaseVo):
+    offset: int = 0
+    limit: int

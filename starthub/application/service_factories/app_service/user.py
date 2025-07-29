@@ -1,9 +1,9 @@
-from application.ports.app_service_factory import AbstractAppServiceFactory
+from application.ports.app_service_factory import AbstractAppServiceBuilder
 from application.service_factories.domain_service.user import UserServiceBuilder
 from application.services.user import UserAppService
 
 
-class UserAppServiceFactory(AbstractAppServiceFactory[UserAppService]):
+class UserAppServiceBuilder(AbstractAppServiceBuilder[UserAppService]):
     @staticmethod
     def create_service() -> UserAppService:
         return UserAppService(

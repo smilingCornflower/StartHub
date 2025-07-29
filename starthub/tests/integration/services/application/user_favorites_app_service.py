@@ -1,6 +1,6 @@
 from application.dto.project import ProjectDto
 from application.dto.user import UserFavoriteDto
-from application.service_factories.app_service.user_favorite import UserFavoriteAppAppServiceFactory
+from application.service_factories.app_service.user_favorite import UserFavoriteAppAppServiceBuilder
 from application.services.user_favorite import UserFavoriteAppService
 from django.test import TestCase
 from domain.exceptions.project_management import ProjectNotFoundException
@@ -24,7 +24,7 @@ class TestUserFavoritesAppService(TestCase):
         cls.project_id = project.id
 
     def setUp(self):
-        self.service: UserFavoriteAppService = UserFavoriteAppAppServiceFactory.create_service()
+        self.service: UserFavoriteAppService = UserFavoriteAppAppServiceBuilder.create_service()
 
     def test_add_favorite(self):
         self.service.add_favorite(user_id=self.user_id, project_id=self.project_id)

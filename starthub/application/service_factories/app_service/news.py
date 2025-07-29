@@ -1,4 +1,4 @@
-from application.ports.app_service_factory import AbstractAppServiceFactory
+from application.ports.app_service_factory import AbstractAppServiceBuilder
 from application.service_factories.domain_service.news import NewsServiceBuilder
 from application.service_factories.domain_service.permission import PermissionServiceBuilder
 from application.service_factories.domain_service.storage import StorageServiceBuilder
@@ -9,7 +9,7 @@ from infrastructure.repositories.news import DjNewsImageReadRepository, DjNewsIm
 from infrastructure.uow import DjangoUnitOfWork
 
 
-class NewsAppServiceFactory(AbstractAppServiceFactory[NewsAppService]):
+class NewsAppServiceBuilder(AbstractAppServiceBuilder[NewsAppService]):
     @staticmethod
     def create_service() -> NewsAppService:
         return NewsAppService(

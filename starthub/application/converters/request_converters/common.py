@@ -3,14 +3,20 @@ from typing import cast
 
 from django.http import QueryDict
 from domain.exceptions.validation import DateIsNotIsoFormatException, MissingRequiredFieldException
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import OffsetPagination, Pagination
 from loguru import logger
 
 
 def request_to_pagination(query_params: QueryDict) -> Pagination:
-    logger.debug(f"request_data = {query_params}")
     return Pagination(
         last_id=int(cast(str, query_params.get("last_id"))) if "last_id" in query_params else None,
+        limit=int(get_required_field(query_params, "limit")),
+    )
+
+
+def request_to_offset_pagination(query_params: QueryDict) -> OffsetPagination:
+    return OffsetPagination(
+        offset=int(cast(str, query_params["offset"])) if "offset" in query_params else 0,
         limit=int(get_required_field(query_params, "limit")),
     )
 
