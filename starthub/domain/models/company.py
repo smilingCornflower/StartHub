@@ -1,6 +1,5 @@
 from autoslug import AutoSlugField
 from django.db import models
-
 from domain.constants import CHAR_FIELD_MAX_LENGTH, CHAR_FIELD_SHORT_LENGTH
 from domain.models.base import BaseModel
 
@@ -29,7 +28,7 @@ class Company(BaseModel):
     country = models.ForeignKey("domain.Country", on_delete=models.PROTECT)
     business_id = models.CharField(max_length=32, unique=True)
     established_date = models.DateField()
-    address = models.ForeignKey('domain.Address', null=True, on_delete=models.SET_NULL)
+    address = models.ForeignKey("domain.Address", null=True, on_delete=models.SET_NULL)
 
     class Meta:
         db_table = "company"

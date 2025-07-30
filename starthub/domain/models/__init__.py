@@ -35,12 +35,10 @@ __all__ = [
     "ProjectSocialLink",
     "ProjectCategory",
     "FundingModel",
-
     "Country",
     "Region",
     "City",
     "Address",
-
     "News",
     "NewsImage",
 ]
