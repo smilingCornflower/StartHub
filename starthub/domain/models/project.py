@@ -47,6 +47,8 @@ class TeamMember(BaseModel):
     name = models.CharField(max_length=CHAR_FIELD_SHORT_LENGTH)
     surname = models.CharField(max_length=CHAR_FIELD_SHORT_LENGTH)
     description = models.TextField(blank=True, null=True)
+    # TODO: position (one or more)
+    # TODO: phone (optional)
 
     class Meta:
         db_table = "team_members"
