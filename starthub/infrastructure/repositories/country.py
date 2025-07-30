@@ -1,5 +1,5 @@
 from domain.exceptions.country import CountryNotFoundException
-from domain.models.country import Country
+from domain.models.geo.country import Country
 from domain.repositories.country import CountryReadRepository
 from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import CountryFilter

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from domain.models.country import Country
+from domain.models.geo.country import Country
 from domain.ports.repository import AbstractReadRepository
 from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import CountryFilter

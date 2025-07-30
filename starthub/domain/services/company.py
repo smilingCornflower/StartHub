@@ -1,7 +1,7 @@
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyFounderAlreadyExistsException
 from domain.exceptions.country import CountryNotFoundException
 from domain.models.company import Company, CompanyFounder
-from domain.models.country import Country
+from domain.models.geo.country import Country
 from domain.ports.service import AbstractDomainService
 from domain.repositories.company import (
     CompanyFounderReadRepository,
