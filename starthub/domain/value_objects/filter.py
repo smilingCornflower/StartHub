@@ -1,5 +1,5 @@
+from domain.models.user import User
 from domain.ports.filter import AbstractFilter
-from domain.value_objects import BaseVo
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
 from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode
@@ -7,14 +7,14 @@ from domain.value_objects.project_management import ProjectStage, ProjectStatus
 from domain.value_objects.user import Email
 
 
-class UserFilter(AbstractFilter, BaseVo):
+class UserFilter(AbstractFilter):
     id_: Id | None = None
     first_name: FirstName | None = None
     last_name: LastName | None = None
     email: Email | None = None
 
 
-class ProjectFilter(AbstractFilter, BaseVo):
+class ProjectFilter(AbstractFilter):
     id_: Id | None = None
     id_list: list[Id] | None = None
 
@@ -25,67 +25,68 @@ class ProjectFilter(AbstractFilter, BaseVo):
     stage: ProjectStage | None = None
 
 
-class ProjectCategoryFilter(AbstractFilter, BaseVo):
+class ProjectCategoryFilter(AbstractFilter):
     project_id: Id | None = None
     category_ids: list[Id] | None = None
 
 
-class FundingModelFilter(AbstractFilter, BaseVo):
+class FundingModelFilter(AbstractFilter):
     pass
 
 
-class CompanyFilter(AbstractFilter, BaseVo):
+class CompanyFilter(AbstractFilter):
     business_id: BusinessNumber | None = None
 
 
-class CountryFilter(AbstractFilter, BaseVo):
+class CountryFilter(AbstractFilter):
     code: CountryCode
 
 
-class TeamMemberFilter(AbstractFilter, BaseVo):
+class TeamMemberFilter(AbstractFilter):
     pass
 
 
-class ProjectPhoneFilter(AbstractFilter, BaseVo):
+class ProjectPhoneFilter(AbstractFilter):
     project_id: Id | None = None
     number: PhoneNumber | None = None
 
 
-class ProjectSocialLinkFilter(AbstractFilter, BaseVo):
+class ProjectSocialLinkFilter(AbstractFilter):
     project_id: Id | None = None
     social_link: SocialLink | None = None
 
 
-class CompanyFounderFilter(AbstractFilter, BaseVo):
+class CompanyFounderFilter(AbstractFilter):
     company_id: Id | None = None
 
 
-class UserFavoriteFilter(AbstractFilter, BaseVo):
+class UserFavoriteFilter(AbstractFilter):
     user_id: Id | None = None
     project_id: Id | None = None
 
 
-class ProjectImageFilter(AbstractFilter, BaseVo):
+class ProjectImageFilter(AbstractFilter):
     project_id: Id | None = None
     image_order: int | None = None
 
 
-class PermissionFilter(AbstractFilter, BaseVo):
+class PermissionFilter(AbstractFilter):
     user_id: Id | None = None
+    user: User | None = None
 
 
-class RoleFilter(AbstractFilter, BaseVo):
+class RoleFilter(AbstractFilter):
     pass
 
 
-class NewsFilter(AbstractFilter, BaseVo):
+class NewsFilter(AbstractFilter):
     pass
 
 
-class UserPhoneFilter(AbstractFilter, BaseVo):
+class UserPhoneFilter(AbstractFilter):
     user_id: Id | None = None
     phone: PhoneNumber | None = None
 
 
-class NewsImageFilter(AbstractFilter, BaseVo):
+class NewsImageFilter(AbstractFilter):
     news_id: Id | None = None

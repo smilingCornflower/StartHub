@@ -174,6 +174,10 @@ class ProjectWriteRepository(AbstractWriteRepository[Project, ProjectCreatePaylo
         """:raises ProjectNotFoundException:"""
         pass
 
+    @abstractmethod
+    def delete(self, project: Project) -> None:
+        pass
+
 
 class FundingModelReadRepository(AbstractReadRepository[FundingModel, FundingModelFilter], ABC):
     @abstractmethod
@@ -195,10 +199,6 @@ class ProjectImageReadRepository(AbstractReadRepository[ProjectImage, ProjectIma
 
     @abstractmethod
     def get_all(self, filter_: ProjectImageFilter, pagination: Pagination | None = None) -> list[ProjectImage]:
-        pass
-
-    @abstractmethod
-    def get_images_count_for_project(self, project_id: Id) -> int:
         pass
 
 

@@ -27,6 +27,7 @@ from domain.exceptions.project_management import (
     ProjectImageMaxAmountException,
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
+    ProjectPlanNotFoundException,
 )
 from domain.exceptions.user import EmailAlreadyExistsException, UserNotFoundException, UserPhoneAlreadyExistException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException, UserFavoriteNotFoundException
@@ -76,6 +77,7 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         BusinessNumberAlreadyExistsException: ("BUSINESS_NUMBER_ALREADY_EXISTS", 409),
         ProjectCategoryNotFoundException: ("PROJECT_CATEGORY_NOT_FOUND", 404),
         FundingModelNotFoundException: ("FUNDING_MODEL_NOT_FOUND", 404),
+        ProjectPlanNotFoundException: ("PROJECT_PLAN_NOT_FOUND", 404),
         InvalidProjectStageException: ("INVALID_PROJECT_STAGE", 422),
         NegativeProjectGoalSumException: ("NEGATIVE_GOAL_SUM", 422),
         DisallowedSocialLinkException: ("DISALLOWED_SOCIAL_PLATFORM", 422),

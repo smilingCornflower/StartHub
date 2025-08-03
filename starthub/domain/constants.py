@@ -18,7 +18,8 @@ PASSWORD_MAX_LENGTH = 64
 # Passwords contains at least one: lowercase letter, uppercase letter and digit
 PASSWORD_PATTERN = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$")
 
-ACCESS_TOKEN_LIFETIME = 15 * 60  # 15 minutes
+# ACCESS_TOKEN_LIFETIME = 15 * 60  # 15 minutes
+ACCESS_TOKEN_LIFETIME = 3600 * 12  # 12 hours
 REFRESH_TOKEN_LIFETIME = 15 * 24 * 3600  # 15 days
 ANONYMOUS_TOKEN_LIFETIME = 30 * 24 * 3600  # 30 days
 
@@ -54,8 +55,8 @@ NEWS_IMAGES_MAX_AMOUNT = 10
 PAGINNATION_MAX_LMIT = 50
 
 
+# TODO: Move this attributes to domain PathProvider
 class StorageLocations:
     PROFILE_PICTURE_PATH = MODE + "/profile_pictures"  # + /user_id.jpg
-    PROJECT_PLAN_PATH = MODE + "/projects/plans"  # + /project_id.pdf
     PROJECT_PHOTO_PATH = MODE + "/projects/photos"  # + /photo_order.jpg
     NEWS_IMAGE_PATH = MODE + "/news"  # + news_id/image_uuid.jpg

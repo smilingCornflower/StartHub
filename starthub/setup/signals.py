@@ -5,6 +5,7 @@ from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.db.models.signals import post_migrate
 from django.dispatch import receiver
+from loguru import logger
 
 _ran = False
 
@@ -15,6 +16,8 @@ def run_after_migrate(sender: Any, **kwargs: Any) -> None:
     if _ran:
         return
 
+    logger.info("Applying commands...")
+
     executor = MigrationExecutor(connection)
     plan = executor.migration_plan(executor.loader.graph.leaf_nodes())
 
@@ -23,4 +26,5 @@ def run_after_migrate(sender: Any, **kwargs: Any) -> None:
 
     _ran = True
     call_command("assign_default_role")
-    call_command("create_blogger_role")
+    call_command("assing_project_permissions_for_user")
+    call_command("create_blogger_role_and_permissions")

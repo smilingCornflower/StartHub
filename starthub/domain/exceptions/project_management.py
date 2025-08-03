@@ -43,6 +43,10 @@ class ProjectNameAlreadyExistsException(AlreadyExistsException, ProjectException
     pass
 
 
+class ProjectPlanNotFoundException(NotFoundException, ProjectException):
+    pass
+
+
 # ==== Project Image Exceptions ====
 class ProjectImageException(ProjectException):
     pass

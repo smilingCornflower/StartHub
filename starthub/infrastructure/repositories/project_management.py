@@ -96,16 +96,18 @@ class DjProjectReadRepository(ProjectReadRepository):
 
 
 class DjProjectWriteRepository(ProjectWriteRepository):
+
     def create(self, data: ProjectCreatePayload) -> Project:
         project = Project.objects.create(
             name=data.name.value,
             description=data.description.value,
-            creator_id=data.creator_id.value,
+            creator_id=data.user_id.value,
             funding_model_id=data.funding_model_id.value,
             stage=data.stage.value,
             status=data.status.value,
             goal_sum=data.goal_sum.value,
             deadline=data.deadline,
+            plan=data.plan_path,
         )
         project.categories.set([i.value for i in data.category_ids])
         return project
@@ -126,7 +128,6 @@ class DjProjectWriteRepository(ProjectWriteRepository):
         if data.stage is not None:
             project.stage = data.stage.value
         if data.category_ids is not None:
-
             project.categories.set([i.value for i in data.category_ids])
         if data.funding_model_id is not None:
             project.funding_model_id = data.funding_model_id.value
@@ -142,6 +143,9 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             project: Project = Project.objects.get(id=id_.value)
         except Project.DoesNotExist:
             raise ProjectNotFoundException(f"The project with id = {id_.value} is not found.")
+        project.delete()
+
+    def delete(self, project: Project) -> None:
         project.delete()
 
     @staticmethod
@@ -303,15 +307,15 @@ class DjProjectImageReadRepository(ProjectImageReadRepository):
 
     def get_all(self, filter_: ProjectImageFilter, pagination: Pagination | None = None) -> list[ProjectImage]:
         queryset = ProjectImage.objects.all()
+
         if filter_.project_id is not None:
             queryset = queryset.filter(project_id=filter_.project_id.value)
+
         if filter_.image_order is not None:
             queryset = queryset.filter(order=filter_.image_order)
+        logger.debug(f"SQL query = \n {queryset.query}")
 
         return list(queryset.distinct())
-
-    def get_images_count_for_project(self, project_id: Id) -> int:
-        return ProjectImage.objects.filter(project_id=project_id.value).count()
 
 
 class DjProjectImageWriteRepository(ProjectImageWriteRepository):

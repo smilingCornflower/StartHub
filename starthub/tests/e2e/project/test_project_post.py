@@ -1,4 +1,5 @@
 import json
+import time
 
 import pydantic
 from config.settings import BASE_DIR
@@ -129,6 +130,7 @@ class TestProjectPost(TestCase):
 
     def test_business_id_exists(self):
         self.client.post(self.project_url, data=self._get_prepared_data(), headers=self.headers)
+        time.sleep(10)
         self._check_response(
             self.client.post(self.project_url, data=self._get_prepared_data(), headers=self.headers),
             BusinessNumberAlreadyExistsException,

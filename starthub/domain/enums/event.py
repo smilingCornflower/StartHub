@@ -1,5 +1,10 @@
 from enum import StrEnum
 
 
-class EventTypeEnum(StrEnum):
-    pass
+class EventType:
+    class Project(StrEnum):
+        CREATED = "project_created"
+        DELETED = "project_deleted"
+
+
+AnyEventType = EventType.Project

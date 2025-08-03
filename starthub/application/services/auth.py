@@ -84,6 +84,7 @@ class AuthAppService(AbstractAppService):
         access_token_dto = access_token_to_dto(access_token)
         return access_token_dto
 
+    # TODO: Application layer shoud not know about HTTP. Move this methods to infra layer
     def verify_access_from_headers(self, headers: dict[str, str]) -> AccessPayloadDto:
         """
         :raises MissingRequiredFieldException:

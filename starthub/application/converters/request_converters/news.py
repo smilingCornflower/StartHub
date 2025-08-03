@@ -1,6 +1,5 @@
 from typing import Any, cast
 
-from application.converters.request_converters.common import get_required_field
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.datastructures import MultiValueDict
 from domain.value_objects.common import Id
@@ -8,6 +7,7 @@ from domain.value_objects.file import Image, ImageFile
 from domain.value_objects.filter import NewsFilter
 from domain.value_objects.news import NewsContent, NewsCreateCommand, NewsTitle, NewsUpdateCommand
 from loguru import logger
+from presentation.request_converters.common import get_required_field
 
 
 def request_to_news_create_command(

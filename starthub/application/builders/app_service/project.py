@@ -1,0 +1,71 @@
+from application.builders.domain_service.project_management import ProjectServiceBuilder
+from application.ports.app_service_builder import AbstractAppServiceBuilder
+from application.services.project import (
+    ProjectCreateAppService,
+    ProjectDeleteAppService,
+    ProjectGetAppService,
+    ProjectUpdateAppService,
+)
+from infrastructure.cloud_storages.google import google_cloud_storage
+from infrastructure.repositories.company import DjCompanyReadRepository
+from infrastructure.repositories.country import DjCountryReadRepository
+from infrastructure.repositories.project_management import (
+    DjFundingModelReadRepository,
+    DjProjectCategoryReadRepository,
+    DjProjectImageReadRepository,
+    DjProjectReadRepository,
+)
+from infrastructure.repositories.user import DjUserReadRepository
+from infrastructure.repositories.user_favorite import DjUserFavoriteReadRepository
+from infrastructure.services.project_search import ProjectSearchService
+
+
+class ProjectCreateAppServiceBuilder(AbstractAppServiceBuilder[ProjectCreateAppService]):
+    @staticmethod
+    def create_service() -> ProjectCreateAppService:
+        return ProjectCreateAppService(
+            project_service=ProjectServiceBuilder.create_service(),
+            cloud_storage=google_cloud_storage,
+            user_read_repository=DjUserReadRepository(),
+            funding_model_read_repository=DjFundingModelReadRepository(),
+            company_read_repository=DjCompanyReadRepository(),
+            country_read_repository=DjCountryReadRepository(),
+            project_category_read_repository=DjProjectCategoryReadRepository(),
+        )
+
+
+class ProjectUpdateAppServiceBuilder(AbstractAppServiceBuilder[ProjectUpdateAppService]):
+    @staticmethod
+    def create_service() -> ProjectUpdateAppService:
+        return ProjectUpdateAppService(
+            project_service=ProjectServiceBuilder.create_service(),
+            user_read_repository=DjUserReadRepository(),
+            project_read_repository=DjProjectReadRepository(),
+            project_category_read_repository=DjProjectCategoryReadRepository(),
+            funding_model_read_repository=DjFundingModelReadRepository(),
+            cloud_storage=google_cloud_storage,
+        )
+
+
+class ProjectGetAppServiceBuilder(AbstractAppServiceBuilder[ProjectGetAppService]):
+    @staticmethod
+    def create_service() -> ProjectGetAppService:
+        return ProjectGetAppService(
+            project_read_repository=DjProjectReadRepository(),
+            project_image_read_repository=DjProjectImageReadRepository(),
+            project_category_read_repository=DjProjectCategoryReadRepository(),
+            user_favorite_read_repository=DjUserFavoriteReadRepository(),
+            project_search_service=ProjectSearchService(),
+            cloud_storage=google_cloud_storage,
+        )
+
+
+class ProjectDeleteAppServiceBuilder(AbstractAppServiceBuilder[ProjectDeleteAppService]):
+    @staticmethod
+    def create_service() -> ProjectDeleteAppService:
+        return ProjectDeleteAppService(
+            project_service=ProjectServiceBuilder.create_service(),
+            user_read_repository=DjUserReadRepository(),
+            project_read_repository=DjProjectReadRepository(),
+            project_image_read_repository=DjProjectImageReadRepository(),
+        )

@@ -33,7 +33,7 @@ class CompanyDto:
     established_date: date
 
 
-@dataclass
+@dataclass(frozen=True)
 class ProjectDto:
     id: int
     name: str

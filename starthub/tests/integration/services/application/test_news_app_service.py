@@ -5,8 +5,8 @@ from pprint import pformat
 from typing import Any, Callable
 
 import pydantic
+from application.builders.app_service.news import NewsAppServiceBuilder, NewsServiceBuilder
 from application.dto.news import NewsShortDto
-from application.service_factories.app_service.news import NewsAppServiceBuilder, NewsServiceBuilder
 from application.services.news import NewsAppService
 from config.settings import BASE_DIR
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -25,6 +25,7 @@ from domain.models.news import News, NewsImage
 from domain.models.role import Role
 from domain.models.user import User
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload
+from domain.value_objects.common import Pagination
 from domain.value_objects.news import NewsContent
 from infrastructure.cloud_storages.google import google_cloud_storage
 from loguru import logger
@@ -385,7 +386,7 @@ class TestGetNewsAppService(TestCase):
         cls.first_news_id = first_news_id
 
     def test_get_many(self):
-        all_news: list[NewsShortDto] = self.service.get(query_params=QueryDict("limit=10"))
+        all_news: list[NewsShortDto] = self.service.get(pagination=Pagination(limit=10))
         logger.debug(f"news: \n{pformat(all_news)}")
 
         self.assertEqual(len(all_news), self.amount)
@@ -398,19 +399,17 @@ class TestGetNewsAppService(TestCase):
 
     def test_get_many_with_limit(self):
         limit_number = 3
-        all_news: list[NewsShortDto] = self.service.get(query_params=QueryDict(f"limit={limit_number}"))
+        all_news: list[NewsShortDto] = self.service.get(pagination=Pagination(limit=limit_number))
         self.assertEqual(len(all_news), limit_number)
 
     def test_get_many_with_last_id(self):
-        all_news: list[NewsShortDto] = self.service.get(
-            query_params=QueryDict(f"limit=10&last_id={self.first_news_id + 2}")
-        )
+        all_news: list[NewsShortDto] = self.service.get(pagination=Pagination(limit=10, last_id=self.first_news_id + 2))
         logger.debug(f"all_news: \n{pformat(all_news)}")
         all_news_ids = [i.id for i in all_news]
         self.assertEqual(all_news_ids, [self.first_news_id + 1, self.first_news_id])
 
     def test_get_one(self):
-        news_full_dto = self.service.get(query_params=QueryDict(f"limit=10"), news_id=self.first_news_id)
+        news_full_dto = self.service.get(pagination=Pagination(limit=10), news_id=self.first_news_id)
         logger.debug(f"news_full_dto: \n {pformat(news_full_dto)}")
         self.assertTrue(self.content_pattern.fullmatch(news_full_dto.content))
         self.assertEqual(len(news_full_dto.images), 2)

@@ -1,24 +1,43 @@
 from dataclasses import asdict
 from json import JSONDecodeError
+from pprint import pformat
 
 import pydantic
+from application.converters.request_converters.project import (
+    request_files_to_project_image_create_command,
+    request_project_data_to_project_images_update_command,
+    request_to_the_project_update_command,
+)
+from application.converters.request_converters.search import request_data_to_project_search_params
 from application.dto.auth import AccessPayloadDto, AnonymousPayloadDto
 from application.dto.project import ProjectDto
-from application.service_factories.app_service.project import ProjectAppServiceBuilder
 from application.services.gateway import gateway
-from application.services.project import ProjectAppService
-from application.utils.token import (
+from domain.enums.token import TokenTypeEnum
+from domain.exceptions import DomainException
+from domain.exceptions.project_management import ProjectNotFoundException
+from domain.models.project import Project
+from domain.value_objects.common import Id, OffsetPagination, Pagination
+from domain.value_objects.filter import ProjectFilter
+from domain.value_objects.project_management import (
+    ProjectCreateCommand,
+    ProjectImageCreateCommand,
+    ProjectImageDeleteCommand,
+    ProjectImageUpdateCommand,
+    ProjectUpdateCommand,
+)
+from domain.value_objects.search import ProjectSearchParams
+from infrastructure.auth.token import (
     get_access_or_anonymous_payload_dto_from_headers,
     get_access_payload_dto_from_headers,
 )
-from domain.enums.token import TokenTypeEnum
-from domain.exceptions import DomainException
-from domain.exceptions.auth import InvalidTokenException
-from domain.exceptions.project_management import ProjectNotFoundException
-from domain.exceptions.validation import ValidationException
-from domain.models.project import Project
+from infrastructure.auth.user import get_user_id_or_none, get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
+from presentation.request_converters.common import request_to_offset_pagination, request_to_pagination
+from presentation.request_converters.project import (
+    convert_request_to_project_filter,
+    request_data_to_project_create_command,
+)
 from presentation.response_factories.common import ProjectErrorResponseFactory
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
@@ -34,19 +53,27 @@ class ProjectView(APIView):
     def get(request: Request, project_id: int | None = None) -> Response:
         logger.info("GET project request", project_id=project_id, query_params=request.query_params)
         try:
-            token: AccessPayloadDto | AnonymousPayloadDto = get_access_or_anonymous_payload_dto_from_headers(
-                headers=request.headers
-            )
-            logger.info(f"Received token type = {type(token)}")
-            user_id: int | None = None
-            if token.type == TokenTypeEnum.ACCESS:
-                user_id = int(token.sub)
+            user_id: Id | None = get_user_id_or_none(request=request)
 
-            if project_id:
-                project: ProjectDto = gateway.project_app_service.get_by_id(project_id=project_id, user_id=user_id)
+            if project_id is not None:
+                project: ProjectDto = gateway.project_get_app_service.get_by_id(
+                    project_id=Id(value=project_id),
+                    user_id=user_id if user_id else None,
+                )
                 return Response(asdict(project), status=status.HTTP_200_OK)
 
-            projects: list[ProjectDto] = gateway.project_app_service.get(request.query_params, user_id=user_id)
+            else:
+                pagination: Pagination = request_to_pagination(request=request)
+                project_filter: ProjectFilter = convert_request_to_project_filter(request=request)
+
+                logger.debug(f"pagination = {pagination}")
+                logger.debug(f"project_filter: \n{pformat(project_filter.__dict__)}")
+
+                projects: list[ProjectDto] = gateway.project_get_app_service.get(
+                    filter_=project_filter,
+                    pagination=pagination,
+                    user_id=user_id,
+                )
         except DomainException as e:
             return ProjectErrorResponseFactory.create_response(e)
         return Response(map(asdict, projects), status=status.HTTP_200_OK)
@@ -58,9 +85,10 @@ class ProjectView(APIView):
 
         try:
             access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(headers=request.headers)
-            project: Project = gateway.project_app_service.create(
-                data=request.data, files=request.FILES, user_id=int(access_dto.sub)
+            command: ProjectCreateCommand = request_data_to_project_create_command(
+                request=request, user_id=int(access_dto.sub)
             )
+            project: Project = gateway.project_create_app_service.create(command=command)
         except (DomainException, pydantic.ValidationError, JSONDecodeError) as e:
             return ProjectErrorResponseFactory.create_response(e)
 
@@ -68,10 +96,15 @@ class ProjectView(APIView):
 
     @staticmethod
     def patch(request: Request, project_id: int) -> Response:
-        logger.debug(f"request.data = {request.data}")
+        print()
+        logger.info(f"PATCH /projects/{project_id}/")
+
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
-            gateway.project_app_service.update(request.data, request.FILES, project_id, user_id=int(access_dto.sub))
+            user_id: Id = get_user_id_or_raises(request=request)
+            command: ProjectUpdateCommand = request_to_the_project_update_command(
+                request=request, project_id=project_id, user_id=user_id.value
+            )
+            gateway.project_update_app_service.update(command=command)
             return Response({"detail": "updated successfully.", "code": SUCCESS}, status=status.HTTP_200_OK)
 
         except (DomainException, pydantic.ValidationError) as e:
@@ -79,19 +112,18 @@ class ProjectView(APIView):
 
     @staticmethod
     def delete(request: Request, project_id: int) -> Response:
-        try:
-            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
-        except (ValidationException, InvalidTokenException) as e:
-            return Response({"detail": str(e), "code": "UNAUTHORIZED"}, status=status.HTTP_400_BAD_REQUEST)
+        print()
+        logger.info(f"DELETE /projects/{project_id}/")
 
-        project_service: ProjectAppService = ProjectAppServiceBuilder.create_service()
-        logger.debug("Project service created.")
         try:
-            project_service.delete(project_id, int(access_dto.sub))
+            user_id: Id = get_user_id_or_raises(request=request)
+            project_delete_service = gateway.project_delete_app_service
+            project_delete_service.delete(project_id=Id(value=project_id), user_id=user_id)
+
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+
         except (DomainException, pydantic.ValidationError) as e:
             return ProjectErrorResponseFactory.create_response(e)
-
-        return Response({"detail": "deleted successfully.", "code": "SUCCESS"}, 200)
 
 
 class MeProjectView(APIView):
@@ -99,9 +131,11 @@ class MeProjectView(APIView):
     def get(request: Request) -> Response:
         logger.info(f"GET /my/projects/ request.query_params: {request.query_params}")
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
-            projects: list[ProjectDto] = gateway.project_app_service.get_my(
-                request.query_params, user_id=int(access_dto.sub)
+            user_id: Id = get_user_id_or_raises(request=request)
+            pagination: Pagination = request_to_pagination(request=request)
+
+            projects: list[ProjectDto] = gateway.project_get_app_service.get(
+                filter_=ProjectFilter(user_id=user_id), pagination=pagination, user_id=user_id
             )
             return Response(map(asdict, projects), status=status.HTTP_200_OK)
         except DomainException as e:
@@ -115,7 +149,7 @@ class ProjectPlanView(APIView):
     @staticmethod
     def get(request: Request, project_id: int) -> Response:
         try:
-            plan_url: str = gateway.project_app_service.get_plan_url(project_id)
+            plan_url: str = gateway.project_get_app_service.get_plan_url(project_id=Id(value=project_id))
             return Response({"plan_url": plan_url, "code": SUCCESS}, status=status.HTTP_200_OK)
         except ProjectNotFoundException:
             return Response({"detail": f"Project with id = {project_id} not found."}, status=status.HTTP_404_NOT_FOUND)
@@ -128,20 +162,22 @@ class ProjectImageView(APIView):
         logger.info(f"POST project photo request.\n\t {project_id=}")
 
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
-            gateway.project_app_service.upload_project_image(
-                files=request.FILES, project_id=project_id, user_id=int(access_dto.sub)
+            user_id: int = get_user_id_or_raises(request=request).value
+            image_create_command: ProjectImageCreateCommand = request_files_to_project_image_create_command(
+                files=request.FILES, project_id=project_id, user_id=user_id
             )
-            return Response({"detail": "Image uploaded successfully.", "code": SUCCESS}, status=status.HTTP_201_CREATED)
+            gateway.project_image_app_service.create(image_create_command=image_create_command)
         except self.error_classes as e:
             logger.exception(f"Exception: {repr(e)}")
             return ProjectErrorResponseFactory.create_response(e)
+
+        return Response({"detail": "Image uploaded successfully.", "code": SUCCESS}, status=status.HTTP_201_CREATED)
 
     def get(self, request: Request, project_id: int) -> Response:
         logger.info(f"GET project photo request.\n\t {project_id=}")
 
         try:
-            image_urls: list[str] = gateway.project_app_service.get_image_urls(project_id=project_id)
+            image_urls: list[str] = gateway.project_image_app_service.get_image_urls(project_id=Id(value=project_id))
             return Response(image_urls, status=status.HTTP_200_OK)
         except self.error_classes as e:
             logger.exception(f"Exception: {repr(e)}")
@@ -151,12 +187,11 @@ class ProjectImageView(APIView):
         logger.info(f"GET /projects/images/ \n\t {project_id=}\n\t {image_order=}")
 
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
-            gateway.project_app_service.delete_image(
-                project_id=project_id,
-                image_order=image_order,
-                user_id=int(access_dto.sub),
+            user_id: Id = get_user_id_or_raises(request=request)
+            command = ProjectImageDeleteCommand(
+                project_id=Id(value=project_id), image_order=image_order, user_id=user_id
             )
+            gateway.project_image_app_service.delete_image(command=command)
             return Response({"detail": "image deleted successfully", "code": SUCCESS}, status=status.HTTP_200_OK)
         except self.error_classes as e:
             logger.exception(f"Exception: {repr(e)}")
@@ -165,14 +200,16 @@ class ProjectImageView(APIView):
     def patch(self, request: Request, project_id: int) -> Response:
         logger.info(f"PATCH /projects/images/ \n\t {request.data=}")
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
-            gateway.project_app_service.update_project_images(
-                request.data, project_id=project_id, user_id=int(access_dto.sub)
+            user_id: Id = get_user_id_or_raises(request=request)
+            image_update_command: ProjectImageUpdateCommand = request_project_data_to_project_images_update_command(
+                data=request.data, project_id=project_id, user_id=user_id.value
             )
-            return Response({"detail": "image deleted successfully", "code": SUCCESS}, status=status.HTTP_200_OK)
+            gateway.project_image_app_service.update_project_images(command=image_update_command)
         except self.error_classes as e:
             logger.exception(f"Exception: {repr(e)}")
             return ProjectErrorResponseFactory.create_response(e)
+
+        return Response({"detail": "image deleted successfully", "code": SUCCESS}, status=status.HTTP_200_OK)
 
 
 class ProjectSearchView(APIView):
@@ -187,10 +224,18 @@ class ProjectSearchView(APIView):
                 headers=request.headers
             )
             logger.info(f"Received token type = {type(token)}")
-            user_id: int | None = None
+            user_id: Id | None = None
             if token.type == TokenTypeEnum.ACCESS:
-                user_id = int(token.sub)
-            projects: list[ProjectDto] = gateway.project_app_service.search(query=request.query_params, user_id=user_id)
+                user_id = Id(value=int(token.sub))
+
+            search_params: ProjectSearchParams = request_data_to_project_search_params(query=request.query_params)
+            offset_pagination: OffsetPagination = request_to_offset_pagination(query_params=request.query_params)
+            logger.debug(f"search_params = {search_params}")
+            logger.debug(f"offset_pagination = {offset_pagination}")
+
+            projects: list[ProjectDto] = gateway.project_get_app_service.search(
+                search_params=search_params, offset_pagination=offset_pagination, user_id=user_id
+            )
             return Response(map(asdict, projects), status=status.HTTP_200_OK)
 
         except DomainException as e:

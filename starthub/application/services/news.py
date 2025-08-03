@@ -3,7 +3,6 @@ from pathlib import Path
 from pprint import pformat
 from typing import Any, cast
 
-from application.converters.request_converters.common import request_to_pagination
 from application.converters.request_converters.news import (
     request_to_news_create_command,
     request_to_news_update_command,
@@ -13,7 +12,6 @@ from application.dto.news import NewsFullDto, NewsImageDto, NewsShortDto
 from application.ports.service import AbstractAppService
 from application.ports.uow import AbstractUnitOfWork
 from django.core.files.uploadedfile import UploadedFile
-from django.http import QueryDict
 from django.utils.datastructures import MultiValueDict
 from domain.constants import NEWS_IMAGES_MAX_AMOUNT
 from domain.enums.permission import ActionEnum, ScopeEnum
@@ -72,10 +70,12 @@ class NewsAppService(AbstractAppService):
         self._storage_service = storage_service
         self._uow = unit_of_work
 
-    def get(self, query_params: QueryDict, news_id: int | None = None) -> NewsFullDto | list[NewsShortDto]:
+    def get(self, news_id: int | None = None, pagination: Pagination | None = None) -> NewsFullDto | list[NewsShortDto]:
         if news_id:
             return self._get_one(news_id=news_id)
-        return self._get_many(query_params=query_params)
+        if pagination:
+            return self._get_many(pagination=pagination)
+        return list()
 
     def _get_one(self, news_id: int) -> NewsFullDto:
         logger.debug("_get_one()")
@@ -98,11 +98,9 @@ class NewsAppService(AbstractAppService):
 
         return news_dto
 
-    def _get_many(self, query_params: QueryDict) -> list[NewsShortDto]:
+    def _get_many(self, pagination: Pagination) -> list[NewsShortDto]:
         logger.debug("_get_many()")
 
-        pagination: Pagination = request_to_pagination(query_params=query_params)
-        logger.debug(f"{pagination=}")
         news_lst: list[News] = self._news_service.get_many(filter_=NewsFilter(), pagination=pagination)
         cover_urls: list[str] = [
             self._storage_service.create_url(payload=CloudStorageCreateUrlPayload(file_path=cast(str, i.cover)))

@@ -1,59 +1,23 @@
 import json
 from typing import Any, cast
 
-from application.converters.request_converters.common import get_required_field, parse_date
 from django.core.files.uploadedfile import UploadedFile
-from django.http import QueryDict
 from django.utils.datastructures import MultiValueDict
-from domain.value_objects.common import (
-    DeadlineDate,
-    Description,
-    FirstName,
-    Id,
-    LastName,
-    Order,
-    PhoneNumber,
-    Slug,
-    SocialLink,
-)
-from domain.value_objects.company import (
-    BusinessNumber,
-    CompanyFounderCreateCommand,
-    CompanyName,
-    CompanyUpdatePayload,
-    EstablishedDate,
-)
-from domain.value_objects.country import CountryCode
+from domain.value_objects.common import DeadlineDate, Description, FirstName, Id, LastName, Order
+from domain.value_objects.company import CompanyFounderCreateCommand
 from domain.value_objects.file import ImageFile, PdfFile
-from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project_management import (
     GoalSum,
-    ProjectCreateCommand,
     ProjectImageCreateCommand,
     ProjectImageUpdateCommand,
     ProjectName,
     ProjectStage,
-    ProjectStatus,
     ProjectUpdateCommand,
     TeamMemberCreateCommand,
 )
 from loguru import logger
-
-
-def request_data_to_project_filter(data: QueryDict) -> ProjectFilter:
-    filter_ = ProjectFilter()
-
-    if data.get("category_slug"):
-        filter_.category_slug = Slug(value=cast(str, data.get("category_slug")))
-    if data.get("funding_model_slug"):
-        filter_.funding_model_slug = Slug(value=cast(str, data.get("funding_model_slug")))
-    if data.get("status"):
-        filter_.status = ProjectStatus(value=cast(str, data.get("status")))
-    if data.get("stage"):
-        filter_.stage = ProjectStage(value=cast(str, data.get("stage")))
-    if data.get("user_id"):
-        filter_.user_id = Id(value=int(cast(str, data["user_id"])))
-    return filter_
+from presentation.request_converters.common import get_required_field, parse_date
+from rest_framework.request import Request
 
 
 def _request_data_to_team_members(data: dict[str, str]) -> list[TeamMemberCreateCommand]:
@@ -99,71 +63,12 @@ def _request_files_to_project_plan(files: MultiValueDict[str, UploadedFile]) -> 
     return pdf_file
 
 
-def request_data_to_project_create_command(
-    data: dict[str, str], files: MultiValueDict[str, UploadedFile], user_id: int
-) -> ProjectCreateCommand:
-    """
-    :raises InvalidPhoneNumberException:
-    :raises NegativeProjectGoalSumException:
-    :raises ProjectDeadlineInPastValidationException:
-    :raises DateIsNotIsoFormatException:
-    :raises InvalidPhoneNumberException:
-    :raises DisallowedSocialLinkException:
-    :raises InvalidProjectStageException:
-    :raises InvalidSocialLinkException:
-    :raises MissingRequiredFieldException:
-    :raises FirstNameIsTooLongException:
-    :raises LastNameIsTooLongException:
-    :raises EmptyStringException:
-    :raises ValidationError: when a field has incorrect type.
-    :raises DateInFutureException:
-    :raises NotPdfFileException:
-    """
-    project_data = json.loads(get_required_field(data, field="project"))
-    company_data = json.loads(get_required_field(data, field="company"))
-    project_plan: PdfFile = _request_files_to_project_plan(files=files)
-    country_code = CountryCode(value=get_required_field(company_data, "country_code", "company.country_code"))
-    project_images: list[ImageFile] = list()
-
-    images: list[UploadedFile] = files.getlist("images")
-    for image in images:
-        image.seek(0)
-        project_images.append(ImageFile(value=image.read()))
-    logger.debug("request.FILES -> ImageFile conversion OK")
-
-    return ProjectCreateCommand(
-        name=ProjectName(value=get_required_field(project_data, field="name")),
-        creator_id=Id(value=user_id),
-        description=Description(value=get_required_field(project_data, field="description")),
-        category_ids=[Id(value=i) for i in get_required_field(project_data, "category_ids")],
-        funding_model_id=Id(value=get_required_field(project_data, field="funding_model_id")),
-        stage=ProjectStage(value=get_required_field(project_data, field="stage")),
-        goal_sum=GoalSum(value=get_required_field(project_data, field="goal_sum")),
-        deadline=DeadlineDate(value=parse_date(get_required_field(project_data, field="deadline"))),
-        social_links=[
-            SocialLink(platform=k, link=v) for k, v in get_required_field(project_data, "social_links").items()
-        ],
-        phone_number=PhoneNumber(value=get_required_field(project_data, "phone_number")),
-        plan_file=project_plan,
-        images=project_images,
-        company_name=CompanyName(value=get_required_field(company_data, "name", "company.name")),
-        country_code=country_code,
-        business_id=BusinessNumber(
-            value=get_required_field(company_data, "business_id", "company.business_id"), country_code=country_code
-        ),
-        established_date=EstablishedDate(
-            value=parse_date(get_required_field(company_data, "established_date", "company.established_date"))
-        ),
-        team_members=_request_data_to_team_members(data),
-        company_founder=_request_data_to_company_founder_create_command(data=data),
-    )
-
-
 ########################################################################################################################
 # Project Update Converter
-def request_data_to_the_project_update_command(
-    data: dict[str, str], files: dict[str, UploadedFile], project_id: int, user_id: int
-) -> ProjectUpdateCommand:
+def request_to_the_project_update_command(request: Request, project_id: int, user_id: int) -> ProjectUpdateCommand:
+    data = request.data
+    files = request.FILES
+
     logger.debug(f"{data=}")
 
     project_data: dict[str, Any] = dict()
@@ -176,21 +81,6 @@ def request_data_to_the_project_update_command(
         logger.debug(f"{project_data.get("category_ids")=}")
         category_ids = [Id(value=i) for i in project_data["category_ids"]]
 
-    company_update_command: CompanyUpdatePayload | None = None
-    if "company" in data:
-        company_data = json.loads(data["company"])
-        logger.debug(f"{company_data=}")
-        company_update_command = CompanyUpdatePayload(
-            project_id=Id(value=project_id),
-            name=CompanyName(value=company_data["name"]) if "name" in company_data else None,
-            description=Description(value=company_data["description"]) if "description" in company_data else None,
-            established_date=(
-                EstablishedDate(value=parse_date(company_data["established_date"]))
-                if "established_date" in company_data
-                else None
-            ),
-        )
-
     project_plan: PdfFile | None = None
     if "project_plan" in files:
         project_plan_file: UploadedFile = files["project_plan"]
@@ -200,7 +90,6 @@ def request_data_to_the_project_update_command(
     return ProjectUpdateCommand(
         project_id=Id(value=project_id),
         user_id=Id(value=user_id),
-        company=company_update_command,
         name=ProjectName(value=project_data["name"]) if "name" in project_data else None,
         category_ids=category_ids,
         funding_model_id=Id(value=project_data["funding_model_id"]) if "funding_model_id" in project_data else None,
