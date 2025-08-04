@@ -4,8 +4,10 @@ from typing import cast
 import pydantic
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
-from domain.exceptions.country import CountryNotFoundException, InvalidCountryCodeException
 from domain.exceptions.file import ImageFileTooLargeException, NotPdfFileException, NotSupportedImageFormatException
+from domain.exceptions.geo.city import CityNotFoundException
+from domain.exceptions.geo.country import CountryNotFoundException, InvalidCountryCodeException
+from domain.exceptions.geo.region import RegionNotFoundException
 from domain.exceptions.news import (
     NewsContentIsTooLongException,
     NewsImageContentAndFileMismatchException,
@@ -78,6 +80,8 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         ProjectCategoryNotFoundException: ("PROJECT_CATEGORY_NOT_FOUND", 404),
         FundingModelNotFoundException: ("FUNDING_MODEL_NOT_FOUND", 404),
         ProjectPlanNotFoundException: ("PROJECT_PLAN_NOT_FOUND", 404),
+        CityNotFoundException: ("CITY_NOT_FOUND", 404),
+        RegionNotFoundException: ("REGION_NOT_FOUND", 404),
         InvalidProjectStageException: ("INVALID_PROJECT_STAGE", 422),
         NegativeProjectGoalSumException: ("NEGATIVE_GOAL_SUM", 422),
         DisallowedSocialLinkException: ("DISALLOWED_SOCIAL_PLATFORM", 422),

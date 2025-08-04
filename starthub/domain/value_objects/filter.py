@@ -1,8 +1,7 @@
 from domain.models.user import User
 from domain.ports.filter import AbstractFilter
-from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
+from domain.value_objects.common import CountryCode, FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
 from domain.value_objects.company import BusinessNumber
-from domain.value_objects.country import CountryCode
 from domain.value_objects.project_management import ProjectStage, ProjectStatus
 from domain.value_objects.user import Email
 
@@ -90,3 +89,15 @@ class UserPhoneFilter(AbstractFilter):
 
 class NewsImageFilter(AbstractFilter):
     news_id: Id | None = None
+
+
+class AddressFilter(AbstractFilter):
+    pass
+
+
+class CityFilter(AbstractFilter):
+    pass
+
+
+class RegionFilter(AbstractFilter):
+    pass

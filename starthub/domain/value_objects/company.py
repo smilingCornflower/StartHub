@@ -7,8 +7,7 @@ from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.validators.business_number import KZBusinessNumberValidator
 from domain.value_objects import BaseVo
-from domain.value_objects.common import Description, FirstName, Id, LastName
-from domain.value_objects.country import CountryCode
+from domain.value_objects.common import CountryCode, Description, FirstName, Id, LastName
 from pydantic import field_validator
 from pydantic_core.core_schema import ValidationInfo
 
@@ -84,6 +83,7 @@ class CompanyCreatePayload(AbstractCreatePayload, BaseVo):
     business_id: BusinessNumber
     established_date: EstablishedDate
     description: Description
+    address_id: Id
 
 
 class CompanyUpdatePayload(AbstractUpdatePayload):
@@ -100,3 +100,4 @@ class CompanyCreateCommand(BaseCommand):
     business_id: BusinessNumber
     established_date: EstablishedDate
     description: Description
+    address_id: Id

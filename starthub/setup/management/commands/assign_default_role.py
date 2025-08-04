@@ -13,6 +13,7 @@ class Command(BaseCommand):
     help = 'Assigns "user" role only to users with NO roles at all'
 
     def handle(self, *args: Any, **options: Any) -> None:
+        logger.warning("Started command: assing_default_role")
         logger.info("Checking users without any roles...")
 
         user_role, _ = Role.objects.get_or_create(name=RoleEnum.get_default())

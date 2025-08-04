@@ -1,8 +1,10 @@
 from domain.events.project import ProjectCreatedEvent
 from domain.models import ProjectPhone
 from domain.models.company import Company, CompanyFounder
+from domain.models.geo.address import Address
 from domain.models.project import ProjectImage
 from domain.ports.event import AbstractEventHandler
+from domain.services.address import AddressService
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
@@ -28,6 +30,7 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         team_member_service: TamMemberService,
         project_phone_service: ProjectPhoneService,
         social_link_service: ProjectSocialLinkService,
+        address_service: AddressService,
     ):
         self._company_service = company_service
         self._company_founder_service = company_founder_service
@@ -35,6 +38,7 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         self._team_member_service = team_member_service
         self._project_phone_service = project_phone_service
         self._social_link_service = social_link_service
+        self._address_service = address_service
 
     def handle(self, event: ProjectCreatedEvent) -> None:
         logger.info(f"Event: {event.event_type} caught.")
@@ -54,18 +58,31 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         logger.debug("Company founder created.")
 
     def _create_company(self, command: ProjectCreateCommand, project_id: Id) -> Company:
-        company_create_command = CompanyCreateCommand(
+        address: Address = self._address_service.create(command=command.company_address)
+
+        company_create_command = self._convert_project_create_command_to_company_create_command(
+            command=command, project_id=project_id, address_id=Id(value=address.id)
+        )
+        company: Company = self._company_service.create(command=company_create_command)
+
+        logger.debug(f"Company created successfully with id = {company.id}")
+        return company
+
+    def _convert_project_create_command_to_company_create_command(
+        self,
+        command: ProjectCreateCommand,
+        project_id: Id,
+        address_id: Id,
+    ) -> CompanyCreateCommand:
+        return CompanyCreateCommand(
             project_id=project_id,
             name=command.company_name,
             country_code=command.country_code,
             business_id=command.business_id,
             established_date=command.established_date,
             description=command.description,
+            address_id=address_id,
         )
-        company: Company = self._company_service.create(command=company_create_command)
-
-        logger.debug(f"Company created successfully with id = {company.id}")
-        return company
 
     def _create_company_founder(self, command: ProjectCreateCommand, company_id: Id) -> CompanyFounder:
         founder_create_command: CompanyFounderCreateCommand = command.company_founder

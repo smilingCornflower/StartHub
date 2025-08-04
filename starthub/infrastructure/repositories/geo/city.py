@@ -1,0 +1,18 @@
+from domain.exceptions.geo.city import CityNotFoundException
+from domain.models.geo.city import City
+from domain.repositories.geo.city import CityReadRepository
+from domain.value_objects.common import Id, Pagination
+from domain.value_objects.filter import CityFilter
+
+
+class DjCityReadRepository(CityReadRepository):
+    def get_by_id(self, id_: Id) -> City:
+        """:raises CityNotFoundException:"""
+
+        city: City | None = City.objects.filter(id=id_.value).first()
+        if city is None:
+            raise CityNotFoundException(f"City with id = {id_.value} does not exists.")
+        return city
+
+    def get_all(self, filter_: CityFilter, pagination: Pagination | None = None) -> list[City]:
+        raise NotImplementedError("The method get_all() not implemented yet.")

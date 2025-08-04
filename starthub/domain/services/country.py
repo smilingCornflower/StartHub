@@ -1,8 +1,8 @@
-from domain.exceptions.country import CountryNotFoundException
+from domain.exceptions.geo.country import CountryNotFoundException
 from domain.models.geo.country import Country
 from domain.ports.service import AbstractDomainService
 from domain.repositories.country import CountryReadRepository
-from domain.value_objects.country import CountryCode
+from domain.value_objects.common import CountryCode
 from domain.value_objects.filter import CountryFilter
 
 

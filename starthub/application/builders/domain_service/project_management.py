@@ -13,7 +13,7 @@ from infrastructure.repositories.company import (
     DjCompanyReadRepository,
     DjCompanyWriteRepository,
 )
-from infrastructure.repositories.country import DjCountryReadRepository
+from infrastructure.repositories.geo.country import DjCountryReadRepository
 from infrastructure.repositories.project_management import (
     DjProjectImageReadRepository,
     DjProjectImageWriteRepository,

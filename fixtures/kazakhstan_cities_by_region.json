@@ -1,0 +1,79 @@
+{
+  "Abai": [
+    "Ayagoz",
+    "Kurchatov",
+    "Semey"
+  ],
+  "Akmola": [
+    "Kosshy",
+    "Stepnogorsk"
+  ],
+  "Aktobe": [
+    "Aktobe"
+  ],
+  "Almaty": [
+    "Almaty"
+  ],
+  "Astana": [
+    "Astana"
+  ],
+  "Atyrau": [
+    "Atyrau"
+  ],
+  "Baikonur": [
+    "Baikonur"
+  ],
+  "East Kazakhstan": [
+    "Ridder",
+    "Zaysanskaya"
+  ],
+  "Jetisu": [
+    "Taldykorgan",
+    "Tekeli"
+  ],
+  "Karaganda": [
+    "Balkhash",
+    "Karaganda",
+    "Saran",
+    "Shakhtinsk",
+    "Temirtau"
+  ],
+  "Kostanay": [
+    "Lisakovsk",
+    "Rudniy"
+  ],
+  "Kyzylorda": [
+    "Kyzylorda"
+  ],
+  "Mangystau": [
+    "Aktau",
+    "Zhanaozen"
+  ],
+  "North Kazakhstan": [
+    "Petropavlovsk"
+  ],
+  "Pavlodar": [
+    "Aksu",
+    "Ekibastuz",
+    "Pavlodar"
+  ],
+  "Shymkent": [
+    "Shymkent"
+  ],
+  "Turkistan": [
+    "Arys",
+    "Kentau",
+    "Turkestan"
+  ],
+  "Ulytau": [
+    "Karazhal",
+    "Satpayev",
+    "Zhezkazgan"
+  ],
+  "West Kazakhstan": [
+    "Uralsk"
+  ],
+  "Zhambyl": [
+    "Taraz"
+  ]
+}

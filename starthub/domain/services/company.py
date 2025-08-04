@@ -1,5 +1,5 @@
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyFounderAlreadyExistsException
-from domain.exceptions.country import CountryNotFoundException
+from domain.exceptions.geo.country import CountryNotFoundException
 from domain.models.company import Company, CompanyFounder
 from domain.models.geo.country import Country
 from domain.ports.service import AbstractDomainService
@@ -51,6 +51,7 @@ class CompanyService(AbstractDomainService):
                 business_id=command.business_id,
                 established_date=command.established_date,
                 description=command.description,
+                address_id=command.address_id,
             )
         )
 

@@ -1,5 +1,6 @@
 from typing import Any
 
+from application.builders.domain_service.address import AddressServiceBuilder
 from application.builders.domain_service.project_management import (
     CompanyFounderServiceBuilder,
     CompanyServiceBuilder,
@@ -26,6 +27,7 @@ class ProjectCreatedEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):
             team_member_service=TeamMemberServiceBuilder.create_service(),
             project_phone_service=ProjectPhoneServiceBuilder.create_service(),
             social_link_service=ProjectSocialLinkServiceBuilder.create_service(),
+            address_service=AddressServiceBuilder.create_service(),
         )
 
 

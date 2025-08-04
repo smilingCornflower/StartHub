@@ -8,6 +8,7 @@ class City(BaseModel):
     region = models.ForeignKey("domain.Region", on_delete=models.RESTRICT, related_name="cities")
 
     class Meta:
+        db_table = "cities"
         unique_together = ("name", "region")
 
     def __str__(self) -> str:

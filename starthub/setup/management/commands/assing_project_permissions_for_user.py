@@ -15,6 +15,7 @@ class Command(BaseCommand):
     help = "Assigns project permissions for user"
 
     def handle(self, *args: Any, **options: Any) -> None:
+        logger.warning("Started command: assing_project_permissions_for_user")
         for action in [ActionEnum.CHANGE, ActionEnum.DELETE]:
             permission_vo: PermissionVo = PermissionService.create_permission_vo(
                 model=Project, action=action, scope=ScopeEnum.OWN

@@ -1,10 +1,8 @@
 import json
-from typing import Any, cast
+from typing import Any
 
 from django.core.files.uploadedfile import UploadedFile
-from django.utils.datastructures import MultiValueDict
-from domain.value_objects.common import DeadlineDate, Description, FirstName, Id, LastName, Order
-from domain.value_objects.company import CompanyFounderCreateCommand
+from domain.value_objects.common import DeadlineDate, Id, Order
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.project_management import (
     GoalSum,
@@ -13,54 +11,10 @@ from domain.value_objects.project_management import (
     ProjectName,
     ProjectStage,
     ProjectUpdateCommand,
-    TeamMemberCreateCommand,
 )
 from loguru import logger
 from presentation.request_converters.common import get_required_field, parse_date
 from rest_framework.request import Request
-
-
-def _request_data_to_team_members(data: dict[str, str]) -> list[TeamMemberCreateCommand]:
-    """
-    :raises MissingRequiredFieldException:
-    :raises FirstNameIsTooLongException:
-    :raises LastNameIsTooLongException:
-    :raises EmptyStringException:
-    """
-    logger.debug("Started _request_data_to_team_members()")
-
-    team_members_data = json.loads(get_required_field(data, field="team_members"))
-
-    logger.debug(f"team_members = {team_members_data}")
-    team_members: list[TeamMemberCreateCommand] = []
-
-    for member in team_members_data:
-        team_members.append(
-            TeamMemberCreateCommand(
-                first_name=FirstName(value=get_required_field(member, field="first_name")),
-                last_name=LastName(value=get_required_field(member, field="last_name")),
-                description=Description(value=member["description"]),
-            )
-        )
-    return team_members
-
-
-def _request_data_to_company_founder_create_command(data: dict[str, Any]) -> CompanyFounderCreateCommand:
-    founder_data: dict[str, Any] = json.loads(get_required_field(data, field="company_founder"))
-    return CompanyFounderCreateCommand(
-        name=FirstName(value=get_required_field(founder_data, "first_name", "founder_first_name")),
-        surname=LastName(value=get_required_field(founder_data, "last_name", "founder_last_name")),
-        description=Description(value=get_required_field(founder_data, "description", "founder_description")),
-    )
-
-
-def _request_files_to_project_plan(files: MultiValueDict[str, UploadedFile]) -> PdfFile:
-    project_plan_file: UploadedFile = get_required_field(cast(dict[str, UploadedFile], files), field="project_plan")
-    logger.debug(f"{project_plan_file=}")
-    project_plan_file.seek(0)
-    pdf_file = PdfFile(value=project_plan_file.read())
-    logger.debug(f"{pdf_file=}")
-    return pdf_file
 
 
 ########################################################################################################################

@@ -14,6 +14,7 @@ from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractDeletePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
 from domain.value_objects.common import (
+    CountryCode,
     DeadlineDate,
     Description,
     FirstName,
@@ -24,8 +25,8 @@ from domain.value_objects.common import (
     SocialLink,
 )
 from domain.value_objects.company import BusinessNumber, CompanyFounderCreateCommand, CompanyName, EstablishedDate
-from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
+from domain.value_objects.geo import AddressCreateCommand
 from pydantic import field_validator
 
 
@@ -152,6 +153,7 @@ class ProjectCreateCommand(BaseCommand):
 
     company_name: CompanyName
     country_code: CountryCode
+    company_address: AddressCreateCommand
     business_id: BusinessNumber
     established_date: EstablishedDate
 

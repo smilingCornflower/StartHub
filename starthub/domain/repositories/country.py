@@ -9,7 +9,7 @@ from domain.value_objects.filter import CountryFilter
 class CountryReadRepository(AbstractReadRepository[Country, CountryFilter], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> Country:
-        """:raises CompanyNotFoundException:"""
+        """:raises CountryNotFoundException:"""
         pass
 
     @abstractmethod

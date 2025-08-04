@@ -5,7 +5,7 @@ from django.db import transaction
 from domain.enums.project_status import ProjectStatusEnum
 from domain.events.project import ProjectCreatedEvent, ProjectDeletedEvent
 from domain.exceptions.company import BusinessNumberAlreadyExistsException
-from domain.exceptions.country import CountryNotFoundException
+from domain.exceptions.geo.country import CountryNotFoundException
 from domain.exceptions.project_management import ProjectCategoryNotFoundException, ProjectPlanNotFoundException
 from domain.exceptions.user_favorite import UserFavoriteNotFoundException
 from domain.models import Country
@@ -16,6 +16,8 @@ from domain.models.user import User
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.repositories.company import CompanyReadRepository
 from domain.repositories.country import CountryReadRepository
+from domain.repositories.geo.city import CityReadRepository
+from domain.repositories.geo.region import RegionReadRepository
 from domain.repositories.project_management import (
     FundingModelReadRepository,
     ProjectCategoryReadRepository,
@@ -27,9 +29,8 @@ from domain.repositories.user_favorite import UserFavoriteReadRepository
 from domain.services.project_management.project import ProjectService
 from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
-from domain.value_objects.common import Id, OffsetPagination, Pagination
+from domain.value_objects.common import CountryCode, Id, OffsetPagination, Pagination
 from domain.value_objects.company import BusinessNumber
-from domain.value_objects.country import CountryCode
 from domain.value_objects.file import PdfFile
 from domain.value_objects.filter import (
     CompanyFilter,
@@ -61,6 +62,8 @@ class ProjectCreateAppService(AbstractAppService):
         company_read_repository: CompanyReadRepository,
         country_read_repository: CountryReadRepository,
         project_category_read_repository: ProjectCategoryReadRepository,
+        city_read_repository: CityReadRepository,
+        region_read_repository: RegionReadRepository,
     ):
         self._project_service = project_service
         self._cloud_storage = cloud_storage
@@ -69,25 +72,42 @@ class ProjectCreateAppService(AbstractAppService):
         self._company_read_repository = company_read_repository
         self._country_read_repository = country_read_repository
         self._project_category_read_repository = project_category_read_repository
+        self._city_read_repository = city_read_repository
+        self._region_read_repository = region_read_repository
 
     def _validate_dependencies(self, command: ProjectCreateCommand) -> None:
         self._check_user_exists(user_id=command.creator_id)
         self._check_categories_exist(command.category_ids)
         self._check_funding_model_exists(funding_model_id=command.funding_model_id)
-        self._check_business_number_free(business_number=command.business_id)
+        self._check_business_number_avaiable(business_number=command.business_id)
+        self._check_city_exists(city_id=command.company_address.city_id)
+        self._check_region_exists(region_id=command.company_address.region_id)
+
         logger.info("All dependencies validated")
+
+    def _check_region_exists(self, region_id: Id) -> None:
+        """:raises RegionNotFoundException:"""
+        self._region_read_repository.get_by_id(id_=region_id)
+        logger.debug(f"Region with id = {region_id.value} exists.")
+
+    def _check_city_exists(self, city_id: Id) -> None:
+        """:raises CityNotFoundException:"""
+        self._city_read_repository.get_by_id(id_=city_id)
+        logger.debug(f"City with id = {city_id.value} exists.")
 
     def _check_country_code_exists(self, country_code: CountryCode) -> None:
         """:raises CountryNotFoundException:"""
         countries: list[Country] = self._country_read_repository.get_all(CountryFilter(code=country_code))
         if not countries:
             raise CountryNotFoundException(f"A country with code = {country_code.value} not found.")
+        logger.debug("Country code exists.")
 
-    def _check_business_number_free(self, business_number: BusinessNumber) -> None:
+    def _check_business_number_avaiable(self, business_number: BusinessNumber) -> None:
         """:raises BusinessNumberAlreadyExistsException:"""
         search_result: list[Company] = self._company_read_repository.get_all(CompanyFilter(business_id=business_number))
         if search_result:
             raise BusinessNumberAlreadyExistsException("This business number already exists.")
+        logger.debug("Business number is available.")
 
     def _check_user_exists(self, user_id: Id) -> None:
         """:raises UserNotFoundException:"""

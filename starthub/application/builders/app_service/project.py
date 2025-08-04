@@ -8,7 +8,9 @@ from application.services.project import (
 )
 from infrastructure.cloud_storages.google import google_cloud_storage
 from infrastructure.repositories.company import DjCompanyReadRepository
-from infrastructure.repositories.country import DjCountryReadRepository
+from infrastructure.repositories.geo.city import DjCityReadRepository
+from infrastructure.repositories.geo.country import DjCountryReadRepository
+from infrastructure.repositories.geo.region import DjRegionReadRepository
 from infrastructure.repositories.project_management import (
     DjFundingModelReadRepository,
     DjProjectCategoryReadRepository,
@@ -31,6 +33,8 @@ class ProjectCreateAppServiceBuilder(AbstractAppServiceBuilder[ProjectCreateAppS
             company_read_repository=DjCompanyReadRepository(),
             country_read_repository=DjCountryReadRepository(),
             project_category_read_repository=DjProjectCategoryReadRepository(),
+            city_read_repository=DjCityReadRepository(),
+            region_read_repository=DjRegionReadRepository(),
         )
 
 

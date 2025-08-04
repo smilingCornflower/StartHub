@@ -7,7 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
-from domain.exceptions.country import CountryNotFoundException, InvalidCountryCodeException
+from domain.exceptions.geo.country import CountryNotFoundException, InvalidCountryCodeException
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
     InvalidProjectStageException,

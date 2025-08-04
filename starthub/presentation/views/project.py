@@ -34,10 +34,8 @@ from infrastructure.auth.user import get_user_id_or_none, get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.request_converters.common import request_to_offset_pagination, request_to_pagination
-from presentation.request_converters.project import (
-    convert_request_to_project_filter,
-    request_data_to_project_create_command,
-)
+from presentation.request_converters.project.request_to_project_create_command import request_to_project_create_command
+from presentation.request_converters.project.request_to_project_filter import request_to_project_filter
 from presentation.response_factories.common import ProjectErrorResponseFactory
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
@@ -64,7 +62,7 @@ class ProjectView(APIView):
 
             else:
                 pagination: Pagination = request_to_pagination(request=request)
-                project_filter: ProjectFilter = convert_request_to_project_filter(request=request)
+                project_filter: ProjectFilter = request_to_project_filter(request=request)
 
                 logger.debug(f"pagination = {pagination}")
                 logger.debug(f"project_filter: \n{pformat(project_filter.__dict__)}")
@@ -80,14 +78,17 @@ class ProjectView(APIView):
 
     @staticmethod
     def post(request: Request) -> Response:
-        logger.info(f"request_data = {request.data} \n\t {type(request.data)=}")
-        logger.info(f"request files = {request.FILES} \n\t {type(request.FILES)=}")
+        print()
+        logger.warning("POST /projects/")
+        logger.info(f"request_data: \n{pformat(request.data)}")
+        logger.info(f"request files: \n{pformat(request.FILES)}")
 
         try:
             access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(headers=request.headers)
-            command: ProjectCreateCommand = request_data_to_project_create_command(
+            command: ProjectCreateCommand = request_to_project_create_command(
                 request=request, user_id=int(access_dto.sub)
             )
+
             project: Project = gateway.project_create_app_service.create(command=command)
         except (DomainException, pydantic.ValidationError, JSONDecodeError) as e:
             return ProjectErrorResponseFactory.create_response(e)

@@ -31,7 +31,7 @@ class Company(BaseModel):
     address = models.ForeignKey("domain.Address", null=True, on_delete=models.SET_NULL)
 
     class Meta:
-        db_table = "company"
+        db_table = "companies"
         verbose_name = "Company"
         verbose_name_plural = "Companies"
 

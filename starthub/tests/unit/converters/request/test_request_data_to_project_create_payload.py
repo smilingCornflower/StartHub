@@ -26,7 +26,7 @@ from domain.value_objects.common import Id
 from domain.value_objects.file import ImageFile
 from domain.value_objects.project_management import ProjectCreateCommand
 from loguru import logger
-from presentation.request_converters.project import request_data_to_project_create_command
+from presentation.request_converters.project.request_to_project_create_command import request_to_project_create_command
 
 
 class TestProjectCreateCommandConversion(SimpleTestCase):
@@ -76,7 +76,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
         return {k: json.dumps(v) for k, v in data.items()}
 
     def check_raises(self, exc: type[Exception]) -> None:
-        self.assertTrue(f":raises {exc.__name__}:" in request_data_to_project_create_command.__doc__)
+        self.assertTrue(f":raises {exc.__name__}:" in request_to_project_create_command.__doc__)
 
     def create_mock_request(self, data: dict | None = None, files: dict | None = None):
         request = MagicMock()
@@ -89,7 +89,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
         return request
 
     def test_valid_conversion(self) -> None:
-        command = request_data_to_project_create_command(
+        command = request_to_project_create_command(
             request=self.create_mock_request(self.valid_data), user_id=self.user_id
         )
         self.assertEqual(type(command), ProjectCreateCommand)
@@ -163,7 +163,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
                 invalid_data = self.valid_data.copy()
                 invalid_data.pop(field)
                 with self.assertRaises(MissingRequiredFieldException):
-                    request_data_to_project_create_command(self.create_mock_request(invalid_data), self.user_id)
+                    request_to_project_create_command(self.create_mock_request(invalid_data), self.user_id)
 
         for field in project_required_fields:
             with self.subTest(f"missing project field: {field}"):
@@ -171,7 +171,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
                 invalid_data["project"] = self.valid_data["project"].copy()
                 invalid_data["project"].pop(field)
                 with self.assertRaises(MissingRequiredFieldException):
-                    request_data_to_project_create_command(self.create_mock_request(invalid_data), self.user_id)
+                    request_to_project_create_command(self.create_mock_request(invalid_data), self.user_id)
 
         for field in company_required_fields:
             with self.subTest(f"missing company field: {field}"):
@@ -179,7 +179,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
                 invalid_data["company"] = self.valid_data["company"].copy()
                 invalid_data["company"].pop(field)
                 with self.assertRaises(MissingRequiredFieldException):
-                    request_data_to_project_create_command(self.create_mock_request(invalid_data), self.user_id)
+                    request_to_project_create_command(self.create_mock_request(invalid_data), self.user_id)
 
         for field in founder_required_fields:
             with self.subTest(f"missing founder field: {field}"):
@@ -187,36 +187,36 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
                 invalid_data["company_founder"] = self.valid_data["company_founder"].copy()
                 invalid_data["company_founder"].pop(field)
                 with self.assertRaises(MissingRequiredFieldException):
-                    request_data_to_project_create_command(self.create_mock_request(invalid_data), self.user_id)
+                    request_to_project_create_command(self.create_mock_request(invalid_data), self.user_id)
 
         with self.subTest("missing project_plan file"):
             with self.assertRaises(MissingRequiredFieldException):
-                request_data_to_project_create_command(self.create_mock_request(files={}), self.user_id)
+                request_to_project_create_command(self.create_mock_request(files={}), self.user_id)
         self.check_raises(MissingRequiredFieldException)
 
     def test_invalid_goal_sum(self) -> None:
         self.valid_data["project"]["goal_sum"] = -100  # type: ignore
         with self.assertRaises(NegativeProjectGoalSumException):
-            request_data_to_project_create_command(self.create_mock_request(), self.user_id)
+            request_to_project_create_command(self.create_mock_request(), self.user_id)
         self.check_raises(NegativeProjectGoalSumException)
 
     def test_invalid_deadline(self) -> None:
         self.valid_data["project"]["deadline"] = (date.today() - timedelta(days=1)).isoformat()
         with self.assertRaises(DeadlineInPastException):
-            request_data_to_project_create_command(self.create_mock_request(), user_id=self.user_id)
+            request_to_project_create_command(self.create_mock_request(), user_id=self.user_id)
 
             self.check_raises(DeadlineInPastException)
 
         self.valid_data["project"]["deadline"] = "invalid-date"
         with self.assertRaises(DateIsNotIsoFormatException):
-            request_data_to_project_create_command(self.create_mock_request(), self.user_id)
+            request_to_project_create_command(self.create_mock_request(), self.user_id)
 
         self.check_raises(DateIsNotIsoFormatException)
 
     def test_invalid_phone_number(self) -> None:
         self.valid_data["project"]["phone_number"] = "invalid-phone"
         with self.assertRaises(InvalidPhoneNumberException):
-            request_data_to_project_create_command(self.create_mock_request(), self.user_id)
+            request_to_project_create_command(self.create_mock_request(), self.user_id)
 
         self.check_raises(InvalidPhoneNumberException)
 
@@ -226,7 +226,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
             "youtube": "https://www.yutube.com/watch?v=cvaIgq5j2Q8",
         }
         with self.assertRaises(InvalidSocialLinkException):
-            request_data_to_project_create_command(self.create_mock_request(), self.user_id)
+            request_to_project_create_command(self.create_mock_request(), self.user_id)
 
         self.check_raises(InvalidSocialLinkException)
 
@@ -234,7 +234,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
         self.valid_data["project"]["stage"] = "invalid"
 
         with self.assertRaises(InvalidProjectStageException):
-            request_data_to_project_create_command(self.create_mock_request(), self.user_id)
+            request_to_project_create_command(self.create_mock_request(), self.user_id)
 
         self.check_raises(InvalidProjectStageException)
 
@@ -244,7 +244,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
             "gpt": "https://chatgpt.com",
         }
         with self.assertRaises(DisallowedSocialLinkException):
-            request_data_to_project_create_command(self.create_mock_request(), self.user_id)
+            request_to_project_create_command(self.create_mock_request(), self.user_id)
 
         self.check_raises(DisallowedSocialLinkException)
 
@@ -252,31 +252,31 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
         self.valid_data["team_members"] = []
 
         # no exceptions
-        request_data_to_project_create_command(self.create_mock_request(), self.user_id)
+        request_to_project_create_command(self.create_mock_request(), self.user_id)
 
     def test_invalid_team_member_data(self) -> None:
         with self.subTest("first name is too long"):
             self.valid_data["team_members"][0]["first_name"] = "A" * 256
             with self.assertRaises(FirstNameIsTooLongException):
-                request_data_to_project_create_command(self.create_mock_request(), self.user_id)
+                request_to_project_create_command(self.create_mock_request(), self.user_id)
             self.valid_data["team_members"][0]["first_name"] = "name1"
 
         with self.subTest("last name is too long"):
             self.valid_data["team_members"][0]["last_name"] = "A" * 256
             with self.assertRaises(LastNameIsTooLongException):
-                request_data_to_project_create_command(self.create_mock_request(), self.user_id)
+                request_to_project_create_command(self.create_mock_request(), self.user_id)
             self.valid_data["team_members"][0]["last_name"] = "surname1"
 
         with self.subTest("empty first name"):
             self.valid_data["team_members"][0]["first_name"] = ""
             with self.assertRaises(EmptyStringException):
-                request_data_to_project_create_command(self.create_mock_request(), self.user_id)
+                request_to_project_create_command(self.create_mock_request(), self.user_id)
             self.valid_data["team_members"][0]["first_name"] = "name1"
 
         with self.subTest("empty last name"):
             self.valid_data["team_members"][0]["last_name"] = ""
             with self.assertRaises(EmptyStringException):
-                request_data_to_project_create_command(self.create_mock_request(), self.user_id)
+                request_to_project_create_command(self.create_mock_request(), self.user_id)
             self.valid_data["team_members"][0]["last_name"] = "surname1"
 
         self.check_raises(EmptyStringException)
@@ -288,14 +288,14 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
         self.valid_data["project"]["category_ids"] = ["not-an-integer", 3.14]
 
         with self.assertRaises(pydantic.ValidationError):
-            request_data_to_project_create_command(self.create_mock_request(), self.user_id)
+            request_to_project_create_command(self.create_mock_request(), self.user_id)
         self.check_raises(pydantic.ValidationError)
 
     def test_invalid_funding_model_id_type(self) -> None:
         self.valid_data["project"]["funding_model_id"] = "not-an-integer"
 
         with self.assertRaises(pydantic.ValidationError):
-            request_data_to_project_create_command(self.create_mock_request(), self.user_id)
+            request_to_project_create_command(self.create_mock_request(), self.user_id)
 
         self.check_raises(pydantic.ValidationError)
 
@@ -315,7 +315,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
                 test_data = self.valid_data.copy()
                 test_data["company"]["established_date"] = date_str  # type: ignore
                 with self.assertRaises(DateIsNotIsoFormatException):
-                    request_data_to_project_create_command(self.create_mock_request(test_data), self.user_id)  # type: ignore
+                    request_to_project_create_command(self.create_mock_request(test_data), self.user_id)  # type: ignore
 
     def test_rejects_company_established_future_dates(self) -> None:
         future_dates = [
@@ -328,7 +328,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
             test_data = self.valid_data.copy()
             test_data["company"]["established_date"] = future_date  # type: ignore
             with self.assertRaises(DateInFutureException):
-                request_data_to_project_create_command(self.create_mock_request(test_data), self.user_id)  # type: ignore
+                request_to_project_create_command(self.create_mock_request(test_data), self.user_id)  # type: ignore
             self.check_raises(DateInFutureException)
 
     def test_get_images(self):
@@ -351,7 +351,7 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
             content_type="image/png",
         )
         self.files.update(MultiValueDict({"images": [img1_file, img2_file]}))
-        command = request_data_to_project_create_command(self.create_mock_request(), user_id=self.user_id)
+        command = request_to_project_create_command(self.create_mock_request(), user_id=self.user_id)
         logger.debug(f"{command.images=}")
         self.assertEqual(len(command.images), 2)
         self.assertTrue(isinstance(command.images[0], ImageFile))
