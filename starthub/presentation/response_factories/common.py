@@ -7,6 +7,7 @@ from domain.exceptions.company import BusinessNumberAlreadyExistsException, Comp
 from domain.exceptions.file import ImageFileTooLargeException, NotPdfFileException, NotSupportedImageFormatException
 from domain.exceptions.geo.city import CityNotFoundException
 from domain.exceptions.geo.country import CountryNotFoundException, InvalidCountryCodeException
+from domain.exceptions.geo.geo import GeographicalInconsistencyException
 from domain.exceptions.geo.region import RegionNotFoundException
 from domain.exceptions.news import (
     NewsContentIsTooLongException,
@@ -24,6 +25,7 @@ from domain.exceptions.permissions import (
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
     InvalidProjectStageException,
+    InvalidProjectStatusException,
     NegativeProjectGoalSumException,
     ProjectCategoryNotFoundException,
     ProjectImageMaxAmountException,
@@ -102,6 +104,8 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         UpdateDeniedPermissionException: ("UPDATE_DENIED", 403),
         ProjectImageMaxAmountException: ("TOO_MANY_IMAGES", 422),
         ImageFileTooLargeException: ("IMAGE_TOO_LARGE", 422),
+        InvalidProjectStatusException: ("INVALID_PROJECT_STATUS", 422),
+        GeographicalInconsistencyException: ("GEOGRAPHICAL_INCONSISTENCY", 422),
     }
 
 
@@ -163,3 +167,7 @@ class NewsErrorResponseFactory(CommonErrorResponseFactory):
         DeleteDeniedPermissionException: ("DELETE_PERMISSION_DENIED", 403),
         NewsImageContentAndFileMismatchException: ("IMAGE_CONTENT_FILE_MISMATCH", 422),
     }
+
+
+class CompanyErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {}

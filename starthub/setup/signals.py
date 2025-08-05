@@ -26,6 +26,7 @@ def run_after_migrate(sender: Any, **kwargs: Any) -> None:
 
     _ran = True
     call_command("assign_default_role")
-    call_command("assing_project_permissions_for_user")
+    call_command("create_project_permissions_for_users")
+    call_command("create_company_permissions_for_users")
     call_command("create_blogger_role_and_permissions")
     call_command("create_kazakhstan_regions_and_cities")

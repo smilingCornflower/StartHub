@@ -12,7 +12,7 @@ from domain.value_objects.company import (
 from domain.value_objects.filter import CompanyFilter, CompanyFounderFilter
 
 
-class CompanyReadRepository(AbstractReadRepository[Company, CompanyFilter], ABC):
+class CompanyReadRepository(AbstractReadRepository[Company, CompanyFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> Company:
         """:raises CompanyNotFoundException:"""
@@ -42,7 +42,7 @@ class CompanyWriteRepository(AbstractWriteRepository[Company, CompanyCreatePaylo
         pass
 
 
-class CompanyFounderReadRepository(AbstractReadRepository[CompanyFounder, CompanyFounderFilter], ABC):
+class CompanyFounderReadRepository(AbstractReadRepository[CompanyFounder, CompanyFounderFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> CompanyFounder:
         pass

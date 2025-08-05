@@ -15,7 +15,7 @@ class Command(BaseCommand):
     help = "Assigns project permissions for user"
 
     def handle(self, *args: Any, **options: Any) -> None:
-        logger.warning("Started command: assing_project_permissions_for_user")
+        logger.warning("Started command: assing_project_permissions_for_users")
         for action in [ActionEnum.CHANGE, ActionEnum.DELETE]:
             permission_vo: PermissionVo = PermissionService.create_permission_vo(
                 model=Project, action=action, scope=ScopeEnum.OWN
@@ -25,4 +25,4 @@ class Command(BaseCommand):
             user_role, _ = Role.objects.get_or_create(name=RoleEnum.USER)
             user_role.permissions.add(permission)
 
-        logger.info("User permissions initialized")
+        logger.info("User permissions for project initialized")

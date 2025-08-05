@@ -62,6 +62,16 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
                 "country_code": "KZ",
                 "business_id": "123456789012",
                 "established_date": "2020-01-15",
+                "address": {
+                    "country_code": "KZ",
+                    "region_id": 4,
+                    "city_id": 37,
+                    "district": "Bostandyk District",
+                    "street": "Al-Farabi Avenue",
+                    "house_number": "77A",
+                    "postal_code": "050040",
+                    "raw_address": None,
+                },
             },
             "company_founder": {"first_name": "John", "last_name": "Doe", "description": "Founder and CEO"},
             "team_members": [

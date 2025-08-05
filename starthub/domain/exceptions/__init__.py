@@ -1,6 +1,6 @@
-class DomainException(Exception):
+class CustomException(Exception):
     pass
 
 
-class BusinessRuleException(DomainException):
+class BusinessRuleException(CustomException):
     pass

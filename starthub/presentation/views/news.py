@@ -3,7 +3,7 @@ from dataclasses import asdict
 import pydantic
 from application.dto.news import NewsFullDto, NewsShortDto
 from application.services.gateway import gateway
-from domain.exceptions import DomainException
+from domain.exceptions import CustomException
 from domain.value_objects.common import Pagination
 from infrastructure.auth.token import get_access_payload_dto_from_headers
 from loguru import logger
@@ -31,7 +31,7 @@ class NewsView(APIView):
                 return Response(asdict(news), status=status.HTTP_200_OK)
             return Response(list(map(asdict, news)), status=status.HTTP_200_OK)
 
-        except DomainException as e:
+        except CustomException as e:
             return NewsErrorResponseFactory.create_response(e)
 
     @staticmethod
@@ -45,7 +45,7 @@ class NewsView(APIView):
                 request_data=request.data, request_files=request.FILES, user_id=int(access_dto.sub)
             )
 
-        except (DomainException, pydantic.ValidationError) as e:
+        except (CustomException, pydantic.ValidationError) as e:
             return NewsErrorResponseFactory.create_response(e)
 
         return Response({"news_id": news_id, "code": "SUCCESS"}, status=status.HTTP_201_CREATED)
@@ -58,7 +58,7 @@ class NewsView(APIView):
             access_dto = get_access_payload_dto_from_headers(request.headers)
             gateway.news_app_service.update(request.data, request.FILES, news_id=news_id, user_id=int(access_dto.sub))
 
-        except (DomainException, pydantic.ValidationError) as e:
+        except (CustomException, pydantic.ValidationError) as e:
             return NewsErrorResponseFactory.create_response(e)
 
         return Response({"detail": "news updated successfully", "code": "SUCCESS"}, status=status.HTTP_200_OK)
@@ -71,5 +71,5 @@ class NewsView(APIView):
             access_dto = get_access_payload_dto_from_headers(request.headers)
             gateway.news_app_service.delete(news_id=news_id, user_id=int(access_dto.sub))
             return Response({"detail": "News deleted.", "code": SUCCESS}, status=status.HTTP_200_OK)
-        except DomainException as e:
+        except CustomException as e:
             return NewsErrorResponseFactory.create_response(e)

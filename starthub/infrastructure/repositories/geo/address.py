@@ -10,7 +10,33 @@ class DjAddressReadRepository(AddressReadRepository):
         raise NotImplementedError("The method get_by_id() is not implemented yet.")
 
     def get_all(self, filter_: AddressFilter, pagination: Pagination | None = None) -> list[Address]:
-        raise NotImplementedError("The method get_all() is not implemented yet.")
+        queryset = Address.objects.all().order_by("-id")
+
+        if filter_.address_id:
+            queryset = queryset.filter(id=filter_.address_id.value)
+        if filter_.country_id:
+            queryset = queryset.filter(country_id=filter_.country_id.value)
+        if filter_.region_id:
+            queryset = queryset.filter(region_id=filter_.region_id.value)
+        if filter_.city_id:
+            queryset = queryset.filter(city_id=filter_.city_id.value)
+        if filter_.district:
+            queryset = queryset.filter(district=filter_.district)
+        if filter_.street:
+            queryset = queryset.filter(street=filter_.street)
+        if filter_.house_number:
+            queryset = queryset.filter(house_number=filter_.house_number)
+        if filter_.raw_address:
+            queryset = queryset.filter(raw_address=filter_.raw_address)
+
+        if pagination and pagination.last_id is not None:
+            queryset = queryset.filter(id__lt=pagination.last_id)
+
+        if pagination and pagination.limit is not None:
+            result = list(queryset.distinct()[: pagination.limit])
+        else:
+            result = list(queryset.distinct())
+        return result
 
 
 class DjAddressWriteRepository(AddressWriteRepository):

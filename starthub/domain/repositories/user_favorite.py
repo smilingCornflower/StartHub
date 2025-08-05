@@ -7,7 +7,7 @@ from domain.value_objects.filter import UserFavoriteFilter
 from domain.value_objects.user_favorite import UserFavoriteCreatePayload, UserFavoriteUpdatePayload
 
 
-class UserFavoriteReadRepository(AbstractReadRepository[UserFavorite, UserFavoriteFilter], ABC):
+class UserFavoriteReadRepository(AbstractReadRepository[UserFavorite, UserFavoriteFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> UserFavorite:
         """:raises UserFavoriteNotFoundException:"""

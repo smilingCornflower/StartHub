@@ -6,7 +6,7 @@ from application.dto.auth import AccessPayloadDto
 from application.dto.project import ProjectDto
 from application.dto.user import UserProfileDto
 from application.services.gateway import gateway
-from domain.exceptions import DomainException
+from domain.exceptions import CustomException
 from infrastructure.auth.token import get_access_payload_dto_from_headers
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import UserErrorResponseFactory, UserFavoriteErrorResponseFactory
@@ -22,7 +22,7 @@ class UserView(APIView):
     def get(request: Request, user_id: int) -> Response:
         try:
             return Response(asdict(gateway.user_app_service.get_user_profile(user_id)), status=status.HTTP_200_OK)
-        except DomainException as e:
+        except CustomException as e:
             return UserErrorResponseFactory.create_response(e)
 
 
@@ -39,7 +39,7 @@ class MeView(APIView):
             access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
             gateway.user_app_service.update_user(request.data, request.FILES, int(access_dto.sub))
             return Response({"detail": "success", "code": SUCCESS}, status=status.HTTP_200_OK)
-        except (DomainException, pydantic.ValidationError) as e:
+        except (CustomException, pydantic.ValidationError) as e:
             return UserErrorResponseFactory.create_response(e)
 
     @staticmethod
@@ -50,7 +50,7 @@ class MeView(APIView):
                 user_id=int(access_dto.sub)
             )
             return Response(asdict(user_profile_dto), status=status.HTTP_200_OK)
-        except DomainException as e:
+        except CustomException as e:
             return UserErrorResponseFactory.create_response(e)
 
 
@@ -63,7 +63,7 @@ class MeFavoriteProjectsView(APIView):
                 user_id=int(access_dto.sub)
             )
             return Response(map(asdict, user_favorite_projects), status=status.HTTP_200_OK)
-        except (DomainException, pydantic.ValidationError) as e:
+        except (CustomException, pydantic.ValidationError) as e:
             return UserErrorResponseFactory.create_response(e)
 
     @staticmethod
@@ -73,7 +73,7 @@ class MeFavoriteProjectsView(APIView):
             gateway.user_favorite_app_service.add_favorite(user_id=int(access_dto.sub), project_id=project_id)
             return Response({"detail": "success", "code": SUCCESS}, status=status.HTTP_201_CREATED)
 
-        except (DomainException, pydantic.ValidationError) as e:
+        except (CustomException, pydantic.ValidationError) as e:
             return UserFavoriteErrorResponseFactory.create_response(e)
 
     @staticmethod
@@ -82,7 +82,7 @@ class MeFavoriteProjectsView(APIView):
             access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
             gateway.user_favorite_app_service.delete_by_association_ids(int(access_dto.sub), project_id)
             return Response({"detail": "success", "code": SUCCESS}, status=status.HTTP_200_OK)
-        except (DomainException, pydantic.ValidationError) as e:
+        except (CustomException, pydantic.ValidationError) as e:
             return UserFavoriteErrorResponseFactory.create_response(e)
 
 
@@ -94,5 +94,5 @@ class UserFavoriteProjectsView(APIView):
                 user_id=user_id
             )
             return Response(map(asdict, user_favorite_projects), status=status.HTTP_200_OK)
-        except DomainException as e:
+        except CustomException as e:
             return UserErrorResponseFactory.create_response(e)

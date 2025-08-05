@@ -32,7 +32,7 @@ from domain.value_objects.project_management import (
 
 
 # noinspection DuplicatedCode
-class ProjectCategoryReadRepository(AbstractReadRepository[ProjectCategory, ProjectCategoryFilter], ABC):
+class ProjectCategoryReadRepository(AbstractReadRepository[ProjectCategory, ProjectCategoryFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> ProjectCategory:
         """:raises ProjectCategoryNotFoundException:"""
@@ -61,7 +61,7 @@ class ProjectCategoryWriteRepository(
         pass
 
 
-class ProjectPhoneReadRepository(AbstractReadRepository[ProjectPhone, ProjectPhoneFilter], ABC):
+class ProjectPhoneReadRepository(AbstractReadRepository[ProjectPhone, ProjectPhoneFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> ProjectPhone:
         pass
@@ -88,7 +88,7 @@ class ProjectPhoneWriteRepository(
 
 
 # noinspection DuplicatedCode
-class ProjectSocialLinkReadRepository(AbstractReadRepository[ProjectSocialLink, ProjectSocialLinkFilter], ABC):
+class ProjectSocialLinkReadRepository(AbstractReadRepository[ProjectSocialLink, ProjectSocialLinkFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> ProjectSocialLink:
         pass
@@ -116,7 +116,7 @@ class ProjectSocialLinkWriteRepository(
         pass
 
 
-class TeamMemberReadRepository(AbstractReadRepository[TeamMember, TeamMemberFilter], ABC):
+class TeamMemberReadRepository(AbstractReadRepository[TeamMember, TeamMemberFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> TeamMember:
         pass
@@ -143,7 +143,7 @@ class TeamMemberWriteRepository(
 
 
 # noinspection DuplicatedCode
-class ProjectReadRepository(AbstractReadRepository[Project, ProjectFilter], ABC):
+class ProjectReadRepository(AbstractReadRepository[Project, ProjectFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> Project:
         """:raises ProjectNotFoundException:"""
@@ -179,7 +179,7 @@ class ProjectWriteRepository(AbstractWriteRepository[Project, ProjectCreatePaylo
         pass
 
 
-class FundingModelReadRepository(AbstractReadRepository[FundingModel, FundingModelFilter], ABC):
+class FundingModelReadRepository(AbstractReadRepository[FundingModel, FundingModelFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> FundingModel:
         """:raises FundingModelNotFoundException:"""
@@ -191,7 +191,7 @@ class FundingModelReadRepository(AbstractReadRepository[FundingModel, FundingMod
 
 
 # noinspection DuplicatedCode
-class ProjectImageReadRepository(AbstractReadRepository[ProjectImage, ProjectImageFilter], ABC):
+class ProjectImageReadRepository(AbstractReadRepository[ProjectImage, ProjectImageFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> ProjectImage:
         """:raises ProjectPhotoNotFoundException:"""

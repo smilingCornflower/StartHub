@@ -7,7 +7,7 @@ from domain.value_objects.filter import AddressFilter
 from domain.value_objects.geo import AddressCreatePayload, AddressUpdatePayload
 
 
-class AddressReadRepository(AbstractReadRepository[Address, AddressFilter], ABC):
+class AddressReadRepository(AbstractReadRepository[Address, AddressFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> Address:
         pass

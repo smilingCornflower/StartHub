@@ -13,7 +13,7 @@ from domain.value_objects.user import (
 )
 
 
-class UserReadRepository(AbstractReadRepository[User, UserFilter]):
+class UserReadRepository(AbstractReadRepository[User, UserFilter, Id]):
     @abstractmethod
     def get_by_id(self, id_: Id) -> User:
         """:raises UserNotFoundException:"""
@@ -49,7 +49,7 @@ class UserWriteRepository(AbstractWriteRepository[User, UserCreatePayload, UserU
         pass
 
 
-class UserPhoneReadRepository(AbstractReadRepository[UserPhone, UserPhoneFilter], ABC):
+class UserPhoneReadRepository(AbstractReadRepository[UserPhone, UserPhoneFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> UserPhone:
         pass

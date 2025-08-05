@@ -1,8 +1,8 @@
-from domain.exceptions import DomainException
+from domain.exceptions import CustomException
 
 
 # ==== File Exceptions ====
-class FileException(DomainException):
+class FileException(CustomException):
     pass
 
 

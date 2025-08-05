@@ -5,7 +5,6 @@ from datetime import date
 import phonenumbers
 from domain.constants import CHAR_FIELD_SHORT_LENGTH, DESCRIPTION_MAX_LENGTH, PAGINNATION_MAX_LMIT
 from domain.enums.social_links import SocialPlatform
-from domain.exceptions.geo.country import InvalidCountryCodeException
 from domain.exceptions.pagination import PaginationMaxLimitException
 from domain.exceptions.validation import (
     DeadlineInPastException,
@@ -149,15 +148,3 @@ class Pagination(BaseVo):
 class OffsetPagination(BaseVo):
     offset: int = 0
     limit: int
-
-
-class CountryCode(BaseVo):
-    value: str
-
-    @field_validator("value", mode="after")
-    @classmethod
-    def is_correct_country_code(cls, value: str) -> str:
-        """:raises InvalidCountryCodeException:"""
-        if not (len(value) == 2 and value.isalpha() and value.isupper()):
-            raise InvalidCountryCodeException("Invalid country code")
-        return value

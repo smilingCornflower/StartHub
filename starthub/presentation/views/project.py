@@ -1,5 +1,5 @@
 from dataclasses import asdict
-from json import JSONDecodeError
+from json.decoder import JSONDecodeError
 from pprint import pformat
 
 import pydantic
@@ -13,7 +13,7 @@ from application.dto.auth import AccessPayloadDto, AnonymousPayloadDto
 from application.dto.project import ProjectDto
 from application.services.gateway import gateway
 from domain.enums.token import TokenTypeEnum
-from domain.exceptions import DomainException
+from domain.exceptions import CustomException
 from domain.exceptions.project_management import ProjectNotFoundException
 from domain.models.project import Project
 from domain.value_objects.common import Id, OffsetPagination, Pagination
@@ -72,7 +72,7 @@ class ProjectView(APIView):
                     pagination=pagination,
                     user_id=user_id,
                 )
-        except DomainException as e:
+        except CustomException as e:
             return ProjectErrorResponseFactory.create_response(e)
         return Response(map(asdict, projects), status=status.HTTP_200_OK)
 
@@ -90,7 +90,7 @@ class ProjectView(APIView):
             )
 
             project: Project = gateway.project_create_app_service.create(command=command)
-        except (DomainException, pydantic.ValidationError, JSONDecodeError) as e:
+        except (CustomException, pydantic.ValidationError, JSONDecodeError) as e:
             return ProjectErrorResponseFactory.create_response(e)
 
         return Response({"project_id": project.id, "code": "SUCCESS"}, status=status.HTTP_201_CREATED)
@@ -108,7 +108,7 @@ class ProjectView(APIView):
             gateway.project_update_app_service.update(command=command)
             return Response({"detail": "updated successfully.", "code": SUCCESS}, status=status.HTTP_200_OK)
 
-        except (DomainException, pydantic.ValidationError) as e:
+        except (CustomException, pydantic.ValidationError, JSONDecodeError) as e:
             return ProjectErrorResponseFactory.create_response(e)
 
     @staticmethod
@@ -123,7 +123,7 @@ class ProjectView(APIView):
 
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
 
-        except (DomainException, pydantic.ValidationError) as e:
+        except (CustomException, pydantic.ValidationError) as e:
             return ProjectErrorResponseFactory.create_response(e)
 
 
@@ -139,7 +139,7 @@ class MeProjectView(APIView):
                 filter_=ProjectFilter(user_id=user_id), pagination=pagination, user_id=user_id
             )
             return Response(map(asdict, projects), status=status.HTTP_200_OK)
-        except DomainException as e:
+        except CustomException as e:
             return ProjectErrorResponseFactory.create_response(e)
 
 
@@ -239,5 +239,5 @@ class ProjectSearchView(APIView):
             )
             return Response(map(asdict, projects), status=status.HTTP_200_OK)
 
-        except DomainException as e:
+        except CustomException as e:
             return ProjectErrorResponseFactory.create_response(e)

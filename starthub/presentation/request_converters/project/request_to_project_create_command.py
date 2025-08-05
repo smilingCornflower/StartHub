@@ -4,19 +4,10 @@ from typing import Any, cast
 
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.datastructures import MultiValueDict
-from domain.value_objects.common import (
-    CountryCode,
-    DeadlineDate,
-    Description,
-    FirstName,
-    Id,
-    LastName,
-    PhoneNumber,
-    SocialLink,
-)
+from domain.value_objects.common import DeadlineDate, Description, FirstName, Id, LastName, PhoneNumber, SocialLink
 from domain.value_objects.company import BusinessNumber, CompanyFounderCreateCommand, CompanyName, EstablishedDate
+from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
-from domain.value_objects.geo import AddressCreateCommand
 from domain.value_objects.project_management import (
     GoalSum,
     ProjectCreateCommand,
@@ -25,7 +16,7 @@ from domain.value_objects.project_management import (
     TeamMemberCreateCommand,
 )
 from loguru import logger
-from presentation.request_converters.common import get_required_field, parse_date
+from presentation.request_converters.common import build_address_create_command, get_required_field, parse_date
 from rest_framework.request import Request
 
 
@@ -109,8 +100,8 @@ def _extract_project_info(project_data: dict[str, Any], user_id: int) -> dict[st
 def _extract_company_info(company_data: dict[str, Any]) -> dict[str, Any]:
     """Extract company-specific information from request data."""
     country_code = CountryCode(value=get_required_field(company_data, "country_code", "company.country_code"))
-    address_create_command = _build_address_create_command(
-        get_required_field(company_data, "address", "company.address"), country_code
+    address_create_command = build_address_create_command(
+        get_required_field(company_data, "address", "company.address")
     )
 
     return {
@@ -124,20 +115,6 @@ def _extract_company_info(company_data: dict[str, Any]) -> dict[str, Any]:
             value=parse_date(get_required_field(company_data, "established_date", "company.established_date"))
         ),
     }
-
-
-def _build_address_create_command(address_data: dict[str, str], country_code: CountryCode) -> AddressCreateCommand:
-    """Build AddressVo from address data."""
-    return AddressCreateCommand(
-        country_code=country_code,
-        region_id=Id(value=int(get_required_field(address_data, "region_id"))),
-        city_id=Id(value=int(get_required_field(address_data, "city_id"))),
-        district=address_data.get("district"),
-        street=address_data.get("street"),
-        house_number=address_data.get("house_number"),
-        postal_code=address_data.get("postal_code"),
-        raw_address=address_data.get("raw_address"),
-    )
 
 
 def _extract_project_plan(files: MultiValueDict[str, UploadedFile]) -> PdfFile:

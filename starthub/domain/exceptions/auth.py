@@ -1,8 +1,8 @@
-from domain.exceptions import DomainException
+from domain.exceptions import CustomException
 from domain.exceptions.validation import MissingRequiredFieldException, ValidationException
 
 
-class AuthException(DomainException):
+class AuthException(CustomException):
     pass
 
 

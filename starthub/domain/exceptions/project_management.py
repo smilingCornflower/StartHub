@@ -1,9 +1,9 @@
-from domain.exceptions import DomainException
+from domain.exceptions import CustomException
 from domain.exceptions.repository import AlreadyExistsException, NotFoundException
 from domain.exceptions.validation import ValidationException
 
 
-class ProjectException(DomainException):
+class ProjectException(CustomException):
     pass
 
 

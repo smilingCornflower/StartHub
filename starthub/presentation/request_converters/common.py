@@ -4,6 +4,8 @@ from typing import cast
 from django.http import QueryDict
 from domain.exceptions.validation import DateIsNotIsoFormatException, MissingRequiredFieldException
 from domain.value_objects.common import OffsetPagination, Pagination
+from domain.value_objects.country import CountryCode
+from domain.value_objects.geo import AddressCreateCommand, CityId, RegionId
 from loguru import logger
 from rest_framework.request import Request
 
@@ -40,3 +42,17 @@ def parse_date(date_str: str) -> date:
     except ValueError as e:
         logger.exception(f"Exception during parsing established_date: {repr(e)}.")
         raise DateIsNotIsoFormatException("Date must be in iso format.") from e
+
+
+def build_address_create_command(address_data: dict[str, str]) -> AddressCreateCommand:
+    """Build AddressVo from address data."""
+    return AddressCreateCommand(
+        country_code=CountryCode(value=get_required_field(address_data, "country_code", "address.country_code")),
+        region_id=RegionId(value=int(get_required_field(address_data, "region_id"))),
+        city_id=CityId(value=int(get_required_field(address_data, "city_id"))),
+        district=address_data.get("district"),
+        street=address_data.get("street"),
+        house_number=address_data.get("house_number"),
+        postal_code=address_data.get("postal_code"),
+        raw_address=address_data.get("raw_address"),
+    )

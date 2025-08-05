@@ -13,6 +13,7 @@ from infrastructure.repositories.company import (
     DjCompanyReadRepository,
     DjCompanyWriteRepository,
 )
+from infrastructure.repositories.geo.address import DjAddressWriteRepository
 from infrastructure.repositories.geo.country import DjCountryReadRepository
 from infrastructure.repositories.project_management import (
     DjProjectImageReadRepository,
@@ -70,6 +71,8 @@ class CompanyServiceBuilder(AbstractDomainServiceBuilder[CompanyService]):
             company_write_repository=DjCompanyWriteRepository(),
             country_read_repository=DjCountryReadRepository(),
             company_read_repository=DjCompanyReadRepository(),
+            address_write_repository=DjAddressWriteRepository(),
+            permission_service=PermissionServiceBuilder.create_service(),
         )
 
 

@@ -1,7 +1,20 @@
 from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
-from domain.value_objects.common import CountryCode, Id
+from domain.value_objects.common import Id
+from domain.value_objects.country import CountryCode, CountryId
+
+
+class RegionId(Id):
+    pass
+
+
+class CityId(Id):
+    pass
+
+
+class AddressId(Id):
+    pass
 
 
 class RegionName(BaseVo):
@@ -14,8 +27,8 @@ class CityName(BaseVo):
 
 class AddressVo(BaseVo):
     country_code: CountryCode
-    region: RegionName
-    city: CityName
+    region_id: RegionId
+    city_id: CityId
     district: str | None = None
     street: str | None = None
     house_number: str | None = None
@@ -26,8 +39,8 @@ class AddressVo(BaseVo):
 
 class AddressCreateCommand(BaseCommand):
     country_code: CountryCode
-    region_id: Id
-    city_id: Id
+    region_id: RegionId
+    city_id: CityId
 
     district: str | None = None
     street: str | None = None
@@ -38,9 +51,9 @@ class AddressCreateCommand(BaseCommand):
 
 
 class AddressCreatePayload(AbstractCreatePayload):
-    country_id: Id
-    region_id: Id
-    city_id: Id
+    country_id: CountryId
+    region_id: RegionId
+    city_id: CityId
 
     district: str | None = None
     street: str | None = None

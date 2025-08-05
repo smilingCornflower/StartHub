@@ -1,7 +1,7 @@
-from domain.exceptions import DomainException
+from domain.exceptions import CustomException
 
 
-class RepositoryException(DomainException):
+class RepositoryException(CustomException):
     pass
 
 

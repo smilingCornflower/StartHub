@@ -1,9 +1,9 @@
-from domain.exceptions import DomainException
+from domain.exceptions import CustomException
 from domain.exceptions.repository import NotFoundException
 from domain.exceptions.validation import ValidationException
 
 
-class CountryException(DomainException):
+class CountryException(CustomException):
     pass
 
 

@@ -14,7 +14,7 @@ from domain.value_objects.news import (
 
 
 # noinspection DuplicatedCode
-class NewsReadRepository(AbstractReadRepository[News, NewsFilter], ABC):
+class NewsReadRepository(AbstractReadRepository[News, NewsFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> News:
         """:raises NewsNotFoundException:"""
@@ -39,7 +39,7 @@ class NewsWriteRepository(AbstractWriteRepository[News, NewsCreatePayload, NewsU
         pass
 
 
-class NewsImageReadRepository(AbstractReadRepository[NewsImage, NewsImageFilter], ABC):
+class NewsImageReadRepository(AbstractReadRepository[NewsImage, NewsImageFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> NewsImage:
         pass

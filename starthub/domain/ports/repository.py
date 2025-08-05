@@ -10,11 +10,12 @@ T = TypeVar("T", bound=AbstractModel)
 F = TypeVar("F", bound=AbstractFilter)
 C = TypeVar("C", bound=AbstractCreatePayload)
 U = TypeVar("U", bound=AbstractUpdatePayload)
+ID = TypeVar("ID", bound=Id)
 
 
-class AbstractReadRepository(ABC, Generic[T, F]):
+class AbstractReadRepository(ABC, Generic[T, F, ID]):
     @abstractmethod
-    def get_by_id(self, id_: Id) -> T:
+    def get_by_id(self, id_: ID) -> T:
         """:raises domain.exception.NotFoundException:"""
         pass
 

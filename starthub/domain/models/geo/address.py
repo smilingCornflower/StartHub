@@ -18,6 +18,16 @@ class Address(BaseModel):
 
     class Meta:
         db_table = "addresses"
+        unique_together = (
+            "country",
+            "region",
+            "city",
+            "district",
+            "street",
+            "house_number",
+            "postal_code",
+            "raw_address",
+        )
 
     def __str__(self) -> str:
         if self.raw_address:

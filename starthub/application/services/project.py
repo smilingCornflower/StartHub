@@ -29,8 +29,9 @@ from domain.repositories.user_favorite import UserFavoriteReadRepository
 from domain.services.project_management.project import ProjectService
 from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
-from domain.value_objects.common import CountryCode, Id, OffsetPagination, Pagination
+from domain.value_objects.common import Id, OffsetPagination, Pagination
 from domain.value_objects.company import BusinessNumber
+from domain.value_objects.country import CountryCode
 from domain.value_objects.file import PdfFile
 from domain.value_objects.filter import (
     CompanyFilter,
@@ -39,6 +40,7 @@ from domain.value_objects.filter import (
     ProjectFilter,
     ProjectImageFilter,
 )
+from domain.value_objects.geo import CityId, RegionId
 from domain.value_objects.project_management import (
     ProjectCreateCommand,
     ProjectCreatePayload,
@@ -85,12 +87,12 @@ class ProjectCreateAppService(AbstractAppService):
 
         logger.info("All dependencies validated")
 
-    def _check_region_exists(self, region_id: Id) -> None:
+    def _check_region_exists(self, region_id: RegionId) -> None:
         """:raises RegionNotFoundException:"""
         self._region_read_repository.get_by_id(id_=region_id)
         logger.debug(f"Region with id = {region_id.value} exists.")
 
-    def _check_city_exists(self, city_id: Id) -> None:
+    def _check_city_exists(self, city_id: CityId) -> None:
         """:raises CityNotFoundException:"""
         self._city_read_repository.get_by_id(id_=city_id)
         logger.debug(f"City with id = {city_id.value} exists.")

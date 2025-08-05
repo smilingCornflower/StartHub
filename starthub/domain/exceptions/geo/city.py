@@ -1,8 +1,8 @@
-from domain.exceptions import DomainException
+from domain.exceptions import CustomException
 from domain.exceptions.repository import NotFoundException
 
 
-class CityException(DomainException):
+class CityException(CustomException):
     pass
 
 
