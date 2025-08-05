@@ -18,8 +18,7 @@ PASSWORD_MAX_LENGTH = 64
 # Passwords contains at least one: lowercase letter, uppercase letter and digit
 PASSWORD_PATTERN = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$")
 
-# ACCESS_TOKEN_LIFETIME = 15 * 60  # 15 minutes
-ACCESS_TOKEN_LIFETIME = 12 * 60 * 60  # 12 hours
+ACCESS_TOKEN_LIFETIME = 15 * 60  # 15 minutes
 REFRESH_TOKEN_LIFETIME = 15 * 24 * 3600  # 15 days
 ANONYMOUS_TOKEN_LIFETIME = 30 * 24 * 3600  # 30 days
 
