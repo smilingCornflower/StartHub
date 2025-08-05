@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Callable, cast
 
-from application.service_factories.domain_service.user import UserServiceBuilder
+from application.builders.domain_service.user import UserServiceBuilder
 from config.settings import BASE_DIR
 from django.test import TestCase
 from domain.constants import StorageLocations

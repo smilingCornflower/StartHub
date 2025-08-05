@@ -1,4 +1,5 @@
 import re
+import uuid
 from datetime import date
 
 import phonenumbers
@@ -16,11 +17,15 @@ from domain.exceptions.validation import (
     StringIsTooLongException,
 )
 from domain.value_objects import BaseVo
-from pydantic import ValidationInfo, field_validator
+from pydantic import Field, ValidationInfo, field_validator
 
 
 class Id(BaseVo):
     value: int
+
+
+class Uuid(BaseVo):
+    value: str = Field(default_factory=lambda: str(uuid.uuid4()))
 
 
 class Slug(BaseVo):

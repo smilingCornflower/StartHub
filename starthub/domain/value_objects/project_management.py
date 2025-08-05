@@ -23,15 +23,10 @@ from domain.value_objects.common import (
     PhoneNumber,
     SocialLink,
 )
-from domain.value_objects.company import (
-    BusinessNumber,
-    CompanyFounderCreateCommand,
-    CompanyName,
-    CompanyUpdatePayload,
-    EstablishedDate,
-)
+from domain.value_objects.company import BusinessNumber, CompanyFounderCreateCommand, CompanyName, EstablishedDate
 from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
+from domain.value_objects.geo import AddressCreateCommand
 from pydantic import field_validator
 
 
@@ -158,6 +153,7 @@ class ProjectCreateCommand(BaseCommand):
 
     company_name: CompanyName
     country_code: CountryCode
+    company_address: AddressCreateCommand
     business_id: BusinessNumber
     established_date: EstablishedDate
 
@@ -168,7 +164,6 @@ class ProjectCreateCommand(BaseCommand):
 class ProjectUpdateCommand(BaseCommand):
     project_id: Id
     user_id: Id
-    company: CompanyUpdatePayload | None
     name: ProjectName | None = None
     category_ids: list[Id] | None = None
     funding_model_id: Id | None = None
@@ -182,13 +177,13 @@ class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
     name: ProjectName
     description: Description
     category_ids: list[Id]
-    creator_id: Id
+    user_id: Id
     funding_model_id: Id
     stage: ProjectStage
     status: ProjectStatus
     goal_sum: GoalSum
     deadline: date
-    plan_file: PdfFile
+    plan_path: str
 
 
 class ProjectUpdatePayload(AbstractUpdatePayload, BaseVo):

@@ -1,11 +1,25 @@
-from application.service_factories.app_service.auth import AuthAppServiceBuilder, RegistrationAppServiceBuilder
-from application.service_factories.app_service.news import NewsAppServiceBuilder
-from application.service_factories.app_service.project import ProjectAppServiceBuilder
-from application.service_factories.app_service.user import UserAppServiceBuilder
-from application.service_factories.app_service.user_favorite import UserFavoriteAppAppServiceBuilder
+from application.builders.app_service.auth import AuthAppServiceBuilder, RegistrationAppServiceBuilder
+from application.builders.app_service.company import CompanyAppServiceBuilder
+from application.builders.app_service.news import NewsAppServiceBuilder
+from application.builders.app_service.project import (
+    ProjectCreateAppServiceBuilder,
+    ProjectDeleteAppServiceBuilder,
+    ProjectGetAppServiceBuilder,
+    ProjectUpdateAppServiceBuilder,
+)
+from application.builders.app_service.project_image import ProjectImageAppServiceBuilder
+from application.builders.app_service.user import UserAppServiceBuilder
+from application.builders.app_service.user_favorite import UserFavoriteAppAppServiceBuilder
 from application.services.auth import AuthAppService, RegistrationAppService
+from application.services.company import CompanyAppService
 from application.services.news import NewsAppService
-from application.services.project import ProjectAppService
+from application.services.project import (
+    ProjectCreateAppService,
+    ProjectDeleteAppService,
+    ProjectGetAppService,
+    ProjectUpdateAppService,
+)
+from application.services.project_image import ProjectImageAppService
 from application.services.user import UserAppService
 from application.services.user_favorite import UserFavoriteAppService
 from infrastructure.services.cookie import CookieService, cookie_service
@@ -16,9 +30,16 @@ class Gateway:
     _registration_app_service: RegistrationAppService | None = None
 
     _user_app_service: UserAppService | None = None
-    _project_app_service: ProjectAppService | None = None
+
+    _project_create_app_service: ProjectCreateAppService | None = None
+    _project_update_app_service: ProjectUpdateAppService | None = None
+    _project_get_app_service: ProjectGetAppService | None = None
+    _project_delete_app_service: ProjectDeleteAppService | None = None
+
+    _project_image_app_service: ProjectImageAppService | None = None
     _user_favorite_app_service: UserFavoriteAppService | None = None
     _news_app_service: NewsAppService | None = None
+    _company_app_service: CompanyAppService | None = None
 
     _cookie_service: CookieService | None = None
 
@@ -41,10 +62,34 @@ class Gateway:
         return self._user_app_service
 
     @property
-    def project_app_service(self) -> ProjectAppService:
-        if self._project_app_service is None:
-            self._project_app_service = ProjectAppServiceBuilder.create_service()
-        return self._project_app_service
+    def project_create_app_service(self) -> ProjectCreateAppService:
+        if self._project_create_app_service is None:
+            self._project_create_app_service = ProjectCreateAppServiceBuilder.create_service()
+        return self._project_create_app_service
+
+    @property
+    def project_update_app_service(self) -> ProjectUpdateAppService:
+        if self._project_update_app_service is None:
+            self._project_update_app_service = ProjectUpdateAppServiceBuilder.create_service()
+        return self._project_update_app_service
+
+    @property
+    def project_get_app_service(self) -> ProjectGetAppService:
+        if self._project_get_app_service is None:
+            self._project_get_app_service = ProjectGetAppServiceBuilder.create_service()
+        return self._project_get_app_service
+
+    @property
+    def project_delete_app_service(self) -> ProjectDeleteAppService:
+        if self._project_delete_app_service is None:
+            self._project_delete_app_service = ProjectDeleteAppServiceBuilder.create_service()
+        return self._project_delete_app_service
+
+    @property
+    def project_image_app_service(self) -> ProjectImageAppService:
+        if self._project_image_app_service is None:
+            self._project_image_app_service = ProjectImageAppServiceBuilder.create_service()
+        return self._project_image_app_service
 
     @property
     def user_favorite_app_service(self) -> UserFavoriteAppService:
@@ -57,6 +102,12 @@ class Gateway:
         if self._news_app_service is None:
             self._news_app_service = NewsAppServiceBuilder.create_service()
         return self._news_app_service
+
+    @property
+    def company_app_service(self) -> CompanyAppService:
+        if self._company_app_service is None:
+            self._company_app_service = CompanyAppServiceBuilder.create_service()
+        return self._company_app_service
 
     @property
     def cookie_service(self) -> CookieService:

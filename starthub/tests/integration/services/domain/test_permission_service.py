@@ -1,4 +1,4 @@
-from application.service_factories.domain_service.permission import PermissionServiceBuilder
+from application.builders.domain_service.permission import PermissionServiceBuilder
 from django.test import TestCase
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.models import Project

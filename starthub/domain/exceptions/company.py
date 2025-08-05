@@ -1,10 +1,10 @@
-from domain.exceptions import DomainException
+from domain.exceptions import CustomException
 from domain.exceptions.repository import AlreadyExistsException, NotFoundException
 from domain.exceptions.user import UserException
 from domain.exceptions.validation import ValidationException
 
 
-class CompanyException(DomainException):
+class CompanyException(CustomException):
     pass
 
 
@@ -21,7 +21,7 @@ class CompanyNameIsTooLongException(ValidationException, CompanyException):
 
 
 # ==== Business Number Exceptions ====
-class BusinessNumberException(DomainException):
+class BusinessNumberException(CustomException):
     pass
 
 
@@ -30,13 +30,13 @@ class BusinessNumberAlreadyExistsException(AlreadyExistsException, BusinessNumbe
 
 
 # ==== Company Founder Exceptions ====
-class CompanyFounderException(DomainException):
+class CompanyFounderException(CustomException):
     pass
 
 
-class CompanyFounderNotFoundException(NotFoundException, DomainException):
+class CompanyFounderNotFoundException(NotFoundException, CustomException):
     pass
 
 
-class CompanyFounderAlreadyExistsException(AlreadyExistsException, DomainException):
+class CompanyFounderAlreadyExistsException(AlreadyExistsException, CustomException):
     pass

@@ -24,6 +24,8 @@ class CompanyFounder(BaseModel):
 class Company(BaseModel):
     name = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
     slug = AutoSlugField(populate_from="name", unique=True, max_length=CHAR_FIELD_MAX_LENGTH)
+    description = models.TextField(null=True, blank=True)
+
     project = models.OneToOneField("domain.Project", on_delete=models.CASCADE)
     country = models.ForeignKey("domain.Country", on_delete=models.PROTECT)
     business_id = models.CharField(max_length=32, unique=True)
@@ -31,7 +33,7 @@ class Company(BaseModel):
     address = models.ForeignKey("domain.Address", null=True, on_delete=models.SET_NULL)
 
     class Meta:
-        db_table = "company"
+        db_table = "companies"
         verbose_name = "Company"
         verbose_name_plural = "Companies"
 
@@ -41,3 +43,7 @@ class Company(BaseModel):
     @classmethod
     def get_permission_key(cls) -> str:
         return "company"
+
+    @classmethod
+    def get_permission_key_for_business_id_field(cls) -> str:
+        return "business_id"

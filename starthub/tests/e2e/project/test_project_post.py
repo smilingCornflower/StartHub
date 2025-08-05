@@ -1,4 +1,5 @@
 import json
+import time
 
 import pydantic
 from config.settings import BASE_DIR
@@ -6,7 +7,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
-from domain.exceptions.country import CountryNotFoundException, InvalidCountryCodeException
+from domain.exceptions.geo.country import CountryNotFoundException, InvalidCountryCodeException
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
     InvalidProjectStageException,
@@ -26,6 +27,8 @@ from domain.exceptions.validation import (
 )
 from domain.models import Country
 from domain.models.funding_model import FundingModel
+from domain.models.geo.city import City
+from domain.models.geo.region import Region
 from domain.models.project_category import ProjectCategory
 from domain.models.user import User
 from loguru import logger
@@ -45,7 +48,7 @@ class TestProjectPost(TestCase):
         cls.funding_model = FundingModel.objects.create(name="Funding Model 1")
         cls.category_1 = ProjectCategory.objects.create(name="Category 1")
         cls.category_2 = ProjectCategory.objects.create(name="Category 2")
-        cls.country = Country.objects.create(code="KZ")
+        cls.country, _ = Country.objects.get_or_create(code="KZ")
 
         response = cls.client.post(
             login_url, data={"email": "test@email.com", "password": "ValidPass1234"}, content_type="application/json"
@@ -56,6 +59,9 @@ class TestProjectPost(TestCase):
 
     def setUp(self):
         with open(self.pdf_path, "rb") as f:
+            city, _ = City.objects.get_or_create(name="Almaty")
+            region, _ = Region.objects.get_or_create(name="Almaty")
+
             self.valid_data = {
                 "project": {
                     "name": "My Project",
@@ -75,6 +81,16 @@ class TestProjectPost(TestCase):
                     "country_code": "KZ",
                     "business_id": "000000000000",
                     "established_date": "2020-01-01",
+                    "address": {
+                        "country_code": "KZ",
+                        "region_id": region.id,
+                        "city_id": city.id,
+                        "district": "Bostandyk District",
+                        "street": "Al-Farabi Avenue",
+                        "house_number": "77A",
+                        "postal_code": "050040",
+                        "raw_address": None,
+                    },
                 },
                 "company_founder": {"first_name": "John", "last_name": "Doe", "description": "CEO"},
                 "project_plan": SimpleUploadedFile("dummy.pdf", f.read(), content_type="application/pdf"),
@@ -129,6 +145,7 @@ class TestProjectPost(TestCase):
 
     def test_business_id_exists(self):
         self.client.post(self.project_url, data=self._get_prepared_data(), headers=self.headers)
+        time.sleep(10)
         self._check_response(
             self.client.post(self.project_url, data=self._get_prepared_data(), headers=self.headers),
             BusinessNumberAlreadyExistsException,

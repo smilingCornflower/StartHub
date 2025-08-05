@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from datetime import date
 
+from application.dto.geo import AddressDto
+
 
 @dataclass
 class CategoryDto:
@@ -25,6 +27,7 @@ class CompanyFounderDto:
 
 @dataclass
 class CompanyDto:
+    id: int
     name: str
     slug: str
     founder: CompanyFounderDto
@@ -34,6 +37,11 @@ class CompanyDto:
 
 
 @dataclass
+class CompanyFullDto(CompanyDto):
+    address: AddressDto | None = None
+
+
+@dataclass(frozen=True)
 class ProjectDto:
     id: int
     name: str

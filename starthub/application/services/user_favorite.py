@@ -6,11 +6,11 @@ from application.ports.service import AbstractAppService
 from domain.models import Project
 from domain.models.project_category import ProjectCategory
 from domain.models.user_favorite import UserFavorite
-from domain.repositories.project_management import ProjectReadRepository
-from domain.services.project_management import ProjectService
+from domain.repositories.project_management import ProjectCategoryReadRepository, ProjectReadRepository
+from domain.services.project_management.project import ProjectService
 from domain.services.user_management import UserFavoriteService
 from domain.value_objects.common import Id
-from domain.value_objects.filter import ProjectFilter
+from domain.value_objects.filter import ProjectCategoryFilter, ProjectFilter
 from domain.value_objects.user_favorite import UserFavoriteCreatePayload
 from loguru import logger
 
@@ -20,10 +20,12 @@ class UserFavoriteAppService(AbstractAppService):
         self,
         user_favorite_service: UserFavoriteService,
         project_read_repository: ProjectReadRepository,
+        project_category_read_repository: ProjectCategoryReadRepository,
         project_service: ProjectService,
     ):
         self._user_favorite_service = user_favorite_service
         self._project_read_repository = project_read_repository
+        self._project_category_read_repository = project_category_read_repository
         self._project_service = project_service
 
     def add_favorite(self, user_id: int, project_id: int) -> None:
@@ -59,7 +61,10 @@ class UserFavoriteAppService(AbstractAppService):
 
         project_dtos: list[ProjectDto] = list()
         for project in favorite_projects:
-            categories: list[ProjectCategory] = self._project_service.get_categories(project_id=Id(value=project.id))
+            categories: list[ProjectCategory] = self._project_category_read_repository.get_all(
+                ProjectCategoryFilter(project_id=Id(value=project.id))
+            )
+
             project_dtos.append(project_to_dto(project=project, categories=categories))
         return project_dtos
 

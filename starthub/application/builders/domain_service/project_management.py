@@ -1,0 +1,96 @@
+from application.builders.domain_service.permission import PermissionServiceBuilder
+from application.ports.domain_service_builder import AbstractDomainServiceBuilder
+from domain.services.company import CompanyFounderService, CompanyService
+from domain.services.project_management.project import ProjectService
+from domain.services.project_management.project_image import ProjectImageService
+from domain.services.project_management.project_phone import ProjectPhoneService
+from domain.services.project_management.project_social_link import ProjectSocialLinkService
+from domain.services.project_management.team_member import TamMemberService
+from infrastructure.cloud_storages.google import google_cloud_storage
+from infrastructure.repositories.company import (
+    DjCompanyFounderReadRepository,
+    DjCompanyFounderWriteRepository,
+    DjCompanyReadRepository,
+    DjCompanyWriteRepository,
+)
+from infrastructure.repositories.geo.address import DjAddressWriteRepository
+from infrastructure.repositories.geo.country import DjCountryReadRepository
+from infrastructure.repositories.project_management import (
+    DjProjectImageReadRepository,
+    DjProjectImageWriteRepository,
+    DjProjectPhoneReadRepository,
+    DjProjectPhoneWriteRepository,
+    DjProjectReadRepository,
+    DjProjectSocialLinkReadRepository,
+    DjProjectSocialLinkWriteRepository,
+    DjProjectWriteRepository,
+    DjTeamMemberReadRepository,
+    DjTeamMemberWriteRepository,
+)
+
+
+class ProjectServiceBuilder(AbstractDomainServiceBuilder[ProjectService]):
+    @staticmethod
+    def create_service() -> ProjectService:
+        return ProjectService(
+            write_repository=DjProjectWriteRepository(), permission_service=PermissionServiceBuilder.create_service()
+        )
+
+
+class TeamMemberServiceBuilder(AbstractDomainServiceBuilder[TamMemberService]):
+    @staticmethod
+    def create_service() -> TamMemberService:
+        return TamMemberService(
+            team_member_read_repository=DjTeamMemberReadRepository(),
+            team_member_write_repository=DjTeamMemberWriteRepository(),
+        )
+
+
+class ProjectPhoneServiceBuilder(AbstractDomainServiceBuilder[ProjectPhoneService]):
+    @staticmethod
+    def create_service() -> ProjectPhoneService:
+        return ProjectPhoneService(
+            project_phone_read_repository=DjProjectPhoneReadRepository(),
+            project_phone_write_repository=DjProjectPhoneWriteRepository(),
+        )
+
+
+class ProjectSocialLinkServiceBuilder(AbstractDomainServiceBuilder[ProjectSocialLinkService]):
+    @staticmethod
+    def create_service() -> ProjectSocialLinkService:
+        return ProjectSocialLinkService(
+            read_repository=DjProjectSocialLinkReadRepository(),
+            write_repository=DjProjectSocialLinkWriteRepository(),
+        )
+
+
+class CompanyServiceBuilder(AbstractDomainServiceBuilder[CompanyService]):
+    @staticmethod
+    def create_service() -> CompanyService:
+        return CompanyService(
+            company_write_repository=DjCompanyWriteRepository(),
+            country_read_repository=DjCountryReadRepository(),
+            company_read_repository=DjCompanyReadRepository(),
+            address_write_repository=DjAddressWriteRepository(),
+            permission_service=PermissionServiceBuilder.create_service(),
+        )
+
+
+class CompanyFounderServiceBuilder(AbstractDomainServiceBuilder[CompanyFounderService]):
+    @staticmethod
+    def create_service() -> CompanyFounderService:
+        return CompanyFounderService(
+            company_founder_read_repository=DjCompanyFounderReadRepository(),
+            company_founder_write_repository=DjCompanyFounderWriteRepository(),
+        )
+
+
+class ProjectImageServiceBuilder(AbstractDomainServiceBuilder[ProjectImageService]):
+    @staticmethod
+    def create_service() -> ProjectImageService:
+        return ProjectImageService(
+            project_image_read_repository=DjProjectImageReadRepository(),
+            project_image_write_repository=DjProjectImageWriteRepository(),
+            project_read_repository=DjProjectReadRepository(),
+            cloud_storage=google_cloud_storage,
+        )

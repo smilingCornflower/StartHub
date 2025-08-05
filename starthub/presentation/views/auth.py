@@ -6,7 +6,7 @@ from application.dto.auth import AccessPayloadDto, AccessTokenDto, AnonymousPayl
 from application.ports.cookie_service import CookiesResponseProtocol
 from application.services.gateway import gateway
 from domain.enums.token import TokenNameEnum
-from domain.exceptions import DomainException
+from domain.exceptions import CustomException
 from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import (
@@ -34,7 +34,7 @@ class LoginView(APIView):
         logger.info("POST /auth/login/")
         try:
             tokens_pair_dto: TokenPairDto = gateway.auth_app_service.login(request.data)
-        except (DomainException, pydantic.ValidationError) as e:
+        except (CustomException, pydantic.ValidationError) as e:
             return LoginErrorResponseFactory.create_response(e)
 
         response = Response(
@@ -56,7 +56,7 @@ class RegistrationView(APIView):
         logger.info("POST /auth/register/")
         try:
             gateway.registration_app_service.register(request.data)
-        except (DomainException, pydantic.ValidationError) as e:
+        except (CustomException, pydantic.ValidationError) as e:
             return RegistrationErrorResponseFactory.create_response(e)
 
         return Response({"detail": "User has registered successfully.", "code": SUCCESS}, status.HTTP_201_CREATED)
@@ -71,7 +71,7 @@ class ReissueAccessTokenView(APIView):
             return Response(
                 {TokenNameEnum.ACCESS_TOKEN: access_token_dto.access_token, "code": SUCCESS}, status=status.HTTP_200_OK
             )
-        except (DomainException, pydantic.ValidationError) as e:
+        except (CustomException, pydantic.ValidationError) as e:
             return ReissueAccessErrorResponseFactory.create_response(e)
 
 
@@ -84,7 +84,7 @@ class AccessVerifyView(APIView):
                 headers=cast(dict[str, str], request.headers)
             )
             return Response(asdict(access_payload_dto), status=status.HTTP_200_OK)
-        except (DomainException, pydantic.ValidationError) as e:
+        except (CustomException, pydantic.ValidationError) as e:
             return CommonErrorResponseFactory.create_response(e)
 
 
@@ -118,5 +118,5 @@ class VerifyAnonymousView(APIView):
             )
             # noinspection PyTypeChecker
             return Response(asdict(anonymous_payload_dto), status=status.HTTP_200_OK)
-        except (DomainException, pydantic.ValidationError) as e:
+        except (CustomException, pydantic.ValidationError) as e:
             return CommonErrorResponseFactory.create_response(e)

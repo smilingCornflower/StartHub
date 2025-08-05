@@ -1,6 +1,7 @@
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.models.base import BaseModel
 from domain.models.permission import Permission
+from domain.models.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.permission import PermissionReadRepository
 from domain.repositories.user import UserReadRepository
@@ -18,6 +19,15 @@ class PermissionService(AbstractDomainService):
     ):
         self._user_read_repository = user_read_repository
         self._permission_read_repository = permission_read_repository
+
+    def has_user_permission(self, user: User, permission_vo: PermissionVo) -> bool:
+        """Checks whether the user's roles has the specified permission."""
+
+        permissions: list[Permission] = self._permission_read_repository.get_all(PermissionFilter(user=user))
+        permission_names = {p.name for p in permissions}
+
+        logger.debug(f"user {user.email}, permissions: {permission_names}")
+        return permission_vo.value in permission_names
 
     def has_permission(self, user_id: Id, permission_vo: PermissionVo) -> bool:
         """

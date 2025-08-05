@@ -4,7 +4,7 @@ from domain.models.project_category import ProjectCategory
 
 
 def project_to_dto(
-    project: Project, categories: list[ProjectCategory], image_links: list[str] | None = None
+    project: Project, categories: list[ProjectCategory], image_links: list[str] | None = None, is_favorite: bool = False
 ) -> ProjectDto:
     return ProjectDto(
         id=project.id,
@@ -13,6 +13,7 @@ def project_to_dto(
         description=project.description,
         creator_id=project.creator.id,
         company=CompanyDto(
+            id=project.company.id,
             name=project.company.name,
             slug=project.company.slug,
             country_code=project.company.country.code,
@@ -43,4 +44,5 @@ def project_to_dto(
         goal_sum=float(project.goal_sum),
         current_sum=float(project.current_sum),
         deadline=project.deadline,
+        is_favorite=is_favorite,
     )

@@ -48,19 +48,24 @@ class DjCompanyWriteRepository(CompanyWriteRepository):
             country_id=data.country_id.value,
             business_id=data.business_id.value,
             established_date=data.established_date.value,
+            address_id=data.address_id.value,
         )
 
     def update(self, data: CompanyUpdatePayload) -> Company:
         """:raises CompanyNotFoundException:"""
-        company: Company | None = Company.objects.filter(project__id=data.project_id.value).first()
+        company: Company | None = Company.objects.filter(id=data.company_id.value).first()
         if company is None:
-            raise CompanyNotFoundException(f"Company with project id = {data.project_id.value} does not exist.")
+            raise CompanyNotFoundException(f"Company with id = {data.company_id.value} does not exist.")
 
         if data.name is not None:
             company.name = data.name.value
             company.slug = None
+        if data.description is not None:
+            company.description = data.description.value
         if data.established_date is not None:
             company.established_date = data.established_date.value
+        if data.address_id is not None:
+            company.address_id = data.address_id.value
 
         company.save()
         return company

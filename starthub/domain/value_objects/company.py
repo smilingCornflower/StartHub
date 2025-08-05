@@ -9,6 +9,7 @@ from domain.validators.business_number import KZBusinessNumberValidator
 from domain.value_objects import BaseVo
 from domain.value_objects.common import Description, FirstName, Id, LastName
 from domain.value_objects.country import CountryCode
+from domain.value_objects.geo import AddressCreateCommand, AddressId
 from pydantic import field_validator
 from pydantic_core.core_schema import ValidationInfo
 
@@ -84,13 +85,23 @@ class CompanyCreatePayload(AbstractCreatePayload, BaseVo):
     business_id: BusinessNumber
     established_date: EstablishedDate
     description: Description
+    address_id: Id
 
 
 class CompanyUpdatePayload(AbstractUpdatePayload):
-    project_id: Id
+    company_id: Id
     name: CompanyName | None = None
     description: Description | None = None
     established_date: EstablishedDate | None = None
+    address_id: AddressId | None = None
+
+
+class CompanyUpdateCommand(BaseCommand):
+    company_id: Id
+    name: CompanyName | None = None
+    description: Description | None = None
+    established_date: EstablishedDate | None = None
+    address_create_command: AddressCreateCommand | None = None
 
 
 class CompanyCreateCommand(BaseCommand):
@@ -100,3 +111,4 @@ class CompanyCreateCommand(BaseCommand):
     business_id: BusinessNumber
     established_date: EstablishedDate
     description: Description
+    address_id: Id

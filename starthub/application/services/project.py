@@ -1,262 +1,372 @@
-from dataclasses import replace
-from pprint import pformat
-from typing import Any
-
-from application.converters.inner.company_founder_command_to_payload import convert_company_founder_command_to_payload
-from application.converters.inner.project_command_to_company_create_command import (
-    convert_project_create_command_to_company_create_command,
-)
-from application.converters.inner.team_members_create_command_to_payload import (
-    convert_team_members_create_command_to_payload,
-)
-from application.converters.request_converters.common import request_to_offset_pagination, request_to_pagination
-from application.converters.request_converters.project import (
-    request_data_to_project_create_command,
-    request_data_to_project_filter,
-    request_data_to_the_project_update_command,
-    request_files_to_project_image_create_command,
-    request_project_data_to_project_images_update_command,
-)
-from application.converters.request_converters.search import request_data_to_project_search_params
 from application.converters.resposne_converters.project import project_to_dto
 from application.dto.project import ProjectDto
 from application.ports.service import AbstractAppService
-from django.core.files.uploadedfile import UploadedFile
 from django.db import transaction
-from django.http import QueryDict
-from django.utils.datastructures import MultiValueDict
-from domain.models.company import Company, CompanyFounder
-from domain.models.project import Project, ProjectPhone, TeamMember
+from domain.enums.project_status import ProjectStatusEnum
+from domain.events.project import ProjectCreatedEvent, ProjectDeletedEvent
+from domain.exceptions.company import BusinessNumberAlreadyExistsException
+from domain.exceptions.geo.country import CountryNotFoundException
+from domain.exceptions.project_management import ProjectCategoryNotFoundException, ProjectPlanNotFoundException
+from domain.exceptions.user_favorite import UserFavoriteNotFoundException
+from domain.models import Country
+from domain.models.company import Company
+from domain.models.project import Project, ProjectImage
 from domain.models.project_category import ProjectCategory
-from domain.services.company import CompanyFounderService, CompanyService
-from domain.services.project_management import (
-    ProjectImageService,
-    ProjectPhoneService,
-    ProjectService,
-    ProjectSocialLinkService,
-    TamMemberService,
+from domain.models.user import User
+from domain.ports.cloud_storage import AbstractCloudStorage
+from domain.repositories.company import CompanyReadRepository
+from domain.repositories.country import CountryReadRepository
+from domain.repositories.geo.city import CityReadRepository
+from domain.repositories.geo.region import RegionReadRepository
+from domain.repositories.project_management import (
+    FundingModelReadRepository,
+    ProjectCategoryReadRepository,
+    ProjectImageReadRepository,
+    ProjectReadRepository,
 )
-from domain.services.user_management import UserFavoriteService
-from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload
+from domain.repositories.user import UserReadRepository
+from domain.repositories.user_favorite import UserFavoriteReadRepository
+from domain.services.project_management.project import ProjectService
+from domain.utils.path_provider import PathProvider
+from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
 from domain.value_objects.common import Id, OffsetPagination, Pagination
-from domain.value_objects.filter import ProjectFilter
+from domain.value_objects.company import BusinessNumber
+from domain.value_objects.country import CountryCode
+from domain.value_objects.file import PdfFile
+from domain.value_objects.filter import (
+    CompanyFilter,
+    CountryFilter,
+    ProjectCategoryFilter,
+    ProjectFilter,
+    ProjectImageFilter,
+)
+from domain.value_objects.geo import CityId, RegionId
 from domain.value_objects.project_management import (
     ProjectCreateCommand,
-    ProjectImageCreateCommand,
-    ProjectImageDeleteCommand,
-    ProjectImageUpdateCommand,
-    ProjectPhoneCreatePayload,
-    ProjectSocialLinkCreatePayload,
+    ProjectCreatePayload,
+    ProjectStatus,
     ProjectUpdateCommand,
+    ProjectUpdatePayload,
 )
 from domain.value_objects.search import ProjectSearchParams
-from infrastructure.cloud_storages.google import GoogleCloudStorage
+from infrastructure.event_bus import EventBus
 from infrastructure.services.project_search import ProjectSearchService
 from loguru import logger
 
 
-class ProjectAppService(AbstractAppService):
+class ProjectCreateAppService(AbstractAppService):
     def __init__(
         self,
         project_service: ProjectService,
-        team_member_service: TamMemberService,
-        project_phone_service: ProjectPhoneService,
-        project_social_link_service: ProjectSocialLinkService,
-        company_service: CompanyService,
-        company_founder_service: CompanyFounderService,
-        project_image_service: ProjectImageService,
-        google_cloud_storage: GoogleCloudStorage,
-        user_favorite_service: UserFavoriteService,
-        project_search_service: ProjectSearchService,
+        cloud_storage: AbstractCloudStorage,
+        user_read_repository: UserReadRepository,
+        funding_model_read_repository: FundingModelReadRepository,
+        company_read_repository: CompanyReadRepository,
+        country_read_repository: CountryReadRepository,
+        project_category_read_repository: ProjectCategoryReadRepository,
+        city_read_repository: CityReadRepository,
+        region_read_repository: RegionReadRepository,
     ):
         self._project_service = project_service
-        self._team_member_service = team_member_service
-        self._project_phone_service = project_phone_service
-        self._social_link_service = project_social_link_service
-        self._company_service = company_service
-        self._company_founder_service = company_founder_service
-        self._project_image_service = project_image_service
-        self._google_cloud_storage = google_cloud_storage
-        self._user_favorite_service = user_favorite_service
-        self._project_search_service = project_search_service
+        self._cloud_storage = cloud_storage
+        self._user_read_repository = user_read_repository
+        self._funding_model_read_repository = funding_model_read_repository
+        self._company_read_repository = company_read_repository
+        self._country_read_repository = country_read_repository
+        self._project_category_read_repository = project_category_read_repository
+        self._city_read_repository = city_read_repository
+        self._region_read_repository = region_read_repository
 
-    def get_by_id(self, project_id: int, user_id: int | None = None) -> ProjectDto:
-        """:raises ProjectNotFoundException:"""
-        project: Project = self._project_service.get_by_id(Id(value=project_id))
-        images: list[str] = self._project_image_service.get_paths(project_id=Id(value=project.id))
-        image_links: list[str] = list()
-        for i in images:
-            image_links.append(self._google_cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=i)))
+    def _validate_dependencies(self, command: ProjectCreateCommand) -> None:
+        self._check_user_exists(user_id=command.creator_id)
+        self._check_categories_exist(command.category_ids)
+        self._check_funding_model_exists(funding_model_id=command.funding_model_id)
+        self._check_business_number_avaiable(business_number=command.business_id)
+        self._check_city_exists(city_id=command.company_address.city_id)
+        self._check_region_exists(region_id=command.company_address.region_id)
 
-        categories: list[ProjectCategory] = self._project_service.get_categories(project_id=Id(value=project_id))
-        project_dto: ProjectDto = project_to_dto(project=project, categories=categories, image_links=image_links)
+        logger.info("All dependencies validated")
 
-        if user_id:
-            return self._wtih_favorite_flag(
-                user_id=Id(value=user_id), project_id=Id(value=project_id), project_dto=project_dto
-            )
+    def _check_region_exists(self, region_id: RegionId) -> None:
+        """:raises RegionNotFoundException:"""
+        self._region_read_repository.get_by_id(id_=region_id)
+        logger.debug(f"Region with id = {region_id.value} exists.")
 
-        return project_dto
+    def _check_city_exists(self, city_id: CityId) -> None:
+        """:raises CityNotFoundException:"""
+        self._city_read_repository.get_by_id(id_=city_id)
+        logger.debug(f"City with id = {city_id.value} exists.")
 
-    # TODO: write _convert_to_dto() method
+    def _check_country_code_exists(self, country_code: CountryCode) -> None:
+        """:raises CountryNotFoundException:"""
+        countries: list[Country] = self._country_read_repository.get_all(CountryFilter(code=country_code))
+        if not countries:
+            raise CountryNotFoundException(f"A country with code = {country_code.value} not found.")
+        logger.debug("Country code exists.")
 
-    def get(self, data: QueryDict, user_id: int | None = None) -> list[ProjectDto]:
-        project_filter: ProjectFilter = request_data_to_project_filter(data)
-        pagination: Pagination = request_to_pagination(query_params=data)
-        logger.debug(f"pagination = {pagination}")
-        logger.debug(f"project_filter = {project_filter}")
+    def _check_business_number_avaiable(self, business_number: BusinessNumber) -> None:
+        """:raises BusinessNumberAlreadyExistsException:"""
+        search_result: list[Company] = self._company_read_repository.get_all(CompanyFilter(business_id=business_number))
+        if search_result:
+            raise BusinessNumberAlreadyExistsException("This business number already exists.")
+        logger.debug("Business number is available.")
 
-        projects: list[Project] = self._project_service.get(filter_=project_filter, pagination=pagination)
-        logger.debug(f"found {len(projects)} projects.")
-        project_dtos: list[ProjectDto] = list()
+    def _check_user_exists(self, user_id: Id) -> None:
+        """:raises UserNotFoundException:"""
+        self._user_read_repository.get_by_id(id_=user_id)
+        logger.debug(f"User with id = {user_id.value} exists.")
 
-        for project in projects:
-            images: list[str] = self._project_image_service.get_paths(project_id=Id(value=project.id))
-            logger.debug(f"{images=}")
-            images_links: list[str] = list()
-            if images:
-                first_image: str = images[0]
-                images_links = [
-                    self._google_cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=first_image))
-                ]
-            categories: list[ProjectCategory] = self._project_service.get_categories(project_id=Id(value=project.id))
-            project_dtos.append(project_to_dto(project=project, categories=categories, image_links=images_links))
+    def _check_funding_model_exists(self, funding_model_id: Id) -> None:
+        """:raises FundingModelNotFoundException:"""
+        self._funding_model_read_repository.get_by_id(id_=funding_model_id)
+        logger.debug(f"Funding model with id = {funding_model_id.value} exists.")
 
-        logger.debug(f"project_dtos amount: {len(project_dtos)}")
-        if user_id:
-            return [
-                self._wtih_favorite_flag(user_id=Id(value=user_id), project_id=Id(value=i.id), project_dto=i)
-                for i in project_dtos
-            ]
-        return project_dtos
+    def _check_categories_exist(self, category_ids: list[Id]) -> None:
+        """:raises ProjectCategoryNotFoundException:"""
+        for category_id in category_ids:
+            self._project_category_read_repository.get_by_id(id_=category_id)
+            logger.debug(f"Category with id = {category_id.value} exists.")
 
-    def get_my(self, data: QueryDict, user_id: int) -> list[ProjectDto]:
-        data_copy = data.copy()
-        data_copy.update({"user_id": str(user_id)})
-        return self.get(data=data_copy)
+    def _convert_command_to_payload(self, command: ProjectCreateCommand, plan_path: str) -> ProjectCreatePayload:
+        payload = ProjectCreatePayload(
+            name=command.name,
+            description=command.description,
+            category_ids=command.category_ids,
+            user_id=command.creator_id,
+            funding_model_id=command.funding_model_id,
+            stage=command.stage,
+            status=ProjectStatus(value=ProjectStatusEnum.UNDER_MODERATION),
+            goal_sum=command.goal_sum,
+            deadline=command.deadline.value,
+            plan_path=plan_path,
+        )
+        return payload
 
-    def create(self, data: dict[str, Any], files: MultiValueDict[str, UploadedFile], user_id: int) -> Project:
+    def _upload_plan(self, plan_file: PdfFile) -> str:
+        project_plan_path: str = PathProvider.get_project_plan_path()
+        uploaded_path: str = self._cloud_storage.upload_file(
+            CloudStorageUploadPayload(file_data=plan_file.value, file_path=project_plan_path)
+        )
+        logger.debug("Project pdf uploaded.")
+
+        assert project_plan_path == uploaded_path, "File uploaded in unexpected path."
+        return uploaded_path
+
+    def create(self, command: ProjectCreateCommand) -> Project:
         logger.warning("Started creating project.")
-        logger.debug(f"{data=}")
+        self._validate_dependencies(command=command)
 
-        command: ProjectCreateCommand = request_data_to_project_create_command(data, files, user_id)
-        logger.debug(f"Command: \n{pformat(command.__dict__)}")
+        plan_path: str = self._upload_plan(plan_file=command.plan_file)
+        create_payload: ProjectCreatePayload = self._convert_command_to_payload(command=command, plan_path=plan_path)
 
         with transaction.atomic():
-            project: Project = self._project_service.create(command=command)
-            company: Company = self._company_service.create(
-                convert_project_create_command_to_company_create_command(command, project_id=Id(value=project.id))
-            )
+            project: Project = self._project_service.create(payload=create_payload)
 
-            logger.info(f"A company created successfully. Company id = {company.id}")
-            founder: CompanyFounder = self._company_founder_service.create(
-                convert_company_founder_command_to_payload(command.company_founder, Id(value=company.id))
-            )
-            logger.info(f"A company_founder created successfully. Founder id = {founder.id}")
-
-            for image in command.images:
-                self._project_image_service.create(
-                    command=ProjectImageCreateCommand(
-                        user_id=Id(value=user_id), project_id=Id(value=project.id), image_file=image
-                    )
-                )
-                logger.debug("ProjectImage uploaded successfully.")
-
-            for member_payload in convert_team_members_create_command_to_payload(
-                command.team_members, Id(value=project.id)
-            ):
-                team_member: TeamMember = self._team_member_service.create(member_payload)
-                logger.debug(f"Team member with id = {team_member.id} is attached to the project successfully.")
-            logger.info("All team members were created successfully.")
-
-            project_phone: ProjectPhone = self._project_phone_service.create(
-                ProjectPhoneCreatePayload(project_id=Id(value=project.id), number=command.phone_number)
-            )
-            logger.info(f"project_phone with id = {project_phone.id} created successfully.")
-
-            for social_link in command.social_links:
-                logger.debug(f"Creating social_link: {social_link}.")
-                self._social_link_service.create(
-                    ProjectSocialLinkCreatePayload(project_id=Id(value=project.id), social_link=social_link)
-                )
-                logger.debug("social link created successfully.")
-            logger.info("All social links create successfully.")
+            event = ProjectCreatedEvent(project_id=Id(value=project.id), command=command)
+            EventBus().publish(event)
 
         return project
 
-    def update(self, data: dict[str, Any], files: dict[str, UploadedFile], project_id: int, user_id: int) -> None:
-        update_command: ProjectUpdateCommand = request_data_to_the_project_update_command(
-            data, files, project_id, user_id
+
+class ProjectGetAppService(AbstractAppService):
+    def __init__(
+        self,
+        project_read_repository: ProjectReadRepository,
+        project_image_read_repository: ProjectImageReadRepository,
+        project_category_read_repository: ProjectCategoryReadRepository,
+        user_favorite_read_repository: UserFavoriteReadRepository,
+        project_search_service: ProjectSearchService,
+        cloud_storage: AbstractCloudStorage,
+    ):
+        self._project_read_repository = project_read_repository
+        self._project_image_read_repository = project_image_read_repository
+        self._project_category_read_repository = project_category_read_repository
+        self._user_favorite_read_repository = user_favorite_read_repository
+        self._project_search_service = project_search_service
+        self._cloud_storage = cloud_storage
+
+    def get(self, filter_: ProjectFilter, pagination: Pagination, user_id: Id | None = None) -> list[ProjectDto]:
+        projects: list[Project] = self._project_read_repository.get_all(filter_=filter_, pagination=pagination)
+        logger.debug(f"Found {len(projects)} projectes.")
+
+        return [self._create_dto(project=project, user_id=user_id) for project in projects]
+
+    def get_by_id(self, project_id: Id, user_id: Id | None = None) -> ProjectDto:
+        project: Project = self._project_read_repository.get_by_id(id_=project_id)
+        logger.debug(f"Project with id = {project_id.value} found.")
+
+        return self._create_dto(project=project, user_id=user_id)
+
+    def get_plan_url(self, project_id: Id) -> str:
+        """
+        :raises ProjectNotFoundException:
+        :raises ProjectPlanNotFoundException:
+        """
+        project: Project = self._project_read_repository.get_by_id(id_=project_id)
+        if project.plan:
+            return self._cloud_storage.create_url(CloudStorageCreateUrlPayload(file_path=project.plan))
+        raise ProjectPlanNotFoundException(f"No plan found for the project with the id = {project_id.value}")
+
+    def _create_dto(self, project: Project, user_id: Id | None = None) -> ProjectDto:
+        project_id: Id = Id(value=project.id)
+
+        categories: list[ProjectCategory] = self._get_categories(project_id=project_id)
+        image_urls: list[str] = self._get_image_urls(project_id=project_id)
+        is_favorite: bool = self._is_project_favorite(project_id=project_id, user_id=user_id)
+
+        return project_to_dto(project=project, categories=categories, image_links=image_urls, is_favorite=is_favorite)
+
+    def _is_project_favorite(self, project_id: Id, user_id: Id | None) -> bool:
+        if user_id is None:
+            return False
+
+        try:
+            self._user_favorite_read_repository.get_by_association_ids(user_id=user_id, project_id=project_id)
+            return True
+        except UserFavoriteNotFoundException:
+            logger.debug(f"UserFavorite not found for user_id={user_id}, project_id={project_id}")
+            return False
+
+    def _get_categories(self, project_id: Id) -> list[ProjectCategory]:
+        return self._project_category_read_repository.get_all(filter_=ProjectCategoryFilter(project_id=project_id))
+
+    def _get_image_urls(self, project_id: Id) -> list[str]:
+        image_urls: list[str] = list()
+        images: list[ProjectImage] = self._project_image_read_repository.get_all(
+            filter_=ProjectImageFilter(project_id=project_id)
         )
-        logger.debug(f"update_command = {update_command}")
-        with transaction.atomic():
-            logger.warning("Started updating project.")
-            self._project_service.update(update_command)
-            logger.info("Project updated successfully.")
 
-    def delete(self, project_id: int, user_id: int) -> None:
-        logger.debug(f"project_id = {project_id}, user_id = {user_id}")
-        self._project_service.delete(Id(value=project_id), Id(value=user_id))
+        for img in images:
+            img_url: str = self._cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=img.file_path))
+            image_urls.append(img_url)
 
-    def get_plan_url(self, project_id: int) -> str:
-        return self._project_service.get_plan_url(Id(value=project_id))
+        return image_urls
 
-    def upload_project_image(self, files: dict[str, UploadedFile], project_id: int, user_id: int) -> None:
-        image_create_command: ProjectImageCreateCommand = request_files_to_project_image_create_command(
-            files=files, project_id=project_id, user_id=user_id
-        )
-        self._project_image_service.create(image_create_command)
-        logger.info("ProjectImage created successfully.")
-
-    def get_image_urls(self, project_id: int) -> list[str]:
-        """:raises ProjectNotFoundException:"""
-
-        logger.info(f"Get image urls for project with id = {project_id}")
-        return self._project_image_service.get_urls(project_id=Id(value=project_id))
-
-    def delete_image(self, project_id: int, image_order: int, user_id: int) -> None:
-        logger.info(f"Deleting image. project_id: {project_id}, image_order: {image_order}")
-        self._project_image_service.delete(
-            command=ProjectImageDeleteCommand(
-                project_id=Id(value=project_id), image_order=image_order, user_id=Id(value=user_id)
-            )
-        )
-        logger.info(f"Image deleted successfully. project_id: {project_id}, image_order: {image_order}")
-
-    def update_project_images(self, request_data: dict[str, Any], project_id: int, user_id: int) -> None:
-        image_update_command: ProjectImageUpdateCommand = request_project_data_to_project_images_update_command(
-            request_data, project_id=project_id, user_id=user_id
-        )
-        logger.debug(f"{image_update_command=}")
-        self._project_image_service.update(image_update_command)
-
-    def _wtih_favorite_flag(self, user_id: Id, project_id: Id, project_dto: ProjectDto) -> ProjectDto:
-        is_favorite: bool = self._user_favorite_service.is_favorite(user_id=user_id, project_id=project_id)
-        return replace(project_dto, is_favorite=is_favorite)
-
-    def _search(self, query: QueryDict) -> list[Project]:
-        search_params: ProjectSearchParams = request_data_to_project_search_params(query=query)
-        offset_pagination: OffsetPagination = request_to_offset_pagination(query_params=query)
-
-        logger.debug(f"search_params = {search_params}")
-        logger.debug(f"offset_pagination = {offset_pagination}")
-
+    def search(
+        self, search_params: ProjectSearchParams, offset_pagination: OffsetPagination, user_id: Id | None = None
+    ) -> list[ProjectDto]:
         projects: list[Project] = self._project_search_service.search(
             search_params=search_params, pagination=offset_pagination
         )
-        logger.info(f"found {len(projects)} projects")
-        return projects
-
-    # TODO: Write method convert_to_dtos()
-    def search(self, query: QueryDict, user_id: int | None = None) -> list[ProjectDto]:
-        projects: list[Project] = self._search(query=query)
-        result = list()
-        for project in projects:
-            categories: list[ProjectCategory] = self._project_service.get_categories(project_id=Id(value=project.id))
-            project_dto: ProjectDto = project_to_dto(project=project, categories=categories)
-            if user_id:
-                project_dto = self._wtih_favorite_flag(
-                    user_id=Id(value=user_id), project_id=Id(value=project.id), project_dto=project_dto
-                )
-            result.append(project_dto)
+        result: list[ProjectDto] = [self._create_dto(project=i, user_id=user_id) for i in projects]
         return result
+
+
+class ProjectDeleteAppService(AbstractAppService):
+    def __init__(
+        self,
+        project_service: ProjectService,
+        user_read_repository: UserReadRepository,
+        project_read_repository: ProjectReadRepository,
+        project_image_read_repository: ProjectImageReadRepository,
+    ):
+        self._project_service = project_service
+        self._user_read_repository = user_read_repository
+        self._project_read_repository = project_read_repository
+        self._project_image_read_repository = project_image_read_repository
+
+    def delete(self, project_id: Id, user_id: Id) -> None:
+        """
+        :raises ProjectNotFoundException:
+        :raises UserNotFoundException:
+        """
+        project: Project = self._project_read_repository.get_by_id(id_=project_id)
+        user: User = self._user_read_repository.get_by_id(id_=user_id)
+
+        plan_path: str | None = project.plan
+        project_image_paths: list[str] = self._get_project_image_paths(project_id=project_id)
+
+        self._project_service.delete(project=project, user=user)
+        logger.info("Project model deleted successfully.")
+        event = ProjectDeletedEvent(project_id=project_id, plan_file_path=plan_path, image_paths=project_image_paths)
+        EventBus().publish(event)
+
+    def _get_project_image_paths(self, project_id: Id) -> list[str]:
+        """:raises ProjectNotFoundException:"""
+        self._project_read_repository.get_by_id(id_=project_id)  # check
+
+        project_images: list[ProjectImage] = self._project_image_read_repository.get_all(
+            filter_=ProjectImageFilter(project_id=project_id)
+        )
+        return [img.file_path for img in project_images]
+
+
+class ProjectUpdateAppService(AbstractAppService):
+    def __init__(
+        self,
+        project_service: ProjectService,
+        user_read_repository: UserReadRepository,
+        project_read_repository: ProjectReadRepository,
+        project_category_read_repository: ProjectCategoryReadRepository,
+        funding_model_read_repository: FundingModelReadRepository,
+        cloud_storage: AbstractCloudStorage,
+    ):
+        self._project_service = project_service
+        self._user_read_repository = user_read_repository
+        self._project_read_repository = project_read_repository
+        self._project_category_read_repository = project_category_read_repository
+        self._funding_model_read_repository = funding_model_read_repository
+        self._cloud_storage = cloud_storage
+
+    def update(self, command: ProjectUpdateCommand) -> None:
+        """
+        :raises UserNotFoundException:
+        :raises ProjectNotFoundException:
+        """
+        logger.warning("Started updating project.")
+
+        user: User = self._user_read_repository.get_by_id(id_=command.user_id)
+        project: Project = self._project_read_repository.get_by_id(id_=command.project_id)
+
+        if command.category_ids:
+            self._check_category_ids(category_ids=command.category_ids)
+        if command.funding_model_id:
+            self._check_funding_model_exists(funding_model_id=command.funding_model_id)
+
+        plan_path: str | None = None
+        if command.plan_file:
+            if project.plan is None:
+                plan_path = PathProvider.get_project_plan_path()
+                self._upload_plan_file(plan_path=plan_path, plan_file=command.plan_file)
+            else:
+                self._upload_plan_file(plan_path=project.plan, plan_file=command.plan_file)
+
+        payload: ProjectUpdatePayload = self._convert_command_to_payload(command=command, plan_path=plan_path)
+
+        self._project_service.update(project=project, user=user, update_payload=payload)
+
+        logger.info("Project updated successfully.")
+
+    def _upload_plan_file(self, plan_path: str, plan_file: PdfFile) -> None:
+        logger.debug("Updating: project_plan file.")
+        self._cloud_storage.upload_file(CloudStorageUploadPayload(file_data=plan_file.value, file_path=plan_path))
+
+    def _check_category_ids(self, category_ids: list[Id]) -> None:
+        """:raises ProjectCategoryNotFoundException:"""
+        logger.debug("Checking: categories exist.")
+
+        categories: list[ProjectCategory] = self._project_category_read_repository.get_all(
+            filter_=ProjectCategoryFilter(category_ids=category_ids)
+        )
+        existing_category_ids: list[Id] = [Id(value=i.id) for i in categories]
+        for i in category_ids:
+            if i not in existing_category_ids:
+                raise ProjectCategoryNotFoundException(f"Category with id {i.value} not found.")
+
+    def _check_funding_model_exists(self, funding_model_id: Id) -> None:
+        """:raises FundingModelNotFoundException:"""
+        logger.debug("Checking: funding model exists.")
+
+        self._funding_model_read_repository.get_by_id(id_=funding_model_id)
+
+    def _convert_command_to_payload(self, command: ProjectUpdateCommand, plan_path: str | None) -> ProjectUpdatePayload:
+        return ProjectUpdatePayload(
+            id_=command.project_id,
+            name=command.name,
+            category_ids=command.category_ids,
+            funding_model_id=command.funding_model_id,
+            stage=command.stage,
+            goal_sum=command.goal_sum,
+            deadline=command.deadline,
+            plan_path=plan_path,
+        )

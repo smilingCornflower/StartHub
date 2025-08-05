@@ -6,7 +6,7 @@ from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import PermissionFilter
 
 
-class PermissionReadRepository(AbstractReadRepository[Permission, PermissionFilter], ABC):
+class PermissionReadRepository(AbstractReadRepository[Permission, PermissionFilter, Id], ABC):
     @abstractmethod
     def get_by_id(self, id_: Id) -> Permission:
         """:raises PermissionNotFoundException:"""

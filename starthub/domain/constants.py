@@ -54,8 +54,8 @@ NEWS_IMAGES_MAX_AMOUNT = 10
 PAGINNATION_MAX_LMIT = 50
 
 
+# TODO: Move this attributes to domain PathProvider
 class StorageLocations:
     PROFILE_PICTURE_PATH = MODE + "/profile_pictures"  # + /user_id.jpg
-    PROJECT_PLAN_PATH = MODE + "/projects/plans"  # + /project_id.pdf
     PROJECT_PHOTO_PATH = MODE + "/projects/photos"  # + /photo_order.jpg
     NEWS_IMAGE_PATH = MODE + "/news"  # + news_id/image_uuid.jpg

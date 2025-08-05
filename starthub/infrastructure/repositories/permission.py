@@ -16,4 +16,7 @@ class DjPermissionReadRepository(PermissionReadRepository):
         queryset = Permission.objects.all()
         if filter_.user_id:
             queryset = queryset.filter(roles__users__id=filter_.user_id.value)
+        if filter_.user:
+            queryset = queryset.filter(roles__users__id=filter_.user.id)
+
         return list(queryset.distinct())

@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from config.settings import MODE
 from domain.constants import StorageLocations
 from domain.ports.service import AbstractDomainService
 from domain.value_objects.common import Id
@@ -11,8 +12,8 @@ class PathProvider(AbstractDomainService):
         return f"{StorageLocations.PROFILE_PICTURE_PATH}/{user_id.value}.jpg"
 
     @staticmethod
-    def get_project_plan_path(project_id: Id) -> str:
-        return f"{StorageLocations.PROJECT_PLAN_PATH}/{project_id.value}.pdf"
+    def get_project_plan_path() -> str:
+        return f"{MODE}/projects/plans/{uuid4()}.pdf"
 
     @staticmethod
     def get_project_image_path(project_id: Id) -> str:
