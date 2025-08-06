@@ -84,6 +84,7 @@ def _extract_project_info(project_data: dict[str, Any], user_id: int) -> dict[st
     return {
         "name": ProjectName(value=get_required_field(project_data, field="name")),
         "creator_id": Id(value=user_id),
+        "goal_description": Description(value=project_data["goal_description"]) if "goal_description" in project_data else None,
         "description": Description(value=get_required_field(project_data, field="description")),
         "category_ids": [Id(value=i) for i in get_required_field(project_data, "category_ids")],
         "funding_model_id": Id(value=get_required_field(project_data, field="funding_model_id")),

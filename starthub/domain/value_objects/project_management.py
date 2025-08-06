@@ -139,6 +139,7 @@ class GoalSum(BaseVo):
 
 class ProjectCreateCommand(BaseCommand):
     name: ProjectName
+    goal_description: Description | None = None
     description: Description
     category_ids: list[Id]
     creator_id: Id
