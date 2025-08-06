@@ -50,7 +50,6 @@ from domain.value_objects.project_management import (
     TeamMemberUpdatePayload,
 )
 from infrastructure.repositories.pagination import apply_pagination
-from loguru import logger
 
 
 class DjProjectReadRepository(ProjectReadRepository):
@@ -313,7 +312,6 @@ class DjProjectImageReadRepository(ProjectImageReadRepository):
 
         if filter_.image_order is not None:
             queryset = queryset.filter(order=filter_.image_order)
-        logger.debug(f"SQL query = \n {queryset.query}")
 
         return list(queryset.distinct())
 
