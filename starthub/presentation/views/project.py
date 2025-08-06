@@ -49,6 +49,7 @@ class ProjectView(APIView):
 
     @staticmethod
     def get(request: Request, project_id: int | None = None) -> Response:
+        print()
         logger.info("GET project request", project_id=project_id, query_params=request.query_params)
         try:
             user_id: Id | None = get_user_id_or_none(request=request)

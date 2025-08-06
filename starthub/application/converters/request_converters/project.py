@@ -2,7 +2,7 @@ import json
 from typing import Any
 
 from django.core.files.uploadedfile import UploadedFile
-from domain.value_objects.common import DeadlineDate, Id, Order
+from domain.value_objects.common import DeadlineDate, Description, Id, Order
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.project_management import (
     GoalSum,
@@ -41,10 +41,19 @@ def request_to_the_project_update_command(request: Request, project_id: int, use
         project_plan_file.seek(0)
         project_plan = PdfFile(value=project_plan_file.read())
 
+    description: Description | None = (
+        Description(value=project_data["description"]) if "description" in project_data else None
+    )
+    goal_description: Description | None = (
+        Description(value=project_data["goal_description"]) if "goal_description" in project_data else None
+    )
+
     return ProjectUpdateCommand(
         project_id=Id(value=project_id),
         user_id=Id(value=user_id),
         name=ProjectName(value=project_data["name"]) if "name" in project_data else None,
+        description=description,
+        goal_description=goal_description,
         category_ids=category_ids,
         funding_model_id=Id(value=project_data["funding_model_id"]) if "funding_model_id" in project_data else None,
         stage=ProjectStage(value=project_data["stage"]) if "stage" in project_data else None,

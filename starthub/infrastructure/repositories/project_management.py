@@ -50,7 +50,6 @@ from domain.value_objects.project_management import (
     TeamMemberUpdatePayload,
 )
 from infrastructure.repositories.pagination import apply_pagination
-from loguru import logger
 
 
 class DjProjectReadRepository(ProjectReadRepository):
@@ -95,10 +94,10 @@ class DjProjectReadRepository(ProjectReadRepository):
 
 
 class DjProjectWriteRepository(ProjectWriteRepository):
-
     def create(self, data: ProjectCreatePayload) -> Project:
         project = Project.objects.create(
             name=data.name.value,
+            goal_description=data.goal_description.value if data.goal_description else None,
             description=data.description.value,
             creator_id=data.user_id.value,
             funding_model_id=data.funding_model_id.value,
@@ -120,6 +119,10 @@ class DjProjectWriteRepository(ProjectWriteRepository):
         if data.name is not None:
             project.name = data.name.value
             project.slug = None
+        if data.description is not None:
+            project.description = data.description.value
+        if data.goal_description is not None:
+            project.goal_description = data.goal_description.value
         if data.goal_sum is not None:
             project.goal_sum = data.goal_sum.value
         if data.deadline is not None:
@@ -312,7 +315,6 @@ class DjProjectImageReadRepository(ProjectImageReadRepository):
 
         if filter_.image_order is not None:
             queryset = queryset.filter(order=filter_.image_order)
-        logger.debug(f"SQL query = \n {queryset.query}")
 
         return list(queryset.distinct())
 

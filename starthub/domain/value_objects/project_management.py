@@ -139,6 +139,7 @@ class GoalSum(BaseVo):
 
 class ProjectCreateCommand(BaseCommand):
     name: ProjectName
+    goal_description: Description | None = None
     description: Description
     category_ids: list[Id]
     creator_id: Id
@@ -165,6 +166,8 @@ class ProjectUpdateCommand(BaseCommand):
     project_id: Id
     user_id: Id
     name: ProjectName | None = None
+    goal_description: Description | None = None
+    description: Description | None = None
     category_ids: list[Id] | None = None
     funding_model_id: Id | None = None
     stage: ProjectStage | None = None
@@ -175,6 +178,7 @@ class ProjectUpdateCommand(BaseCommand):
 
 class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
     name: ProjectName
+    goal_description: Description | None = None
     description: Description
     category_ids: list[Id]
     user_id: Id
@@ -189,6 +193,8 @@ class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
 class ProjectUpdatePayload(AbstractUpdatePayload, BaseVo):
     id_: Id
     name: ProjectName | None = None
+    goal_description: Description | None = None
+    description: Description | None = None
     category_ids: list[Id] | None = None
     funding_model_id: Id | None = None
     goal_sum: GoalSum | None = None
