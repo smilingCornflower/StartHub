@@ -130,6 +130,7 @@ class ProjectCreateAppService(AbstractAppService):
     def _convert_command_to_payload(self, command: ProjectCreateCommand, plan_path: str) -> ProjectCreatePayload:
         payload = ProjectCreatePayload(
             name=command.name,
+            goal_description=command.goal_description,
             description=command.description,
             category_ids=command.category_ids,
             user_id=command.creator_id,

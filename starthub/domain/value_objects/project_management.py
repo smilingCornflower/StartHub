@@ -176,6 +176,7 @@ class ProjectUpdateCommand(BaseCommand):
 
 class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
     name: ProjectName
+    goal_description: Description | None = None
     description: Description
     category_ids: list[Id]
     user_id: Id

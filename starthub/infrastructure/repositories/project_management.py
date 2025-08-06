@@ -99,6 +99,7 @@ class DjProjectWriteRepository(ProjectWriteRepository):
     def create(self, data: ProjectCreatePayload) -> Project:
         project = Project.objects.create(
             name=data.name.value,
+            goal_description=data.goal_description.value if data.goal_description else None,
             description=data.description.value,
             creator_id=data.user_id.value,
             funding_model_id=data.funding_model_id.value,
