@@ -2,7 +2,10 @@ import json
 from typing import Any
 
 from django.core.files.uploadedfile import UploadedFile
-from domain.value_objects.common import DeadlineDate, Id, Order
+from loguru import logger
+from rest_framework.request import Request
+
+from domain.value_objects.common import DeadlineDate, Id, Order, Description
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.project_management import (
     GoalSum,
@@ -12,9 +15,7 @@ from domain.value_objects.project_management import (
     ProjectStage,
     ProjectUpdateCommand,
 )
-from loguru import logger
 from presentation.request_converters.common import get_required_field, parse_date
-from rest_framework.request import Request
 
 
 ########################################################################################################################
@@ -41,10 +42,17 @@ def request_to_the_project_update_command(request: Request, project_id: int, use
         project_plan_file.seek(0)
         project_plan = PdfFile(value=project_plan_file.read())
 
+    description: Description | None = Description(
+        value=project_data['description']) if "description" in project_data else None
+    goal_description: Description | None = Description(
+        value=project_data['goal_description']) if "goal_description" in project_data else None
+
     return ProjectUpdateCommand(
         project_id=Id(value=project_id),
         user_id=Id(value=user_id),
         name=ProjectName(value=project_data["name"]) if "name" in project_data else None,
+        description=description,
+        goal_description=goal_description,
         category_ids=category_ids,
         funding_model_id=Id(value=project_data["funding_model_id"]) if "funding_model_id" in project_data else None,
         stage=ProjectStage(value=project_data["stage"]) if "stage" in project_data else None,
@@ -57,9 +65,9 @@ def request_to_the_project_update_command(request: Request, project_id: int, use
 ########################################################################################################################
 # Project Image Converter
 def request_files_to_project_image_create_command(
-    files: dict[str, UploadedFile],
-    project_id: int,
-    user_id: int,
+        files: dict[str, UploadedFile],
+        project_id: int,
+        user_id: int,
 ) -> ProjectImageCreateCommand:
     project_image_file: UploadedFile = get_required_field(files, "project_image")
     project_image_file.seek(0)
@@ -73,7 +81,7 @@ def request_files_to_project_image_create_command(
 
 
 def request_project_data_to_project_images_update_command(
-    data: dict[str, Any], project_id: int, user_id: int
+        data: dict[str, Any], project_id: int, user_id: int
 ) -> ProjectImageUpdateCommand:
     new_order: list[Order] = list()
 

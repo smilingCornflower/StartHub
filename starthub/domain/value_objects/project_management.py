@@ -166,6 +166,8 @@ class ProjectUpdateCommand(BaseCommand):
     project_id: Id
     user_id: Id
     name: ProjectName | None = None
+    goal_description: Description | None = None
+    description: Description | None = None
     category_ids: list[Id] | None = None
     funding_model_id: Id | None = None
     stage: ProjectStage | None = None
