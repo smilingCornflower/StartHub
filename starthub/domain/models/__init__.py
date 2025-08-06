@@ -11,6 +11,7 @@ ProjectPhone = import_module("domain.models.project_management.phone").ProjectPh
 ProjectImage = import_module("domain.models.project_management.image").ProjectImage
 ProjectSocialLink = import_module("domain.models.project_management.social_link").ProjectSocialLink
 ProjectCategory = import_module("domain.models.project_management.category").ProjectCategory
+ProjectStep = import_module("domain.models.project_management.step").ProjectStep
 Company = import_module("domain.models.company").Company
 FundingModel = import_module("domain.models.funding_model").FundingModel
 

@@ -4,6 +4,7 @@ from domain.models.base import BaseModel
 
 
 class ProjectStep(BaseModel):
+    project = models.ForeignKey("domain.Project", on_delete=models.CASCADE, related_name="steps")
     name = models.CharField(max_length=CHAR_FIELD_MEDIUM_LENGTH)
     description = models.TextField()
     date = models.DateField()
