@@ -94,7 +94,6 @@ class DjProjectReadRepository(ProjectReadRepository):
 
 
 class DjProjectWriteRepository(ProjectWriteRepository):
-
     def create(self, data: ProjectCreatePayload) -> Project:
         project = Project.objects.create(
             name=data.name.value,
@@ -120,6 +119,10 @@ class DjProjectWriteRepository(ProjectWriteRepository):
         if data.name is not None:
             project.name = data.name.value
             project.slug = None
+        if data.description is not None:
+            project.description = data.description.value
+        if data.goal_description is not None:
+            project.goal_description = data.goal_description.value
         if data.goal_sum is not None:
             project.goal_sum = data.goal_sum.value
         if data.deadline is not None:

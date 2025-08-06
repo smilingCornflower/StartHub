@@ -364,6 +364,8 @@ class ProjectUpdateAppService(AbstractAppService):
         return ProjectUpdatePayload(
             id_=command.project_id,
             name=command.name,
+            description=command.description,
+            goal_description=command.goal_description,
             category_ids=command.category_ids,
             funding_model_id=command.funding_model_id,
             stage=command.stage,

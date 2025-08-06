@@ -193,6 +193,8 @@ class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
 class ProjectUpdatePayload(AbstractUpdatePayload, BaseVo):
     id_: Id
     name: ProjectName | None = None
+    goal_description: Description | None = None
+    description: Description | None = None
     category_ids: list[Id] | None = None
     funding_model_id: Id | None = None
     goal_sum: GoalSum | None = None
