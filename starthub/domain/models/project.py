@@ -14,6 +14,7 @@ from domain.models.base import BaseModel
 class Project(BaseModel):
     name = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
     slug = AutoSlugField(populate_from="name", unique=True, max_length=CHAR_FIELD_MAX_LENGTH)
+    goal_description = models.TextField(blank=True, null=True)
     description = models.TextField()
     categories = models.ManyToManyField("domain.ProjectCategory", related_name="projects")
     creator = models.ForeignKey("domain.User", on_delete=models.PROTECT, related_name="created_projects")
