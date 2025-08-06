@@ -9,7 +9,7 @@ from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.geo import AddressCreateCommand
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage, ProjectStatus
-from domain.value_objects.project.steps import ProjectStepCreateCommand
+from domain.value_objects.project.step import ProjectStepCreateCommand
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
 
 

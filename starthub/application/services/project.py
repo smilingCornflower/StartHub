@@ -19,12 +19,10 @@ from domain.repositories.company import CompanyReadRepository
 from domain.repositories.country import CountryReadRepository
 from domain.repositories.geo.city import CityReadRepository
 from domain.repositories.geo.region import RegionReadRepository
-from domain.repositories.project_management import (
-    FundingModelReadRepository,
-    ProjectCategoryReadRepository,
-    ProjectImageReadRepository,
-    ProjectReadRepository,
-)
+from domain.repositories.project.category import ProjectCategoryReadRepository
+from domain.repositories.project.funding_model import FundingModelReadRepository
+from domain.repositories.project.image import ProjectImageReadRepository
+from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.user import UserReadRepository
 from domain.repositories.user_favorite import UserFavoriteReadRepository
 from domain.services.project_management.project import ProjectService

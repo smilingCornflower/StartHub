@@ -12,8 +12,9 @@ ProjectImage = import_module("domain.models.project_management.image").ProjectIm
 ProjectSocialLink = import_module("domain.models.project_management.social_link").ProjectSocialLink
 ProjectCategory = import_module("domain.models.project_management.category").ProjectCategory
 ProjectStep = import_module("domain.models.project_management.step").ProjectStep
+FundingModel = import_module("domain.models.project_management.funding_model").FundingModel
+
 Company = import_module("domain.models.company").Company
-FundingModel = import_module("domain.models.funding_model").FundingModel
 
 Country = import_module("domain.models.geo.country").Country
 Region = import_module("domain.models.geo.region").Region

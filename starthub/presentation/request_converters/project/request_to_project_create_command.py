@@ -10,7 +10,7 @@ from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
 from domain.value_objects.project.project import ProjectCreateCommand
-from domain.value_objects.project.steps import ProjectStepCreateCommand, ProjectStepDate, ProjectStepName
+from domain.value_objects.project.step import ProjectStepCreateCommand, ProjectStepDate, ProjectStepName
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
 from loguru import logger
 from presentation.request_converters.common import build_address_create_command, get_required_field, parse_date

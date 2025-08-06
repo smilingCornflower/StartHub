@@ -3,7 +3,7 @@ from domain.exceptions.permissions import DeleteDeniedPermissionException, Updat
 from domain.models.project_management.project import Project
 from domain.models.user import User
 from domain.ports.service import AbstractDomainService
-from domain.repositories.project_management import ProjectWriteRepository
+from domain.repositories.project.project import ProjectWriteRepository
 from domain.services.permission import PermissionService
 from domain.value_objects.project.project import ProjectCreatePayload, ProjectUpdatePayload
 from domain.value_objects.user import PermissionVo

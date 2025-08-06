@@ -111,3 +111,7 @@ class CityFilter(AbstractFilter):
 
 class RegionFilter(AbstractFilter):
     pass
+
+
+class ProjectStepFilter(AbstractFilter):
+    pass

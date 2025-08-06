@@ -11,12 +11,10 @@ from infrastructure.repositories.company import DjCompanyReadRepository
 from infrastructure.repositories.geo.city import DjCityReadRepository
 from infrastructure.repositories.geo.country import DjCountryReadRepository
 from infrastructure.repositories.geo.region import DjRegionReadRepository
-from infrastructure.repositories.project_management import (
-    DjFundingModelReadRepository,
-    DjProjectCategoryReadRepository,
-    DjProjectImageReadRepository,
-    DjProjectReadRepository,
-)
+from infrastructure.repositories.project.category import DjProjectCategoryReadRepository
+from infrastructure.repositories.project.funding_model import DjFundingModelReadRepository
+from infrastructure.repositories.project.image import DjProjectImageReadRepository
+from infrastructure.repositories.project.project import DjProjectReadRepository
 from infrastructure.repositories.user import DjUserReadRepository
 from infrastructure.repositories.user_favorite import DjUserFavoriteReadRepository
 from infrastructure.services.project_search import ProjectSearchService

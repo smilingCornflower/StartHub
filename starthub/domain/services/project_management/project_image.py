@@ -7,11 +7,8 @@ from domain.models.project_management.image import ProjectImage
 from domain.models.project_management.project import Project
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.ports.service import AbstractDomainService
-from domain.repositories.project_management import (
-    ProjectImageReadRepository,
-    ProjectImageWriteRepository,
-    ProjectReadRepository,
-)
+from domain.repositories.project.image import ProjectImageReadRepository, ProjectImageWriteRepository
+from domain.repositories.project.project import ProjectReadRepository
 from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import (
     CloudStorageCreateUrlPayload,

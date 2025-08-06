@@ -23,7 +23,7 @@ class UserFavoriteReadRepository(AbstractReadRepository[UserFavorite, UserFavori
 
 
 class UserFavoriteWriteRepository(
-    AbstractWriteRepository[UserFavorite, UserFavoriteCreatePayload, UserFavoriteUpdatePayload], ABC
+    AbstractWriteRepository[UserFavorite, UserFavoriteCreatePayload, UserFavoriteUpdatePayload, Id], ABC
 ):
     @abstractmethod
     def create(self, data: UserFavoriteCreatePayload) -> UserFavorite:

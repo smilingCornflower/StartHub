@@ -29,7 +29,7 @@ class UserReadRepository(AbstractReadRepository[User, UserFilter, Id]):
         pass
 
 
-class UserWriteRepository(AbstractWriteRepository[User, UserCreatePayload, UserUpdatePayload], ABC):
+class UserWriteRepository(AbstractWriteRepository[User, UserCreatePayload, UserUpdatePayload, Id], ABC):
     @abstractmethod
     def create(self, data: UserCreatePayload) -> User:
         pass
@@ -59,7 +59,9 @@ class UserPhoneReadRepository(AbstractReadRepository[UserPhone, UserPhoneFilter,
         pass
 
 
-class UserPhoneWriteRepository(AbstractWriteRepository[UserPhone, UserPhoneCreatePayload, UserPhoneUpdatePayload], ABC):
+class UserPhoneWriteRepository(
+    AbstractWriteRepository[UserPhone, UserPhoneCreatePayload, UserPhoneUpdatePayload, Id], ABC
+):
     @abstractmethod
     def create(self, data: UserPhoneCreatePayload) -> UserPhone:
         pass

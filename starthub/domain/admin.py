@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django_stubs_ext import monkeypatch
-from domain.models.funding_model import FundingModel
 from domain.models.geo.country import Country
 from domain.models.news import News, NewsImage
 from domain.models.project_management.category import ProjectCategory
+from domain.models.project_management.funding_model import FundingModel
 from domain.models.project_management.phone import ProjectPhone
 from domain.models.project_management.project import Project
 from domain.models.project_management.social_link import ProjectSocialLink

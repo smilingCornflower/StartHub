@@ -5,6 +5,7 @@ from domain.services.project_management.project import ProjectService
 from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
 from domain.services.project_management.project_social_link import ProjectSocialLinkService
+from domain.services.project_management.step import ProjectStepService
 from domain.services.project_management.team_member import TamMemberService
 from infrastructure.cloud_storages.google import google_cloud_storage
 from infrastructure.repositories.company import (
@@ -15,18 +16,15 @@ from infrastructure.repositories.company import (
 )
 from infrastructure.repositories.geo.address import DjAddressWriteRepository
 from infrastructure.repositories.geo.country import DjCountryReadRepository
-from infrastructure.repositories.project_management import (
-    DjProjectImageReadRepository,
-    DjProjectImageWriteRepository,
-    DjProjectPhoneReadRepository,
-    DjProjectPhoneWriteRepository,
-    DjProjectReadRepository,
+from infrastructure.repositories.project.image import DjProjectImageReadRepository, DjProjectImageWriteRepository
+from infrastructure.repositories.project.phone import DjProjectPhoneReadRepository, DjProjectPhoneWriteRepository
+from infrastructure.repositories.project.project import DjProjectReadRepository, DjProjectWriteRepository
+from infrastructure.repositories.project.social_link import (
     DjProjectSocialLinkReadRepository,
     DjProjectSocialLinkWriteRepository,
-    DjProjectWriteRepository,
-    DjTeamMemberReadRepository,
-    DjTeamMemberWriteRepository,
 )
+from infrastructure.repositories.project.step import DjProjectStepWriteRepositroy
+from infrastructure.repositories.project.team_member import DjTeamMemberReadRepository, DjTeamMemberWriteRepository
 
 
 class ProjectServiceBuilder(AbstractDomainServiceBuilder[ProjectService]):
@@ -93,4 +91,12 @@ class ProjectImageServiceBuilder(AbstractDomainServiceBuilder[ProjectImageServic
             project_image_write_repository=DjProjectImageWriteRepository(),
             project_read_repository=DjProjectReadRepository(),
             cloud_storage=google_cloud_storage,
+        )
+
+
+class ProjectStepServiceBuilder(AbstractDomainServiceBuilder[ProjectStepService]):
+    @staticmethod
+    def create_service() -> ProjectStepService:
+        return ProjectStepService(
+            write_repository=DjProjectStepWriteRepositroy(),
         )

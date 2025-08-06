@@ -6,7 +6,7 @@ from domain.models.user import User, UserPhone
 from domain.models.user_favorite import UserFavorite
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.ports.service import AbstractDomainService
-from domain.repositories.project_management import ProjectReadRepository
+from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.user import (
     UserPhoneReadRepository,
     UserPhoneWriteRepository,

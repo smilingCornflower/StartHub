@@ -28,7 +28,7 @@ class CompanyReadRepository(AbstractReadRepository[Company, CompanyFilter, Id], 
         pass
 
 
-class CompanyWriteRepository(AbstractWriteRepository[Company, CompanyCreatePayload, CompanyUpdatePayload], ABC):
+class CompanyWriteRepository(AbstractWriteRepository[Company, CompanyCreatePayload, CompanyUpdatePayload, Id], ABC):
     @abstractmethod
     def create(self, data: CompanyCreatePayload) -> Company:
         pass
@@ -53,7 +53,7 @@ class CompanyFounderReadRepository(AbstractReadRepository[CompanyFounder, Compan
 
 
 class CompanyFounderWriteRepository(
-    AbstractWriteRepository[CompanyFounder, CompanyFounderCreatePayload, CompanyFounderUpdatePayload], ABC
+    AbstractWriteRepository[CompanyFounder, CompanyFounderCreatePayload, CompanyFounderUpdatePayload, Id], ABC
 ):
     @abstractmethod
     def create(self, data: CompanyFounderCreatePayload) -> CompanyFounder:

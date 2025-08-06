@@ -1,6 +1,6 @@
 from application.ports.domain_service_builder import AbstractDomainServiceBuilder
 from domain.services.user_management import UserFavoriteService
-from infrastructure.repositories.project_management import DjProjectReadRepository
+from infrastructure.repositories.project.project import DjProjectReadRepository
 from infrastructure.repositories.user import DjUserReadRepository
 from infrastructure.repositories.user_favorite import DjUserFavoriteReadRepository, DjUserFavoriteWriteRepository
 

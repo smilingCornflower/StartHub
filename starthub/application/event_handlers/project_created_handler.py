@@ -9,6 +9,7 @@ from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
 from domain.services.project_management.project_social_link import ProjectSocialLinkService
+from domain.services.project_management.step import ProjectStepService
 from domain.services.project_management.team_member import TamMemberService
 from domain.value_objects.common import Id
 from domain.value_objects.company import CompanyCreateCommand, CompanyFounderCreateCommand, CompanyFounderCreatePayload
@@ -29,6 +30,7 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         project_phone_service: ProjectPhoneService,
         social_link_service: ProjectSocialLinkService,
         address_service: AddressService,
+        project_step_service: ProjectStepService,
     ):
         self._company_service = company_service
         self._company_founder_service = company_founder_service
