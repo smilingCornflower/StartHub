@@ -32,6 +32,7 @@ from domain.exceptions.project_management import (
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
     ProjectPlanNotFoundException,
+    ProjectStepMaxAmountException,
 )
 from domain.exceptions.user import EmailAlreadyExistsException, UserNotFoundException, UserPhoneAlreadyExistException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException, UserFavoriteNotFoundException
@@ -106,6 +107,7 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         ImageFileTooLargeException: ("IMAGE_TOO_LARGE", 422),
         InvalidProjectStatusException: ("INVALID_PROJECT_STATUS", 422),
         GeographicalInconsistencyException: ("GEOGRAPHICAL_INCONSISTENCY", 422),
+        ProjectStepMaxAmountException: ("TOO_MANY_PROJECT_STEPS", 422),
     }
 
 

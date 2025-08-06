@@ -69,6 +69,10 @@ class TestProjectPost(TestCase):
                     "category_ids": [self.category_1.id, self.category_2.id],
                     "funding_model_id": self.funding_model.id,
                     "stage": "idea",
+                    "project_steps": [
+                        {"name": "step 1", "description": "description 1", "date": "2042-10-22"},
+                        {"name": "step2", "description": "description 2", "date": "2077-12-10"},
+                    ],
                     "goal_sum": 100000,
                     "deadline": "2025-12-31",
                     "social_links": {"linkedin": "https://linkedin.com/in/example"},

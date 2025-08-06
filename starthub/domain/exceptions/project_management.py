@@ -107,3 +107,12 @@ class ProjectStatusException(ProjectException):
 
 class InvalidProjectStatusException(ValidationException, ProjectStatusException):
     pass
+
+
+# ==== Project Steps Exceptions ====
+class ProjectStepException(ProjectException):
+    pass
+
+
+class ProjectStepMaxAmountException(ProjectStepException):
+    pass

@@ -1,5 +1,4 @@
 from domain.constants import PROJECT_IMAGES_MAX_AMOUNT
-from domain.exceptions import BusinessRuleException
 from domain.exceptions.cloud_storage import FileNotFoundCloudStorageException
 from domain.exceptions.permissions import DeleteDeniedPermissionException, UpdateDeniedPermissionException
 from domain.exceptions.project_management import ProjectImageMaxAmountException
@@ -57,13 +56,9 @@ class ProjectImageService(AbstractDomainService):
 
         image_count = self._get_images_count(project_id=command.project_id)
 
-        if image_count == PROJECT_IMAGES_MAX_AMOUNT:
-            logger.exception("Images max amount reached.")
-            raise ProjectImageMaxAmountException(f"Project images max limit is {PROJECT_IMAGES_MAX_AMOUNT}")
-
         if image_count > PROJECT_IMAGES_MAX_AMOUNT:
             logger.critical("Project images amount exceeds allowed max limit!")
-            raise BusinessRuleException(f"Project images max limit is {PROJECT_IMAGES_MAX_AMOUNT}")
+            raise ProjectImageMaxAmountException(f"Project images max limit is {PROJECT_IMAGES_MAX_AMOUNT}")
 
         img_path: str = PathProvider.get_project_image_path(command.project_id)
         uploaded_path: str = self._cloud_storage.upload_file(

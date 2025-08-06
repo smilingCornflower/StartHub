@@ -154,7 +154,9 @@ class ProjectCreateAppService(AbstractAppService):
 
     def create(self, command: ProjectCreateCommand) -> Project:
         logger.warning("Started creating project.")
+
         self._validate_dependencies(command=command)
+        self._project_service.check_project_max_steps_limit(project_steps=command.steps)
 
         plan_path: str = self._upload_plan(plan_file=command.plan_file)
         create_payload: ProjectCreatePayload = self._convert_command_to_payload(command=command, plan_path=plan_path)

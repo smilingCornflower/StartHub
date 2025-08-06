@@ -80,8 +80,6 @@ class ProjectView(APIView):
     def post(request: Request) -> Response:
         print()
         logger.warning("POST /projects/")
-        logger.info(f"request_data: \n{pformat(request.data)}")
-        logger.info(f"request files: \n{pformat(request.FILES)}")
 
         try:
             access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(headers=request.headers)
