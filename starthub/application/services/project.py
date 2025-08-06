@@ -10,9 +10,9 @@ from domain.exceptions.project_management import ProjectCategoryNotFoundExceptio
 from domain.exceptions.user_favorite import UserFavoriteNotFoundException
 from domain.models import Country
 from domain.models.company import Company
-from domain.models.project_management.project import Project
-from domain.models.project_management.image import ProjectImage
 from domain.models.project_management.category import ProjectCategory
+from domain.models.project_management.image import ProjectImage
+from domain.models.project_management.project import Project
 from domain.models.user import User
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.repositories.company import CompanyReadRepository

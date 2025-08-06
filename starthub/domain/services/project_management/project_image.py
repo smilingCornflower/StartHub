@@ -3,8 +3,8 @@ from domain.exceptions import BusinessRuleException
 from domain.exceptions.cloud_storage import FileNotFoundCloudStorageException
 from domain.exceptions.permissions import DeleteDeniedPermissionException, UpdateDeniedPermissionException
 from domain.exceptions.project_management import ProjectImageMaxAmountException
-from domain.models.project_management.project import Project
 from domain.models.project_management.image import ProjectImage
+from domain.models.project_management.project import Project
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project_management import (

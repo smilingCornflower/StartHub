@@ -1,6 +1,6 @@
 from application.dto.project import CategoryDto, CompanyDto, CompanyFounderDto, FundingModelDto, ProjectDto
-from domain.models.project_management.project import Project
 from domain.models.project_management.category import ProjectCategory
+from domain.models.project_management.project import Project
 
 
 def project_to_dto(

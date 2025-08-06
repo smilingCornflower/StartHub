@@ -1,12 +1,12 @@
 from abc import ABC, abstractmethod
 
 from domain.models.funding_model import FundingModel
-from domain.models.project_management.project import Project
-from domain.models.project_management.phone import ProjectPhone
+from domain.models.project_management.category import ProjectCategory
 from domain.models.project_management.image import ProjectImage
+from domain.models.project_management.phone import ProjectPhone
+from domain.models.project_management.project import Project
 from domain.models.project_management.social_link import ProjectSocialLink
 from domain.models.project_management.team_member import TeamMember
-from domain.models.project_management.category import ProjectCategory
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
 from domain.value_objects.common import Id, Pagination, Slug
 from domain.value_objects.filter import (

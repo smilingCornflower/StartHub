@@ -1,5 +1,4 @@
 from django.db import models
-
 from domain.constants import CHAR_FIELD_SHORT_LENGTH
 from domain.models.base import BaseModel
 
@@ -18,5 +17,3 @@ class ProjectPhone(BaseModel):
     @classmethod
     def get_permission_key(cls) -> str:
         return "project_phone"
-
-
