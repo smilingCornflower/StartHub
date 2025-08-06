@@ -114,4 +114,4 @@ class RegionFilter(AbstractFilter):
 
 
 class ProjectStepFilter(AbstractFilter):
-    pass
+    project_id: Id | None = None

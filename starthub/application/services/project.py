@@ -1,5 +1,7 @@
+from dataclasses import asdict
+
 from application.converters.resposne_converters.project import project_to_dto
-from application.dto.project import ProjectDto
+from application.dto.project import ProjectDto, ProjectFullDto, ProjectStepDto
 from application.ports.service import AbstractAppService
 from django.db import transaction
 from domain.enums.project_status import ProjectStatusEnum
@@ -13,6 +15,7 @@ from domain.models.company import Company
 from domain.models.project_management.category import ProjectCategory
 from domain.models.project_management.image import ProjectImage
 from domain.models.project_management.project import Project
+from domain.models.project_management.step import ProjectStep
 from domain.models.user import User
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.repositories.company import CompanyReadRepository
@@ -23,6 +26,7 @@ from domain.repositories.project.category import ProjectCategoryReadRepository
 from domain.repositories.project.funding_model import FundingModelReadRepository
 from domain.repositories.project.image import ProjectImageReadRepository
 from domain.repositories.project.project import ProjectReadRepository
+from domain.repositories.project.step import ProjectStepReadRepository
 from domain.repositories.user import UserReadRepository
 from domain.repositories.user_favorite import UserFavoriteReadRepository
 from domain.services.project_management.project import ProjectService
@@ -38,6 +42,7 @@ from domain.value_objects.filter import (
     ProjectCategoryFilter,
     ProjectFilter,
     ProjectImageFilter,
+    ProjectStepFilter,
 )
 from domain.value_objects.geo import CityId, RegionId
 from domain.value_objects.project.common import ProjectStatus
@@ -177,6 +182,7 @@ class ProjectGetAppService(AbstractAppService):
         project_image_read_repository: ProjectImageReadRepository,
         project_category_read_repository: ProjectCategoryReadRepository,
         user_favorite_read_repository: UserFavoriteReadRepository,
+        project_step_read_repository: ProjectStepReadRepository,
         project_search_service: ProjectSearchService,
         cloud_storage: AbstractCloudStorage,
     ):
@@ -184,6 +190,7 @@ class ProjectGetAppService(AbstractAppService):
         self._project_image_read_repository = project_image_read_repository
         self._project_category_read_repository = project_category_read_repository
         self._user_favorite_read_repository = user_favorite_read_repository
+        self._project_step_read_repository = project_step_read_repository
         self._project_search_service = project_search_service
         self._cloud_storage = cloud_storage
 
@@ -197,7 +204,7 @@ class ProjectGetAppService(AbstractAppService):
         project: Project = self._project_read_repository.get_by_id(id_=project_id)
         logger.debug(f"Project with id = {project_id.value} found.")
 
-        return self._create_dto(project=project, user_id=user_id)
+        return self._create_full_dto(project=project, user_id=user_id)
 
     def get_plan_url(self, project_id: Id) -> str:
         """
@@ -217,6 +224,18 @@ class ProjectGetAppService(AbstractAppService):
         is_favorite: bool = self._is_project_favorite(project_id=project_id, user_id=user_id)
 
         return project_to_dto(project=project, categories=categories, image_links=image_urls, is_favorite=is_favorite)
+
+    def _create_full_dto(self, project: Project, user_id: Id | None = None) -> ProjectFullDto:
+        project_dto: ProjectDto = self._create_dto(project=project, user_id=user_id)
+
+        steps: list[ProjectStep] = self._project_step_read_repository.get_all(
+            filter_=ProjectStepFilter(project_id=Id(value=project.id))
+        )
+        step_dtos: list[ProjectStepDto] = list()
+        for i in steps:
+            step_dtos.append(ProjectStepDto(id=i.id, name=i.name, description=i.description, date=i.date))
+
+        return ProjectFullDto(**asdict(project_dto), steps=step_dtos)
 
     def _is_project_favorite(self, project_id: Id, user_id: Id | None) -> bool:
         if user_id is None:
