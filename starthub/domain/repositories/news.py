@@ -25,7 +25,7 @@ class NewsReadRepository(AbstractReadRepository[News, NewsFilter, Id], ABC):
         pass
 
 
-class NewsWriteRepository(AbstractWriteRepository[News, NewsCreatePayload, NewsUpdatePayload], ABC):
+class NewsWriteRepository(AbstractWriteRepository[News, NewsCreatePayload, NewsUpdatePayload, Id], ABC):
     @abstractmethod
     def create(self, data: NewsCreatePayload) -> News:
         pass
@@ -49,7 +49,9 @@ class NewsImageReadRepository(AbstractReadRepository[NewsImage, NewsImageFilter,
         pass
 
 
-class NewsImageWriteRepository(AbstractWriteRepository[NewsImage, NewsImageCreatePayload, NewsImageUpdatePayload], ABC):
+class NewsImageWriteRepository(
+    AbstractWriteRepository[NewsImage, NewsImageCreatePayload, NewsImageUpdatePayload, Id], ABC
+):
     @abstractmethod
     def create(self, data: NewsImageCreatePayload) -> NewsImage:
         pass

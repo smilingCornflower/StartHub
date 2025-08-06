@@ -1,16 +1,13 @@
 from domain.constants import PROJECT_IMAGES_MAX_AMOUNT
-from domain.exceptions import BusinessRuleException
 from domain.exceptions.cloud_storage import FileNotFoundCloudStorageException
 from domain.exceptions.permissions import DeleteDeniedPermissionException, UpdateDeniedPermissionException
 from domain.exceptions.project_management import ProjectImageMaxAmountException
-from domain.models.project import Project, ProjectImage
+from domain.models.project_management.image import ProjectImage
+from domain.models.project_management.project import Project
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.ports.service import AbstractDomainService
-from domain.repositories.project_management import (
-    ProjectImageReadRepository,
-    ProjectImageWriteRepository,
-    ProjectReadRepository,
-)
+from domain.repositories.project.image import ProjectImageReadRepository, ProjectImageWriteRepository
+from domain.repositories.project.project import ProjectReadRepository
 from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import (
     CloudStorageCreateUrlPayload,
@@ -19,7 +16,7 @@ from domain.value_objects.cloud_storage import (
 )
 from domain.value_objects.common import Id, Order
 from domain.value_objects.filter import ProjectImageFilter
-from domain.value_objects.project_management import (
+from domain.value_objects.project.image import (
     ProjectImageCreateCommand,
     ProjectImageCreatePayload,
     ProjectImageDeleteCommand,
@@ -59,13 +56,9 @@ class ProjectImageService(AbstractDomainService):
 
         image_count = self._get_images_count(project_id=command.project_id)
 
-        if image_count == PROJECT_IMAGES_MAX_AMOUNT:
-            logger.exception("Images max amount reached.")
-            raise ProjectImageMaxAmountException(f"Project images max limit is {PROJECT_IMAGES_MAX_AMOUNT}")
-
         if image_count > PROJECT_IMAGES_MAX_AMOUNT:
             logger.critical("Project images amount exceeds allowed max limit!")
-            raise BusinessRuleException(f"Project images max limit is {PROJECT_IMAGES_MAX_AMOUNT}")
+            raise ProjectImageMaxAmountException(f"Project images max limit is {PROJECT_IMAGES_MAX_AMOUNT}")
 
         img_path: str = PathProvider.get_project_image_path(command.project_id)
         uploaded_path: str = self._cloud_storage.upload_file(

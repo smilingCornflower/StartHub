@@ -6,7 +6,7 @@ from django.test import TestCase
 from domain.exceptions.project_management import ProjectNotFoundException
 from domain.exceptions.user import UserNotFoundException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException, UserFavoriteNotFoundException
-from domain.models.project import Project
+from domain.models.project_management.project import Project
 from domain.models.user import User
 from domain.models.user_favorite import UserFavorite
 from domain.value_objects.common import Id

@@ -1,11 +1,14 @@
+from domain.constants import PROJECT_STEPS_MAX_AMOUNT
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.permissions import DeleteDeniedPermissionException, UpdateDeniedPermissionException
-from domain.models.project import Project
+from domain.exceptions.project_management import ProjectStepMaxAmountException
+from domain.models.project_management.project import Project
 from domain.models.user import User
 from domain.ports.service import AbstractDomainService
-from domain.repositories.project_management import ProjectWriteRepository
+from domain.repositories.project.project import ProjectWriteRepository
 from domain.services.permission import PermissionService
-from domain.value_objects.project_management import ProjectCreatePayload, ProjectUpdatePayload
+from domain.value_objects.project.project import ProjectCreatePayload, ProjectUpdatePayload
+from domain.value_objects.project.step import ProjectStepCreateCommand
 from domain.value_objects.user import PermissionVo
 from loguru import logger
 
@@ -21,6 +24,17 @@ class ProjectCreateService(AbstractDomainService):
         project: Project = self._write_repository.create(payload)
         logger.info("Project created successfully.")
         return project
+
+    def check_project_max_steps_limit(self, project_steps: list[ProjectStepCreateCommand]) -> None:
+        logger.debug(f"{project_steps=}")
+
+        if len(project_steps) > PROJECT_STEPS_MAX_AMOUNT:
+            logger.exception("Project step limit exceeded: max allowed is {PROJECT_STEPS_MAX_AMOUNT}")
+            raise ProjectStepMaxAmountException(
+                "Project step limit exceeded: max allowed is {PROJECT_STEPS_MAX_AMOUNT}"
+            )
+
+        logger.debug(f"Project steps count is {len(project_steps)}, within allowed limit")
 
 
 class ProjectUpdateService(AbstractDomainService):

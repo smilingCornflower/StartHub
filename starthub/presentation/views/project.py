@@ -15,16 +15,15 @@ from application.services.gateway import gateway
 from domain.enums.token import TokenTypeEnum
 from domain.exceptions import CustomException
 from domain.exceptions.project_management import ProjectNotFoundException
-from domain.models.project import Project
+from domain.models.project_management.project import Project
 from domain.value_objects.common import Id, OffsetPagination, Pagination
 from domain.value_objects.filter import ProjectFilter
-from domain.value_objects.project_management import (
-    ProjectCreateCommand,
+from domain.value_objects.project.image import (
     ProjectImageCreateCommand,
     ProjectImageDeleteCommand,
     ProjectImageUpdateCommand,
-    ProjectUpdateCommand,
 )
+from domain.value_objects.project.project import ProjectCreateCommand, ProjectUpdateCommand
 from domain.value_objects.search import ProjectSearchParams
 from infrastructure.auth.token import (
     get_access_or_anonymous_payload_dto_from_headers,
@@ -81,8 +80,6 @@ class ProjectView(APIView):
     def post(request: Request) -> Response:
         print()
         logger.warning("POST /projects/")
-        logger.info(f"request_data: \n{pformat(request.data)}")
-        logger.info(f"request files: \n{pformat(request.FILES)}")
 
         try:
             access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(headers=request.headers)

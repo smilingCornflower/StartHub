@@ -1,5 +1,5 @@
-from domain.exceptions import BusinessRuleException
+from domain.exceptions import CustomException
 
 
-class GeographicalInconsistencyException(BusinessRuleException):
+class GeographicalInconsistencyException(CustomException):
     pass

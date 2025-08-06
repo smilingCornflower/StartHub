@@ -1,5 +1,5 @@
 from domain.value_objects.common import Id
-from domain.value_objects.project_management import TeamMemberCreateCommand, TeamMemberCreatePayload
+from domain.value_objects.project.team_member import TeamMemberCreateCommand, TeamMemberCreatePayload
 
 
 def convert_team_members_create_command_to_payload(

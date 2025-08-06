@@ -2,22 +2,23 @@ from domain.events.project import ProjectCreatedEvent
 from domain.models import ProjectPhone
 from domain.models.company import Company, CompanyFounder
 from domain.models.geo.address import Address
-from domain.models.project import ProjectImage
+from domain.models.project_management.image import ProjectImage
+from domain.models.project_management.step import ProjectStep
 from domain.ports.event import AbstractEventHandler
 from domain.services.address import AddressService
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
 from domain.services.project_management.project_social_link import ProjectSocialLinkService
+from domain.services.project_management.step import ProjectStepService
 from domain.services.project_management.team_member import TamMemberService
 from domain.value_objects.common import Id
 from domain.value_objects.company import CompanyCreateCommand, CompanyFounderCreateCommand, CompanyFounderCreatePayload
-from domain.value_objects.project_management import (
-    ProjectCreateCommand,
-    ProjectImageCreateCommand,
-    ProjectPhoneCreatePayload,
-    ProjectSocialLinkCreatePayload,
-)
+from domain.value_objects.project.image import ProjectImageCreateCommand
+from domain.value_objects.project.phone import ProjectPhoneCreatePayload
+from domain.value_objects.project.project import ProjectCreateCommand
+from domain.value_objects.project.social_link import ProjectSocialLinkCreatePayload
+from domain.value_objects.project.step import ProjectStepCreatePaylaod
 from loguru import logger
 
 
@@ -31,6 +32,7 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         project_phone_service: ProjectPhoneService,
         social_link_service: ProjectSocialLinkService,
         address_service: AddressService,
+        project_step_service: ProjectStepService,
     ):
         self._company_service = company_service
         self._company_founder_service = company_founder_service
@@ -39,6 +41,7 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         self._project_phone_service = project_phone_service
         self._social_link_service = social_link_service
         self._address_service = address_service
+        self._project_step_service = project_step_service
 
     def handle(self, event: ProjectCreatedEvent) -> None:
         logger.info(f"Event: {event.event_type} caught.")
@@ -50,6 +53,20 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         self._create_images(command=command, project_id=project_id)
         self._create_project_phone(command=command, project_id=project_id)
         self._create_social_links(command=command, project_id=project_id)
+        self._create_project_steps(command=command, project_id=project_id)
+
+        logger.info("All related models are created.")
+
+    def _create_project_steps(self, command: ProjectCreateCommand, project_id: Id) -> None:
+        for project_step_create_command in command.steps:
+            payload = ProjectStepCreatePaylaod(
+                project_id=project_id,
+                name=project_step_create_command.name,
+                description=project_step_create_command.description,
+                date=project_step_create_command.date,
+            )
+            project_step: ProjectStep = self._project_step_service.create(paylaod=payload)
+            logger.debug(f"project_step with id = {project_step.id} created successfully")
 
     def _create_company_and_founder(self, command: ProjectCreateCommand, project_id: Id) -> None:
         company = self._create_company(command=command, project_id=project_id)

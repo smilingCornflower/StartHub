@@ -1,7 +1,7 @@
 from domain.enums.event import EventType
 from domain.events.base import DomainEvent
 from domain.value_objects.common import Id
-from domain.value_objects.project_management import ProjectCreateCommand
+from domain.value_objects.project.project import ProjectCreateCommand
 from pydantic import Field
 
 

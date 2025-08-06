@@ -17,7 +17,7 @@ class AddressReadRepository(AbstractReadRepository[Address, AddressFilter, Id], 
         pass
 
 
-class AddressWriteRepository(AbstractWriteRepository[Address, AddressCreatePayload, AddressUpdatePayload], ABC):
+class AddressWriteRepository(AbstractWriteRepository[Address, AddressCreatePayload, AddressUpdatePayload, Id], ABC):
     @abstractmethod
     def create(self, data: AddressCreatePayload) -> Address:
         pass

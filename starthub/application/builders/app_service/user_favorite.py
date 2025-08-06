@@ -2,7 +2,8 @@ from application.builders.domain_service.project_management import ProjectServic
 from application.builders.domain_service.user_favorite import UserFavoriteServiceBuilder
 from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.user_favorite import UserFavoriteAppService
-from infrastructure.repositories.project_management import DjProjectCategoryReadRepository, DjProjectReadRepository
+from infrastructure.repositories.project.category import DjProjectCategoryReadRepository
+from infrastructure.repositories.project.project import DjProjectReadRepository
 
 
 class UserFavoriteAppAppServiceBuilder(AbstractAppServiceBuilder[UserFavoriteAppService]):

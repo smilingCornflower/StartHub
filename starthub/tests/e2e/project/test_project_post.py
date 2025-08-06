@@ -26,10 +26,10 @@ from domain.exceptions.validation import (
     MissingRequiredFieldException,
 )
 from domain.models import Country
-from domain.models.funding_model import FundingModel
 from domain.models.geo.city import City
 from domain.models.geo.region import Region
-from domain.models.project_category import ProjectCategory
+from domain.models.project_management.category import ProjectCategory
+from domain.models.project_management.funding_model import FundingModel
 from domain.models.user import User
 from loguru import logger
 from presentation.response_factories.common import ProjectErrorResponseFactory
@@ -69,6 +69,10 @@ class TestProjectPost(TestCase):
                     "category_ids": [self.category_1.id, self.category_2.id],
                     "funding_model_id": self.funding_model.id,
                     "stage": "idea",
+                    "project_steps": [
+                        {"name": "step 1", "description": "description 1", "date": "2042-10-22"},
+                        {"name": "step2", "description": "description 2", "date": "2077-12-10"},
+                    ],
                     "goal_sum": 100000,
                     "deadline": "2025-12-31",
                     "social_links": {"linkedin": "https://linkedin.com/in/example"},

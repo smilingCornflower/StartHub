@@ -24,7 +24,7 @@ class AbstractReadRepository(ABC, Generic[T, F, ID]):
         pass
 
 
-class AbstractWriteRepository(ABC, Generic[T, C, U]):
+class AbstractWriteRepository(ABC, Generic[T, C, U, ID]):
     @abstractmethod
     def create(self, data: C) -> T:
         pass
@@ -35,6 +35,6 @@ class AbstractWriteRepository(ABC, Generic[T, C, U]):
         pass
 
     @abstractmethod
-    def delete_by_id(self, id_: Id) -> None:
+    def delete_by_id(self, id_: ID) -> None:
         """:raises domain.exception.NotFoundException:"""
         pass

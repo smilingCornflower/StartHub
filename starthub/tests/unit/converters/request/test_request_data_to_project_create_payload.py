@@ -24,7 +24,7 @@ from domain.exceptions.validation import (
 )
 from domain.value_objects.common import Id
 from domain.value_objects.file import ImageFile
-from domain.value_objects.project_management import ProjectCreateCommand
+from domain.value_objects.project.project import ProjectCreateCommand
 from loguru import logger
 from presentation.request_converters.project.request_to_project_create_command import request_to_project_create_command
 
@@ -50,6 +50,10 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
                 "funding_model_id": 2,
                 "deadline": (date.today() + timedelta(days=90)).isoformat(),
                 "stage": "idea",
+                "project_steps": [
+                    {"name": "step 1", "description": "description 1", "date": "2042-10-22"},
+                    {"name": "step2", "description": "description 2", "date": "2077-12-10"},
+                ],
                 "goal_sum": 1700000.00,
                 "phone_number": "+77026882938",
                 "social_links": {

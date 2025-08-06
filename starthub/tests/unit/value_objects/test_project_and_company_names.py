@@ -4,7 +4,7 @@ from domain.exceptions.company import CompanyNameIsTooLongException
 from domain.exceptions.project_management import ProjectNameIsTooLongException
 from domain.exceptions.validation import EmptyStringException
 from domain.value_objects.company import CompanyName
-from domain.value_objects.project_management import ProjectName
+from domain.value_objects.project.common import ProjectName
 
 
 class TestProjectAndCompanyName(SimpleTestCase):

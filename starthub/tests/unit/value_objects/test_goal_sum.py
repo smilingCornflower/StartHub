@@ -1,6 +1,6 @@
 from django.test import SimpleTestCase
 from domain.exceptions.project_management import NegativeProjectGoalSumException
-from domain.value_objects.project_management import GoalSum
+from domain.value_objects.project.common import GoalSum
 
 
 class TestGoalSum(SimpleTestCase):

@@ -1,7 +1,7 @@
-from domain.models.project import TeamMember
+from domain.models.project_management.team_member import TeamMember
 from domain.ports.service import AbstractDomainService
-from domain.repositories.project_management import TeamMemberReadRepository, TeamMemberWriteRepository
-from domain.value_objects.project_management import TeamMemberCreatePayload
+from domain.repositories.project.team_member import TeamMemberReadRepository, TeamMemberWriteRepository
+from domain.value_objects.project.team_member import TeamMemberCreatePayload
 
 
 class TamMemberService(AbstractDomainService):

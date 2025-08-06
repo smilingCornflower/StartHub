@@ -3,10 +3,10 @@ from datetime import date, timedelta
 from domain.enums.project_stage import ProjectStageEnum
 from domain.enums.project_status import ProjectStatusEnum
 from domain.models.company import Company, CompanyFounder
-from domain.models.funding_model import FundingModel
 from domain.models.geo.country import Country
-from domain.models.project import Project
-from domain.models.project_category import ProjectCategory
+from domain.models.project_management.category import ProjectCategory
+from domain.models.project_management.funding_model import FundingModel
+from domain.models.project_management.project import Project
 from domain.value_objects.common import Id
 
 

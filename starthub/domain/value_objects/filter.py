@@ -4,7 +4,7 @@ from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Sl
 from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode, CountryId
 from domain.value_objects.geo import AddressId, CityId, RegionId
-from domain.value_objects.project_management import ProjectStage, ProjectStatus
+from domain.value_objects.project.common import ProjectStage, ProjectStatus
 from domain.value_objects.user import Email
 
 
@@ -111,3 +111,7 @@ class CityFilter(AbstractFilter):
 
 class RegionFilter(AbstractFilter):
     pass
+
+
+class ProjectStepFilter(AbstractFilter):
+    project_id: Id | None = None

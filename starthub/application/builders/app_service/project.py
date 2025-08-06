@@ -11,12 +11,11 @@ from infrastructure.repositories.company import DjCompanyReadRepository
 from infrastructure.repositories.geo.city import DjCityReadRepository
 from infrastructure.repositories.geo.country import DjCountryReadRepository
 from infrastructure.repositories.geo.region import DjRegionReadRepository
-from infrastructure.repositories.project_management import (
-    DjFundingModelReadRepository,
-    DjProjectCategoryReadRepository,
-    DjProjectImageReadRepository,
-    DjProjectReadRepository,
-)
+from infrastructure.repositories.project.category import DjProjectCategoryReadRepository
+from infrastructure.repositories.project.funding_model import DjFundingModelReadRepository
+from infrastructure.repositories.project.image import DjProjectImageReadRepository
+from infrastructure.repositories.project.project import DjProjectReadRepository
+from infrastructure.repositories.project.step import DjProjectStepReadRepository
 from infrastructure.repositories.user import DjUserReadRepository
 from infrastructure.repositories.user_favorite import DjUserFavoriteReadRepository
 from infrastructure.services.project_search import ProjectSearchService
@@ -59,6 +58,7 @@ class ProjectGetAppServiceBuilder(AbstractAppServiceBuilder[ProjectGetAppService
             project_image_read_repository=DjProjectImageReadRepository(),
             project_category_read_repository=DjProjectCategoryReadRepository(),
             user_favorite_read_repository=DjUserFavoriteReadRepository(),
+            project_step_read_repository=DjProjectStepReadRepository(),
             project_search_service=ProjectSearchService(),
             cloud_storage=google_cloud_storage,
         )

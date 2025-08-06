@@ -42,6 +42,14 @@ class CompanyFullDto(CompanyDto):
 
 
 @dataclass(frozen=True)
+class ProjectStepDto:
+    id: int
+    name: str
+    description: str
+    date: date
+
+
+@dataclass(frozen=True)
 class ProjectDto:
     id: int
     name: str
@@ -59,3 +67,8 @@ class ProjectDto:
     stage: str
     status: str
     is_favorite: bool = False
+
+
+@dataclass(frozen=True)
+class ProjectFullDto(ProjectDto):
+    steps: list[ProjectStepDto] | None = None
