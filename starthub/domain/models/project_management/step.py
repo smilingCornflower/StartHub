@@ -9,6 +9,9 @@ class ProjectStep(BaseModel):
     description = models.TextField()
     date = models.DateField()
 
+    class Meta:
+        db_table = "project_steps"
+
     def __str__(self) -> str:
         return self.name
 
