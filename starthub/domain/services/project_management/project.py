@@ -1,6 +1,6 @@
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.permissions import DeleteDeniedPermissionException, UpdateDeniedPermissionException
-from domain.models.project import Project
+from domain.models.project_management.project import Project
 from domain.models.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project_management import ProjectWriteRepository

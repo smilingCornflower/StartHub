@@ -4,7 +4,7 @@ from django.core.management.base import BaseCommand
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.enums.role import RoleEnum
 from domain.models.permission import Permission
-from domain.models.project import Project
+from domain.models.project_management.project import Project
 from domain.models.role import Role
 from domain.services.permission import PermissionService
 from domain.value_objects.user import PermissionVo

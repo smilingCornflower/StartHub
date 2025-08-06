@@ -2,7 +2,7 @@ from domain.events.project import ProjectCreatedEvent
 from domain.models import ProjectPhone
 from domain.models.company import Company, CompanyFounder
 from domain.models.geo.address import Address
-from domain.models.project import ProjectImage
+from domain.models.project_management.image import ProjectImage
 from domain.ports.event import AbstractEventHandler
 from domain.services.address import AddressService
 from domain.services.company import CompanyFounderService, CompanyService

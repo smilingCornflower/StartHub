@@ -15,7 +15,7 @@ from application.services.gateway import gateway
 from domain.enums.token import TokenTypeEnum
 from domain.exceptions import CustomException
 from domain.exceptions.project_management import ProjectNotFoundException
-from domain.models.project import Project
+from domain.models.project_management.project import Project
 from domain.value_objects.common import Id, OffsetPagination, Pagination
 from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project_management import (

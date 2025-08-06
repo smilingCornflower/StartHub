@@ -29,7 +29,7 @@ from domain.models import Country
 from domain.models.funding_model import FundingModel
 from domain.models.geo.city import City
 from domain.models.geo.region import Region
-from domain.models.project_category import ProjectCategory
+from domain.models.project_management.category import ProjectCategory
 from domain.models.user import User
 from loguru import logger
 from presentation.response_factories.common import ProjectErrorResponseFactory

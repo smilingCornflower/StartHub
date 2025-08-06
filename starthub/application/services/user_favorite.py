@@ -4,7 +4,7 @@ from application.dto.project import ProjectDto
 from application.dto.user import UserFavoriteDto
 from application.ports.service import AbstractAppService
 from domain.models import Project
-from domain.models.project_category import ProjectCategory
+from domain.models.project_management.category import ProjectCategory
 from domain.models.user_favorite import UserFavorite
 from domain.repositories.project_management import ProjectCategoryReadRepository, ProjectReadRepository
 from domain.services.project_management.project import ProjectService

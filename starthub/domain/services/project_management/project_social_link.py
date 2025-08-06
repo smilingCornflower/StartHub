@@ -1,5 +1,5 @@
 from domain.exceptions.project_management import ProjectSocialLinkAlreadyExistsException
-from domain.models.project import ProjectSocialLink
+from domain.models.project_management.social_link import ProjectSocialLink
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project_management import ProjectSocialLinkReadRepository, ProjectSocialLinkWriteRepository
 from domain.value_objects.filter import ProjectSocialLinkFilter

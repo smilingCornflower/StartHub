@@ -10,8 +10,12 @@ from domain.exceptions.project_management import (
     TeamMemberNotFoundException,
 )
 from domain.models.funding_model import FundingModel
-from domain.models.project import Project, ProjectImage, ProjectPhone, ProjectSocialLink, TeamMember
-from domain.models.project_category import ProjectCategory
+from domain.models.project_management.project import Project
+from domain.models.project_management.phone import ProjectPhone
+from domain.models.project_management.image import ProjectImage
+from domain.models.project_management.social_link import ProjectSocialLink
+from domain.models.project_management.team_member import TeamMember
+from domain.models.project_management.category import ProjectCategory
 from domain.repositories.project_management import (
     FundingModelReadRepository,
     ProjectCategoryReadRepository,

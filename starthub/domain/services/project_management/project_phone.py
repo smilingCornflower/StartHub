@@ -1,5 +1,5 @@
 from domain.exceptions.project_management import ProjectPhoneAlreadyExistsException
-from domain.models.project import ProjectPhone
+from domain.models.project_management.phone import ProjectPhone
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project_management import ProjectPhoneReadRepository, ProjectPhoneWriteRepository
 from domain.value_objects.filter import ProjectPhoneFilter
