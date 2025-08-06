@@ -15,7 +15,7 @@ class DjProjectStepReadRepository(ProjectStepReadRepository):
 
 class DjProjectStepWriteRepositroy(ProjectStepWriteRepository):
     def create(self, data: ProjectStepCreatePaylaod) -> ProjectStep:
-        return ProjectStep(
+        return ProjectStep.objects.create(
             project_id=data.project_id.value,
             name=data.name.value,
             description=data.description.value,
