@@ -12,12 +12,10 @@ from domain.services.project_management.project_social_link import ProjectSocial
 from domain.services.project_management.team_member import TamMemberService
 from domain.value_objects.common import Id
 from domain.value_objects.company import CompanyCreateCommand, CompanyFounderCreateCommand, CompanyFounderCreatePayload
-from domain.value_objects.project_management import (
-    ProjectCreateCommand,
-    ProjectImageCreateCommand,
-    ProjectPhoneCreatePayload,
-    ProjectSocialLinkCreatePayload,
-)
+from domain.value_objects.project.image import ProjectImageCreateCommand
+from domain.value_objects.project.phone import ProjectPhoneCreatePayload
+from domain.value_objects.project.project import ProjectCreateCommand
+from domain.value_objects.project.social_link import ProjectSocialLinkCreatePayload
 from loguru import logger
 
 

@@ -20,7 +20,7 @@ from domain.value_objects.cloud_storage import (
 )
 from domain.value_objects.common import Id, Order
 from domain.value_objects.filter import ProjectImageFilter
-from domain.value_objects.project_management import (
+from domain.value_objects.project.image import (
     ProjectImageCreateCommand,
     ProjectImageCreatePayload,
     ProjectImageDeleteCommand,

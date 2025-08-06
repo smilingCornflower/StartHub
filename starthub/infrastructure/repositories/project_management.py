@@ -40,19 +40,15 @@ from domain.value_objects.filter import (
     ProjectSocialLinkFilter,
     TeamMemberFilter,
 )
-from domain.value_objects.project_management import (
-    ProjectCreatePayload,
+from domain.value_objects.project.image import (
     ProjectImageCreatePayload,
     ProjectImageDeletePayload,
     ProjectImageUpdatePayload,
-    ProjectPhoneCreatePayload,
-    ProjectPhoneUpdatePayload,
-    ProjectSocialLinkCreatePayload,
-    ProjectSocialLinkUpdatePayload,
-    ProjectUpdatePayload,
-    TeamMemberCreatePayload,
-    TeamMemberUpdatePayload,
 )
+from domain.value_objects.project.phone import ProjectPhoneCreatePayload, ProjectPhoneUpdatePayload
+from domain.value_objects.project.project import ProjectCreatePayload, ProjectUpdatePayload
+from domain.value_objects.project.social_link import ProjectSocialLinkCreatePayload, ProjectSocialLinkUpdatePayload
+from domain.value_objects.project.team_member import TeamMemberCreatePayload, TeamMemberUpdatePayload
 from infrastructure.repositories.pagination import apply_pagination
 
 

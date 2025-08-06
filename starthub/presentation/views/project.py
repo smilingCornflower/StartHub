@@ -18,13 +18,12 @@ from domain.exceptions.project_management import ProjectNotFoundException
 from domain.models.project_management.project import Project
 from domain.value_objects.common import Id, OffsetPagination, Pagination
 from domain.value_objects.filter import ProjectFilter
-from domain.value_objects.project_management import (
-    ProjectCreateCommand,
+from domain.value_objects.project.image import (
     ProjectImageCreateCommand,
     ProjectImageDeleteCommand,
     ProjectImageUpdateCommand,
-    ProjectUpdateCommand,
 )
+from domain.value_objects.project.project import ProjectCreateCommand, ProjectUpdateCommand
 from domain.value_objects.search import ProjectSearchParams
 from infrastructure.auth.token import (
     get_access_or_anonymous_payload_dto_from_headers,

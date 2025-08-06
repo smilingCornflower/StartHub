@@ -4,14 +4,9 @@ from typing import Any
 from django.core.files.uploadedfile import UploadedFile
 from domain.value_objects.common import DeadlineDate, Description, Id, Order
 from domain.value_objects.file import ImageFile, PdfFile
-from domain.value_objects.project_management import (
-    GoalSum,
-    ProjectImageCreateCommand,
-    ProjectImageUpdateCommand,
-    ProjectName,
-    ProjectStage,
-    ProjectUpdateCommand,
-)
+from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
+from domain.value_objects.project.image import ProjectImageCreateCommand, ProjectImageUpdateCommand
+from domain.value_objects.project.project import ProjectUpdateCommand
 from loguru import logger
 from presentation.request_converters.common import get_required_field, parse_date
 from rest_framework.request import Request

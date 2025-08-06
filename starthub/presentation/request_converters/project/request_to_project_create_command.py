@@ -8,13 +8,9 @@ from domain.value_objects.common import DeadlineDate, Description, FirstName, Id
 from domain.value_objects.company import BusinessNumber, CompanyFounderCreateCommand, CompanyName, EstablishedDate
 from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
-from domain.value_objects.project_management import (
-    GoalSum,
-    ProjectCreateCommand,
-    ProjectName,
-    ProjectStage,
-    TeamMemberCreateCommand,
-)
+from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
+from domain.value_objects.project.project import ProjectCreateCommand
+from domain.value_objects.project.team_member import TeamMemberCreateCommand
 from loguru import logger
 from presentation.request_converters.common import build_address_create_command, get_required_field, parse_date
 from rest_framework.request import Request

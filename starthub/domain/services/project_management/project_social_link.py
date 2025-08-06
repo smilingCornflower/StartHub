@@ -3,7 +3,7 @@ from domain.models.project_management.social_link import ProjectSocialLink
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project_management import ProjectSocialLinkReadRepository, ProjectSocialLinkWriteRepository
 from domain.value_objects.filter import ProjectSocialLinkFilter
-from domain.value_objects.project_management import ProjectSocialLinkCreatePayload
+from domain.value_objects.project.social_link import ProjectSocialLinkCreatePayload
 
 
 class ProjectSocialLinkService(AbstractDomainService):

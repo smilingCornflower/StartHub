@@ -42,10 +42,10 @@ from domain.value_objects.filter import (
     ProjectImageFilter,
 )
 from domain.value_objects.geo import CityId, RegionId
-from domain.value_objects.project_management import (
+from domain.value_objects.project.common import ProjectStatus
+from domain.value_objects.project.project import (
     ProjectCreateCommand,
     ProjectCreatePayload,
-    ProjectStatus,
     ProjectUpdateCommand,
     ProjectUpdatePayload,
 )

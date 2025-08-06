@@ -1,5 +1,5 @@
 from domain.ports.search import SearchParams
-from domain.value_objects.project_management import ProjectName
+from domain.value_objects.project.common import ProjectName
 
 
 class ProjectSearchParams(SearchParams):

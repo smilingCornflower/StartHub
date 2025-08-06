@@ -5,7 +5,7 @@ from domain.models.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project_management import ProjectWriteRepository
 from domain.services.permission import PermissionService
-from domain.value_objects.project_management import ProjectCreatePayload, ProjectUpdatePayload
+from domain.value_objects.project.project import ProjectCreatePayload, ProjectUpdatePayload
 from domain.value_objects.user import PermissionVo
 from loguru import logger
 

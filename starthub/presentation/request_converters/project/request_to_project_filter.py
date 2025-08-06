@@ -4,7 +4,7 @@ from typing import cast
 from django.http import QueryDict
 from domain.value_objects.common import Id, Slug
 from domain.value_objects.filter import ProjectFilter
-from domain.value_objects.project_management import ProjectStage, ProjectStatus
+from domain.value_objects.project.common import ProjectStage, ProjectStatus
 from loguru import logger
 from rest_framework.request import Request
 
