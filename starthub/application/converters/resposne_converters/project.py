@@ -10,6 +10,7 @@ def project_to_dto(
         id=project.id,
         name=project.name,
         slug=project.slug,
+        goal_descriptioin=project.goal_description,
         description=project.description,
         creator_id=project.creator.id,
         company=CompanyDto(

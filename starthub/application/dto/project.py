@@ -46,6 +46,7 @@ class ProjectDto:
     id: int
     name: str
     slug: str
+    goal_descriptioin: str | None
     description: str
     images: list[str]
     categories: list[CategoryDto]
