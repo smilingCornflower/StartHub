@@ -3,7 +3,12 @@ import uuid
 from datetime import date
 
 import phonenumbers
-from domain.constants import CHAR_FIELD_SHORT_LENGTH, DESCRIPTION_MAX_LENGTH, PAGINNATION_MAX_LMIT
+from domain.constants import (
+    CHAR_FIELD_MEDIUM_LENGTH,
+    CHAR_FIELD_SHORT_LENGTH,
+    DESCRIPTION_MAX_LENGTH,
+    PAGINNATION_MAX_LMIT,
+)
 from domain.enums.social_links import SocialPlatform
 from domain.exceptions.pagination import PaginationMaxLimitException
 from domain.exceptions.validation import (
@@ -30,6 +35,19 @@ class Uuid(BaseVo):
 
 class Slug(BaseVo):
     value: str
+
+
+class MediumString(BaseVo):
+    value: str
+
+    @field_validator("value", mode="after")
+    @classmethod
+    def validate_length(cls, value: str) -> str:
+        if not value.strip():
+            raise EmptyStringException("First name cannot be empty.")
+        if len(value) > CHAR_FIELD_MEDIUM_LENGTH:
+            raise StringIsTooLongException(f"String must be no longer than {CHAR_FIELD_MEDIUM_LENGTH} characters.")
+        return value
 
 
 class FirstName(BaseVo):
