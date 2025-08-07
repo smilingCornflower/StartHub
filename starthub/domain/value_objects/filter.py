@@ -115,3 +115,7 @@ class RegionFilter(AbstractFilter):
 
 class ProjectStepFilter(AbstractFilter):
     project_id: Id | None = None
+
+
+class ProjectIncubatorFilter(AbstractFilter):
+    pass

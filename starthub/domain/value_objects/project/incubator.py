@@ -1,5 +1,7 @@
 from domain.ports.command import BaseCommand
-from domain.value_objects.common import Id, LongString, Description
+from domain.ports.payload import AbstractCreatePayload
+from domain.value_objects.common import Description, Id, LongString
+from domain.value_objects.geo import AddressUpdatePayload
 
 
 class IncubatorId(Id):
@@ -15,7 +17,11 @@ class IncubatorCreateCommand(BaseCommand):
     description: Description
 
 
-class IncubatorCreatePayload(BaseCommand):
+class IncubatorCreatePayload(AbstractCreatePayload):
     project_id: Id
     name: IncubatorName
     description: Description
+
+
+class IncubatorUpdatePayload(AddressUpdatePayload):
+    pass

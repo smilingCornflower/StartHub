@@ -1,6 +1,7 @@
 from application.builders.domain_service.permission import PermissionServiceBuilder
 from application.ports.domain_service_builder import AbstractDomainServiceBuilder
 from domain.services.company import CompanyFounderService, CompanyService
+from domain.services.project_management.incubator import IncubatorService
 from domain.services.project_management.project import ProjectService
 from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
@@ -17,6 +18,7 @@ from infrastructure.repositories.company import (
 from infrastructure.repositories.geo.address import DjAddressWriteRepository
 from infrastructure.repositories.geo.country import DjCountryReadRepository
 from infrastructure.repositories.project.image import DjProjectImageReadRepository, DjProjectImageWriteRepository
+from infrastructure.repositories.project.incubator import DjProjectIncubatorWriteRepository
 from infrastructure.repositories.project.phone import DjProjectPhoneReadRepository, DjProjectPhoneWriteRepository
 from infrastructure.repositories.project.project import DjProjectReadRepository, DjProjectWriteRepository
 from infrastructure.repositories.project.social_link import (
@@ -100,4 +102,12 @@ class ProjectStepServiceBuilder(AbstractDomainServiceBuilder[ProjectStepService]
         return ProjectStepService(
             read_repository=DjProjectStepReadRepository(),
             write_repository=DjProjectStepWriteRepositroy(),
+        )
+
+
+class ProjectIncubatorServiceBuilder(AbstractDomainServiceBuilder[IncubatorService]):
+    @staticmethod
+    def create_service() -> IncubatorService:
+        return IncubatorService(
+            write_repository=DjProjectIncubatorWriteRepository(),
         )

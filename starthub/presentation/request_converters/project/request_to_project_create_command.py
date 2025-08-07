@@ -15,6 +15,7 @@ from domain.value_objects.company import (
 from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
+from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorName
 from domain.value_objects.project.project import ProjectCreateCommand
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
 from loguru import logger
@@ -63,6 +64,9 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
     # Process related entities
     team_members = _extract_team_members(data)
     company_founder = _extract_company_founder(data)
+    incubator = None
+    if "incubator" in data:
+        incubator = _extract_incubator(data)
 
     command = ProjectCreateCommand(
         **project_info,
@@ -71,6 +75,7 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
         images=project_images,
         team_members=team_members,
         company_founder=company_founder,
+        incubator=incubator,
     )
 
     logger.debug(f"command: \n{pformat(command.__dict__)}")
@@ -94,14 +99,25 @@ def _extract_project_info(project_data: dict[str, Any], user_id: int) -> dict[st
         "category_ids": [Id(value=i) for i in get_required_field(project_data, "category_ids")],
         "funding_model_id": Id(value=get_required_field(project_data, field="funding_model_id")),
         "stage": ProjectStage(value=get_required_field(project_data, field="stage")),
-        "steps": extract_steps(project_data),
         "goal_sum": GoalSum(value=get_required_field(project_data, field="goal_sum")),
         "deadline": DeadlineDate(value=parse_date(get_required_field(project_data, field="deadline"))),
         "social_links": [
             SocialLink(platform=k, link=v) for k, v in get_required_field(project_data, "social_links").items()
         ],
+        "steps": extract_steps(project_data),
         "phone_number": PhoneNumber(value=get_required_field(project_data, "phone_number")),
     }
+
+
+def _extract_incubator(project_data: dict[str, Any]) -> IncubatorCreateCommand:
+    incubator_data = _parse_json_field(project_data, "incubator")
+    logger.debug(f"incubator_data = {incubator_data}")
+
+    incubator = IncubatorCreateCommand(
+        name=IncubatorName(value=get_required_field(incubator_data, "name", "incubator.name")),
+        description=Description(value=get_required_field(incubator_data, "description", "incubator.description")),
+    )
+    return incubator
 
 
 def _extract_company_info(company_data: dict[str, Any]) -> dict[str, Any]:

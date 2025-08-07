@@ -52,6 +52,7 @@ class MediumString(BaseVo):
             raise StringIsTooLongException(f"String must be no longer than {CHAR_FIELD_MEDIUM_LENGTH} characters.")
         return value
 
+
 class LongString(BaseVo):
     value: str
 
