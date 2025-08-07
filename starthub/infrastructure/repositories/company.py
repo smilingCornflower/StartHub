@@ -1,4 +1,5 @@
 from django.db.models import QuerySet
+
 from domain.exceptions.company import CompanyFounderNotFoundException, CompanyNotFoundException
 from domain.models.company import Company, CompanyFounder
 from domain.repositories.company import (
@@ -67,6 +68,11 @@ class DjCompanyWriteRepository(CompanyWriteRepository):
             company.established_date = data.established_date.value
         if data.address_id is not None:
             company.address_id = data.address_id.value
+        if data.patent_number is not None:
+            if data.patent_number.value:
+                company.patent_number = data.patent_number.value
+            else:
+                company.patent_number = None
 
         company.save()
         return company

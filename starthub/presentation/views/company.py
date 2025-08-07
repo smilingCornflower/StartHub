@@ -44,6 +44,7 @@ class CompanyView(APIView):
                 request=request, company_id=company_id
             )
             logger.debug(f"command = {company_update_command}")
+
             gateway.company_app_service.update(command=company_update_command, user_id=user_id)
 
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)

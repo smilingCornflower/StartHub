@@ -64,4 +64,5 @@ class CompanyAppService(AbstractAppService):
             description=command.description,
             established_date=command.established_date,
             address_id=address_id,
+            patent_number=command.patent_number,
         )
