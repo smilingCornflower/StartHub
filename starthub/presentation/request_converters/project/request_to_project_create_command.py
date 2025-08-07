@@ -10,10 +10,10 @@ from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
 from domain.value_objects.project.project import ProjectCreateCommand
-from domain.value_objects.project.step import ProjectStepCreateCommand, ProjectStepDate, ProjectStepName
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
 from loguru import logger
 from presentation.request_converters.common import build_address_create_command, get_required_field, parse_date
+from presentation.request_converters.project.common import extract_steps
 from rest_framework.request import Request
 
 
@@ -88,7 +88,7 @@ def _extract_project_info(project_data: dict[str, Any], user_id: int) -> dict[st
         "category_ids": [Id(value=i) for i in get_required_field(project_data, "category_ids")],
         "funding_model_id": Id(value=get_required_field(project_data, field="funding_model_id")),
         "stage": ProjectStage(value=get_required_field(project_data, field="stage")),
-        "steps": _extract_steps(project_data),
+        "steps": extract_steps(project_data),
         "goal_sum": GoalSum(value=get_required_field(project_data, field="goal_sum")),
         "deadline": DeadlineDate(value=parse_date(get_required_field(project_data, field="deadline"))),
         "social_links": [
@@ -178,16 +178,3 @@ def _extract_company_founder(data: dict[str, Any]) -> CompanyFounderCreateComman
         surname=LastName(value=get_required_field(founder_data, "last_name", "founder_last_name")),
         description=Description(value=get_required_field(founder_data, "description", "founder_description")),
     )
-
-
-def _extract_steps(data: dict[str, Any]) -> list[ProjectStepCreateCommand]:
-    project_steps = get_required_field(data, "project_steps")
-
-    result: list[ProjectStepCreateCommand] = list()
-    for step in project_steps:
-        name = ProjectStepName(value=get_required_field(step, "name", "project_steps.name"))
-        description = Description(value=get_required_field(step, "description", "project_steps.description"))
-        step_date = ProjectStepDate(value=parse_date(get_required_field(step, "date", "project_steps.date")))
-        result.append(ProjectStepCreateCommand(name=name, description=description, date=step_date))
-
-    return result

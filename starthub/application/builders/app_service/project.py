@@ -1,4 +1,4 @@
-from application.builders.domain_service.project_management import ProjectServiceBuilder
+from application.builders.domain_service.project_management import ProjectServiceBuilder, ProjectStepServiceBuilder
 from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.project import (
     ProjectCreateAppService,
@@ -26,6 +26,7 @@ class ProjectCreateAppServiceBuilder(AbstractAppServiceBuilder[ProjectCreateAppS
     def create_service() -> ProjectCreateAppService:
         return ProjectCreateAppService(
             project_service=ProjectServiceBuilder.create_service(),
+            project_step_service=ProjectStepServiceBuilder.create_service(),
             cloud_storage=google_cloud_storage,
             user_read_repository=DjUserReadRepository(),
             funding_model_read_repository=DjFundingModelReadRepository(),
@@ -42,6 +43,7 @@ class ProjectUpdateAppServiceBuilder(AbstractAppServiceBuilder[ProjectUpdateAppS
     def create_service() -> ProjectUpdateAppService:
         return ProjectUpdateAppService(
             project_service=ProjectServiceBuilder.create_service(),
+            project_step_service=ProjectStepServiceBuilder.create_service(),
             user_read_repository=DjUserReadRepository(),
             project_read_repository=DjProjectReadRepository(),
             project_category_read_repository=DjProjectCategoryReadRepository(),

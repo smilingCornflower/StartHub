@@ -23,7 +23,7 @@ from infrastructure.repositories.project.social_link import (
     DjProjectSocialLinkReadRepository,
     DjProjectSocialLinkWriteRepository,
 )
-from infrastructure.repositories.project.step import DjProjectStepWriteRepositroy
+from infrastructure.repositories.project.step import DjProjectStepReadRepository, DjProjectStepWriteRepositroy
 from infrastructure.repositories.project.team_member import DjTeamMemberReadRepository, DjTeamMemberWriteRepository
 
 
@@ -98,5 +98,6 @@ class ProjectStepServiceBuilder(AbstractDomainServiceBuilder[ProjectStepService]
     @staticmethod
     def create_service() -> ProjectStepService:
         return ProjectStepService(
+            read_repository=DjProjectStepReadRepository(),
             write_repository=DjProjectStepWriteRepositroy(),
         )

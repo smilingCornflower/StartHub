@@ -49,6 +49,7 @@ class ProjectUpdateCommand(BaseCommand):
     funding_model_id: Id | None = None
     stage: ProjectStage | None = None
     goal_sum: GoalSum | None = None
+    steps: list[ProjectStepCreateCommand] | None = None
     deadline: DeadlineDate | None = None
     plan_file: PdfFile | None = None
 

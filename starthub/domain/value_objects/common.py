@@ -28,6 +28,9 @@ from pydantic import Field, ValidationInfo, field_validator
 class Id(BaseVo):
     value: int
 
+    def __int__(self) -> int:
+        return self.value
+
 
 class Uuid(BaseVo):
     value: str = Field(default_factory=lambda: str(uuid.uuid4()))
