@@ -1,5 +1,8 @@
 from datetime import date
 
+from pydantic import field_validator
+from pydantic_core.core_schema import ValidationInfo
+
 from domain.constants import CHAR_FIELD_MAX_LENGTH
 from domain.exceptions.company import CompanyNameIsTooLongException
 from domain.exceptions.validation import DateInFutureException, EmptyStringException
@@ -10,8 +13,6 @@ from domain.value_objects import BaseVo
 from domain.value_objects.common import Description, FirstName, Id, LastName
 from domain.value_objects.country import CountryCode
 from domain.value_objects.geo import AddressCreateCommand, AddressId
-from pydantic import field_validator
-from pydantic_core.core_schema import ValidationInfo
 
 
 class BusinessNumber(BaseVo):
@@ -59,6 +60,10 @@ class EstablishedDate(BaseVo):
         return value
 
 
+class PatentNumber(BaseVo):
+    value: str
+
+
 class CompanyFounderCreateCommand(BaseCommand):
     name: FirstName
     surname: LastName
@@ -86,6 +91,7 @@ class CompanyCreatePayload(AbstractCreatePayload, BaseVo):
     established_date: EstablishedDate
     description: Description
     address_id: Id
+    patent_number: PatentNumber | None
 
 
 class CompanyUpdatePayload(AbstractUpdatePayload):
@@ -94,6 +100,7 @@ class CompanyUpdatePayload(AbstractUpdatePayload):
     description: Description | None = None
     established_date: EstablishedDate | None = None
     address_id: AddressId | None = None
+    patent_number: PatentNumber | None = None
 
 
 class CompanyUpdateCommand(BaseCommand):
@@ -102,6 +109,7 @@ class CompanyUpdateCommand(BaseCommand):
     description: Description | None = None
     established_date: EstablishedDate | None = None
     address_create_command: AddressCreateCommand | None = None
+    patent_number: PatentNumber | None = None
 
 
 class CompanyCreateCommand(BaseCommand):
@@ -112,3 +120,4 @@ class CompanyCreateCommand(BaseCommand):
     established_date: EstablishedDate
     description: Description
     address_id: Id
+    patent_number: PatentNumber | None
