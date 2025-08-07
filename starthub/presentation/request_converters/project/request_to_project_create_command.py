@@ -5,7 +5,13 @@ from typing import Any, cast
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.datastructures import MultiValueDict
 from domain.value_objects.common import DeadlineDate, Description, FirstName, Id, LastName, PhoneNumber, SocialLink
-from domain.value_objects.company import BusinessNumber, CompanyFounderCreateCommand, CompanyName, EstablishedDate
+from domain.value_objects.company import (
+    BusinessNumber,
+    CompanyFounderCreateCommand,
+    CompanyName,
+    EstablishedDate,
+    PatentNumber,
+)
 from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
@@ -104,6 +110,10 @@ def _extract_company_info(company_data: dict[str, Any]) -> dict[str, Any]:
     address_create_command = build_address_create_command(
         get_required_field(company_data, "address", "company.address")
     )
+    patent_number: PatentNumber | None = None
+    if "patent_number" in company_data:
+        if company_data["patent_number"] is not None:
+            patent_number = PatentNumber(value=company_data["patent_number"])
 
     return {
         "company_name": CompanyName(value=get_required_field(company_data, "name", "company.name")),
@@ -115,6 +125,7 @@ def _extract_company_info(company_data: dict[str, Any]) -> dict[str, Any]:
         "established_date": EstablishedDate(
             value=parse_date(get_required_field(company_data, "established_date", "company.established_date"))
         ),
+        "patent_number": patent_number,
     }
 
 

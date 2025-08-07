@@ -4,7 +4,8 @@ from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
 from domain.value_objects.common import DeadlineDate, Description, Id, PhoneNumber, SocialLink
-from domain.value_objects.company import BusinessNumber, CompanyFounderCreateCommand, CompanyName, EstablishedDate
+from domain.value_objects.company import BusinessNumber, CompanyFounderCreateCommand, CompanyName, EstablishedDate, \
+    PatentNumber
 from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.geo import AddressCreateCommand
@@ -34,6 +35,7 @@ class ProjectCreateCommand(BaseCommand):
     company_address: AddressCreateCommand
     business_id: BusinessNumber
     established_date: EstablishedDate
+    patent_number: PatentNumber | None
 
     team_members: list[TeamMemberCreateCommand]
     company_founder: CompanyFounderCreateCommand

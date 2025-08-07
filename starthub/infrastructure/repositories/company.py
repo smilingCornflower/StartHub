@@ -49,6 +49,7 @@ class DjCompanyWriteRepository(CompanyWriteRepository):
             business_id=data.business_id.value,
             established_date=data.established_date.value,
             address_id=data.address_id.value,
+            patent_number=data.patent_number.value if data.patent_number else None,
         )
 
     def update(self, data: CompanyUpdatePayload) -> Company:

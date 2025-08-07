@@ -99,6 +99,7 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
             established_date=command.established_date,
             description=command.description,
             address_id=address_id,
+            patent_number=command.patent_number,
         )
 
     def _create_company_founder(self, command: ProjectCreateCommand, company_id: Id) -> CompanyFounder:
