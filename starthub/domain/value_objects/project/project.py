@@ -15,7 +15,7 @@ from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.geo import AddressCreateCommand
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage, ProjectStatus
-from domain.value_objects.project.incubator import IncubatorCreateCommand
+from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorUpdatePayload
 from domain.value_objects.project.step import ProjectStepCreateCommand
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
 
@@ -58,9 +58,10 @@ class ProjectUpdateCommand(BaseCommand):
     funding_model_id: Id | None = None
     stage: ProjectStage | None = None
     goal_sum: GoalSum | None = None
-    steps: list[ProjectStepCreateCommand] | None = None
     deadline: DeadlineDate | None = None
     plan_file: PdfFile | None = None
+    steps: list[ProjectStepCreateCommand] | None = None
+    incubator: IncubatorUpdatePayload | None = None
 
 
 class ProjectCreatePayload(AbstractCreatePayload, BaseVo):

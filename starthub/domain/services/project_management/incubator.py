@@ -1,6 +1,6 @@
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project.incubator import ProjectIncubatorWriteRepository
-from domain.value_objects.project.incubator import IncubatorCreatePayload
+from domain.value_objects.project.incubator import IncubatorCreatePayload, IncubatorUpdatePayload
 
 
 class IncubatorService(AbstractDomainService):
@@ -12,3 +12,6 @@ class IncubatorService(AbstractDomainService):
 
     def create(self, payload: IncubatorCreatePayload) -> None:
         self._write_repository.create(data=payload)
+
+    def update(self, payload: IncubatorUpdatePayload) -> None:
+        self._write_repository.update(data=payload)

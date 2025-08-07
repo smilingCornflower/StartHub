@@ -116,3 +116,12 @@ class ProjectStepException(ProjectException):
 
 class ProjectStepMaxAmountException(ProjectStepException):
     pass
+
+
+# ==== Project Incubator Exceptions ====
+class ProjectIncubatorException(ProjectException):
+    pass
+
+
+class ProjectIncubatorNotFoundException(ProjectIncubatorException, NotFoundException):
+    pass

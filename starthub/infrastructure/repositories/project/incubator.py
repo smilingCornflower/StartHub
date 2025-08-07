@@ -1,3 +1,4 @@
+from domain.exceptions.project_management import ProjectIncubatorNotFoundException
 from domain.models.project_management.incubator import ProjectIncubator
 from domain.repositories.project.incubator import PojectIncubatorReadRepository, ProjectIncubatorWriteRepository
 from domain.value_objects.common import Pagination
@@ -29,7 +30,19 @@ class DjProjectIncubatorWriteRepository(ProjectIncubatorWriteRepository):
         )
 
     def update(self, data: IncubatorUpdatePayload) -> ProjectIncubator:
-        raise NotImplementedError("The method update() is not implemented yet.")
+        incubator: ProjectIncubator | None = ProjectIncubator.objects.filter(project_id=data.project_id.value).first()
+        if incubator is None:
+            raise ProjectIncubatorNotFoundException(
+                f"Project with id {data.project_id.value} does not have an incubator."
+            )
+
+        if data.name is not None:
+            incubator.name = data.name.value
+        if data.description is not None:
+            incubator.description = data.description.value
+
+        incubator.save()
+        return incubator
 
     def delete_by_id(self, id_: IncubatorId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")

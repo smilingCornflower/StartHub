@@ -1,4 +1,8 @@
-from application.builders.domain_service.project_management import ProjectServiceBuilder, ProjectStepServiceBuilder
+from application.builders.domain_service.project_management import (
+    ProjectIncubatorServiceBuilder,
+    ProjectServiceBuilder,
+    ProjectStepServiceBuilder,
+)
 from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.project import (
     ProjectCreateAppService,
@@ -45,6 +49,8 @@ class ProjectUpdateAppServiceBuilder(AbstractAppServiceBuilder[ProjectUpdateAppS
         return ProjectUpdateAppService(
             project_service=ProjectServiceBuilder.create_service(),
             project_step_service=ProjectStepServiceBuilder.create_service(),
+            incubator_service=ProjectIncubatorServiceBuilder.create_service(),
+            incubator_read_repository=DjProjectIncubatorReadRepository(),
             user_read_repository=DjUserReadRepository(),
             project_read_repository=DjProjectReadRepository(),
             project_category_read_repository=DjProjectCategoryReadRepository(),

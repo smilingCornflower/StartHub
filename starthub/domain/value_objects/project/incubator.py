@@ -24,4 +24,6 @@ class IncubatorCreatePayload(AbstractCreatePayload):
 
 
 class IncubatorUpdatePayload(AddressUpdatePayload):
-    pass
+    project_id: Id
+    name: IncubatorName
+    description: Description
