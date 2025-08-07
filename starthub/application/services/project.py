@@ -1,7 +1,7 @@
 from dataclasses import asdict
 
 from application.converters.resposne_converters.project import project_to_dto
-from application.dto.project import ProjectDto, ProjectFullDto, ProjectStepDto
+from application.dto.project import IncubatorDto, ProjectDto, ProjectFullDto, ProjectStepDto
 from application.ports.service import AbstractAppService
 from django.db import transaction
 from domain.enums.project_status import ProjectStatusEnum
@@ -14,6 +14,7 @@ from domain.models import Country
 from domain.models.company import Company
 from domain.models.project_management.category import ProjectCategory
 from domain.models.project_management.image import ProjectImage
+from domain.models.project_management.incubator import ProjectIncubator
 from domain.models.project_management.project import Project
 from domain.models.project_management.step import ProjectStep
 from domain.models.user import User
@@ -25,6 +26,7 @@ from domain.repositories.geo.region import RegionReadRepository
 from domain.repositories.project.category import ProjectCategoryReadRepository
 from domain.repositories.project.funding_model import FundingModelReadRepository
 from domain.repositories.project.image import ProjectImageReadRepository
+from domain.repositories.project.incubator import PojectIncubatorReadRepository
 from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.project.step import ProjectStepReadRepository
 from domain.repositories.user import UserReadRepository
@@ -43,6 +45,7 @@ from domain.value_objects.filter import (
     ProjectCategoryFilter,
     ProjectFilter,
     ProjectImageFilter,
+    ProjectIncubatorFilter,
     ProjectStepFilter,
 )
 from domain.value_objects.geo import CityId, RegionId
@@ -187,6 +190,7 @@ class ProjectGetAppService(AbstractAppService):
         project_category_read_repository: ProjectCategoryReadRepository,
         user_favorite_read_repository: UserFavoriteReadRepository,
         project_step_read_repository: ProjectStepReadRepository,
+        project_incubator_read_repository: PojectIncubatorReadRepository,
         project_search_service: ProjectSearchService,
         cloud_storage: AbstractCloudStorage,
     ):
@@ -195,6 +199,7 @@ class ProjectGetAppService(AbstractAppService):
         self._project_category_read_repository = project_category_read_repository
         self._user_favorite_read_repository = user_favorite_read_repository
         self._project_step_read_repository = project_step_read_repository
+        self._project_incubator_read_repository = project_incubator_read_repository
         self._project_search_service = project_search_service
         self._cloud_storage = cloud_storage
 
@@ -231,15 +236,29 @@ class ProjectGetAppService(AbstractAppService):
 
     def _create_full_dto(self, project: Project, user_id: Id | None = None) -> ProjectFullDto:
         project_dto: ProjectDto = self._create_dto(project=project, user_id=user_id)
+        steps: list[ProjectStepDto] = self._get_step_dtos(project_id=Id(value=project.id))
+        incubator: IncubatorDto | None = self._get_incubator_dto_if_present(project_id=Id(value=project.id))
 
+        return ProjectFullDto(**asdict(project_dto), steps=steps, incubator=incubator)
+
+    def _get_incubator_dto_if_present(self, project_id: Id) -> IncubatorDto | None:
+        incubators: list[ProjectIncubator] = self._project_incubator_read_repository.get_all(
+            filter_=ProjectIncubatorFilter(project_id=project_id)
+        )
+        if incubators:
+            incubator: ProjectIncubator = incubators[0]
+            return IncubatorDto(id=incubator.id, name=incubator.name, description=incubator.description)
+        else:
+            return None
+
+    def _get_step_dtos(self, project_id: Id) -> list[ProjectStepDto]:
         steps: list[ProjectStep] = self._project_step_read_repository.get_all(
-            filter_=ProjectStepFilter(project_id=Id(value=project.id))
+            filter_=ProjectStepFilter(project_id=project_id)
         )
         step_dtos: list[ProjectStepDto] = list()
         for i in steps:
             step_dtos.append(ProjectStepDto(id=i.id, name=i.name, description=i.description, date=i.date))
-
-        return ProjectFullDto(**asdict(project_dto), steps=step_dtos)
+        return step_dtos
 
     def _is_project_favorite(self, project_id: Id, user_id: Id | None) -> bool:
         if user_id is None:

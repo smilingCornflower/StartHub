@@ -50,6 +50,13 @@ class ProjectStepDto:
 
 
 @dataclass(frozen=True)
+class IncubatorDto:
+    id: int
+    name: str
+    description: str
+
+
+@dataclass(frozen=True)
 class ProjectDto:
     id: int
     name: str
@@ -72,3 +79,4 @@ class ProjectDto:
 @dataclass(frozen=True)
 class ProjectFullDto(ProjectDto):
     steps: list[ProjectStepDto] | None = None
+    incubator: IncubatorDto | None = None

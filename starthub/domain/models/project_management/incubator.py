@@ -4,7 +4,7 @@ from domain.models.base import BaseModel
 
 
 class ProjectIncubator(BaseModel):
-    project = models.OneToOneField("domain.Project", on_delete=models.CASCADE)
+    project = models.OneToOneField("domain.Project", on_delete=models.CASCADE, related_name="incubator")
     name = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
     description = models.TextField()
 

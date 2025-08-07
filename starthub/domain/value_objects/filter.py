@@ -118,4 +118,4 @@ class ProjectStepFilter(AbstractFilter):
 
 
 class ProjectIncubatorFilter(AbstractFilter):
-    pass
+    project_id: Id | None = None
