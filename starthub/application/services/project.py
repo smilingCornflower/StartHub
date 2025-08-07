@@ -1,7 +1,7 @@
 from dataclasses import asdict
 
 from application.converters.resposne_converters.project import project_to_dto
-from application.dto.project import ProjectDto, ProjectFullDto, ProjectStepDto
+from application.dto.project import IncubatorDto, ProjectDto, ProjectFullDto, ProjectStepDto
 from application.ports.service import AbstractAppService
 from django.db import transaction
 from domain.enums.project_status import ProjectStatusEnum
@@ -14,6 +14,7 @@ from domain.models import Country
 from domain.models.company import Company
 from domain.models.project_management.category import ProjectCategory
 from domain.models.project_management.image import ProjectImage
+from domain.models.project_management.incubator import ProjectIncubator
 from domain.models.project_management.project import Project
 from domain.models.project_management.step import ProjectStep
 from domain.models.user import User
@@ -25,11 +26,14 @@ from domain.repositories.geo.region import RegionReadRepository
 from domain.repositories.project.category import ProjectCategoryReadRepository
 from domain.repositories.project.funding_model import FundingModelReadRepository
 from domain.repositories.project.image import ProjectImageReadRepository
+from domain.repositories.project.incubator import PojectIncubatorReadRepository
 from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.project.step import ProjectStepReadRepository
 from domain.repositories.user import UserReadRepository
 from domain.repositories.user_favorite import UserFavoriteReadRepository
+from domain.services.project_management.incubator import IncubatorService
 from domain.services.project_management.project import ProjectService
+from domain.services.project_management.step import ProjectStepService
 from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
 from domain.value_objects.common import Id, OffsetPagination, Pagination
@@ -42,16 +46,19 @@ from domain.value_objects.filter import (
     ProjectCategoryFilter,
     ProjectFilter,
     ProjectImageFilter,
+    ProjectIncubatorFilter,
     ProjectStepFilter,
 )
 from domain.value_objects.geo import CityId, RegionId
 from domain.value_objects.project.common import ProjectStatus
+from domain.value_objects.project.incubator import IncubatorCreatePayload, IncubatorUpdatePayload
 from domain.value_objects.project.project import (
     ProjectCreateCommand,
     ProjectCreatePayload,
     ProjectUpdateCommand,
     ProjectUpdatePayload,
 )
+from domain.value_objects.project.step import ProjectStepCreateCommand, ProjectStepCreatePaylaod
 from domain.value_objects.search import ProjectSearchParams
 from infrastructure.event_bus import EventBus
 from infrastructure.services.project_search import ProjectSearchService
@@ -62,6 +69,7 @@ class ProjectCreateAppService(AbstractAppService):
     def __init__(
         self,
         project_service: ProjectService,
+        project_step_service: ProjectStepService,
         cloud_storage: AbstractCloudStorage,
         user_read_repository: UserReadRepository,
         funding_model_read_repository: FundingModelReadRepository,
@@ -72,6 +80,7 @@ class ProjectCreateAppService(AbstractAppService):
         region_read_repository: RegionReadRepository,
     ):
         self._project_service = project_service
+        self._project_step_service = project_step_service
         self._cloud_storage = cloud_storage
         self._user_read_repository = user_read_repository
         self._funding_model_read_repository = funding_model_read_repository
@@ -80,6 +89,23 @@ class ProjectCreateAppService(AbstractAppService):
         self._project_category_read_repository = project_category_read_repository
         self._city_read_repository = city_read_repository
         self._region_read_repository = region_read_repository
+
+    def create(self, command: ProjectCreateCommand) -> Project:
+        logger.warning("Started creating project.")
+
+        self._validate_dependencies(command=command)
+        self._project_step_service.check_project_max_steps_limit(project_steps=command.steps)
+
+        plan_path: str = self._upload_plan(plan_file=command.plan_file)
+        create_payload: ProjectCreatePayload = self._convert_command_to_payload(command=command, plan_path=plan_path)
+
+        with transaction.atomic():
+            project: Project = self._project_service.create(payload=create_payload)
+
+            event = ProjectCreatedEvent(project_id=Id(value=project.id), command=command)
+            EventBus().publish(event)
+
+        return project
 
     def _validate_dependencies(self, command: ProjectCreateCommand) -> None:
         self._check_user_exists(user_id=command.creator_id)
@@ -157,23 +183,6 @@ class ProjectCreateAppService(AbstractAppService):
         assert project_plan_path == uploaded_path, "File uploaded in unexpected path."
         return uploaded_path
 
-    def create(self, command: ProjectCreateCommand) -> Project:
-        logger.warning("Started creating project.")
-
-        self._validate_dependencies(command=command)
-        self._project_service.check_project_max_steps_limit(project_steps=command.steps)
-
-        plan_path: str = self._upload_plan(plan_file=command.plan_file)
-        create_payload: ProjectCreatePayload = self._convert_command_to_payload(command=command, plan_path=plan_path)
-
-        with transaction.atomic():
-            project: Project = self._project_service.create(payload=create_payload)
-
-            event = ProjectCreatedEvent(project_id=Id(value=project.id), command=command)
-            EventBus().publish(event)
-
-        return project
-
 
 class ProjectGetAppService(AbstractAppService):
     def __init__(
@@ -183,6 +192,7 @@ class ProjectGetAppService(AbstractAppService):
         project_category_read_repository: ProjectCategoryReadRepository,
         user_favorite_read_repository: UserFavoriteReadRepository,
         project_step_read_repository: ProjectStepReadRepository,
+        project_incubator_read_repository: PojectIncubatorReadRepository,
         project_search_service: ProjectSearchService,
         cloud_storage: AbstractCloudStorage,
     ):
@@ -191,6 +201,7 @@ class ProjectGetAppService(AbstractAppService):
         self._project_category_read_repository = project_category_read_repository
         self._user_favorite_read_repository = user_favorite_read_repository
         self._project_step_read_repository = project_step_read_repository
+        self._project_incubator_read_repository = project_incubator_read_repository
         self._project_search_service = project_search_service
         self._cloud_storage = cloud_storage
 
@@ -227,15 +238,29 @@ class ProjectGetAppService(AbstractAppService):
 
     def _create_full_dto(self, project: Project, user_id: Id | None = None) -> ProjectFullDto:
         project_dto: ProjectDto = self._create_dto(project=project, user_id=user_id)
+        steps: list[ProjectStepDto] = self._get_step_dtos(project_id=Id(value=project.id))
+        incubator: IncubatorDto | None = self._get_incubator_dto_if_present(project_id=Id(value=project.id))
 
+        return ProjectFullDto(**asdict(project_dto), steps=steps, incubator=incubator)
+
+    def _get_incubator_dto_if_present(self, project_id: Id) -> IncubatorDto | None:
+        incubators: list[ProjectIncubator] = self._project_incubator_read_repository.get_all(
+            filter_=ProjectIncubatorFilter(project_id=project_id)
+        )
+        if incubators:
+            incubator: ProjectIncubator = incubators[0]
+            return IncubatorDto(id=incubator.id, name=incubator.name, description=incubator.description)
+        else:
+            return None
+
+    def _get_step_dtos(self, project_id: Id) -> list[ProjectStepDto]:
         steps: list[ProjectStep] = self._project_step_read_repository.get_all(
-            filter_=ProjectStepFilter(project_id=Id(value=project.id))
+            filter_=ProjectStepFilter(project_id=project_id)
         )
         step_dtos: list[ProjectStepDto] = list()
         for i in steps:
             step_dtos.append(ProjectStepDto(id=i.id, name=i.name, description=i.description, date=i.date))
-
-        return ProjectFullDto(**asdict(project_dto), steps=step_dtos)
+        return step_dtos
 
     def _is_project_favorite(self, project_id: Id, user_id: Id | None) -> bool:
         if user_id is None:
@@ -316,6 +341,9 @@ class ProjectUpdateAppService(AbstractAppService):
     def __init__(
         self,
         project_service: ProjectService,
+        project_step_service: ProjectStepService,
+        incubator_service: IncubatorService,
+        incubator_read_repository: PojectIncubatorReadRepository,
         user_read_repository: UserReadRepository,
         project_read_repository: ProjectReadRepository,
         project_category_read_repository: ProjectCategoryReadRepository,
@@ -323,6 +351,9 @@ class ProjectUpdateAppService(AbstractAppService):
         cloud_storage: AbstractCloudStorage,
     ):
         self._project_service = project_service
+        self._project_step_service = project_step_service
+        self._incubator_service = incubator_service
+        self._incubator_read_repository = incubator_read_repository
         self._user_read_repository = user_read_repository
         self._project_read_repository = project_read_repository
         self._project_category_read_repository = project_category_read_repository
@@ -343,6 +374,10 @@ class ProjectUpdateAppService(AbstractAppService):
             self._check_category_ids(category_ids=command.category_ids)
         if command.funding_model_id:
             self._check_funding_model_exists(funding_model_id=command.funding_model_id)
+        if command.steps:
+            self._update_project_steps(project=project, steps=command.steps)
+        if command.incubator:
+            self._update_incubator(project=project, incubator_payload=command.incubator)
 
         plan_path: str | None = None
         if command.plan_file:
@@ -357,6 +392,41 @@ class ProjectUpdateAppService(AbstractAppService):
         self._project_service.update(project=project, user=user, update_payload=payload)
 
         logger.info("Project updated successfully.")
+
+    def _update_incubator(self, project: Project, incubator_payload: IncubatorUpdatePayload) -> None:
+        incubators: list[ProjectIncubator] = self._incubator_read_repository.get_all(
+            ProjectIncubatorFilter(project_id=Id(value=project.id))
+        )
+        if not incubators:
+            logger.debug("Project has no incubator, started creating...")
+            self._incubator_service.create(
+                payload=IncubatorCreatePayload(
+                    project_id=incubator_payload.project_id,
+                    name=incubator_payload.name,
+                    description=incubator_payload.description,
+                )
+            )
+            logger.info("Incubator created successfully.")
+        else:
+            logger.debug("Project has incubator, started updating...")
+            self._incubator_service.update(payload=incubator_payload)
+            logger.info("Incubator updated successfully.")
+
+    def _update_project_steps(self, project: Project, steps: list[ProjectStepCreateCommand]) -> None:
+        self._project_step_service.check_project_max_steps_limit(project_steps=steps)
+        self._project_step_service.delete_all_for_project(project=project)
+
+        for step in steps:
+            step_model: ProjectStep = self._project_step_service.create(
+                paylaod=ProjectStepCreatePaylaod(
+                    project_id=Id(value=project.id),
+                    name=step.name,
+                    description=step.description,
+                    date=step.date,
+                )
+            )
+            logger.debug(f"Step with id = {step_model.id} created successfully.")
+        logger.info("All steps created successfully.")
 
     def _upload_plan_file(self, plan_path: str, plan_file: PdfFile) -> None:
         logger.debug("Updating: project_plan file.")

@@ -5,6 +5,7 @@ from application.builders.domain_service.project_management import (
     CompanyFounderServiceBuilder,
     CompanyServiceBuilder,
     ProjectImageServiceBuilder,
+    ProjectIncubatorServiceBuilder,
     ProjectPhoneServiceBuilder,
     ProjectSocialLinkServiceBuilder,
     ProjectStepServiceBuilder,
@@ -30,6 +31,7 @@ class ProjectCreatedEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):
             social_link_service=ProjectSocialLinkServiceBuilder.create_service(),
             address_service=AddressServiceBuilder.create_service(),
             project_step_service=ProjectStepServiceBuilder.create_service(),
+            incubator_service=ProjectIncubatorServiceBuilder.create_service(),
         )
 
 

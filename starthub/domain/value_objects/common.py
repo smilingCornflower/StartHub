@@ -28,6 +28,9 @@ from pydantic import Field, ValidationInfo, field_validator
 class Id(BaseVo):
     value: int
 
+    def __int__(self) -> int:
+        return self.value
+
 
 class Uuid(BaseVo):
     value: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -38,6 +41,19 @@ class Slug(BaseVo):
 
 
 class MediumString(BaseVo):
+    value: str
+
+    @field_validator("value", mode="after")
+    @classmethod
+    def validate_length(cls, value: str) -> str:
+        if not value.strip():
+            raise EmptyStringException("First name cannot be empty.")
+        if len(value) > CHAR_FIELD_MEDIUM_LENGTH:
+            raise StringIsTooLongException(f"String must be no longer than {CHAR_FIELD_MEDIUM_LENGTH} characters.")
+        return value
+
+
+class LongString(BaseVo):
     value: str
 
     @field_validator("value", mode="after")

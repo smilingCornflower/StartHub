@@ -68,6 +68,7 @@ class CompanyService(AbstractDomainService):
                 established_date=command.established_date,
                 description=command.description,
                 address_id=command.address_id,
+                patent_number=command.patent_number,
             )
         )
 

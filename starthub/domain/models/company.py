@@ -31,6 +31,7 @@ class Company(BaseModel):
     business_id = models.CharField(max_length=32, unique=True)
     established_date = models.DateField()
     address = models.ForeignKey("domain.Address", null=True, on_delete=models.SET_NULL)
+    patent_number = models.CharField(max_length=CHAR_FIELD_SHORT_LENGTH, null=True)
 
     class Meta:
         db_table = "companies"

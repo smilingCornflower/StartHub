@@ -3,11 +3,6 @@ from json.decoder import JSONDecodeError
 from pprint import pformat
 
 import pydantic
-from application.converters.request_converters.project import (
-    request_files_to_project_image_create_command,
-    request_project_data_to_project_images_update_command,
-    request_to_the_project_update_command,
-)
 from application.converters.request_converters.search import request_data_to_project_search_params
 from application.dto.auth import AccessPayloadDto, AnonymousPayloadDto
 from application.dto.project import ProjectDto
@@ -25,16 +20,22 @@ from domain.value_objects.project.image import (
 )
 from domain.value_objects.project.project import ProjectCreateCommand, ProjectUpdateCommand
 from domain.value_objects.search import ProjectSearchParams
-from infrastructure.auth.token import (
-    get_access_or_anonymous_payload_dto_from_headers,
-    get_access_payload_dto_from_headers,
-)
+from infrastructure.auth.token import get_access_or_anonymous_payload_dto_from_headers
 from infrastructure.auth.user import get_user_id_or_none, get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.request_converters.common import request_to_offset_pagination, request_to_pagination
+from presentation.request_converters.project.request_files_to_project_image_create_command import (
+    request_files_to_project_image_create_command,
+)
 from presentation.request_converters.project.request_to_project_create_command import request_to_project_create_command
 from presentation.request_converters.project.request_to_project_filter import request_to_project_filter
+from presentation.request_converters.project.request_to_project_images_update_command import (
+    request_project_data_to_project_images_update_command,
+)
+from presentation.request_converters.project.request_to_project_update_command import (
+    request_to_the_project_update_command,
+)
 from presentation.response_factories.common import ProjectErrorResponseFactory
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
@@ -82,10 +83,8 @@ class ProjectView(APIView):
         logger.warning("POST /projects/")
 
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(headers=request.headers)
-            command: ProjectCreateCommand = request_to_project_create_command(
-                request=request, user_id=int(access_dto.sub)
-            )
+            user_id: Id = get_user_id_or_raises(request=request)
+            command: ProjectCreateCommand = request_to_project_create_command(request=request, user_id=int(user_id))
 
             project: Project = gateway.project_create_app_service.create(command=command)
         except (CustomException, pydantic.ValidationError, JSONDecodeError) as e:
@@ -101,8 +100,10 @@ class ProjectView(APIView):
         try:
             user_id: Id = get_user_id_or_raises(request=request)
             command: ProjectUpdateCommand = request_to_the_project_update_command(
-                request=request, project_id=project_id, user_id=user_id.value
+                request=request, project_id=project_id, user_id=int(user_id)
             )
+            logger.debug(f"command: \n {pformat(command.__dict__)}")
+
             gateway.project_update_app_service.update(command=command)
             return Response({"detail": "updated successfully.", "code": SUCCESS}, status=status.HTTP_200_OK)
 

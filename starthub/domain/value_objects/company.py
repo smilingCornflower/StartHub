@@ -59,6 +59,10 @@ class EstablishedDate(BaseVo):
         return value
 
 
+class PatentNumber(BaseVo):
+    value: str
+
+
 class CompanyFounderCreateCommand(BaseCommand):
     name: FirstName
     surname: LastName
@@ -86,6 +90,7 @@ class CompanyCreatePayload(AbstractCreatePayload, BaseVo):
     established_date: EstablishedDate
     description: Description
     address_id: Id
+    patent_number: PatentNumber | None
 
 
 class CompanyUpdatePayload(AbstractUpdatePayload):
@@ -94,6 +99,7 @@ class CompanyUpdatePayload(AbstractUpdatePayload):
     description: Description | None = None
     established_date: EstablishedDate | None = None
     address_id: AddressId | None = None
+    patent_number: PatentNumber | None = None
 
 
 class CompanyUpdateCommand(BaseCommand):
@@ -102,6 +108,7 @@ class CompanyUpdateCommand(BaseCommand):
     description: Description | None = None
     established_date: EstablishedDate | None = None
     address_create_command: AddressCreateCommand | None = None
+    patent_number: PatentNumber | None = None
 
 
 class CompanyCreateCommand(BaseCommand):
@@ -112,3 +119,4 @@ class CompanyCreateCommand(BaseCommand):
     established_date: EstablishedDate
     description: Description
     address_id: Id
+    patent_number: PatentNumber | None

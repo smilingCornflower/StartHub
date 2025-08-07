@@ -1,4 +1,8 @@
-from application.builders.domain_service.project_management import ProjectServiceBuilder
+from application.builders.domain_service.project_management import (
+    ProjectIncubatorServiceBuilder,
+    ProjectServiceBuilder,
+    ProjectStepServiceBuilder,
+)
 from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.project import (
     ProjectCreateAppService,
@@ -14,6 +18,7 @@ from infrastructure.repositories.geo.region import DjRegionReadRepository
 from infrastructure.repositories.project.category import DjProjectCategoryReadRepository
 from infrastructure.repositories.project.funding_model import DjFundingModelReadRepository
 from infrastructure.repositories.project.image import DjProjectImageReadRepository
+from infrastructure.repositories.project.incubator import DjProjectIncubatorReadRepository
 from infrastructure.repositories.project.project import DjProjectReadRepository
 from infrastructure.repositories.project.step import DjProjectStepReadRepository
 from infrastructure.repositories.user import DjUserReadRepository
@@ -26,6 +31,7 @@ class ProjectCreateAppServiceBuilder(AbstractAppServiceBuilder[ProjectCreateAppS
     def create_service() -> ProjectCreateAppService:
         return ProjectCreateAppService(
             project_service=ProjectServiceBuilder.create_service(),
+            project_step_service=ProjectStepServiceBuilder.create_service(),
             cloud_storage=google_cloud_storage,
             user_read_repository=DjUserReadRepository(),
             funding_model_read_repository=DjFundingModelReadRepository(),
@@ -42,6 +48,9 @@ class ProjectUpdateAppServiceBuilder(AbstractAppServiceBuilder[ProjectUpdateAppS
     def create_service() -> ProjectUpdateAppService:
         return ProjectUpdateAppService(
             project_service=ProjectServiceBuilder.create_service(),
+            project_step_service=ProjectStepServiceBuilder.create_service(),
+            incubator_service=ProjectIncubatorServiceBuilder.create_service(),
+            incubator_read_repository=DjProjectIncubatorReadRepository(),
             user_read_repository=DjUserReadRepository(),
             project_read_repository=DjProjectReadRepository(),
             project_category_read_repository=DjProjectCategoryReadRepository(),
@@ -60,6 +69,7 @@ class ProjectGetAppServiceBuilder(AbstractAppServiceBuilder[ProjectGetAppService
             user_favorite_read_repository=DjUserFavoriteReadRepository(),
             project_step_read_repository=DjProjectStepReadRepository(),
             project_search_service=ProjectSearchService(),
+            project_incubator_read_repository=DjProjectIncubatorReadRepository(),
             cloud_storage=google_cloud_storage,
         )
 
