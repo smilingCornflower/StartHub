@@ -13,6 +13,7 @@ ProjectSocialLink = import_module("domain.models.project_management.social_link"
 ProjectCategory = import_module("domain.models.project_management.category").ProjectCategory
 ProjectStep = import_module("domain.models.project_management.step").ProjectStep
 ProjectIncubator = import_module("domain.models.project_management.incubator").ProjectIncubator
+ProjectAccelerator = import_module("domain.models.project_management.accelerator").ProjectAccelerator
 
 FundingModel = import_module("domain.models.project_management.funding_model").FundingModel
 Company = import_module("domain.models.company").Company
