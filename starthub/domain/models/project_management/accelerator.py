@@ -1,5 +1,4 @@
 from django.db import models
-
 from domain.constants import CHAR_FIELD_MAX_LENGTH
 from domain.models.base import BaseModel
 
@@ -10,7 +9,7 @@ class ProjectAccelerator(BaseModel):
     description = models.TextField()
 
     class Meta:
-        db_table = 'project_accelerators'
+        db_table = "project_accelerators"
 
     def __str__(self) -> str:
         return self.name
