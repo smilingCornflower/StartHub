@@ -34,7 +34,7 @@ class ProjectStepService(AbstractDomainService):
 
     @staticmethod
     def check_project_max_steps_limit(project_steps: list[ProjectStepCreateCommand]) -> None:
-        logger.debug(f"{project_steps=}")
+        logger.debug(f"project steps amount: {len(project_steps)}")
 
         if len(project_steps) > PROJECT_STEPS_MAX_AMOUNT:
             logger.exception("Project step limit exceeded: max allowed is {PROJECT_STEPS_MAX_AMOUNT}")

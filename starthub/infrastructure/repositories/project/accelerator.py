@@ -21,7 +21,11 @@ class DjProjectAcceleratorReadRepository(ProjectAcceleratorReadRepository):
 
 class DjProjectAcceleratorWriteRepository(ProjectAcceleratorWriteRepository):
     def create(self, data: ProjectAcceleratorCreatePayload) -> ProjectAccelerator:
-        raise NotImplementedError("The method create() is not implemented yet.")
+        return ProjectAccelerator.objects.create(
+            project_id=data.project_id.value,
+            name=data.name.value,
+            description=data.name.value,
+        )
 
     def update(self, data: ProjectAcceleratorUpdatePayload) -> ProjectAccelerator:
         raise NotImplementedError("The method update() is not implemented yet.")

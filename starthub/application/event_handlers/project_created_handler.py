@@ -7,6 +7,7 @@ from domain.models.project_management.step import ProjectStep
 from domain.ports.event import AbstractEventHandler
 from domain.services.address import AddressService
 from domain.services.company import CompanyFounderService, CompanyService
+from domain.services.project_management.accelerator import ProjectAcceleratorService
 from domain.services.project_management.incubator import IncubatorService
 from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
@@ -15,6 +16,7 @@ from domain.services.project_management.step import ProjectStepService
 from domain.services.project_management.team_member import TamMemberService
 from domain.value_objects.common import Id
 from domain.value_objects.company import CompanyCreateCommand, CompanyFounderCreateCommand, CompanyFounderCreatePayload
+from domain.value_objects.project.accelerator import ProjectAcceleratorCreateCommand, ProjectAcceleratorCreatePayload
 from domain.value_objects.project.image import ProjectImageCreateCommand
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorCreatePayload
 from domain.value_objects.project.phone import ProjectPhoneCreatePayload
@@ -36,6 +38,7 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         address_service: AddressService,
         project_step_service: ProjectStepService,
         incubator_service: IncubatorService,
+        accelerator_service: ProjectAcceleratorService,
     ):
         self._company_service = company_service
         self._company_founder_service = company_founder_service
@@ -46,6 +49,7 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         self._address_service = address_service
         self._project_step_service = project_step_service
         self._incubator_service = incubator_service
+        self._accelerator_service = accelerator_service
 
     def handle(self, event: ProjectCreatedEvent) -> None:
         logger.info(f"Event: {event.event_type} caught.")
@@ -58,8 +62,12 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         self._create_project_phone(command=command, project_id=project_id)
         self._create_social_links(command=command, project_id=project_id)
         self._create_project_steps(command=command, project_id=project_id)
+
         if command.incubator is not None:
             self._create_project_incubator(incubator_command=command.incubator, project_id=project_id)
+
+        if command.accelerator is not None:
+            self._create_project_accelerator(accelerator_command=command.accelerator, project_id=project_id)
 
         logger.info("All related models are created.")
 
@@ -71,6 +79,15 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         )
         self._incubator_service.create(payload=payload)
         logger.info("Incubator created successfully.")
+
+    def _create_project_accelerator(self, accelerator_command: ProjectAcceleratorCreateCommand, project_id: Id) -> None:
+        payload = ProjectAcceleratorCreatePayload(
+            project_id=project_id,
+            name=accelerator_command.name,
+            description=accelerator_command.description,
+        )
+        self._accelerator_service.create(payload=payload)
+        logger.info("Accelerator ctreated successfully.")
 
     def _create_project_steps(self, command: ProjectCreateCommand, project_id: Id) -> None:
         for project_step_create_command in command.steps:
