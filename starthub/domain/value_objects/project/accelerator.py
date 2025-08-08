@@ -19,7 +19,9 @@ class ProjectAcceleratorCreatePayload(AbstractCreatePayload):
 
 
 class ProjectAcceleratorUpdatePayload(AddressUpdatePayload):
-    pass
+    project_id: Id
+    name: AcceleratorName
+    description: Description
 
 
 class ProjectAcceleratorCreateCommand(BaseCommand):

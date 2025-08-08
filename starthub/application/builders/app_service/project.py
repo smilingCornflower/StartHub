@@ -1,4 +1,5 @@
 from application.builders.domain_service.project_management import (
+    ProjectAcceleratorServiceBuilder,
     ProjectIncubatorServiceBuilder,
     ProjectServiceBuilder,
     ProjectStepServiceBuilder,
@@ -15,6 +16,7 @@ from infrastructure.repositories.company import DjCompanyReadRepository
 from infrastructure.repositories.geo.city import DjCityReadRepository
 from infrastructure.repositories.geo.country import DjCountryReadRepository
 from infrastructure.repositories.geo.region import DjRegionReadRepository
+from infrastructure.repositories.project.accelerator import DjProjectAcceleratorReadRepository
 from infrastructure.repositories.project.category import DjProjectCategoryReadRepository
 from infrastructure.repositories.project.funding_model import DjFundingModelReadRepository
 from infrastructure.repositories.project.image import DjProjectImageReadRepository
@@ -50,7 +52,9 @@ class ProjectUpdateAppServiceBuilder(AbstractAppServiceBuilder[ProjectUpdateAppS
             project_service=ProjectServiceBuilder.create_service(),
             project_step_service=ProjectStepServiceBuilder.create_service(),
             incubator_service=ProjectIncubatorServiceBuilder.create_service(),
+            accelerator_service=ProjectAcceleratorServiceBuilder.create_service(),
             incubator_read_repository=DjProjectIncubatorReadRepository(),
+            accelerator_read_repository=DjProjectAcceleratorReadRepository(),
             user_read_repository=DjUserReadRepository(),
             project_read_repository=DjProjectReadRepository(),
             project_category_read_repository=DjProjectCategoryReadRepository(),
