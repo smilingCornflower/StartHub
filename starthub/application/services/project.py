@@ -1,7 +1,7 @@
 from dataclasses import asdict
 
 from application.converters.resposne_converters.project import project_to_dto
-from application.dto.project import IncubatorDto, ProjectDto, ProjectFullDto, ProjectStepDto
+from application.dto.project import AcceleratorDto, IncubatorDto, ProjectDto, ProjectFullDto, ProjectStepDto
 from application.ports.service import AbstractAppService
 from django.db import transaction
 from domain.enums.project_status import ProjectStatusEnum
@@ -198,6 +198,7 @@ class ProjectGetAppService(AbstractAppService):
         user_favorite_read_repository: UserFavoriteReadRepository,
         project_step_read_repository: ProjectStepReadRepository,
         project_incubator_read_repository: PojectIncubatorReadRepository,
+        project_accelerator_read_repository: ProjectAcceleratorReadRepository,
         project_search_service: ProjectSearchService,
         cloud_storage: AbstractCloudStorage,
     ):
@@ -207,6 +208,7 @@ class ProjectGetAppService(AbstractAppService):
         self._user_favorite_read_repository = user_favorite_read_repository
         self._project_step_read_repository = project_step_read_repository
         self._project_incubator_read_repository = project_incubator_read_repository
+        self._project_accelerator_read_repository = project_accelerator_read_repository
         self._project_search_service = project_search_service
         self._cloud_storage = cloud_storage
 
@@ -242,11 +244,24 @@ class ProjectGetAppService(AbstractAppService):
         return project_to_dto(project=project, categories=categories, image_links=image_urls, is_favorite=is_favorite)
 
     def _create_full_dto(self, project: Project, user_id: Id | None = None) -> ProjectFullDto:
+        project_id: Id = Id(value=project.id)
         project_dto: ProjectDto = self._create_dto(project=project, user_id=user_id)
-        steps: list[ProjectStepDto] = self._get_step_dtos(project_id=Id(value=project.id))
-        incubator: IncubatorDto | None = self._get_incubator_dto_if_present(project_id=Id(value=project.id))
 
-        return ProjectFullDto(**asdict(project_dto), steps=steps, incubator=incubator)
+        steps: list[ProjectStepDto] = self._get_step_dtos(project_id=project_id)
+        incubator: IncubatorDto | None = self._get_incubator_dto_if_present(project_id=project_id)
+        accelerator: AcceleratorDto | None = self._get_accelerator_dto_if_present(project_id=project_id)
+
+        return ProjectFullDto(**asdict(project_dto), steps=steps, incubator=incubator, accelerator=accelerator)
+
+    def _get_accelerator_dto_if_present(self, project_id: Id) -> AcceleratorDto | None:
+        accelerators: list[ProjectAccelerator] = self._project_accelerator_read_repository.get_all(
+            filter_=ProjectAcceleratorFilter(project_id=project_id)
+        )
+        if accelerators:
+            accelerator: ProjectAccelerator = accelerators[0]
+            return AcceleratorDto(id=accelerator.id, name=accelerator.name, description=accelerator.description)
+        else:
+            return None
 
     def _get_incubator_dto_if_present(self, project_id: Id) -> IncubatorDto | None:
         incubators: list[ProjectIncubator] = self._project_incubator_read_repository.get_all(

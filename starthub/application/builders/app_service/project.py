@@ -73,6 +73,7 @@ class ProjectGetAppServiceBuilder(AbstractAppServiceBuilder[ProjectGetAppService
             user_favorite_read_repository=DjUserFavoriteReadRepository(),
             project_step_read_repository=DjProjectStepReadRepository(),
             project_search_service=ProjectSearchService(),
+            project_accelerator_read_repository=DjProjectAcceleratorReadRepository(),
             project_incubator_read_repository=DjProjectIncubatorReadRepository(),
             cloud_storage=google_cloud_storage,
         )
