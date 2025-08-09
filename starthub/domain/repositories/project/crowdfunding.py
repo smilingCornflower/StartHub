@@ -11,7 +11,7 @@ from domain.value_objects.project.crowdfunding import (
 )
 
 
-class CrowdfundingReadRepository(
+class ProjectCrowdfundingReadRepository(
     AbstractReadRepository[ProjectCrowdfunding, ProjectCrowdfundingFilter, ProjectCrowdfundingId], ABC
 ):
     @abstractmethod
@@ -25,7 +25,7 @@ class CrowdfundingReadRepository(
         pass
 
 
-class CrowdundingWriteRepository(
+class ProjectCrowdfundingWriteRepository(
     AbstractWriteRepository[
         ProjectCrowdfunding, ProjectCrowdfundingCreatePayload, ProjectCrowdfundingUpdatePayload, ProjectCrowdfundingId
     ],
