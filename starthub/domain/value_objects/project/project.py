@@ -16,6 +16,7 @@ from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.geo import AddressCreateCommand
 from domain.value_objects.project.accelerator import ProjectAcceleratorCreateCommand, ProjectAcceleratorUpdatePayload
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage, ProjectStatus
+from domain.value_objects.project.crowdfunding import ProjectCrowdfundingCreateCommand
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorUpdatePayload
 from domain.value_objects.project.step import ProjectStepCreateCommand
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
@@ -36,8 +37,10 @@ class ProjectCreateCommand(BaseCommand):
     phone_number: PhoneNumber
     plan_file: PdfFile
     images: list[ImageFile]
+
     incubator: IncubatorCreateCommand | None
     accelerator: ProjectAcceleratorCreateCommand | None
+    crowdunding: ProjectCrowdfundingCreateCommand | None
 
     company_name: CompanyName
     country_code: CountryCode

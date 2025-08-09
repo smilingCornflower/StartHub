@@ -1,6 +1,6 @@
 from domain.exceptions import CustomException
 from domain.exceptions.repository import AlreadyExistsException, NotFoundException
-from domain.exceptions.validation import ValidationException
+from domain.exceptions.validation import NegativeNumberException, ValidationException
 
 
 class ProjectException(CustomException):
@@ -31,7 +31,7 @@ class ProjectNameIsTooLongException(ValidationException, ProjectException):
     pass
 
 
-class NegativeProjectGoalSumException(ValidationException, ProjectException):
+class NegativeProjectGoalSumException(NegativeNumberException, ProjectException):
     pass
 
 
@@ -133,4 +133,13 @@ class ProjectAcceleratorException(ProjectException):
 
 
 class ProjectAcceleratorNotFoundException(ProjectAcceleratorException, NotFoundException):
+    pass
+
+
+# ==== Project Crowdfunding Exceptions ====
+class ProjectCrowdfundingException(ProjectException):
+    pass
+
+
+class ProjectCrowdfundingMaxAmountException(ValidationException, ProjectCrowdfundingException):
     pass

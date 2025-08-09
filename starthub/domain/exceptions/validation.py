@@ -55,3 +55,7 @@ class DeadlineInPastException(ValidationException):
 
 class MissingFileExcpetion(ValidationException):
     pass
+
+
+class NegativeNumberException(ValidationException):
+    pass
