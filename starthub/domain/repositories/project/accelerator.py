@@ -42,3 +42,7 @@ class ProjectAcceleratorWriteRepository(
     @abstractmethod
     def delete_by_id(self, id_: AcceleratorId) -> None:
         pass
+
+    @abstractmethod
+    def delete(self, accelerator: ProjectAccelerator) -> None:
+        pass

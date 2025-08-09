@@ -16,4 +16,4 @@ class ProjectAccelerator(BaseModel):
 
     @classmethod
     def get_permission_key(cls) -> str:
-        return "accelerator"
+        return "project_accelerator"

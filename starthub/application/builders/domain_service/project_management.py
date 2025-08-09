@@ -120,4 +120,5 @@ class ProjectAcceleratorServiceBuilder(AbstractDomainServiceBuilder[ProjectAccel
     def create_service() -> ProjectAcceleratorService:
         return ProjectAcceleratorService(
             write_repository=DjProjectAcceleratorWriteRepository(),
+            permission_service=PermissionServiceBuilder.create_service(),
         )

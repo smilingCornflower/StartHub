@@ -13,7 +13,10 @@ from infrastructure.repositories.pagination import apply_pagination
 
 class DjProjectAcceleratorReadRepository(ProjectAcceleratorReadRepository):
     def get_by_id(self, id_: AcceleratorId) -> ProjectAccelerator:
-        raise NotImplementedError("The method get_by_id() is not implemented yet.")
+        accelerator: ProjectAccelerator | None = ProjectAccelerator.objects.filter(id=id_.value).first()
+        if accelerator is None:
+            raise ProjectAcceleratorNotFoundException(f"Project accelerator with id = {id_.value} not found.")
+        return accelerator
 
     def get_all(
         self, filter_: ProjectAcceleratorFilter, pagination: Pagination | None = None
@@ -55,3 +58,6 @@ class DjProjectAcceleratorWriteRepository(ProjectAcceleratorWriteRepository):
 
     def delete_by_id(self, id_: AcceleratorId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")
+
+    def delete(self, accelerator: ProjectAccelerator) -> None:
+        accelerator.delete()
