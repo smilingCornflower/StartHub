@@ -18,6 +18,7 @@ from infrastructure.repositories.geo.country import DjCountryReadRepository
 from infrastructure.repositories.geo.region import DjRegionReadRepository
 from infrastructure.repositories.project.accelerator import DjProjectAcceleratorReadRepository
 from infrastructure.repositories.project.category import DjProjectCategoryReadRepository
+from infrastructure.repositories.project.crowdfunding import DjProjectCrowdFundingReadRepository
 from infrastructure.repositories.project.funding_model import DjFundingModelReadRepository
 from infrastructure.repositories.project.image import DjProjectImageReadRepository
 from infrastructure.repositories.project.incubator import DjProjectIncubatorReadRepository
@@ -75,6 +76,7 @@ class ProjectGetAppServiceBuilder(AbstractAppServiceBuilder[ProjectGetAppService
             project_search_service=ProjectSearchService(),
             project_accelerator_read_repository=DjProjectAcceleratorReadRepository(),
             project_incubator_read_repository=DjProjectIncubatorReadRepository(),
+            project_crowdfunding_read_repository=DjProjectCrowdFundingReadRepository(),
             cloud_storage=google_cloud_storage,
         )
 

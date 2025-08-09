@@ -10,6 +10,7 @@ from domain.value_objects.project.crowdfunding import (
     ProjectCrowdfundingId,
     ProjectCrowdfundingUpdatePayload,
 )
+from infrastructure.repositories.pagination import apply_pagination
 
 
 class DjProjectCrowdfundingWriteRepository(ProjectCrowdfundingWriteRepository):
@@ -34,4 +35,11 @@ class DjProjectCrowdFundingReadRepository(ProjectCrowdfundingReadRepository):
     def get_all(
         self, filter_: ProjectCrowdfundingFilter, pagination: Pagination | None = None
     ) -> list[ProjectCrowdfunding]:
-        raise NotImplementedError("The method get_all() is not implemented yet.")
+        queryset = ProjectCrowdfunding.objects.all()
+
+        if filter_.project_id is not None:
+            queryset = queryset.filter(project_id=filter_.project_id.value)
+        if pagination:
+            return apply_pagination(queryset, pagination=pagination)
+
+        return list(queryset)

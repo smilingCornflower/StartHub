@@ -1,7 +1,14 @@
 from dataclasses import asdict
 
 from application.converters.resposne_converters.project import project_to_dto
-from application.dto.project import AcceleratorDto, IncubatorDto, ProjectDto, ProjectFullDto, ProjectStepDto
+from application.dto.project import (
+    AcceleratorDto,
+    CrowdfundingDto,
+    IncubatorDto,
+    ProjectDto,
+    ProjectFullDto,
+    ProjectStepDto,
+)
 from application.ports.service import AbstractAppService
 from django.db import transaction
 from domain.enums.project_status import ProjectStatusEnum
@@ -14,6 +21,7 @@ from domain.models import Country
 from domain.models.company import Company
 from domain.models.project_management.accelerator import ProjectAccelerator
 from domain.models.project_management.category import ProjectCategory
+from domain.models.project_management.crowdfunding import ProjectCrowdfunding
 from domain.models.project_management.image import ProjectImage
 from domain.models.project_management.incubator import ProjectIncubator
 from domain.models.project_management.project import Project
@@ -26,6 +34,7 @@ from domain.repositories.geo.city import CityReadRepository
 from domain.repositories.geo.region import RegionReadRepository
 from domain.repositories.project.accelerator import ProjectAcceleratorReadRepository
 from domain.repositories.project.category import ProjectCategoryReadRepository
+from domain.repositories.project.crowdfunding import ProjectCrowdfundingReadRepository
 from domain.repositories.project.funding_model import FundingModelReadRepository
 from domain.repositories.project.image import ProjectImageReadRepository
 from domain.repositories.project.incubator import PojectIncubatorReadRepository
@@ -48,6 +57,7 @@ from domain.value_objects.filter import (
     CountryFilter,
     ProjectAcceleratorFilter,
     ProjectCategoryFilter,
+    ProjectCrowdfundingFilter,
     ProjectFilter,
     ProjectImageFilter,
     ProjectIncubatorFilter,
@@ -199,6 +209,7 @@ class ProjectGetAppService(AbstractAppService):
         project_step_read_repository: ProjectStepReadRepository,
         project_incubator_read_repository: PojectIncubatorReadRepository,
         project_accelerator_read_repository: ProjectAcceleratorReadRepository,
+        project_crowdfunding_read_repository: ProjectCrowdfundingReadRepository,
         project_search_service: ProjectSearchService,
         cloud_storage: AbstractCloudStorage,
     ):
@@ -206,9 +217,12 @@ class ProjectGetAppService(AbstractAppService):
         self._project_image_read_repository = project_image_read_repository
         self._project_category_read_repository = project_category_read_repository
         self._user_favorite_read_repository = user_favorite_read_repository
+
         self._project_step_read_repository = project_step_read_repository
         self._project_incubator_read_repository = project_incubator_read_repository
         self._project_accelerator_read_repository = project_accelerator_read_repository
+        self._project_crowdfunding_read_repository = project_crowdfunding_read_repository
+
         self._project_search_service = project_search_service
         self._cloud_storage = cloud_storage
 
@@ -250,8 +264,21 @@ class ProjectGetAppService(AbstractAppService):
         steps: list[ProjectStepDto] = self._get_step_dtos(project_id=project_id)
         incubator: IncubatorDto | None = self._get_incubator_dto_if_present(project_id=project_id)
         accelerator: AcceleratorDto | None = self._get_accelerator_dto_if_present(project_id=project_id)
+        crowdfunding: CrowdfundingDto | None = self._get_crowdfunding_dto_if_present(project_id=project_id)
 
-        return ProjectFullDto(**asdict(project_dto), steps=steps, incubator=incubator, accelerator=accelerator)
+        return ProjectFullDto(
+            **asdict(project_dto), steps=steps, incubator=incubator, accelerator=accelerator, crowdfunding=crowdfunding
+        )
+
+    def _get_crowdfunding_dto_if_present(self, project_id: Id) -> CrowdfundingDto | None:
+        crowdfundings: list[ProjectCrowdfunding] = self._project_crowdfunding_read_repository.get_all(
+            filter_=ProjectCrowdfundingFilter(project_id=project_id)
+        )
+        if crowdfundings:
+            crowdfunding: ProjectCrowdfunding = crowdfundings[0]
+            return CrowdfundingDto(id=crowdfunding.id, name=crowdfunding.name, amount=crowdfunding.amount)
+        else:
+            return None
 
     def _get_accelerator_dto_if_present(self, project_id: Id) -> AcceleratorDto | None:
         accelerators: list[ProjectAccelerator] = self._project_accelerator_read_repository.get_all(
