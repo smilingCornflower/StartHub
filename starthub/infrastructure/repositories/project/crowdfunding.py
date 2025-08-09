@@ -14,7 +14,11 @@ from domain.value_objects.project.crowdfunding import (
 
 class DjProjectCrowdfundingWriteRepository(ProjectCrowdfundingWriteRepository):
     def create(self, data: ProjectCrowdfundingCreatePayload) -> ProjectCrowdfunding:
-        raise NotImplementedError("The method create() is not implemented yet.")
+        return ProjectCrowdfunding.objects.create(
+            project_id=data.project_id.value,
+            name=data.name.value,
+            amount=data.amount.value,
+        )
 
     def update(self, data: ProjectCrowdfundingUpdatePayload) -> ProjectCrowdfunding:
         raise NotImplementedError("The method update() is not implemented yet.")

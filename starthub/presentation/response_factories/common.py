@@ -24,6 +24,7 @@ from domain.exceptions.project_management import (
     NegativeProjectGoalSumException,
     ProjectAcceleratorNotFoundException,
     ProjectCategoryNotFoundException,
+    ProjectCrowdfundingMaxAmountException,
     ProjectImageMaxAmountException,
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
@@ -102,6 +103,7 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         InvalidProjectStatusException: ("INVALID_PROJECT_STATUS", 422),
         GeographicalInconsistencyException: ("GEOGRAPHICAL_INCONSISTENCY", 422),
         ProjectStepMaxAmountException: ("TOO_MANY_PROJECT_STEPS", 422),
+        ProjectCrowdfundingMaxAmountException: ("MAX_CROWDFUNDING_AMOUNT_EXCEEDED", 422),
     }
 
 

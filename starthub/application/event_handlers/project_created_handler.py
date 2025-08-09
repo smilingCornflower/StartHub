@@ -73,6 +73,9 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         if command.accelerator is not None:
             self._create_project_accelerator(accelerator_command=command.accelerator, project_id=project_id)
 
+        if command.crowdunding is not None:
+            self._create_project_crowdfunding(crowdfunding_command=command.crowdunding, project_id=project_id)
+
         logger.info("All related models are created.")
 
     def _create_project_crowdfunding(

@@ -20,7 +20,7 @@ class ProjectCrowdfundingAmount(PositiveNumber):
     @classmethod
     def validate_funding_max_amount(cls, value: float) -> float:
         """:raises ProjectCrowdfundingMaxAmountException:"""
-        if value > PROJECT_CROWDFUNDING_AMOUNT_MAX_DIGITS:
+        if value >= 10**PROJECT_CROWDFUNDING_AMOUNT_MAX_DIGITS:
             raise ProjectCrowdfundingMaxAmountException(
                 f"Funding amount {value} exceeds maximum allowed {PROJECT_CROWDFUNDING_AMOUNT_MAX_DIGITS}"
             )
