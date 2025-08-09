@@ -14,6 +14,7 @@ from domain.value_objects.company import (
 )
 from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
+from domain.value_objects.project.accelerator import AcceleratorName, ProjectAcceleratorCreateCommand
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorName
 from domain.value_objects.project.project import ProjectCreateCommand
@@ -64,9 +65,14 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
     # Process related entities
     team_members = _extract_team_members(data)
     company_founder = _extract_company_founder(data)
-    incubator = None
+
+    incubator: IncubatorCreateCommand | None = None
     if "incubator" in data:
-        incubator = _extract_incubator(data)
+        incubator = _extract_incubator(raw_data=data)
+
+    accelerator: ProjectAcceleratorCreateCommand | None = None
+    if "accelerator" in data:
+        accelerator = _extract_accelerator(raw_data=data)
 
     command = ProjectCreateCommand(
         **project_info,
@@ -76,6 +82,7 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
         team_members=team_members,
         company_founder=company_founder,
         incubator=incubator,
+        accelerator=accelerator,
     )
 
     logger.debug(f"command: \n{pformat(command.__dict__)}")
@@ -109,8 +116,19 @@ def _extract_project_info(project_data: dict[str, Any], user_id: int) -> dict[st
     }
 
 
-def _extract_incubator(project_data: dict[str, Any]) -> IncubatorCreateCommand:
-    incubator_data = _parse_json_field(project_data, "incubator")
+def _extract_accelerator(raw_data: dict[str, str]) -> ProjectAcceleratorCreateCommand:
+    accelerator_data = _parse_json_field(raw_data, "accelerator")
+    logger.debug(f"accelerator_data = {accelerator_data}")
+
+    accelerator = ProjectAcceleratorCreateCommand(
+        name=AcceleratorName(value=get_required_field(accelerator_data, "name")),
+        description=Description(value=get_required_field(accelerator_data, "description")),
+    )
+    return accelerator
+
+
+def _extract_incubator(raw_data: dict[str, str]) -> IncubatorCreateCommand:
+    incubator_data = _parse_json_field(raw_data, "incubator")
     logger.debug(f"incubator_data = {incubator_data}")
 
     incubator = IncubatorCreateCommand(

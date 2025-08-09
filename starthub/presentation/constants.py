@@ -1,5 +1,10 @@
 import pydantic
 from domain.exceptions.auth import InvalidTokenException, TokenExpiredException
+from domain.exceptions.permissions import (
+    AddDeniedPermissionException,
+    DeleteDeniedPermissionException,
+    UpdateDeniedPermissionException,
+)
 from domain.exceptions.validation import (
     DateIsNotIsoFormatException,
     EmptyStringException,
@@ -13,5 +18,8 @@ APPLICATION_ERROR_CODES: dict[type, tuple[str, int]] = {
     TokenExpiredException: ("TOKEN_EXPIRED", 401),
     InvalidTokenException: ("INVALID_TOKEN", 401),
     DateIsNotIsoFormatException: ("DATE_IS_NOT_ISO_FORMAT", 422),
+    AddDeniedPermissionException: ("ADD_PERMISSION_DENIED", 403),
+    DeleteDeniedPermissionException: ("DELETE_PERMISSION_DENIED", 403),
+    UpdateDeniedPermissionException: ("UPDATE_PERMISSION_DENIED", 403),
 }
 SUCCESS = "SUCCESS"

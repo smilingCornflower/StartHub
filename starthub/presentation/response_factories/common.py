@@ -17,16 +17,12 @@ from domain.exceptions.news import (
     NewsTitleIsTooLongException,
 )
 from domain.exceptions.pagination import PaginationMaxLimitException
-from domain.exceptions.permissions import (
-    AddDeniedPermissionException,
-    DeleteDeniedPermissionException,
-    UpdateDeniedPermissionException,
-)
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
     InvalidProjectStageException,
     InvalidProjectStatusException,
     NegativeProjectGoalSumException,
+    ProjectAcceleratorNotFoundException,
     ProjectCategoryNotFoundException,
     ProjectImageMaxAmountException,
     ProjectNameIsTooLongException,
@@ -100,9 +96,7 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         CountryNotFoundException: ("COUNTRY_NOT_FOUND", 404),
         DateInFutureException: ("DATE_IN_FUTURE_NOT_ALLOWED", 422),
         ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
-        DeleteDeniedPermissionException: ("DELETE_PERMISSION_DENIED", 403),
         DeadlineInPastException: ("DEADLINE_IN_PAST", 422),
-        UpdateDeniedPermissionException: ("UPDATE_DENIED", 403),
         ProjectImageMaxAmountException: ("TOO_MANY_IMAGES", 422),
         ImageFileTooLargeException: ("IMAGE_TOO_LARGE", 422),
         InvalidProjectStatusException: ("INVALID_PROJECT_STATUS", 422),
@@ -155,8 +149,6 @@ class UserFavoriteErrorResponseFactory(CommonErrorResponseFactory):
 
 class NewsErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
-        AddDeniedPermissionException: ("ADD_PERMISSION_DENIED", 403),
-        UpdateDeniedPermissionException: ("UPDATE_PERMISSION_DENIED", 403),
         NotSupportedImageFormatException: ("UNSUPPORTED_IMAGE_FORMAT", 400),
         ImageFileTooLargeException: ("IMAGE_TOO_LARGE", 422),
         NewsTitleIsTooLongException: ("NEWS_TITLE_TOO_LONG", 422),
@@ -166,10 +158,15 @@ class NewsErrorResponseFactory(CommonErrorResponseFactory):
         PaginationMaxLimitException: ("PAGINATION_LIMIT_EXCEEDED", 422),
         MissingFileExcpetion: ("MISSING_FILE", 400),
         NewsImagesMaxAmountException: ("TOO_MANY_IMAGES", 422),
-        DeleteDeniedPermissionException: ("DELETE_PERMISSION_DENIED", 403),
         NewsImageContentAndFileMismatchException: ("IMAGE_CONTENT_FILE_MISMATCH", 422),
     }
 
 
 class CompanyErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {}
+
+
+class AcceleratorErrorResponseFactory(CompanyErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectAcceleratorNotFoundException: ("PROJECT_ACCELERATOR_NOT_FOUND", 404),
+    }

@@ -119,3 +119,7 @@ class ProjectStepFilter(AbstractFilter):
 
 class ProjectIncubatorFilter(AbstractFilter):
     project_id: Id | None = None
+
+
+class ProjectAcceleratorFilter(AbstractFilter):
+    project_id: Id | None = None

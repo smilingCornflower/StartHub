@@ -4,6 +4,7 @@ from application.builders.domain_service.address import AddressServiceBuilder
 from application.builders.domain_service.project_management import (
     CompanyFounderServiceBuilder,
     CompanyServiceBuilder,
+    ProjectAcceleratorServiceBuilder,
     ProjectImageServiceBuilder,
     ProjectIncubatorServiceBuilder,
     ProjectPhoneServiceBuilder,
@@ -32,6 +33,7 @@ class ProjectCreatedEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):
             address_service=AddressServiceBuilder.create_service(),
             project_step_service=ProjectStepServiceBuilder.create_service(),
             incubator_service=ProjectIncubatorServiceBuilder.create_service(),
+            accelerator_service=ProjectAcceleratorServiceBuilder.create_service(),
         )
 
 

@@ -125,3 +125,12 @@ class ProjectIncubatorException(ProjectException):
 
 class ProjectIncubatorNotFoundException(ProjectIncubatorException, NotFoundException):
     pass
+
+
+# ==== Project Accelerator Exceptions ====
+class ProjectAcceleratorException(ProjectException):
+    pass
+
+
+class ProjectAcceleratorNotFoundException(ProjectAcceleratorException, NotFoundException):
+    pass

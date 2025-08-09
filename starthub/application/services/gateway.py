@@ -1,3 +1,4 @@
+from application.builders.app_service.accelerator import AcceleratorAppServiceBuilder
 from application.builders.app_service.auth import AuthAppServiceBuilder, RegistrationAppServiceBuilder
 from application.builders.app_service.company import CompanyAppServiceBuilder
 from application.builders.app_service.news import NewsAppServiceBuilder
@@ -10,6 +11,7 @@ from application.builders.app_service.project import (
 from application.builders.app_service.project_image import ProjectImageAppServiceBuilder
 from application.builders.app_service.user import UserAppServiceBuilder
 from application.builders.app_service.user_favorite import UserFavoriteAppAppServiceBuilder
+from application.services.accelerator import AcceleratorAppService
 from application.services.auth import AuthAppService, RegistrationAppService
 from application.services.company import CompanyAppService
 from application.services.news import NewsAppService
@@ -40,6 +42,7 @@ class Gateway:
     _user_favorite_app_service: UserFavoriteAppService | None = None
     _news_app_service: NewsAppService | None = None
     _company_app_service: CompanyAppService | None = None
+    _accelerator_app_service: AcceleratorAppService | None = None
 
     _cookie_service: CookieService | None = None
 
@@ -108,6 +111,12 @@ class Gateway:
         if self._company_app_service is None:
             self._company_app_service = CompanyAppServiceBuilder.create_service()
         return self._company_app_service
+
+    @property
+    def accelerator_app_service(self) -> AcceleratorAppService:
+        if self._accelerator_app_service is None:
+            self._accelerator_app_service = AcceleratorAppServiceBuilder.create_service()
+        return self._accelerator_app_service
 
     @property
     def cookie_service(self) -> CookieService:

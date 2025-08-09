@@ -14,6 +14,7 @@ from domain.value_objects.company import (
 from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.geo import AddressCreateCommand
+from domain.value_objects.project.accelerator import ProjectAcceleratorCreateCommand, ProjectAcceleratorUpdatePayload
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage, ProjectStatus
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorUpdatePayload
 from domain.value_objects.project.step import ProjectStepCreateCommand
@@ -36,6 +37,7 @@ class ProjectCreateCommand(BaseCommand):
     plan_file: PdfFile
     images: list[ImageFile]
     incubator: IncubatorCreateCommand | None
+    accelerator: ProjectAcceleratorCreateCommand | None
 
     company_name: CompanyName
     country_code: CountryCode
@@ -61,7 +63,9 @@ class ProjectUpdateCommand(BaseCommand):
     deadline: DeadlineDate | None = None
     plan_file: PdfFile | None = None
     steps: list[ProjectStepCreateCommand] | None = None
+
     incubator: IncubatorUpdatePayload | None = None
+    accelerator: ProjectAcceleratorUpdatePayload | None = None
 
 
 class ProjectCreatePayload(AbstractCreatePayload, BaseVo):

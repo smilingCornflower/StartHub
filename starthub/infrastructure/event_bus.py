@@ -18,7 +18,7 @@ class EventBus(AbstractEventBus):
         self._handlers[event_type].append(handler)
 
     def publish(self, event: AbstractEvent) -> None:
-        logger.debug(f"Publishing event '{event.event_type}' with payload: \n {event.__dict__}")
+        logger.debug(f"Publishing event {event.event_type}")
         handlers = self._handlers.get(event.event_type, [])
 
         for handler in handlers:
