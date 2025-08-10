@@ -428,7 +428,7 @@ class ProjectUpdateAppService(AbstractAppService):
         if command.steps:
             self._update_project_steps(project=project, steps=command.steps)
         if command.incubator:
-            self._update_incubator(project=project, incubator_payload=command.incubator)
+            self._update_incubator(user=user, project=project, incubator_payload=command.incubator)
         if command.accelerator:
             self._update_accelerator(project=project, accelerator_payload=command.accelerator)
 
@@ -465,7 +465,7 @@ class ProjectUpdateAppService(AbstractAppService):
             self._accelerator_service.update(payload=accelerator_payload)
             logger.info("Accelerator updated successfully.")
 
-    def _update_incubator(self, project: Project, incubator_payload: IncubatorUpdatePayload) -> None:
+    def _update_incubator(self, user: User, project: Project, incubator_payload: IncubatorUpdatePayload) -> None:
         incubators: list[ProjectIncubator] = self._incubator_read_repository.get_all(
             ProjectIncubatorFilter(project_id=Id(value=project.id))
         )
@@ -480,8 +480,9 @@ class ProjectUpdateAppService(AbstractAppService):
             )
             logger.info("Incubator created successfully.")
         else:
+            incubator: ProjectIncubator = incubators[0]
             logger.debug("Project has an incubator, started updating...")
-            self._incubator_service.update(payload=incubator_payload)
+            self._incubator_service.update(user=user, incubator=incubator, payload=incubator_payload)
             logger.info("Incubator updated successfully.")
 
     def _update_project_steps(self, project: Project, steps: list[ProjectStepCreateCommand]) -> None:

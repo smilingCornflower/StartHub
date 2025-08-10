@@ -47,8 +47,8 @@ def request_to_the_project_update_command(request: Request, project_id: int, use
         incubator_info = project_data["incubator"]
         incubator = IncubatorUpdatePayload(
             project_id=Id(value=project_id),
-            name=IncubatorName(value=incubator_info["name"]),
-            description=Description(value=incubator_info["description"]),
+            name=IncubatorName(value=incubator_info["name"]) if "name" in incubator_info else None,
+            description=Description(value=incubator_info["description"]) if "description" in incubator_info else None,
         )
     accelerator: ProjectAcceleratorUpdatePayload | None = None
     if "accelerator" in project_data:

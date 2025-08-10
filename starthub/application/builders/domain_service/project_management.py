@@ -114,6 +114,7 @@ class ProjectIncubatorServiceBuilder(AbstractDomainServiceBuilder[IncubatorServi
     def create_service() -> IncubatorService:
         return IncubatorService(
             write_repository=DjProjectIncubatorWriteRepository(),
+            permission_service=PermissionServiceBuilder.create_service(),
         )
 
 
