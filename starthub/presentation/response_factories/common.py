@@ -17,7 +17,6 @@ from domain.exceptions.news import (
     NewsTitleIsTooLongException,
 )
 from domain.exceptions.pagination import PaginationMaxLimitException
-from domain.exceptions.permissions import DeleteDeniedPermissionException
 from domain.exceptions.project_management import (
     FundingModelNotFoundException,
     InvalidProjectStageException,
@@ -25,12 +24,14 @@ from domain.exceptions.project_management import (
     NegativeProjectGoalSumException,
     ProjectAcceleratorNotFoundException,
     ProjectCategoryNotFoundException,
+    ProjectCrowdfundingAlreadyExistsException,
     ProjectCrowdfundingMaxAmountException,
+    ProjectCrowdfundingNotFoundException,
     ProjectImageMaxAmountException,
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
     ProjectPlanNotFoundException,
-    ProjectStepMaxAmountException, ProjectCrowdfundingNotFoundException,
+    ProjectStepMaxAmountException,
 )
 from domain.exceptions.user import EmailAlreadyExistsException, UserNotFoundException, UserPhoneAlreadyExistException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException, UserFavoriteNotFoundException
@@ -173,7 +174,11 @@ class AcceleratorErrorResponseFactory(CompanyErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
         ProjectAcceleratorNotFoundException: ("PROJECT_ACCELERATOR_NOT_FOUND", 404),
     }
+
+
 class CrowdfundingErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
         ProjectCrowdfundingNotFoundException: ("PROJECT_CROWDFUNDING_NOT_FOUND", 404),
+        ProjectCrowdfundingAlreadyExistsException: ("PROJECT_CROWDFUNDING_ALREADY_EXISTS", 409),
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
     }

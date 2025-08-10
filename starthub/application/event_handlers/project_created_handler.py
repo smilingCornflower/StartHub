@@ -1,8 +1,9 @@
 from domain.events.project import ProjectCreatedEvent
-from domain.models import ProjectPhone
+from domain.models import ProjectPhone, User
 from domain.models.company import Company, CompanyFounder
 from domain.models.geo.address import Address
 from domain.models.project_management.image import ProjectImage
+from domain.models.project_management.project import Project
 from domain.models.project_management.step import ProjectStep
 from domain.ports.event import AbstractEventHandler
 from domain.services.address import AddressService
@@ -59,7 +60,9 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         logger.info(f"Event: {event.event_type} caught.")
 
         command = event.command
-        project_id: Id = event.project_id
+        project_id: Id = Id(value=event.project.id)
+        user: User = event.user
+        project: Project = event.project
 
         self._create_company_and_founder(command=command, project_id=project_id)
         self._create_images(command=command, project_id=project_id)
@@ -74,19 +77,19 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
             self._create_project_accelerator(accelerator_command=command.accelerator, project_id=project_id)
 
         if command.crowdunding is not None:
-            self._create_project_crowdfunding(crowdfunding_command=command.crowdunding, project_id=project_id)
+            self._create_project_crowdfunding(user=user, project=project, crowdfunding_command=command.crowdunding)
 
         logger.info("All related models are created.")
 
     def _create_project_crowdfunding(
-        self, crowdfunding_command: ProjectCrowdfundingCreateCommand, project_id: Id
+        self, user: User, project: Project, crowdfunding_command: ProjectCrowdfundingCreateCommand
     ) -> None:
         payload = ProjectCrowdfundingCreatePayload(
-            project_id=project_id,
+            project_id=Id(value=project.id),
             name=crowdfunding_command.name,
             amount=crowdfunding_command.amount,
         )
-        self._crowdfunding_service.create(payload=payload)
+        self._crowdfunding_service.create(user=user, project=project, payload=payload)
         logger.info("Project crowdfunding created successfully.")
 
     def _create_project_incubator(self, incubator_command: IncubatorCreateCommand, project_id: Id) -> None:

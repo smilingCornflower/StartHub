@@ -12,10 +12,10 @@ from application.builders.app_service.project import (
 from application.builders.app_service.project_image import ProjectImageAppServiceBuilder
 from application.builders.app_service.user import UserAppServiceBuilder
 from application.builders.app_service.user_favorite import UserFavoriteAppAppServiceBuilder
-from application.services.project_management.accelerator import AcceleratorAppService
 from application.services.auth import AuthAppService, RegistrationAppService
 from application.services.company import CompanyAppService
 from application.services.news import NewsAppService
+from application.services.project_management.accelerator import AcceleratorAppService
 from application.services.project_management.crowdfunding import CrowdfundingAppService
 from application.services.project_management.project import (
     ProjectCreateAppService,

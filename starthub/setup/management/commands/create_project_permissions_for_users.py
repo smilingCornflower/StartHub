@@ -23,7 +23,6 @@ class Command(BaseCommand):
         self._assign_project_incubator_permission_for_users()
         self._assign_project_crowdfunding_permission_for_users()
 
-
     def assing_project_permissions_for_users(self) -> None:
         logger.warning("Started command: assing_project_permissions_for_users()")
         for action in [ActionEnum.CHANGE, ActionEnum.DELETE]:

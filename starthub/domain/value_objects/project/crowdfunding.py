@@ -35,10 +35,15 @@ class ProjectCrowdfundingCreatePayload(AbstractCreatePayload):
 
 class ProjectCrowdfundingUpdatePayload(AddressUpdatePayload):
     project_id: Id
-    name: ProjectCrowdfundingName
-    amount: ProjectCrowdfundingAmount
+    name: ProjectCrowdfundingName | None = None
+    amount: ProjectCrowdfundingAmount | None = None
 
 
 class ProjectCrowdfundingCreateCommand(BaseCommand):
     name: ProjectCrowdfundingName
     amount: ProjectCrowdfundingAmount
+
+
+class ProjectCrowdfundingUpdateCommand(BaseCommand):
+    name: ProjectCrowdfundingName | None = None
+    amount: ProjectCrowdfundingAmount | None = None

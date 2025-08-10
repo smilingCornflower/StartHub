@@ -6,11 +6,6 @@ from domain.value_objects.common import DeadlineDate, Description, Id
 from domain.value_objects.file import PdfFile
 from domain.value_objects.project.accelerator import AcceleratorName, ProjectAcceleratorUpdatePayload
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
-from domain.value_objects.project.crowdfunding import (
-    ProjectCrowdfundingAmount,
-    ProjectCrowdfundingName,
-    ProjectCrowdfundingUpdatePayload,
-)
 from domain.value_objects.project.incubator import IncubatorName, IncubatorUpdatePayload
 from domain.value_objects.project.project import ProjectUpdateCommand
 from loguru import logger
@@ -67,16 +62,6 @@ def request_to_the_project_update_command(request: Request, project_id: int, use
                 value=get_required_field(accelerator_info, "description", "accelerator.description")
             ),
         )
-    crowdfunding: ProjectCrowdfundingUpdatePayload | None = None
-    if "crowdfunding" in project_data:
-        crowdfunding_info = project_data["crowdfunding"]
-        crowdfunding = ProjectCrowdfundingUpdatePayload(
-            project_id=project_id_vo,
-            name=ProjectCrowdfundingName(value=get_required_field(crowdfunding_info, "name", "crowdfunding.name")),
-            amount=ProjectCrowdfundingAmount(
-                value=float(get_required_field(crowdfunding_info, "amount", "crowdfunding.amount"))
-            ),
-        )
 
     return ProjectUpdateCommand(
         project_id=project_id_vo,
@@ -93,5 +78,4 @@ def request_to_the_project_update_command(request: Request, project_id: int, use
         plan_file=project_plan,
         incubator=incubator,
         accelerator=accelerator,
-        crowdfunding=crowdfunding,
     )

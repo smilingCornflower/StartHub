@@ -12,5 +12,5 @@ urlpatterns = [
     path("<int:project_id>/images/", ProjectImageView.as_view()),
     path("<int:project_id>/images/<int:image_order>", ProjectImageView.as_view()),
     path("accelerators/<int:accelerator_id>/", AcceleratorView.as_view()),
-    path("crowdfundings/<int:crowdfunding_id>/", CrowdfundingView.as_view()),
+    path("crowdfundings/<int:project_id>/", CrowdfundingView.as_view()),
 ]

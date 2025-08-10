@@ -24,10 +24,14 @@ class DjProjectCrowdfundingWriteRepository(ProjectCrowdfundingWriteRepository):
 
     def update(self, data: ProjectCrowdfundingUpdatePayload) -> ProjectCrowdfunding:
         """:raises ProjectCrowdfundingNotFoundException:"""
-        crowdfunding: ProjectCrowdfunding | None = ProjectCrowdfunding.objects.filter(project_id=data.project_id.value).first()
+        crowdfunding: ProjectCrowdfunding | None = ProjectCrowdfunding.objects.filter(
+            project_id=data.project_id.value
+        ).first()
 
         if crowdfunding is None:
-            raise ProjectCrowdfundingNotFoundException(f"Crowdfunding with project_id = {data.project_id.value} not found.")
+            raise ProjectCrowdfundingNotFoundException(
+                f"Crowdfunding with project_id = {data.project_id.value} not found."
+            )
 
         if data.name:
             crowdfunding.name = data.name.value
@@ -35,7 +39,7 @@ class DjProjectCrowdfundingWriteRepository(ProjectCrowdfundingWriteRepository):
             crowdfunding.amount = data.amount.value
 
         crowdfunding.save()
-
+        return crowdfunding
 
     def delete_by_id(self, id_: ProjectCrowdfundingId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")
@@ -54,7 +58,7 @@ class DjProjectCrowdFundingReadRepository(ProjectCrowdfundingReadRepository):
         return crowdfunding
 
     def get_all(
-            self, filter_: ProjectCrowdfundingFilter, pagination: Pagination | None = None
+        self, filter_: ProjectCrowdfundingFilter, pagination: Pagination | None = None
     ) -> list[ProjectCrowdfunding]:
         queryset = ProjectCrowdfunding.objects.all()
 
