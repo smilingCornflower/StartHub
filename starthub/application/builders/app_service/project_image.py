@@ -1,6 +1,6 @@
 from application.builders.domain_service.project_management import ProjectImageServiceBuilder
 from application.ports.app_service_builder import AbstractAppServiceBuilder
-from application.services.project_image import ProjectImageAppService
+from application.services.project_management.project_image import ProjectImageAppService
 
 
 class ProjectImageAppServiceBuilder(AbstractAppServiceBuilder[ProjectImageAppService]):

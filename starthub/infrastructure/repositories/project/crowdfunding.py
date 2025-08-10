@@ -1,3 +1,4 @@
+from domain.exceptions.project_management import ProjectCrowdfundingNotFoundException
 from domain.models.project_management.crowdfunding import ProjectCrowdfunding
 from domain.repositories.project.crowdfunding import (
     ProjectCrowdfundingReadRepository,
@@ -22,18 +23,38 @@ class DjProjectCrowdfundingWriteRepository(ProjectCrowdfundingWriteRepository):
         )
 
     def update(self, data: ProjectCrowdfundingUpdatePayload) -> ProjectCrowdfunding:
-        raise NotImplementedError("The method update() is not implemented yet.")
+        """:raises ProjectCrowdfundingNotFoundException:"""
+        crowdfunding: ProjectCrowdfunding | None = ProjectCrowdfunding.objects.filter(project_id=data.project_id.value).first()
+
+        if crowdfunding is None:
+            raise ProjectCrowdfundingNotFoundException(f"Crowdfunding with project_id = {data.project_id.value} not found.")
+
+        if data.name:
+            crowdfunding.name = data.name.value
+        if data.amount:
+            crowdfunding.amount = data.amount.value
+
+        crowdfunding.save()
+
 
     def delete_by_id(self, id_: ProjectCrowdfundingId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")
 
+    def delete(self, crowdfunding: ProjectCrowdfunding) -> None:
+        crowdfunding.delete()
+
 
 class DjProjectCrowdFundingReadRepository(ProjectCrowdfundingReadRepository):
     def get_by_id(self, id_: ProjectCrowdfundingId) -> ProjectCrowdfunding:
-        raise NotImplementedError("The method get_by_id() is not implemented yet.")
+        """:raises ProjectCrowdfundingNotFoundException:"""
+        crowdfunding: ProjectCrowdfunding | None = ProjectCrowdfunding.objects.filter(id=id_.value).first()
+        if crowdfunding is None:
+            raise ProjectCrowdfundingNotFoundException(f"ProjectCrowdfunding with id = {id_.value} not found.")
+
+        return crowdfunding
 
     def get_all(
-        self, filter_: ProjectCrowdfundingFilter, pagination: Pagination | None = None
+            self, filter_: ProjectCrowdfundingFilter, pagination: Pagination | None = None
     ) -> list[ProjectCrowdfunding]:
         queryset = ProjectCrowdfunding.objects.all()
 

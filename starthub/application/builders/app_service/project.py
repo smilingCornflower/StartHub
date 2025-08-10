@@ -6,7 +6,7 @@ from application.builders.domain_service.project_management import (
     ProjectStepServiceBuilder,
 )
 from application.ports.app_service_builder import AbstractAppServiceBuilder
-from application.services.project import (
+from application.services.project_management.project import (
     ProjectCreateAppService,
     ProjectDeleteAppService,
     ProjectGetAppService,

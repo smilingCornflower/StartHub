@@ -143,3 +143,7 @@ class ProjectCrowdfundingException(ProjectException):
 
 class ProjectCrowdfundingMaxAmountException(ValidationException, ProjectCrowdfundingException):
     pass
+
+
+class ProjectCrowdfundingNotFoundException(NotFoundException, ProjectCrowdfundingException):
+    pass

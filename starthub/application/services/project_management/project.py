@@ -470,7 +470,7 @@ class ProjectUpdateAppService(AbstractAppService):
                 )
             )
         else:
-            logger.debug("Project has an accelerator, started updating...")
+            logger.debug("Project has an crowdfunding, started updating...")
             self._crowdfunding_service.update(user=user, payload=crowdfunding_payload)
             logger.info("Crowdfunding updated successfully.")
 

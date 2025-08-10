@@ -42,3 +42,7 @@ class ProjectCrowdfundingWriteRepository(
     @abstractmethod
     def delete_by_id(self, id_: ProjectCrowdfundingId) -> None:
         pass
+
+    @abstractmethod
+    def delete(self, crowdfunding: ProjectCrowdfunding) -> None:
+        pass
