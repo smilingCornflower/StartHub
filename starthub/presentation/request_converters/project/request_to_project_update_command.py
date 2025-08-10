@@ -55,9 +55,10 @@ def request_to_the_project_update_command(request: Request, project_id: int, use
         accelerator_info = project_data["accelerator"]
         accelerator = ProjectAcceleratorUpdatePayload(
             project_id=Id(value=project_id),
-            name=AcceleratorName(value=accelerator_info["name"]),
-            description=Description(value=accelerator_info["description"]),
+            name=AcceleratorName(value=accelerator_info["name"]) if "name" in accelerator_info else None,
+            description=Description(value=accelerator_info["description"]) if "description" in accelerator_info else None,
         )
+
     return ProjectUpdateCommand(
         project_id=Id(value=project_id),
         user_id=Id(value=user_id),
