@@ -16,6 +16,11 @@ from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.project.accelerator import AcceleratorName, ProjectAcceleratorCreateCommand
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
+from domain.value_objects.project.crowdfunding import (
+    ProjectCrowdfundingAmount,
+    ProjectCrowdfundingCreateCommand,
+    ProjectCrowdfundingName,
+)
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorName
 from domain.value_objects.project.project import ProjectCreateCommand
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
@@ -74,6 +79,10 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
     if "accelerator" in data:
         accelerator = _extract_accelerator(raw_data=data)
 
+    crowdfunding: ProjectCrowdfundingCreateCommand | None = None
+    if "crowdfunding" in data:
+        crowdfunding = _extract_crowdfunding(raw_data=data)
+
     command = ProjectCreateCommand(
         **project_info,
         **company_info,
@@ -83,6 +92,7 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
         company_founder=company_founder,
         incubator=incubator,
         accelerator=accelerator,
+        crowdunding=crowdfunding,
     )
 
     logger.debug(f"command: \n{pformat(command.__dict__)}")
@@ -114,6 +124,19 @@ def _extract_project_info(project_data: dict[str, Any], user_id: int) -> dict[st
         "steps": extract_steps(project_data),
         "phone_number": PhoneNumber(value=get_required_field(project_data, "phone_number")),
     }
+
+
+def _extract_crowdfunding(raw_data: dict[str, str]) -> ProjectCrowdfundingCreateCommand:
+    crowdfunding_data = _parse_json_field(raw_data, "crowdfunding")
+    logger.debug(f"crowdfunding_data = {crowdfunding_data}")
+
+    crowdfunding = ProjectCrowdfundingCreateCommand(
+        name=ProjectCrowdfundingName(value=get_required_field(crowdfunding_data, "name", "crowdfunding.name")),
+        amount=ProjectCrowdfundingAmount(
+            value=float(get_required_field(crowdfunding_data, "amount", "crowdfunding.amount"))
+        ),
+    )
+    return crowdfunding
 
 
 def _extract_accelerator(raw_data: dict[str, str]) -> ProjectAcceleratorCreateCommand:

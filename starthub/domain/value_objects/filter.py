@@ -123,3 +123,7 @@ class ProjectIncubatorFilter(AbstractFilter):
 
 class ProjectAcceleratorFilter(AbstractFilter):
     project_id: Id | None = None
+
+
+class ProjectCrowdfundingFilter(AbstractFilter):
+    project_id: Id | None = None

@@ -5,6 +5,7 @@ from application.builders.domain_service.project_management import (
     CompanyFounderServiceBuilder,
     CompanyServiceBuilder,
     ProjectAcceleratorServiceBuilder,
+    ProjectCrowdfundingServiceBuilder,
     ProjectImageServiceBuilder,
     ProjectIncubatorServiceBuilder,
     ProjectPhoneServiceBuilder,
@@ -34,6 +35,7 @@ class ProjectCreatedEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):
             project_step_service=ProjectStepServiceBuilder.create_service(),
             incubator_service=ProjectIncubatorServiceBuilder.create_service(),
             accelerator_service=ProjectAcceleratorServiceBuilder.create_service(),
+            crowdfunding_service=ProjectCrowdfundingServiceBuilder.create_service(),
         )
 
 

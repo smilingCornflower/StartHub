@@ -64,6 +64,13 @@ class AcceleratorDto:
 
 
 @dataclass(frozen=True)
+class CrowdfundingDto:
+    id: int
+    name: str
+    amount: float
+
+
+@dataclass(frozen=True)
 class ProjectDto:
     id: int
     name: str
@@ -88,3 +95,4 @@ class ProjectFullDto(ProjectDto):
     steps: list[ProjectStepDto] | None = None
     incubator: IncubatorDto | None = None
     accelerator: AcceleratorDto | None = None
+    crowdfunding: CrowdfundingDto | None = None

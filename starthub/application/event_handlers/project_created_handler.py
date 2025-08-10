@@ -1,13 +1,15 @@
 from domain.events.project import ProjectCreatedEvent
-from domain.models import ProjectPhone
+from domain.models import ProjectPhone, User
 from domain.models.company import Company, CompanyFounder
 from domain.models.geo.address import Address
 from domain.models.project_management.image import ProjectImage
+from domain.models.project_management.project import Project
 from domain.models.project_management.step import ProjectStep
 from domain.ports.event import AbstractEventHandler
 from domain.services.address import AddressService
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management.accelerator import ProjectAcceleratorService
+from domain.services.project_management.crowdfunding import ProjectCrowdfundingService
 from domain.services.project_management.incubator import IncubatorService
 from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
@@ -17,6 +19,7 @@ from domain.services.project_management.team_member import TamMemberService
 from domain.value_objects.common import Id
 from domain.value_objects.company import CompanyCreateCommand, CompanyFounderCreateCommand, CompanyFounderCreatePayload
 from domain.value_objects.project.accelerator import ProjectAcceleratorCreateCommand, ProjectAcceleratorCreatePayload
+from domain.value_objects.project.crowdfunding import ProjectCrowdfundingCreateCommand, ProjectCrowdfundingCreatePayload
 from domain.value_objects.project.image import ProjectImageCreateCommand
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorCreatePayload
 from domain.value_objects.project.phone import ProjectPhoneCreatePayload
@@ -39,6 +42,7 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         project_step_service: ProjectStepService,
         incubator_service: IncubatorService,
         accelerator_service: ProjectAcceleratorService,
+        crowdfunding_service: ProjectCrowdfundingService,
     ):
         self._company_service = company_service
         self._company_founder_service = company_founder_service
@@ -50,12 +54,15 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         self._project_step_service = project_step_service
         self._incubator_service = incubator_service
         self._accelerator_service = accelerator_service
+        self._crowdfunding_service = crowdfunding_service
 
     def handle(self, event: ProjectCreatedEvent) -> None:
         logger.info(f"Event: {event.event_type} caught.")
 
         command = event.command
-        project_id: Id = event.project_id
+        project_id: Id = Id(value=event.project.id)
+        user: User = event.user
+        project: Project = event.project
 
         self._create_company_and_founder(command=command, project_id=project_id)
         self._create_images(command=command, project_id=project_id)
@@ -67,9 +74,25 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
             self._create_project_incubator(incubator_command=command.incubator, project_id=project_id)
 
         if command.accelerator is not None:
-            self._create_project_accelerator(accelerator_command=command.accelerator, project_id=project_id)
+            self._create_project_accelerator(
+                user=user, project=project, accelerator_command=command.accelerator, project_id=project_id
+            )
+
+        if command.crowdunding is not None:
+            self._create_project_crowdfunding(user=user, project=project, crowdfunding_command=command.crowdunding)
 
         logger.info("All related models are created.")
+
+    def _create_project_crowdfunding(
+        self, user: User, project: Project, crowdfunding_command: ProjectCrowdfundingCreateCommand
+    ) -> None:
+        payload = ProjectCrowdfundingCreatePayload(
+            project_id=Id(value=project.id),
+            name=crowdfunding_command.name,
+            amount=crowdfunding_command.amount,
+        )
+        self._crowdfunding_service.create(user=user, project=project, payload=payload)
+        logger.info("Project crowdfunding created successfully.")
 
     def _create_project_incubator(self, incubator_command: IncubatorCreateCommand, project_id: Id) -> None:
         payload = IncubatorCreatePayload(
@@ -78,15 +101,17 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
             description=incubator_command.description,
         )
         self._incubator_service.create(payload=payload)
-        logger.info("Incubator created successfully.")
+        logger.info("Project incubator created successfully.")
 
-    def _create_project_accelerator(self, accelerator_command: ProjectAcceleratorCreateCommand, project_id: Id) -> None:
+    def _create_project_accelerator(
+        self, user: User, project: Project, accelerator_command: ProjectAcceleratorCreateCommand, project_id: Id
+    ) -> None:
         payload = ProjectAcceleratorCreatePayload(
             project_id=project_id,
             name=accelerator_command.name,
             description=accelerator_command.description,
         )
-        self._accelerator_service.create(payload=payload)
+        self._accelerator_service.create(user=user, project=project, payload=payload)
         logger.info("Accelerator ctreated successfully.")
 
     def _create_project_steps(self, command: ProjectCreateCommand, project_id: Id) -> None:

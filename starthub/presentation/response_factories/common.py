@@ -22,8 +22,12 @@ from domain.exceptions.project_management import (
     InvalidProjectStageException,
     InvalidProjectStatusException,
     NegativeProjectGoalSumException,
+    ProjectAcceleratorAlreadyExists,
     ProjectAcceleratorNotFoundException,
     ProjectCategoryNotFoundException,
+    ProjectCrowdfundingAlreadyExistsException,
+    ProjectCrowdfundingMaxAmountException,
+    ProjectCrowdfundingNotFoundException,
     ProjectImageMaxAmountException,
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
@@ -102,6 +106,7 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         InvalidProjectStatusException: ("INVALID_PROJECT_STATUS", 422),
         GeographicalInconsistencyException: ("GEOGRAPHICAL_INCONSISTENCY", 422),
         ProjectStepMaxAmountException: ("TOO_MANY_PROJECT_STEPS", 422),
+        ProjectCrowdfundingMaxAmountException: ("MAX_CROWDFUNDING_AMOUNT_EXCEEDED", 422),
     }
 
 
@@ -168,5 +173,15 @@ class CompanyErrorResponseFactory(CommonErrorResponseFactory):
 
 class AcceleratorErrorResponseFactory(CompanyErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectAcceleratorAlreadyExists: ("PROJECT_ACCELERATOR_ALREADY_EXISTS", 409),
         ProjectAcceleratorNotFoundException: ("PROJECT_ACCELERATOR_NOT_FOUND", 404),
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+    }
+
+
+class CrowdfundingErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectCrowdfundingNotFoundException: ("PROJECT_CROWDFUNDING_NOT_FOUND", 404),
+        ProjectCrowdfundingAlreadyExistsException: ("PROJECT_CROWDFUNDING_ALREADY_EXISTS", 409),
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
     }

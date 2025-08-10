@@ -1,7 +1,14 @@
 from dataclasses import asdict
 
 from application.converters.resposne_converters.project import project_to_dto
-from application.dto.project import AcceleratorDto, IncubatorDto, ProjectDto, ProjectFullDto, ProjectStepDto
+from application.dto.project import (
+    AcceleratorDto,
+    CrowdfundingDto,
+    IncubatorDto,
+    ProjectDto,
+    ProjectFullDto,
+    ProjectStepDto,
+)
 from application.ports.service import AbstractAppService
 from django.db import transaction
 from domain.enums.project_status import ProjectStatusEnum
@@ -14,6 +21,7 @@ from domain.models import Country
 from domain.models.company import Company
 from domain.models.project_management.accelerator import ProjectAccelerator
 from domain.models.project_management.category import ProjectCategory
+from domain.models.project_management.crowdfunding import ProjectCrowdfunding
 from domain.models.project_management.image import ProjectImage
 from domain.models.project_management.incubator import ProjectIncubator
 from domain.models.project_management.project import Project
@@ -26,6 +34,7 @@ from domain.repositories.geo.city import CityReadRepository
 from domain.repositories.geo.region import RegionReadRepository
 from domain.repositories.project.accelerator import ProjectAcceleratorReadRepository
 from domain.repositories.project.category import ProjectCategoryReadRepository
+from domain.repositories.project.crowdfunding import ProjectCrowdfundingReadRepository
 from domain.repositories.project.funding_model import FundingModelReadRepository
 from domain.repositories.project.image import ProjectImageReadRepository
 from domain.repositories.project.incubator import PojectIncubatorReadRepository
@@ -48,13 +57,13 @@ from domain.value_objects.filter import (
     CountryFilter,
     ProjectAcceleratorFilter,
     ProjectCategoryFilter,
+    ProjectCrowdfundingFilter,
     ProjectFilter,
     ProjectImageFilter,
     ProjectIncubatorFilter,
     ProjectStepFilter,
 )
 from domain.value_objects.geo import CityId, RegionId
-from domain.value_objects.project.accelerator import ProjectAcceleratorCreatePayload, ProjectAcceleratorUpdatePayload
 from domain.value_objects.project.common import ProjectStatus
 from domain.value_objects.project.incubator import IncubatorCreatePayload, IncubatorUpdatePayload
 from domain.value_objects.project.project import (
@@ -95,7 +104,7 @@ class ProjectCreateAppService(AbstractAppService):
         self._city_read_repository = city_read_repository
         self._region_read_repository = region_read_repository
 
-    def create(self, command: ProjectCreateCommand) -> Project:
+    def create(self, command: ProjectCreateCommand, user_id: Id) -> Project:
         logger.warning("Started creating project.")
 
         self._validate_dependencies(command=command)
@@ -104,10 +113,11 @@ class ProjectCreateAppService(AbstractAppService):
         plan_path: str = self._upload_plan(plan_file=command.plan_file)
         create_payload: ProjectCreatePayload = self._convert_command_to_payload(command=command, plan_path=plan_path)
 
+        user: User = self._user_read_repository.get_by_id(id_=user_id)
         with transaction.atomic():
             project: Project = self._project_service.create(payload=create_payload)
 
-            event = ProjectCreatedEvent(project_id=Id(value=project.id), command=command)
+            event = ProjectCreatedEvent(user=user, project=project, command=command)
             EventBus().publish(event)
 
         return project
@@ -199,6 +209,7 @@ class ProjectGetAppService(AbstractAppService):
         project_step_read_repository: ProjectStepReadRepository,
         project_incubator_read_repository: PojectIncubatorReadRepository,
         project_accelerator_read_repository: ProjectAcceleratorReadRepository,
+        project_crowdfunding_read_repository: ProjectCrowdfundingReadRepository,
         project_search_service: ProjectSearchService,
         cloud_storage: AbstractCloudStorage,
     ):
@@ -206,9 +217,12 @@ class ProjectGetAppService(AbstractAppService):
         self._project_image_read_repository = project_image_read_repository
         self._project_category_read_repository = project_category_read_repository
         self._user_favorite_read_repository = user_favorite_read_repository
+
         self._project_step_read_repository = project_step_read_repository
         self._project_incubator_read_repository = project_incubator_read_repository
         self._project_accelerator_read_repository = project_accelerator_read_repository
+        self._project_crowdfunding_read_repository = project_crowdfunding_read_repository
+
         self._project_search_service = project_search_service
         self._cloud_storage = cloud_storage
 
@@ -250,8 +264,21 @@ class ProjectGetAppService(AbstractAppService):
         steps: list[ProjectStepDto] = self._get_step_dtos(project_id=project_id)
         incubator: IncubatorDto | None = self._get_incubator_dto_if_present(project_id=project_id)
         accelerator: AcceleratorDto | None = self._get_accelerator_dto_if_present(project_id=project_id)
+        crowdfunding: CrowdfundingDto | None = self._get_crowdfunding_dto_if_present(project_id=project_id)
 
-        return ProjectFullDto(**asdict(project_dto), steps=steps, incubator=incubator, accelerator=accelerator)
+        return ProjectFullDto(
+            **asdict(project_dto), steps=steps, incubator=incubator, accelerator=accelerator, crowdfunding=crowdfunding
+        )
+
+    def _get_crowdfunding_dto_if_present(self, project_id: Id) -> CrowdfundingDto | None:
+        crowdfundings: list[ProjectCrowdfunding] = self._project_crowdfunding_read_repository.get_all(
+            filter_=ProjectCrowdfundingFilter(project_id=project_id)
+        )
+        if crowdfundings:
+            crowdfunding: ProjectCrowdfunding = crowdfundings[0]
+            return CrowdfundingDto(id=crowdfunding.id, name=crowdfunding.name, amount=crowdfunding.amount)
+        else:
+            return None
 
     def _get_accelerator_dto_if_present(self, project_id: Id) -> AcceleratorDto | None:
         accelerators: list[ProjectAccelerator] = self._project_accelerator_read_repository.get_all(
@@ -401,9 +428,7 @@ class ProjectUpdateAppService(AbstractAppService):
         if command.steps:
             self._update_project_steps(project=project, steps=command.steps)
         if command.incubator:
-            self._update_incubator(project=project, incubator_payload=command.incubator)
-        if command.accelerator:
-            self._update_accelerator(project=project, accelerator_payload=command.accelerator)
+            self._update_incubator(user=user, project=project, incubator_payload=command.incubator)
 
         plan_path: str | None = None
         if command.plan_file:
@@ -419,26 +444,7 @@ class ProjectUpdateAppService(AbstractAppService):
 
         logger.info("Project updated successfully.")
 
-    def _update_accelerator(self, project: Project, accelerator_payload: ProjectAcceleratorUpdatePayload) -> None:
-        accelerators: list[ProjectAccelerator] = self._accelerator_read_repository.get_all(
-            filter_=ProjectAcceleratorFilter(project_id=Id(value=project.id))
-        )
-        if not accelerators:
-            logger.debug("Project has no accelerator, started creating...")
-            self._accelerator_service.create(
-                payload=ProjectAcceleratorCreatePayload(
-                    project_id=Id(value=project.id),
-                    name=accelerator_payload.name,
-                    description=accelerator_payload.description,
-                )
-            )
-            logger.info("Accelerator created successfully.")
-        else:
-            logger.debug("Project has an accelerator, started updating...")
-            self._accelerator_service.update(payload=accelerator_payload)
-            logger.info("Accelerator updated successfully.")
-
-    def _update_incubator(self, project: Project, incubator_payload: IncubatorUpdatePayload) -> None:
+    def _update_incubator(self, user: User, project: Project, incubator_payload: IncubatorUpdatePayload) -> None:
         incubators: list[ProjectIncubator] = self._incubator_read_repository.get_all(
             ProjectIncubatorFilter(project_id=Id(value=project.id))
         )
@@ -453,8 +459,9 @@ class ProjectUpdateAppService(AbstractAppService):
             )
             logger.info("Incubator created successfully.")
         else:
+            incubator: ProjectIncubator = incubators[0]
             logger.debug("Project has an incubator, started updating...")
-            self._incubator_service.update(payload=incubator_payload)
+            self._incubator_service.update(user=user, incubator=incubator, payload=incubator_payload)
             logger.info("Incubator updated successfully.")
 
     def _update_project_steps(self, project: Project, steps: list[ProjectStepCreateCommand]) -> None:

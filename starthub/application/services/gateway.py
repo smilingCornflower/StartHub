@@ -1,6 +1,7 @@
 from application.builders.app_service.accelerator import AcceleratorAppServiceBuilder
 from application.builders.app_service.auth import AuthAppServiceBuilder, RegistrationAppServiceBuilder
 from application.builders.app_service.company import CompanyAppServiceBuilder
+from application.builders.app_service.crowdfunding import CrowdfundingAppServiceBuilder
 from application.builders.app_service.news import NewsAppServiceBuilder
 from application.builders.app_service.project import (
     ProjectCreateAppServiceBuilder,
@@ -11,17 +12,18 @@ from application.builders.app_service.project import (
 from application.builders.app_service.project_image import ProjectImageAppServiceBuilder
 from application.builders.app_service.user import UserAppServiceBuilder
 from application.builders.app_service.user_favorite import UserFavoriteAppAppServiceBuilder
-from application.services.accelerator import AcceleratorAppService
 from application.services.auth import AuthAppService, RegistrationAppService
 from application.services.company import CompanyAppService
 from application.services.news import NewsAppService
-from application.services.project import (
+from application.services.project_management.accelerator import AcceleratorAppService
+from application.services.project_management.crowdfunding import CrowdfundingAppService
+from application.services.project_management.project import (
     ProjectCreateAppService,
     ProjectDeleteAppService,
     ProjectGetAppService,
     ProjectUpdateAppService,
 )
-from application.services.project_image import ProjectImageAppService
+from application.services.project_management.project_image import ProjectImageAppService
 from application.services.user import UserAppService
 from application.services.user_favorite import UserFavoriteAppService
 from infrastructure.services.cookie import CookieService, cookie_service
@@ -43,6 +45,7 @@ class Gateway:
     _news_app_service: NewsAppService | None = None
     _company_app_service: CompanyAppService | None = None
     _accelerator_app_service: AcceleratorAppService | None = None
+    _crowdfunding_app_service: CrowdfundingAppService | None = None
 
     _cookie_service: CookieService | None = None
 
@@ -117,6 +120,12 @@ class Gateway:
         if self._accelerator_app_service is None:
             self._accelerator_app_service = AcceleratorAppServiceBuilder.create_service()
         return self._accelerator_app_service
+
+    @property
+    def crowdfunding_app_service(self) -> CrowdfundingAppService:
+        if self._crowdfunding_app_service is None:
+            self._crowdfunding_app_service = CrowdfundingAppServiceBuilder.create_service()
+        return self._crowdfunding_app_service
 
     @property
     def cookie_service(self) -> CookieService:

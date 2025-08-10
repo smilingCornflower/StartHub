@@ -4,6 +4,7 @@ from datetime import date
 
 import phonenumbers
 from domain.constants import (
+    CHAR_FIELD_MAX_LENGTH,
     CHAR_FIELD_MEDIUM_LENGTH,
     CHAR_FIELD_SHORT_LENGTH,
     DESCRIPTION_MAX_LENGTH,
@@ -19,6 +20,7 @@ from domain.exceptions.validation import (
     InvalidPhoneNumberException,
     InvalidSocialLinkException,
     LastNameIsTooLongException,
+    NegativeNumberException,
     StringIsTooLongException,
 )
 from domain.value_objects import BaseVo
@@ -61,8 +63,20 @@ class LongString(BaseVo):
     def validate_length(cls, value: str) -> str:
         if not value.strip():
             raise EmptyStringException("First name cannot be empty.")
-        if len(value) > CHAR_FIELD_MEDIUM_LENGTH:
-            raise StringIsTooLongException(f"String must be no longer than {CHAR_FIELD_MEDIUM_LENGTH} characters.")
+        if len(value) > CHAR_FIELD_MAX_LENGTH:
+            raise StringIsTooLongException(f"String must be no longer than {CHAR_FIELD_MAX_LENGTH} characters.")
+        return value
+
+
+class PositiveNumber(BaseVo):
+    value: float
+
+    @field_validator("value", mode="after")
+    @classmethod
+    def validate_positive_number(cls, value: float) -> float:
+        """:raises NegativeNumberException:"""
+        if value < 0:
+            raise NegativeNumberException("Value must be positive.")
         return value
 
 
