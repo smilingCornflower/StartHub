@@ -74,7 +74,9 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
             self._create_project_incubator(incubator_command=command.incubator, project_id=project_id)
 
         if command.accelerator is not None:
-            self._create_project_accelerator(accelerator_command=command.accelerator, project_id=project_id)
+            self._create_project_accelerator(
+                user=user, project=project, accelerator_command=command.accelerator, project_id=project_id
+            )
 
         if command.crowdunding is not None:
             self._create_project_crowdfunding(user=user, project=project, crowdfunding_command=command.crowdunding)
@@ -101,13 +103,15 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         self._incubator_service.create(payload=payload)
         logger.info("Project incubator created successfully.")
 
-    def _create_project_accelerator(self, accelerator_command: ProjectAcceleratorCreateCommand, project_id: Id) -> None:
+    def _create_project_accelerator(
+        self, user: User, project: Project, accelerator_command: ProjectAcceleratorCreateCommand, project_id: Id
+    ) -> None:
         payload = ProjectAcceleratorCreatePayload(
             project_id=project_id,
             name=accelerator_command.name,
             description=accelerator_command.description,
         )
-        self._accelerator_service.create(payload=payload)
+        self._accelerator_service.create(user=user, project=project, payload=payload)
         logger.info("Accelerator ctreated successfully.")
 
     def _create_project_steps(self, command: ProjectCreateCommand, project_id: Id) -> None:

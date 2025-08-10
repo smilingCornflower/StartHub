@@ -22,6 +22,7 @@ from domain.exceptions.project_management import (
     InvalidProjectStageException,
     InvalidProjectStatusException,
     NegativeProjectGoalSumException,
+    ProjectAcceleratorAlreadyExists,
     ProjectAcceleratorNotFoundException,
     ProjectCategoryNotFoundException,
     ProjectCrowdfundingAlreadyExistsException,
@@ -172,7 +173,9 @@ class CompanyErrorResponseFactory(CommonErrorResponseFactory):
 
 class AcceleratorErrorResponseFactory(CompanyErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectAcceleratorAlreadyExists: ("PROJECT_ACCELERATOR_ALREADY_EXISTS", 409),
         ProjectAcceleratorNotFoundException: ("PROJECT_ACCELERATOR_NOT_FOUND", 404),
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
     }
 
 

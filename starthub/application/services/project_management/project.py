@@ -431,7 +431,7 @@ class ProjectUpdateAppService(AbstractAppService):
         if command.incubator:
             self._update_incubator(user=user, project=project, incubator_payload=command.incubator)
         if command.accelerator:
-            self._update_accelerator(project=project, accelerator_payload=command.accelerator)
+            self._update_accelerator(user=user, project=project, accelerator_payload=command.accelerator)
 
         plan_path: str | None = None
         if command.plan_file:
@@ -447,18 +447,22 @@ class ProjectUpdateAppService(AbstractAppService):
 
         logger.info("Project updated successfully.")
 
-    def _update_accelerator(self, project: Project, accelerator_payload: ProjectAcceleratorUpdatePayload) -> None:
+    def _update_accelerator(
+        self, user: User, project: Project, accelerator_payload: ProjectAcceleratorUpdatePayload
+    ) -> None:
         accelerators: list[ProjectAccelerator] = self._accelerator_read_repository.get_all(
             filter_=ProjectAcceleratorFilter(project_id=Id(value=project.id))
         )
         if not accelerators:
             logger.debug("Project has no accelerator, started creating...")
             self._accelerator_service.create(
+                user=user,
+                project=project,
                 payload=ProjectAcceleratorCreatePayload(
                     project_id=Id(value=project.id),
                     name=accelerator_payload.name,
                     description=accelerator_payload.description,
-                )
+                ),
             )
             logger.info("Accelerator created successfully.")
         else:

@@ -136,6 +136,10 @@ class ProjectAcceleratorNotFoundException(ProjectAcceleratorException, NotFoundE
     pass
 
 
+class ProjectAcceleratorAlreadyExists(AlreadyExistsException, ProjectAcceleratorException):
+    pass
+
+
 # ==== Project Crowdfunding Exceptions ====
 class ProjectCrowdfundingException(ProjectException):
     pass
