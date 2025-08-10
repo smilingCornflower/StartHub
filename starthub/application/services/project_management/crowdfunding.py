@@ -80,7 +80,13 @@ class CrowdfundingAppService(AbstractAppService):
             )
 
     def update(self, user_id: Id, project_id: Id, command: ProjectCrowdfundingUpdateCommand) -> None:
+        """
+        :raises UserNotFoundException:
+        :raises ProjectNotFoundException:
+        :raises ProjectCrowdfundingNotFoundException:
+        """
         user: User = self._user_read_repository.get_by_id(id_=user_id)
+        self._project_read_repository.get_by_id(id_=project_id)
         crowdfundings: list[ProjectCrowdfunding] = self._read_repository.get_all(
             filter_=ProjectCrowdfundingFilter(project_id=project_id)
         )

@@ -64,7 +64,6 @@ from domain.value_objects.filter import (
     ProjectStepFilter,
 )
 from domain.value_objects.geo import CityId, RegionId
-from domain.value_objects.project.accelerator import ProjectAcceleratorCreatePayload, ProjectAcceleratorUpdatePayload
 from domain.value_objects.project.common import ProjectStatus
 from domain.value_objects.project.incubator import IncubatorCreatePayload, IncubatorUpdatePayload
 from domain.value_objects.project.project import (
@@ -430,8 +429,6 @@ class ProjectUpdateAppService(AbstractAppService):
             self._update_project_steps(project=project, steps=command.steps)
         if command.incubator:
             self._update_incubator(user=user, project=project, incubator_payload=command.incubator)
-        if command.accelerator:
-            self._update_accelerator(user=user, project=project, accelerator_payload=command.accelerator)
 
         plan_path: str | None = None
         if command.plan_file:
@@ -446,29 +443,6 @@ class ProjectUpdateAppService(AbstractAppService):
         self._project_service.update(project=project, user=user, update_payload=payload)
 
         logger.info("Project updated successfully.")
-
-    def _update_accelerator(
-        self, user: User, project: Project, accelerator_payload: ProjectAcceleratorUpdatePayload
-    ) -> None:
-        accelerators: list[ProjectAccelerator] = self._accelerator_read_repository.get_all(
-            filter_=ProjectAcceleratorFilter(project_id=Id(value=project.id))
-        )
-        if not accelerators:
-            logger.debug("Project has no accelerator, started creating...")
-            self._accelerator_service.create(
-                user=user,
-                project=project,
-                payload=ProjectAcceleratorCreatePayload(
-                    project_id=Id(value=project.id),
-                    name=accelerator_payload.name,
-                    description=accelerator_payload.description,
-                ),
-            )
-            logger.info("Accelerator created successfully.")
-        else:
-            logger.debug("Project has an accelerator, started updating...")
-            self._accelerator_service.update(payload=accelerator_payload)
-            logger.info("Accelerator updated successfully.")
 
     def _update_incubator(self, user: User, project: Project, incubator_payload: IncubatorUpdatePayload) -> None:
         incubators: list[ProjectIncubator] = self._incubator_read_repository.get_all(

@@ -4,7 +4,6 @@ from typing import Any
 from django.core.files.uploadedfile import UploadedFile
 from domain.value_objects.common import DeadlineDate, Description, Id
 from domain.value_objects.file import PdfFile
-from domain.value_objects.project.accelerator import AcceleratorName, ProjectAcceleratorUpdatePayload
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
 from domain.value_objects.project.incubator import IncubatorName, IncubatorUpdatePayload
 from domain.value_objects.project.project import ProjectUpdateCommand
@@ -52,16 +51,6 @@ def request_to_the_project_update_command(request: Request, project_id: int, use
             name=IncubatorName(value=get_required_field(incubator_info, "name", "incubator.name")),
             description=Description(value=get_required_field(incubator_info, "description", "incubator.description")),
         )
-    accelerator: ProjectAcceleratorUpdatePayload | None = None
-    if "accelerator" in project_data:
-        accelerator_info = project_data["accelerator"]
-        accelerator = ProjectAcceleratorUpdatePayload(
-            project_id=project_id_vo,
-            name=AcceleratorName(value=get_required_field(accelerator_info, "name", "accelerator.name")),
-            description=Description(
-                value=get_required_field(accelerator_info, "description", "accelerator.description")
-            ),
-        )
 
     return ProjectUpdateCommand(
         project_id=project_id_vo,
@@ -77,5 +66,4 @@ def request_to_the_project_update_command(request: Request, project_id: int, use
         deadline=DeadlineDate(value=parse_date(project_data["deadline"])) if "deadline" in project_data else None,
         plan_file=project_plan,
         incubator=incubator,
-        accelerator=accelerator,
     )

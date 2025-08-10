@@ -20,10 +20,15 @@ class ProjectAcceleratorCreatePayload(AbstractCreatePayload):
 
 class ProjectAcceleratorUpdatePayload(AddressUpdatePayload):
     project_id: Id
-    name: AcceleratorName
-    description: Description
+    name: AcceleratorName | None = None
+    description: Description | None = None
 
 
 class ProjectAcceleratorCreateCommand(BaseCommand):
     name: AcceleratorName
     description: Description
+
+
+class ProjectAcceleratorUpdateCommand(BaseCommand):
+    name: AcceleratorName | None = None
+    description: Description | None = None
