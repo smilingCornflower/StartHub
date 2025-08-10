@@ -25,5 +25,5 @@ class IncubatorCreatePayload(AbstractCreatePayload):
 
 class IncubatorUpdatePayload(AddressUpdatePayload):
     project_id: Id
-    name: IncubatorName | None = None
-    description: Description | None = None
+    name: IncubatorName
+    description: Description

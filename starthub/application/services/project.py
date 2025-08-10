@@ -43,6 +43,7 @@ from domain.repositories.project.step import ProjectStepReadRepository
 from domain.repositories.user import UserReadRepository
 from domain.repositories.user_favorite import UserFavoriteReadRepository
 from domain.services.project_management.accelerator import ProjectAcceleratorService
+from domain.services.project_management.crowdfunding import ProjectCrowdfundingService
 from domain.services.project_management.incubator import IncubatorService
 from domain.services.project_management.project import ProjectService
 from domain.services.project_management.step import ProjectStepService
@@ -66,6 +67,7 @@ from domain.value_objects.filter import (
 from domain.value_objects.geo import CityId, RegionId
 from domain.value_objects.project.accelerator import ProjectAcceleratorCreatePayload, ProjectAcceleratorUpdatePayload
 from domain.value_objects.project.common import ProjectStatus
+from domain.value_objects.project.crowdfunding import ProjectCrowdfundingCreatePayload, ProjectCrowdfundingUpdatePayload
 from domain.value_objects.project.incubator import IncubatorCreatePayload, IncubatorUpdatePayload
 from domain.value_objects.project.project import (
     ProjectCreateCommand,
@@ -391,8 +393,10 @@ class ProjectUpdateAppService(AbstractAppService):
         project_step_service: ProjectStepService,
         incubator_service: IncubatorService,
         accelerator_service: ProjectAcceleratorService,
+        crowdfunding_service: ProjectCrowdfundingService,
         incubator_read_repository: PojectIncubatorReadRepository,
         accelerator_read_repository: ProjectAcceleratorReadRepository,
+        crowdfunding_read_repository: ProjectCrowdfundingReadRepository,
         user_read_repository: UserReadRepository,
         project_read_repository: ProjectReadRepository,
         project_category_read_repository: ProjectCategoryReadRepository,
@@ -403,8 +407,10 @@ class ProjectUpdateAppService(AbstractAppService):
         self._project_step_service = project_step_service
         self._incubator_service = incubator_service
         self._accelerator_service = accelerator_service
+        self._crowdfunding_service = crowdfunding_service
         self._incubator_read_repository = incubator_read_repository
         self._accelerator_read_repository = accelerator_read_repository
+        self._crowdfunding_read_repository = crowdfunding_read_repository
         self._user_read_repository = user_read_repository
         self._project_read_repository = project_read_repository
         self._project_category_read_repository = project_category_read_repository
@@ -431,6 +437,8 @@ class ProjectUpdateAppService(AbstractAppService):
             self._update_incubator(user=user, project=project, incubator_payload=command.incubator)
         if command.accelerator:
             self._update_accelerator(project=project, accelerator_payload=command.accelerator)
+        if command.crowdfunding:
+            self._update_crowdfunding(user=user, project=project, crowdfunding_payload=command.crowdfunding)
 
         plan_path: str | None = None
         if command.plan_file:
@@ -445,6 +453,26 @@ class ProjectUpdateAppService(AbstractAppService):
         self._project_service.update(project=project, user=user, update_payload=payload)
 
         logger.info("Project updated successfully.")
+
+    def _update_crowdfunding(
+        self, user: User, project: Project, crowdfunding_payload: ProjectCrowdfundingUpdatePayload
+    ) -> None:
+        crowdfundings: list[ProjectCrowdfunding] = self._crowdfunding_read_repository.get_all(
+            filter_=ProjectCrowdfundingFilter(project_id=Id(value=project.id))
+        )
+        if not crowdfundings:
+            logger.debug("Proejct has no crowdfunding, started creating...")
+            self._crowdfunding_service.create(
+                payload=ProjectCrowdfundingCreatePayload(
+                    project_id=crowdfunding_payload.project_id,
+                    name=crowdfunding_payload.name,
+                    amount=crowdfunding_payload.amount,
+                )
+            )
+        else:
+            logger.debug("Project has an accelerator, started updating...")
+            self._crowdfunding_service.update(user=user, payload=crowdfunding_payload)
+            logger.info("Crowdfunding updated successfully.")
 
     def _update_accelerator(self, project: Project, accelerator_payload: ProjectAcceleratorUpdatePayload) -> None:
         accelerators: list[ProjectAccelerator] = self._accelerator_read_repository.get_all(

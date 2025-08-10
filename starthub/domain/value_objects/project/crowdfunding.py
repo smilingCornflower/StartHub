@@ -34,7 +34,9 @@ class ProjectCrowdfundingCreatePayload(AbstractCreatePayload):
 
 
 class ProjectCrowdfundingUpdatePayload(AddressUpdatePayload):
-    pass
+    project_id: Id
+    name: ProjectCrowdfundingName
+    amount: ProjectCrowdfundingAmount
 
 
 class ProjectCrowdfundingCreateCommand(BaseCommand):

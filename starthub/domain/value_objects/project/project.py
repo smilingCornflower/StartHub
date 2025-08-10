@@ -16,7 +16,7 @@ from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.geo import AddressCreateCommand
 from domain.value_objects.project.accelerator import ProjectAcceleratorCreateCommand, ProjectAcceleratorUpdatePayload
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage, ProjectStatus
-from domain.value_objects.project.crowdfunding import ProjectCrowdfundingCreateCommand
+from domain.value_objects.project.crowdfunding import ProjectCrowdfundingCreateCommand, ProjectCrowdfundingUpdatePayload
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorUpdatePayload
 from domain.value_objects.project.step import ProjectStepCreateCommand
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
@@ -69,6 +69,7 @@ class ProjectUpdateCommand(BaseCommand):
 
     incubator: IncubatorUpdatePayload | None = None
     accelerator: ProjectAcceleratorUpdatePayload | None = None
+    crowdfunding: ProjectCrowdfundingUpdatePayload | None = None
 
 
 class ProjectCreatePayload(AbstractCreatePayload, BaseVo):

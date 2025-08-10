@@ -6,10 +6,15 @@ from domain.value_objects.common import DeadlineDate, Description, Id
 from domain.value_objects.file import PdfFile
 from domain.value_objects.project.accelerator import AcceleratorName, ProjectAcceleratorUpdatePayload
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
+from domain.value_objects.project.crowdfunding import (
+    ProjectCrowdfundingAmount,
+    ProjectCrowdfundingName,
+    ProjectCrowdfundingUpdatePayload,
+)
 from domain.value_objects.project.incubator import IncubatorName, IncubatorUpdatePayload
 from domain.value_objects.project.project import ProjectUpdateCommand
 from loguru import logger
-from presentation.request_converters.common import parse_date
+from presentation.request_converters.common import get_required_field, parse_date
 from presentation.request_converters.project.common import extract_steps
 from rest_framework.request import Request
 
@@ -42,25 +47,39 @@ def request_to_the_project_update_command(request: Request, project_id: int, use
     goal_description: Description | None = (
         Description(value=project_data["goal_description"]) if "goal_description" in project_data else None
     )
+    # ==================================================================================================================
+    project_id_vo = Id(value=project_id)
     incubator: IncubatorUpdatePayload | None = None
     if "incubator" in project_data:
         incubator_info = project_data["incubator"]
         incubator = IncubatorUpdatePayload(
-            project_id=Id(value=project_id),
-            name=IncubatorName(value=incubator_info["name"]) if "name" in incubator_info else None,
-            description=Description(value=incubator_info["description"]) if "description" in incubator_info else None,
+            project_id=project_id_vo,
+            name=IncubatorName(value=get_required_field(incubator_info, "name", "incubator.name")),
+            description=Description(value=get_required_field(incubator_info, "description", "incubator.description")),
         )
     accelerator: ProjectAcceleratorUpdatePayload | None = None
     if "accelerator" in project_data:
         accelerator_info = project_data["accelerator"]
         accelerator = ProjectAcceleratorUpdatePayload(
-            project_id=Id(value=project_id),
-            name=AcceleratorName(value=accelerator_info["name"]) if "name" in accelerator_info else None,
-            description=Description(value=accelerator_info["description"]) if "description" in accelerator_info else None,
+            project_id=project_id_vo,
+            name=AcceleratorName(value=get_required_field(accelerator_info, "name", "accelerator.name")),
+            description=Description(
+                value=get_required_field(accelerator_info, "description", "accelerator.description")
+            ),
+        )
+    crowdfunding: ProjectCrowdfundingUpdatePayload | None = None
+    if "crowdfunding" in project_data:
+        crowdfunding_info = project_data["crowdfunding"]
+        crowdfunding = ProjectCrowdfundingUpdatePayload(
+            project_id=project_id_vo,
+            name=ProjectCrowdfundingName(value=get_required_field(crowdfunding_info, "name", "crowdfunding.name")),
+            amount=ProjectCrowdfundingAmount(
+                value=float(get_required_field(crowdfunding_info, "amount", "crowdfunding.amount"))
+            ),
         )
 
     return ProjectUpdateCommand(
-        project_id=Id(value=project_id),
+        project_id=project_id_vo,
         user_id=Id(value=user_id),
         name=ProjectName(value=project_data["name"]) if "name" in project_data else None,
         description=description,
@@ -74,4 +93,5 @@ def request_to_the_project_update_command(request: Request, project_id: int, use
         plan_file=project_plan,
         incubator=incubator,
         accelerator=accelerator,
+        crowdfunding=crowdfunding,
     )

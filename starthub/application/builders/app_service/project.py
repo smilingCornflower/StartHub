@@ -1,5 +1,6 @@
 from application.builders.domain_service.project_management import (
     ProjectAcceleratorServiceBuilder,
+    ProjectCrowdfundingServiceBuilder,
     ProjectIncubatorServiceBuilder,
     ProjectServiceBuilder,
     ProjectStepServiceBuilder,
@@ -54,8 +55,10 @@ class ProjectUpdateAppServiceBuilder(AbstractAppServiceBuilder[ProjectUpdateAppS
             project_step_service=ProjectStepServiceBuilder.create_service(),
             incubator_service=ProjectIncubatorServiceBuilder.create_service(),
             accelerator_service=ProjectAcceleratorServiceBuilder.create_service(),
+            crowdfunding_service=ProjectCrowdfundingServiceBuilder.create_service(),
             incubator_read_repository=DjProjectIncubatorReadRepository(),
             accelerator_read_repository=DjProjectAcceleratorReadRepository(),
+            crowdfunding_read_repository=DjProjectCrowdFundingReadRepository(),
             user_read_repository=DjUserReadRepository(),
             project_read_repository=DjProjectReadRepository(),
             project_category_read_repository=DjProjectCategoryReadRepository(),

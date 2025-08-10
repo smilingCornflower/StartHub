@@ -132,4 +132,5 @@ class ProjectCrowdfundingServiceBuilder(AbstractDomainServiceBuilder[ProjectCrow
     def create_service() -> ProjectCrowdfundingService:
         return ProjectCrowdfundingService(
             write_repository=DjProjectCrowdfundingWriteRepository(),
+            permission_service=PermissionServiceBuilder.create_service(),
         )
