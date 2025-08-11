@@ -193,4 +193,5 @@ class ProjectInvestmentErrorResponseFactory(CommonErrorResponseFactory):
         DisallowedSocialLinkException: ("DISALLOWED_SOCIAL_PLATFORM", 422),
         StringIsTooLongException: ("STRING_TOO_LONG", 422),
         ProjectInvestmentMaxAmountException: ("MAX_INVESTMENT_AMOUNT_EXCEEDED", 422),
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
     }

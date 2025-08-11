@@ -51,7 +51,23 @@ class DjProjectInvestmentWriteRepository(ProjectInvestmentWriteRepository):
         )
 
     def update(self, data: ProjectInvestmentUpdatePayload) -> ProjectInvestment:
-        raise NotImplementedError("The method update() is not implemented yet.")
+        """:raises ProjectInvestmentNotFoundException:"""
+        investment: ProjectInvestment | None = ProjectInvestment.objects.filter(id=data.investment_id.value).first()
+
+        if investment is None:
+            raise ProjectInvestmentNotFoundException(
+                f"Project investment with id = {data.investment_id.value} does not exist."
+            )
+
+        if data.organization_name is not None:
+            investment.organization_name = data.organization_name.value
+            investment.slug = None
+
+        if data.amount is not None:
+            investment.amount = data.amount.value
+
+        investment.save()
+        return investment
 
     def delete_by_id(self, id_: ProjectInvestmentId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")

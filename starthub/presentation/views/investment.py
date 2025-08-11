@@ -1,9 +1,13 @@
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id
+from domain.value_objects.project.investment import ProjectInvestmentId
 from infrastructure.auth.user import get_user_id_or_raises
 from presentation.constants import SUCCESS
-from presentation.request_converters.project.investment import request_to_project_investment_create_command
+from presentation.request_converters.project.investment import (
+    request_to_project_investment_create_command,
+    request_to_project_investment_update_command,
+)
 from presentation.response_factories.common import ProjectInvestmentErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
@@ -21,5 +25,19 @@ class ProjectInvestmentView(APIView):
             )
 
             return Response({"code": SUCCESS}, status=status.HTTP_201_CREATED)
+        except CustomException as e:
+            return ProjectInvestmentErrorResponseFactory.create_response(exception=e)
+
+    def patch(self, request: Request, project_id: int, investment_id: int) -> Response:
+        try:
+            user_id: Id = get_user_id_or_raises(request=request)
+            command = request_to_project_investment_update_command(request=request)
+            gateway.project_investment_app_service.update(
+                user_id=user_id,
+                project_id=Id(value=project_id),
+                investment_id=ProjectInvestmentId(value=investment_id),
+                command=command,
+            )
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
         except CustomException as e:
             return ProjectInvestmentErrorResponseFactory.create_response(exception=e)

@@ -1,6 +1,6 @@
 from domain.constants import PROJECT_INVESTMENTS_ORGANIZATIONS_MAX_AMOUNT
 from domain.enums.permission import ActionEnum, ScopeEnum
-from domain.exceptions.permissions import AddDeniedPermissionException
+from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
 from domain.exceptions.project_management import ProjectInvestmentMaxAmountException
 from domain.models.project_management.investment import ProjectInvestment, ProjectInvestmentSocialLink
 from domain.models.project_management.project import Project
@@ -14,7 +14,7 @@ from domain.repositories.project.investment import (
 from domain.services.permission import PermissionService
 from domain.value_objects.common import Id
 from domain.value_objects.filter import ProjectInvestmentFilter
-from domain.value_objects.project.investment import ProjectInvestmentCreatePayload
+from domain.value_objects.project.investment import ProjectInvestmentCreatePayload, ProjectInvestmentUpdatePayload
 from domain.value_objects.project.project_investment_social_link import ProjectInvestmentSocialLinkCreatePayload
 from loguru import logger
 
@@ -70,6 +70,28 @@ class ProjectInvestmentService(AbstractDomainService):
             f"User(id={user.id}) doesn't have enough permission to add ProjectInvestment to the Project(id={project.id})."
         )
         raise AddDeniedPermissionException("You don't have enough permission to add this resource.")
+
+    def update(self, user: User, project: Project, payload: ProjectInvestmentUpdatePayload) -> None:
+        self._check_udpate_permissions(user=user, project=project)
+        self._write_repository.update(data=payload)
+
+    def _check_udpate_permissions(self, user: User, project: Project) -> None:
+        """:raises UpdateDeniedPermissionException:"""
+
+        add_own_permission = self._permission_service.create_permission_vo(
+            model=ProjectInvestment,
+            action=ActionEnum.CHANGE,
+            scope=ScopeEnum.OWN,
+        )
+        has_permission = self._permission_service.has_user_permission(user=user, permission_vo=add_own_permission)
+        if has_permission:
+            if project.creator == user:
+                return None
+
+        logger.exception(
+            f"User(id={user.id}) doesn't have enough permission to change ProjectInvestment to the Project(id={project.id})."
+        )
+        raise UpdateDeniedPermissionException("You don't have enough permission to change this resource.")
 
 
 # ======================================================================================================================

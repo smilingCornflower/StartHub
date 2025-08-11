@@ -23,10 +23,18 @@ class ProjectInvestmentCreatePayload(AbstractCreatePayload):
 
 
 class ProjectInvestmentUpdatePayload(AddressUpdatePayload):
-    pass
+    investment_id: Id
+    organization_name: ProjectInvestmentOrganizationName | None = None
+    amount: ProjectInvestmentAmount | None = None
 
 
 class ProjectInvestmentCreateCommand(BaseCommand):
     organization_name: ProjectInvestmentOrganizationName
     amount: ProjectInvestmentAmount
     social_links: list[SocialLink]
+
+
+class ProjectInvestmentUpdateCommand(BaseCommand):
+    organization_name: ProjectInvestmentOrganizationName | None = None
+    amount: ProjectInvestmentAmount | None = None
+    social_links: list[SocialLink] | None = None

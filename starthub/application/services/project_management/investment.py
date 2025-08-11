@@ -1,4 +1,7 @@
+from pprint import pformat
+
 from application.ports.service import AbstractAppService
+from django.db import transaction
 from domain.events.project import ProjectInvestmentCreatedEvent
 from domain.models.project_management.project import Project
 from domain.models.user import User
@@ -6,7 +9,13 @@ from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.user import UserReadRepository
 from domain.services.project_management.investment import ProjectInvestmentService
 from domain.value_objects.common import Id
-from domain.value_objects.project.investment import ProjectInvestmentCreateCommand, ProjectInvestmentCreatePayload
+from domain.value_objects.project.investment import (
+    ProjectInvestmentCreateCommand,
+    ProjectInvestmentCreatePayload,
+    ProjectInvestmentId,
+    ProjectInvestmentUpdateCommand,
+    ProjectInvestmentUpdatePayload,
+)
 from infrastructure.event_bus import EventBus
 from loguru import logger
 
@@ -45,6 +54,32 @@ class ProjectInvestmentAppService(AbstractAppService):
     ) -> ProjectInvestmentCreatePayload:
         return ProjectInvestmentCreatePayload(
             project_id=project_id,
+            organization_name=command.organization_name,
+            amount=command.amount,
+        )
+
+    def update(
+        self, user_id: Id, project_id: Id, investment_id: ProjectInvestmentId, command: ProjectInvestmentUpdateCommand
+    ) -> None:
+        user: User = self._user_read_repository.get_by_id(id_=user_id)
+        project: Project = self._project_read_repository.get_by_id(id_=project_id)
+
+        payload = self._convert_update_command_to_payload(
+            command=command, project_id=project_id, investmetn_id=investment_id
+        )
+        logger.debug(f"payload: \n{pformat(payload.__dict__)}")
+        with transaction.atomic():
+            self._project_investment_service.update(user=user, project=project, payload=payload)
+            logger.info(f"ProjectInvestment with id = {investment_id.value} updated successfully.")
+
+    def _convert_update_command_to_payload(
+        self,
+        command: ProjectInvestmentUpdateCommand,
+        project_id: Id,
+        investmetn_id: ProjectInvestmentId,
+    ) -> ProjectInvestmentUpdatePayload:
+        return ProjectInvestmentUpdatePayload(
+            investment_id=investmetn_id,
             organization_name=command.organization_name,
             amount=command.amount,
         )

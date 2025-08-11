@@ -6,6 +6,7 @@ from domain.value_objects.project.investment import (
     ProjectInvestmentAmount,
     ProjectInvestmentCreateCommand,
     ProjectInvestmentOrganizationName,
+    ProjectInvestmentUpdateCommand,
 )
 from loguru import logger
 from presentation.request_converters.common import get_required_field
@@ -19,6 +20,24 @@ def request_to_project_investment_create_command(request: Request) -> ProjectInv
         organization_name=ProjectInvestmentOrganizationName(value=get_required_field(data, "organization_name")),
         amount=ProjectInvestmentAmount(value=float(get_required_field(data, "amount"))),
         social_links=[SocialLink(platform=k, link=v) for k, v in get_required_field(data, "social_links").items()],
+    )
+    logger.debug(f"command: \n {pformat(command.__dict__)}")
+    return command
+
+
+def request_to_project_investment_update_command(request: Request) -> ProjectInvestmentUpdateCommand:
+    data: dict[str, Any] = request.data
+
+    command = ProjectInvestmentUpdateCommand(
+        organization_name=(
+            ProjectInvestmentOrganizationName(value=data["organization_name"]) if "organization_name" in data else None
+        ),
+        amount=ProjectInvestmentAmount(value=float(data["amount"])) if "amount" in data else None,
+        social_links=(
+            [SocialLink(platform=k, link=v) for k, v in data["social_links"].items()]
+            if "social_links" in data
+            else None
+        ),
     )
     logger.debug(f"command: \n {pformat(command.__dict__)}")
     return command
