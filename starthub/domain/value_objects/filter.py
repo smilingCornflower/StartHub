@@ -131,3 +131,7 @@ class ProjectCrowdfundingFilter(AbstractFilter):
 
 class ProjectInvestmentFilter(AbstractFilter):
     project_id: Id | None = None
+
+
+class ProjectInvestmentSocialLinkFilter(AbstractFilter):
+    pass

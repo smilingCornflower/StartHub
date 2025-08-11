@@ -1,5 +1,5 @@
 from domain.ports.service import AbstractDomainService
 
 
-class ProjectInvestmentSocialLink(AbstractDomainService):
+class ProjectInvestmentSocialLinkService(AbstractDomainService):
     pass
