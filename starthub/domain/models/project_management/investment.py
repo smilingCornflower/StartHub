@@ -1,6 +1,7 @@
 from autoslug import AutoSlugField
 from django.db import models
-from domain.constants import CHAR_FIELD_MAX_LENGTH, CHAR_FIELD_MEDIUM_LENGTH
+
+from domain.constants import CHAR_FIELD_MAX_LENGTH, CHAR_FIELD_MEDIUM_LENGTH, CHAR_FIELD_SHORT_LENGTH
 from domain.models.base import BaseModel
 
 
@@ -35,3 +36,19 @@ class ProjectInvestmentSocialLink(BaseModel):
     @classmethod
     def get_permission_key(cls) -> str:
         return "project_investment_social_link"
+
+
+class ProjectInvestmentPhone(BaseModel):
+    project = models.ForeignKey("domain.ProjectInvestment", on_delete=models.CASCADE, related_name="phones")
+    number = models.CharField(max_length=CHAR_FIELD_SHORT_LENGTH)
+
+    class Meta:
+        db_table = "project_investment_phones"
+        unique_together = ("project", "number")
+
+    def __str__(self) -> str:
+        return f"{self.project.name} {self.number}"
+
+    @classmethod
+    def get_permission_key(cls) -> str:
+        return "project_investment_phone"

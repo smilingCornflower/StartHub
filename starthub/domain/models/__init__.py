@@ -1,5 +1,7 @@
 from importlib import import_module
 
+
+
 User = import_module("domain.models.user").User
 UserFavorite = import_module("domain.models.user_favorite").UserFavorite
 Role = import_module("domain.models.role").Role
@@ -17,6 +19,7 @@ ProjectAccelerator = import_module("domain.models.project_management.accelerator
 ProjectCrowdfunding = import_module("domain.models.project_management.crowdfunding").ProjectCrowdfunding
 ProjectInvestment = import_module("domain.models.project_management.investment").ProjectInvestment
 ProjectInvestmentSocialLink = import_module("domain.models.project_management.investment").ProjectInvestmentSocialLink
+ProjectInvestmentPhone = import_module("domain.models.project_management.investment").ProjectInvestmentPhone
 
 FundingModel = import_module("domain.models.project_management.funding_model").FundingModel
 Company = import_module("domain.models.company").Company
