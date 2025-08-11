@@ -164,3 +164,7 @@ class ProjectInvestmentException(CustomException):
 
 class ProjectInvestmentNotFoundException(NotFoundException, ProjectInvestmentException):
     pass
+
+
+class ProjectInvestmentMaxAmountException(ValidationException, ProjectInvestmentException):
+    pass

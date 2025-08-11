@@ -1,6 +1,7 @@
 from domain.ports.payload import AbstractCreatePayload
-from domain.value_objects.common import Id
+from domain.value_objects.common import Id, SocialLink
 from domain.value_objects.geo import AddressUpdatePayload
+from domain.value_objects.project.investment import ProjectInvestmentId
 
 
 class ProjectInvestmentSocialLinkId(Id):
@@ -8,8 +9,10 @@ class ProjectInvestmentSocialLinkId(Id):
 
 
 class ProjectInvestmentSocialLinkCreatePayload(AbstractCreatePayload):
-    pass
+    investment_id: ProjectInvestmentId
+    social_link: SocialLink
 
 
 class ProjectInvestmentSocialLinkUpdatePayload(AddressUpdatePayload):
-    pass
+    investment_id: ProjectInvestmentId
+    social_link: SocialLink

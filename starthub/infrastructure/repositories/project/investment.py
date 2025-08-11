@@ -2,8 +2,9 @@ from domain.exceptions.project_management import ProjectInvestmentNotFoundExcept
 from domain.models.project_management.investment import ProjectInvestment, ProjectInvestmentSocialLink
 from domain.repositories.project.investment import (
     ProjectInestmentReadRepository,
+    ProjectInvestmentSocialLinkReadRepository,
+    ProjectInvestmentSocialLinkWriteRepository,
     ProjectInvestmentWriteRepository,
-    ProjectInvestmentSocialLinkReadRepository, ProjectInvestmentSocialLinkWriteRepository,
 )
 from domain.value_objects.common import Pagination
 from domain.value_objects.filter import ProjectInvestmentFilter, ProjectInvestmentSocialLinkFilter
@@ -12,8 +13,11 @@ from domain.value_objects.project.investment import (
     ProjectInvestmentId,
     ProjectInvestmentUpdatePayload,
 )
-from domain.value_objects.project.project_investment_social_link import ProjectInvestmentSocialLinkId, \
-    ProjectInvestmentSocialLinkUpdatePayload, ProjectInvestmentSocialLinkCreatePayload
+from domain.value_objects.project.project_investment_social_link import (
+    ProjectInvestmentSocialLinkCreatePayload,
+    ProjectInvestmentSocialLinkId,
+    ProjectInvestmentSocialLinkUpdatePayload,
+)
 from infrastructure.repositories.pagination import apply_pagination
 
 
@@ -68,7 +72,11 @@ class DjProjectInvestmentSocialLinkReadRepository(ProjectInvestmentSocialLinkRea
 
 class DjProjectInvestmentSocialLinkWriteRepository(ProjectInvestmentSocialLinkWriteRepository):
     def create(self, data: ProjectInvestmentSocialLinkCreatePayload) -> ProjectInvestmentSocialLink:
-        raise NotImplementedError("The method create() is not implemented yet.")
+        return ProjectInvestmentSocialLink.objects.create(
+            investment_id=data.investment_id.value,
+            platform=data.social_link.platform,
+            url=data.social_link.link,
+        )
 
     def update(self, data: ProjectInvestmentSocialLinkUpdatePayload) -> ProjectInvestmentSocialLink:
         raise NotImplementedError("The method update() is not implemented yet.")

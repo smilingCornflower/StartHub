@@ -29,6 +29,7 @@ from domain.exceptions.project_management import (
     ProjectCrowdfundingMaxAmountException,
     ProjectCrowdfundingNotFoundException,
     ProjectImageMaxAmountException,
+    ProjectInvestmentMaxAmountException,
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
     ProjectPlanNotFoundException,
@@ -184,4 +185,12 @@ class CrowdfundingErrorResponseFactory(CommonErrorResponseFactory):
         ProjectCrowdfundingNotFoundException: ("PROJECT_CROWDFUNDING_NOT_FOUND", 404),
         ProjectCrowdfundingAlreadyExistsException: ("PROJECT_CROWDFUNDING_ALREADY_EXISTS", 409),
         ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+    }
+
+
+class ProjectInvestmentErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        DisallowedSocialLinkException: ("DISALLOWED_SOCIAL_PLATFORM", 422),
+        StringIsTooLongException: ("STRING_TOO_LONG", 422),
+        ProjectInvestmentMaxAmountException: ("MAX_INVESTMENT_AMOUNT_EXCEEDED", 422),
     }

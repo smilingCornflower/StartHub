@@ -35,7 +35,9 @@ class ProjectInvestmentAppService(AbstractAppService):
         investment = self._project_investment_service.create(user=user, project=project, payload=payload)
         logger.info(f"ProjectInvestment(id={investment.id}) created successfully.")
 
-        event = ProjectInvestmentCreatedEvent(user=user, project=project, social_links=command.social_links)
+        event = ProjectInvestmentCreatedEvent(
+            user=user, project_investment=investment, social_links=command.social_links
+        )
         EventBus().publish(event)
 
     def _convert_create_command_to_payload(

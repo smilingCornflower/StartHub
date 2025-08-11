@@ -4,7 +4,7 @@ from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management.accelerator import ProjectAcceleratorService
 from domain.services.project_management.crowdfunding import ProjectCrowdfundingService
 from domain.services.project_management.incubator import IncubatorService
-from domain.services.project_management.investment import ProjectInvestmentService
+from domain.services.project_management.investment import ProjectInvestmentService, ProjectInvestmentSocialLinkService
 from domain.services.project_management.project import ProjectService
 from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
@@ -24,7 +24,11 @@ from infrastructure.repositories.project.accelerator import DjProjectAccelerator
 from infrastructure.repositories.project.crowdfunding import DjProjectCrowdfundingWriteRepository
 from infrastructure.repositories.project.image import DjProjectImageReadRepository, DjProjectImageWriteRepository
 from infrastructure.repositories.project.incubator import DjProjectIncubatorWriteRepository
-from infrastructure.repositories.project.investment import DjProjectInvestmentWriteRepository
+from infrastructure.repositories.project.investment import (
+    DjProjectInvestmentReadRepository,
+    DjProjectInvestmentSocialLinkWriteRepository,
+    DjProjectInvestmentWriteRepository,
+)
 from infrastructure.repositories.project.phone import DjProjectPhoneReadRepository, DjProjectPhoneWriteRepository
 from infrastructure.repositories.project.project import DjProjectReadRepository, DjProjectWriteRepository
 from infrastructure.repositories.project.social_link import (
@@ -144,4 +148,13 @@ class ProjectInvestmentServiceBuilder(AbstractDomainServiceBuilder[ProjectInvest
         return ProjectInvestmentService(
             write_repository=DjProjectInvestmentWriteRepository(),
             permission_service=PermissionServiceBuilder.create_service(),
+            project_investment_read_repository=DjProjectInvestmentReadRepository(),
+        )
+
+
+class ProjectInvestmentSocialLinkServiceBuilder(AbstractDomainServiceBuilder[ProjectInvestmentSocialLinkService]):
+    @staticmethod
+    def create_service() -> ProjectInvestmentSocialLinkService:
+        return ProjectInvestmentSocialLinkService(
+            write_repository=DjProjectInvestmentSocialLinkWriteRepository(),
         )

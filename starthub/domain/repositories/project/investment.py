@@ -10,8 +10,8 @@ from domain.value_objects.project.investment import (
     ProjectInvestmentUpdatePayload,
 )
 from domain.value_objects.project.project_investment_social_link import (
-    ProjectInvestmentSocialLinkId,
     ProjectInvestmentSocialLinkCreatePayload,
+    ProjectInvestmentSocialLinkId,
     ProjectInvestmentSocialLinkUpdatePayload,
 )
 

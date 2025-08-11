@@ -26,7 +26,7 @@ from domain.value_objects.common import Id
 from domain.value_objects.file import ImageFile
 from domain.value_objects.project.project import ProjectCreateCommand
 from loguru import logger
-from presentation.request_converters.project.request_to_project_create_command import request_to_project_create_command
+from presentation.request_converters.project.project_create_command import request_to_project_create_command
 
 
 class TestProjectCreateCommandConversion(SimpleTestCase):

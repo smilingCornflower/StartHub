@@ -1,10 +1,10 @@
 from typing import Any, List, Type
 
 from django.core.management.base import BaseCommand
-from django.db import models
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.enums.role import RoleEnum
 from domain.models import ProjectIncubator
+from domain.models.base import BaseModel
 from domain.models.permission import Permission
 from domain.models.project_management.accelerator import ProjectAccelerator
 from domain.models.project_management.crowdfunding import ProjectCrowdfunding
@@ -27,11 +27,7 @@ class Command(BaseCommand):
         self._assign_project_investment_permission_for_users()
 
     def _assign_permissions_for_model(
-            self,
-            model: Type[models.Model],
-            actions: List[ActionEnum],
-            log_start_message: str,
-            log_end_message: str
+        self, model: Type[BaseModel], actions: List[ActionEnum], log_start_message: str, log_end_message: str
     ) -> None:
         """Helper method to assign permissions for a given model."""
         logger.warning(log_start_message)
@@ -52,7 +48,7 @@ class Command(BaseCommand):
             model=Project,
             actions=[ActionEnum.CHANGE, ActionEnum.DELETE],
             log_start_message="Started command: assing_project_permissions_for_users()",
-            log_end_message="User permissions for project initialized"
+            log_end_message="User permissions for project initialized",
         )
 
     def _assign_project_investment_permission_for_users(self) -> None:
@@ -60,7 +56,7 @@ class Command(BaseCommand):
             model=ProjectInvestment,
             actions=[ActionEnum.ADD, ActionEnum.CHANGE, ActionEnum.DELETE],
             log_start_message="Started command: _assign_project_investment_permission_for_users()",
-            log_end_message="User permissions for project investment initialized"
+            log_end_message="User permissions for project investment initialized",
         )
 
     def _assign_project_accelerator_permission_for_users(self) -> None:
@@ -68,7 +64,7 @@ class Command(BaseCommand):
             model=ProjectAccelerator,
             actions=[ActionEnum.ADD, ActionEnum.CHANGE, ActionEnum.DELETE],
             log_start_message="Started command: _assign_project_accelerator_permission_for_users()",
-            log_end_message="User permissions for project accelerator initialized"
+            log_end_message="User permissions for project accelerator initialized",
         )
 
     def _assign_project_incubator_permission_for_users(self) -> None:
@@ -76,7 +72,7 @@ class Command(BaseCommand):
             model=ProjectIncubator,
             actions=[ActionEnum.ADD, ActionEnum.CHANGE, ActionEnum.DELETE],
             log_start_message="Started _assign_project_incubator_permission_for_users()",
-            log_end_message="User permissions for project incubator initialized"
+            log_end_message="User permissions for project incubator initialized",
         )
 
     def _assign_project_crowdfunding_permission_for_users(self) -> None:
@@ -84,5 +80,5 @@ class Command(BaseCommand):
             model=ProjectCrowdfunding,
             actions=[ActionEnum.ADD, ActionEnum.CHANGE, ActionEnum.DELETE],
             log_start_message="Started _assign_project_crowdfunding_permission_for_users()",
-            log_end_message="User permissions for project crowdfunding initialized"
+            log_end_message="User permissions for project crowdfunding initialized",
         )
