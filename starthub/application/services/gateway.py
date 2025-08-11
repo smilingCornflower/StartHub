@@ -2,7 +2,10 @@ from application.builders.app_service.accelerator import AcceleratorAppServiceBu
 from application.builders.app_service.auth import AuthAppServiceBuilder, RegistrationAppServiceBuilder
 from application.builders.app_service.company import CompanyAppServiceBuilder
 from application.builders.app_service.crowdfunding import CrowdfundingAppServiceBuilder
-from application.builders.app_service.investment import ProjectInvestmentAppServiceBuilder
+from application.builders.app_service.investment import (
+    ProjectInvestmentAppServiceBuilder,
+    ProjectInvestmentSocialLinkAppServiceBuilder,
+)
 from application.builders.app_service.news import NewsAppServiceBuilder
 from application.builders.app_service.project import (
     ProjectCreateAppServiceBuilder,
@@ -26,6 +29,7 @@ from application.services.project_management.project import (
     ProjectUpdateAppService,
 )
 from application.services.project_management.project_image import ProjectImageAppService
+from application.services.project_management.project_investment_social_link import ProjectInvestmentSocialLinkAppService
 from application.services.user import UserAppService
 from application.services.user_favorite import UserFavoriteAppService
 from infrastructure.services.cookie import CookieService, cookie_service
@@ -49,6 +53,7 @@ class Gateway:
     _accelerator_app_service: AcceleratorAppService | None = None
     _crowdfunding_app_service: CrowdfundingAppService | None = None
     _project_investment_app_service: ProjectInvestmentAppService | None = None
+    _project_investment_social_link_app_service: ProjectInvestmentSocialLinkAppService | None = None
 
     _cookie_service: CookieService | None = None
 
@@ -135,6 +140,14 @@ class Gateway:
         if self._project_investment_app_service is None:
             self._project_investment_app_service = ProjectInvestmentAppServiceBuilder.create_service()
         return self._project_investment_app_service
+
+    @property
+    def project_investment_social_link_app_service(self) -> ProjectInvestmentSocialLinkAppService:
+        if self._project_investment_social_link_app_service is None:
+            self._project_investment_social_link_app_service = (
+                ProjectInvestmentSocialLinkAppServiceBuilder.create_service()
+            )
+        return self._project_investment_social_link_app_service
 
     @property
     def cookie_service(self) -> CookieService:

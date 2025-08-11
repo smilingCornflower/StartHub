@@ -27,6 +27,7 @@ class ProjectDeletedEvent(DomainEvent):
 # ==== ProjectInvestment ====
 class ProjectInvestmentCreatedEvent(DomainEvent):
     user: User
+    project: Project
     project_investment: ProjectInvestment
     social_links: list[SocialLink]
 

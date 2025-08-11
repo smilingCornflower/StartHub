@@ -45,7 +45,7 @@ class ProjectInvestmentAppService(AbstractAppService):
         logger.info(f"ProjectInvestment(id={investment.id}) created successfully.")
 
         event = ProjectInvestmentCreatedEvent(
-            user=user, project_investment=investment, social_links=command.social_links
+            user=user, project=project, project_investment=investment, social_links=command.social_links
         )
         EventBus().publish(event)
 
@@ -64,9 +64,7 @@ class ProjectInvestmentAppService(AbstractAppService):
         user: User = self._user_read_repository.get_by_id(id_=user_id)
         project: Project = self._project_read_repository.get_by_id(id_=project_id)
 
-        payload = self._convert_update_command_to_payload(
-            command=command, project_id=project_id, investmetn_id=investment_id
-        )
+        payload = self._convert_update_command_to_payload(command=command, investmetn_id=investment_id)
         logger.debug(f"payload: \n{pformat(payload.__dict__)}")
         with transaction.atomic():
             self._project_investment_service.update(user=user, project=project, payload=payload)
@@ -75,7 +73,6 @@ class ProjectInvestmentAppService(AbstractAppService):
     def _convert_update_command_to_payload(
         self,
         command: ProjectInvestmentUpdateCommand,
-        project_id: Id,
         investmetn_id: ProjectInvestmentId,
     ) -> ProjectInvestmentUpdatePayload:
         return ProjectInvestmentUpdatePayload(

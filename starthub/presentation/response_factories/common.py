@@ -29,7 +29,9 @@ from domain.exceptions.project_management import (
     ProjectCrowdfundingMaxAmountException,
     ProjectCrowdfundingNotFoundException,
     ProjectImageMaxAmountException,
+    ProjectInvestmentDoesNotBelongToProjectException,
     ProjectInvestmentMaxAmountException,
+    ProjectInvestmentNotFoundException,
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
     ProjectPlanNotFoundException,
@@ -194,4 +196,6 @@ class ProjectInvestmentErrorResponseFactory(CommonErrorResponseFactory):
         StringIsTooLongException: ("STRING_TOO_LONG", 422),
         ProjectInvestmentMaxAmountException: ("MAX_INVESTMENT_AMOUNT_EXCEEDED", 422),
         ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+        ProjectInvestmentDoesNotBelongToProjectException: ("INVESTMENT_DOES_NOT_BELONG_TO_PROJECT", 422),
+        ProjectInvestmentNotFoundException: ("INVESTMENT_NOT_FOUND", 404),
     }

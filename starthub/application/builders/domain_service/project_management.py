@@ -157,4 +157,5 @@ class ProjectInvestmentSocialLinkServiceBuilder(AbstractDomainServiceBuilder[Pro
     def create_service() -> ProjectInvestmentSocialLinkService:
         return ProjectInvestmentSocialLinkService(
             write_repository=DjProjectInvestmentSocialLinkWriteRepository(),
+            permission_service=PermissionServiceBuilder.create_service(),
         )

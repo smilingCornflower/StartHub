@@ -41,3 +41,11 @@ def request_to_project_investment_update_command(request: Request) -> ProjectInv
     )
     logger.debug(f"command: \n {pformat(command.__dict__)}")
     return command
+
+
+def request_to_social_link(request: Request) -> list[SocialLink]:
+    data: dict[str, Any] = request.data
+    social_link = [SocialLink(platform=k, link=v) for k, v in get_required_field(data, "social_links").items()]
+
+    logger.debug(f"social_links = {social_link}")
+    return social_link

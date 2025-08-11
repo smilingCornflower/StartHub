@@ -1,13 +1,17 @@
 from domain.constants import PROJECT_INVESTMENTS_ORGANIZATIONS_MAX_AMOUNT
 from domain.enums.permission import ActionEnum, ScopeEnum
-from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
+from domain.exceptions.permissions import (
+    AddDeniedPermissionException,
+    DeleteDeniedPermissionException,
+    UpdateDeniedPermissionException,
+)
 from domain.exceptions.project_management import ProjectInvestmentMaxAmountException
 from domain.models.project_management.investment import ProjectInvestment, ProjectInvestmentSocialLink
 from domain.models.project_management.project import Project
 from domain.models.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project.investment import (
-    ProjectInestmentReadRepository,
+    ProjectInvestmentReadRepository,
     ProjectInvestmentSocialLinkWriteRepository,
     ProjectInvestmentWriteRepository,
 )
@@ -24,7 +28,7 @@ class ProjectInvestmentService(AbstractDomainService):
         self,
         write_repository: ProjectInvestmentWriteRepository,
         permission_service: PermissionService,
-        project_investment_read_repository: ProjectInestmentReadRepository,
+        project_investment_read_repository: ProjectInvestmentReadRepository,
     ):
         self._write_repository = write_repository
         self._permission_service = permission_service
@@ -101,8 +105,56 @@ class ProjectInvestmentSocialLinkService(AbstractDomainService):
     def __init__(
         self,
         write_repository: ProjectInvestmentSocialLinkWriteRepository,
+        permission_service: PermissionService,
     ):
         self._write_repository = write_repository
+        self._permission_service = permission_service
 
-    def create(self, payload: ProjectInvestmentSocialLinkCreatePayload) -> ProjectInvestmentSocialLink:
+    def create(
+        self, user: User, project: Project, payload: ProjectInvestmentSocialLinkCreatePayload
+    ) -> ProjectInvestmentSocialLink:
+        self._check_create_permissions(user=user, project=project)
         return self._write_repository.create(data=payload)
+
+    def delete(
+        self,
+        user: User,
+        project: Project,
+        social_link: ProjectInvestmentSocialLink,
+    ) -> None:
+        self._check_delete_permissions(user=user, project=project)
+        self._write_repository.delete(investment=social_link)
+
+    def _check_delete_permissions(self, user: User, project: Project) -> None:
+        """:raises DeleteDeniedPermissionException:"""
+        add_own_permission = self._permission_service.create_permission_vo(
+            model=ProjectInvestment,
+            action=ActionEnum.DELETE,
+            scope=ScopeEnum.OWN,
+        )
+        has_permission = self._permission_service.has_user_permission(user=user, permission_vo=add_own_permission)
+        if has_permission:
+            if project.creator == user:
+                return None
+
+        logger.exception(
+            f"User(id={user.id}) doesn't have enough permission to delete ProjectInvestmentSocialLink to the Project(id={project.id})."
+        )
+        raise DeleteDeniedPermissionException("You don't have enough permission to delete this resource.")
+
+    def _check_create_permissions(self, user: User, project: Project) -> None:
+        """:raises AddDeniedPermissionException:"""
+        add_own_permission = self._permission_service.create_permission_vo(
+            model=ProjectInvestment,
+            action=ActionEnum.ADD,
+            scope=ScopeEnum.OWN,
+        )
+        has_permission = self._permission_service.has_user_permission(user=user, permission_vo=add_own_permission)
+        if has_permission:
+            if project.creator == user:
+                return None
+
+        logger.exception(
+            f"User(id={user.id}) doesn't have enough permission to add ProjectInvestmentSocialLink to the Project(id={project.id})."
+        )
+        raise AddDeniedPermissionException("You don't have enough permission to add this resource.")

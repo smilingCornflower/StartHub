@@ -1,7 +1,7 @@
 from domain.exceptions.project_management import ProjectInvestmentNotFoundException
 from domain.models.project_management.investment import ProjectInvestment, ProjectInvestmentSocialLink
 from domain.repositories.project.investment import (
-    ProjectInestmentReadRepository,
+    ProjectInvestmentReadRepository,
     ProjectInvestmentSocialLinkReadRepository,
     ProjectInvestmentSocialLinkWriteRepository,
     ProjectInvestmentWriteRepository,
@@ -21,7 +21,7 @@ from domain.value_objects.project.project_investment_social_link import (
 from infrastructure.repositories.pagination import apply_pagination
 
 
-class DjProjectInvestmentReadRepository(ProjectInestmentReadRepository):
+class DjProjectInvestmentReadRepository(ProjectInvestmentReadRepository):
     def get_by_id(self, id_: ProjectInvestmentId) -> ProjectInvestment:
         """:raises ProjectInvestmentNotFoundException:"""
         investment: ProjectInvestment | None = ProjectInvestment.objects.filter(id=id_.value).first()
@@ -78,7 +78,13 @@ class DjProjectInvestmentWriteRepository(ProjectInvestmentWriteRepository):
 
 class DjProjectInvestmentSocialLinkReadRepository(ProjectInvestmentSocialLinkReadRepository):
     def get_by_id(self, id_: ProjectInvestmentSocialLinkId) -> ProjectInvestmentSocialLink:
-        raise NotImplementedError("The method get_by_id() is not implemented yet.")
+        """:raises ProjectInvestmentNotFoundException:"""
+        investment: ProjectInvestmentSocialLink | None = ProjectInvestmentSocialLink.objects.filter(
+            id=id_.value
+        ).first()
+        if investment is None:
+            raise ProjectInvestmentNotFoundException(f"Project investment with id = {id_.value} not found.")
+        return investment
 
     def get_all(
         self, filter_: ProjectInvestmentSocialLinkFilter, pagination: Pagination | None = None
@@ -99,3 +105,6 @@ class DjProjectInvestmentSocialLinkWriteRepository(ProjectInvestmentSocialLinkWr
 
     def delete_by_id(self, id_: ProjectInvestmentSocialLinkId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")
+
+    def delete(self, investment: ProjectInvestmentSocialLink) -> None:
+        investment.delete()

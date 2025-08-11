@@ -16,7 +16,7 @@ from domain.value_objects.project.project_investment_social_link import (
 )
 
 
-class ProjectInestmentReadRepository(
+class ProjectInvestmentReadRepository(
     AbstractReadRepository[ProjectInvestment, ProjectInvestmentFilter, ProjectInvestmentId], ABC
 ):
     @abstractmethod
@@ -86,4 +86,8 @@ class ProjectInvestmentSocialLinkWriteRepository(
 
     @abstractmethod
     def delete_by_id(self, id_: ProjectInvestmentSocialLinkId) -> None:
+        pass
+
+    @abstractmethod
+    def delete(self, investment: ProjectInvestmentSocialLink) -> None:
         pass
