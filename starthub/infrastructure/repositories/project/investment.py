@@ -34,7 +34,11 @@ class DjProjectInvestmentReadRepository(ProjectInestmentReadRepository):
 
 class DjProjectInvestmentWriteRepository(ProjectInvestmentWriteRepository):
     def create(self, data: ProjectInvestmentCreatePayload) -> ProjectInvestment:
-        raise NotImplementedError("The method create() is not implemented yet.")
+        return ProjectInvestment.objects.create(
+            project_id=data.project_id.value,
+            organization_name=data.organization_name.value,
+            amount=data.amount.value,
+        )
 
     def update(self, data: ProjectInvestmentUpdatePayload) -> ProjectInvestment:
         raise NotImplementedError("The method update() is not implemented yet.")
