@@ -172,3 +172,16 @@ class ProjectInvestmentMaxAmountException(ValidationException, ProjectInvestment
 
 class ProjectInvestmentDoesNotBelongToProjectException(ValidationException, ProjectInvestmentException):
     pass
+
+
+# ==== Project Investment Phone Exceptions ====
+class ProjectInvestmentPhoneException(CustomException):
+    pass
+
+
+class ProjectInvestmentPhoneAlreadyExistsException(AlreadyExistsException, ProjectInvestmentPhoneException):
+    pass
+
+
+class ProjectInvestmentPhoneMaxAmountException(ValidationException, ProjectInvestmentPhoneException):
+    pass

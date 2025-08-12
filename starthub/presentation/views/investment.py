@@ -1,11 +1,13 @@
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
-from domain.value_objects.common import Id
+from domain.value_objects.common import Id, PhoneNumber
 from domain.value_objects.project.investment import ProjectInvestmentId
 from domain.value_objects.project.project_investment_social_link import ProjectInvestmentSocialLinkId
 from infrastructure.auth.user import get_user_id_or_raises
+from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.request_converters.project.investment import (
+    request_to_phone,
     request_to_project_investment_create_command,
     request_to_project_investment_update_command,
     request_to_social_link,
@@ -67,5 +69,20 @@ class ProjectInvestmentSocialLinkView(APIView):
             )
 
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+        except CustomException as e:
+            return ProjectInvestmentErrorResponseFactory.create_response(exception=e)
+
+
+class ProjectInvestmentPhoneView(APIView):
+    def post(self, request: Request, investment_id: int) -> Response:
+        try:
+            user_id: Id = get_user_id_or_raises(request=request)
+            phone_number: PhoneNumber = request_to_phone(request=request)
+            logger.debug(f"{phone_number=}")
+
+            gateway.project_investment_phone_app_service.create(
+                user_id=user_id, investment_id=ProjectInvestmentId(value=investment_id), phone_number=phone_number
+            )
+            return Response({"code": SUCCESS}, status=status.HTTP_201_CREATED)
         except CustomException as e:
             return ProjectInvestmentErrorResponseFactory.create_response(exception=e)

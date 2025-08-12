@@ -5,6 +5,7 @@ from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode, CountryId
 from domain.value_objects.geo import AddressId, CityId, RegionId
 from domain.value_objects.project.common import ProjectStage, ProjectStatus
+from domain.value_objects.project.investment import ProjectInvestmentId
 from domain.value_objects.user import Email
 
 
@@ -135,3 +136,8 @@ class ProjectInvestmentFilter(AbstractFilter):
 
 class ProjectInvestmentSocialLinkFilter(AbstractFilter):
     pass
+
+
+class ProjectInvestmentPhoneFilter(AbstractFilter):
+    investment_id: ProjectInvestmentId | None = None
+    number: PhoneNumber | None = None

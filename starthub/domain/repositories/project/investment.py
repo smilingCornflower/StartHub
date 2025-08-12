@@ -1,13 +1,22 @@
 from abc import ABC, abstractmethod
 
+from domain.models import ProjectInvestmentPhone
 from domain.models.project_management.investment import ProjectInvestment, ProjectInvestmentSocialLink
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
 from domain.value_objects.common import Pagination
-from domain.value_objects.filter import ProjectInvestmentFilter, ProjectInvestmentSocialLinkFilter
+from domain.value_objects.filter import (
+    ProjectInvestmentFilter,
+    ProjectInvestmentPhoneFilter,
+    ProjectInvestmentSocialLinkFilter,
+)
 from domain.value_objects.project.investment import (
     ProjectInvestmentCreatePayload,
     ProjectInvestmentId,
     ProjectInvestmentUpdatePayload,
+)
+from domain.value_objects.project.project_investment_phone import (
+    ProjectInvestmentPhoneCreatePayload,
+    ProjectInvestmentPhoneUpdatePayload,
 )
 from domain.value_objects.project.project_investment_social_link import (
     ProjectInvestmentSocialLinkCreatePayload,
@@ -90,4 +99,40 @@ class ProjectInvestmentSocialLinkWriteRepository(
 
     @abstractmethod
     def delete(self, investment: ProjectInvestmentSocialLink) -> None:
+        pass
+
+
+class ProjectInvestmentPhoneReadRepository(
+    AbstractReadRepository[ProjectInvestmentPhone, ProjectInvestmentPhoneFilter, ProjectInvestmentId], ABC
+):
+    @abstractmethod
+    def get_by_id(self, id_: ProjectInvestmentId) -> ProjectInvestment:
+        pass
+
+    @abstractmethod
+    def get_all(
+        self, filter_: ProjectInvestmentPhoneFilter, pagination: Pagination | None = None
+    ) -> list[ProjectInvestmentPhone]:
+        pass
+
+
+class ProjectInvestmentPhoneWriteRepository(
+    AbstractWriteRepository[
+        ProjectInvestmentPhone,
+        ProjectInvestmentPhoneCreatePayload,
+        ProjectInvestmentPhoneUpdatePayload,
+        ProjectInvestmentId,
+    ],
+    ABC,
+):
+    @abstractmethod
+    def create(self, data: ProjectInvestmentPhoneCreatePayload) -> ProjectInvestmentPhone:
+        pass
+
+    @abstractmethod
+    def update(self, data: ProjectInvestmentPhoneUpdatePayload) -> ProjectInvestmentPhone:
+        pass
+
+    @abstractmethod
+    def delete_by_id(self, id_: ProjectInvestmentId) -> None:
         pass

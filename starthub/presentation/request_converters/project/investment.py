@@ -1,7 +1,7 @@
 from pprint import pformat
 from typing import Any
 
-from domain.value_objects.common import SocialLink
+from domain.value_objects.common import PhoneNumber, SocialLink
 from domain.value_objects.project.investment import (
     ProjectInvestmentAmount,
     ProjectInvestmentCreateCommand,
@@ -49,3 +49,9 @@ def request_to_social_link(request: Request) -> list[SocialLink]:
 
     logger.debug(f"social_links = {social_link}")
     return social_link
+
+
+def request_to_phone(request: Request) -> PhoneNumber:
+    data = request.data
+    project_phone = PhoneNumber(value=get_required_field(data, "phone_number"))
+    return project_phone

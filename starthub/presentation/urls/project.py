@@ -1,7 +1,11 @@
 from django.urls import path
 from presentation.views.accelerator import AcceleratorView
 from presentation.views.crowdfunding import CrowdfundingView
-from presentation.views.investment import ProjectInvestmentSocialLinkView, ProjectInvestmentView
+from presentation.views.investment import (
+    ProjectInvestmentPhoneView,
+    ProjectInvestmentSocialLinkView,
+    ProjectInvestmentView,
+)
 from presentation.views.project import MeProjectView, ProjectImageView, ProjectPlanView, ProjectSearchView, ProjectView
 
 urlpatterns = [
@@ -18,4 +22,5 @@ urlpatterns = [
     path("<int:project_id>/investments/<int:investment_id>/", ProjectInvestmentView.as_view()),
     path("investments/<int:investment_id>/social-links/", ProjectInvestmentSocialLinkView.as_view()),
     path("investments/social-links/<int:social_link_id>/", ProjectInvestmentSocialLinkView.as_view()),
+    path("investments/<int:investment_id>/phone/", ProjectInvestmentPhoneView.as_view()),
 ]

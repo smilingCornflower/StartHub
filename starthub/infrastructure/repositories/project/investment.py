@@ -1,17 +1,31 @@
 from domain.exceptions.project_management import ProjectInvestmentNotFoundException
-from domain.models.project_management.investment import ProjectInvestment, ProjectInvestmentSocialLink
+from domain.models.project_management.investment import (
+    ProjectInvestment,
+    ProjectInvestmentPhone,
+    ProjectInvestmentSocialLink,
+)
 from domain.repositories.project.investment import (
+    ProjectInvestmentPhoneReadRepository,
+    ProjectInvestmentPhoneWriteRepository,
     ProjectInvestmentReadRepository,
     ProjectInvestmentSocialLinkReadRepository,
     ProjectInvestmentSocialLinkWriteRepository,
     ProjectInvestmentWriteRepository,
 )
 from domain.value_objects.common import Pagination
-from domain.value_objects.filter import ProjectInvestmentFilter, ProjectInvestmentSocialLinkFilter
+from domain.value_objects.filter import (
+    ProjectInvestmentFilter,
+    ProjectInvestmentPhoneFilter,
+    ProjectInvestmentSocialLinkFilter,
+)
 from domain.value_objects.project.investment import (
     ProjectInvestmentCreatePayload,
     ProjectInvestmentId,
     ProjectInvestmentUpdatePayload,
+)
+from domain.value_objects.project.project_investment_phone import (
+    ProjectInvestmentPhoneCreatePayload,
+    ProjectInvestmentPhoneUpdatePayload,
 )
 from domain.value_objects.project.project_investment_social_link import (
     ProjectInvestmentSocialLinkCreatePayload,
@@ -108,3 +122,39 @@ class DjProjectInvestmentSocialLinkWriteRepository(ProjectInvestmentSocialLinkWr
 
     def delete(self, investment: ProjectInvestmentSocialLink) -> None:
         investment.delete()
+
+
+# ======================================================================================================================
+class DjProjectInvestmentPhoneReadRepository(ProjectInvestmentPhoneReadRepository):
+    def get_by_id(self, id_: ProjectInvestmentId) -> ProjectInvestment:
+        raise NotImplementedError("The method get_by_id() is not implemented yet.")
+
+    def get_all(
+        self, filter_: ProjectInvestmentPhoneFilter, pagination: Pagination | None = None
+    ) -> list[ProjectInvestmentPhone]:
+        queryset = ProjectInvestmentPhone.objects.all()
+
+        if filter_.number is not None:
+            queryset = queryset.filter(number=filter_.number.value)
+
+        if filter_.investment_id is not None:
+            queryset = queryset.filter(investment_id=filter_.investment_id.value)
+
+        if pagination:
+            return apply_pagination(queryset=queryset, pagination=pagination)
+
+        return list(queryset)
+
+
+class DjProjectInvestmentPhoneWriteRepository(ProjectInvestmentPhoneWriteRepository):
+    def create(self, data: ProjectInvestmentPhoneCreatePayload) -> ProjectInvestmentPhone:
+        return ProjectInvestmentPhone.objects.create(
+            investment_id=data.investment_id.value,
+            number=data.phone_number.value,
+        )
+
+    def update(self, data: ProjectInvestmentPhoneUpdatePayload) -> ProjectInvestmentPhone:
+        raise NotImplementedError("The method update() is not implemented yet.")
+
+    def delete_by_id(self, id_: ProjectInvestmentId) -> None:
+        raise NotImplementedError("The method delete_by_id() is not implemented yet.")
