@@ -3,6 +3,7 @@ from application.ports.domain_service_builder import AbstractDomainServiceBuilde
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management.accelerator import ProjectAcceleratorService
 from domain.services.project_management.crowdfunding import ProjectCrowdfundingService
+from domain.services.project_management.government_grant import ProjectGovernmentGrantService
 from domain.services.project_management.incubator import IncubatorService
 from domain.services.project_management.investment import (
     ProjectInvestmentPhoneService,
@@ -26,6 +27,7 @@ from infrastructure.repositories.geo.address import DjAddressWriteRepository
 from infrastructure.repositories.geo.country import DjCountryReadRepository
 from infrastructure.repositories.project.accelerator import DjProjectAcceleratorWriteRepository
 from infrastructure.repositories.project.crowdfunding import DjProjectCrowdfundingWriteRepository
+from infrastructure.repositories.project.government_grant import DjProjectGovernmentGrantWriteRepository
 from infrastructure.repositories.project.image import DjProjectImageReadRepository, DjProjectImageWriteRepository
 from infrastructure.repositories.project.incubator import DjProjectIncubatorWriteRepository
 from infrastructure.repositories.project.investment import (
@@ -171,5 +173,14 @@ class ProjectInvestmentPhoneServiceBuilder(AbstractDomainServiceBuilder[ProjectI
     def create_service() -> ProjectInvestmentPhoneService:
         return ProjectInvestmentPhoneService(
             write_repository=DjProjectInvestmentPhoneWriteRepository(),
+            permission_service=PermissionServiceBuilder.create_service(),
+        )
+
+
+class ProjectGovernmentGrantServiceBuilder(AbstractDomainServiceBuilder[ProjectGovernmentGrantService]):
+    @staticmethod
+    def create_service() -> ProjectGovernmentGrantService:
+        return ProjectGovernmentGrantService(
+            write_repository=DjProjectGovernmentGrantWriteRepository(),
             permission_service=PermissionServiceBuilder.create_service(),
         )

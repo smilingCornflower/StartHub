@@ -2,6 +2,7 @@ from application.builders.app_service.accelerator import AcceleratorAppServiceBu
 from application.builders.app_service.auth import AuthAppServiceBuilder, RegistrationAppServiceBuilder
 from application.builders.app_service.company import CompanyAppServiceBuilder
 from application.builders.app_service.crowdfunding import CrowdfundingAppServiceBuilder
+from application.builders.app_service.government_grant import GovernmentGrantAppServiceBuilder
 from application.builders.app_service.investment import (
     ProjectInvestmentAppServiceBuilder,
     ProjectInvestmentPhoneAppServiceBuilder,
@@ -22,6 +23,7 @@ from application.services.company import CompanyAppService
 from application.services.news import NewsAppService
 from application.services.project_management.accelerator import AcceleratorAppService
 from application.services.project_management.crowdfunding import CrowdfundingAppService
+from application.services.project_management.government_grant import GovernmentGrantAppService
 from application.services.project_management.investment import ProjectInvestmentAppService
 from application.services.project_management.project import (
     ProjectCreateAppService,
@@ -57,6 +59,7 @@ class Gateway:
     _project_investment_app_service: ProjectInvestmentAppService | None = None
     _project_investment_social_link_app_service: ProjectInvestmentSocialLinkAppService | None = None
     _project_investment_phone_app_service: ProjectInvestmentPhoneAppService | None = None
+    _proejct_government_grant_app_service: GovernmentGrantAppService | None = None
 
     _cookie_service: CookieService | None = None
 
@@ -157,6 +160,12 @@ class Gateway:
         if self._project_investment_phone_app_service is None:
             self._project_investment_phone_app_service = ProjectInvestmentPhoneAppServiceBuilder.create_service()
         return self._project_investment_phone_app_service
+
+    @property
+    def project_government_grant_app_service(self) -> GovernmentGrantAppService:
+        if self._proejct_government_grant_app_service is None:
+            self._proejct_government_grant_app_service = GovernmentGrantAppServiceBuilder.create_service()
+        return self._proejct_government_grant_app_service
 
     @property
     def cookie_service(self) -> CookieService:

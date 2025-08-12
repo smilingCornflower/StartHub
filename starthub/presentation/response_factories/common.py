@@ -28,6 +28,7 @@ from domain.exceptions.project_management import (
     ProjectCrowdfundingAlreadyExistsException,
     ProjectCrowdfundingMaxAmountException,
     ProjectCrowdfundingNotFoundException,
+    ProjectGovernmentGrantMaxAmountException,
     ProjectImageMaxAmountException,
     ProjectInvestmentDoesNotBelongToProjectException,
     ProjectInvestmentMaxAmountException,
@@ -52,6 +53,7 @@ from domain.exceptions.validation import (
     InvalidSocialLinkException,
     LastNameIsTooLongException,
     MissingFileExcpetion,
+    NegativeNumberException,
     StringIsTooLongException,
     ValidationException,
 )
@@ -204,4 +206,11 @@ class ProjectInvestmentErrorResponseFactory(CommonErrorResponseFactory):
         ProjectInvestmentPhoneAlreadyExistsException: ("INVESTMENT_PHONE_ALREADY_EXISTS", 409),
         ProjectInvestmentPhoneMaxAmountException: ("MAX_INVESTMENT_PHONE_AMOUNT_EXCEEDED", 422),
         ProjectInvestmentPhoneNotFoundException: ("INVESTMENT_PHONE_NOT_FOUND", 404),
+    }
+
+
+class ProjectGovernmentGrantErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectGovernmentGrantMaxAmountException: ("MAX_GOVERNMENT_GRANT_AMOUNT_EXCEEDED", 422),
+        NegativeNumberException: ("NEGATIVE_NUMBER", 422),
     }

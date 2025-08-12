@@ -175,7 +175,7 @@ class ProjectInvestmentDoesNotBelongToProjectException(ValidationException, Proj
 
 
 # ==== Project Investment Phone Exceptions ====
-class ProjectInvestmentPhoneException(CustomException):
+class ProjectInvestmentPhoneException(ProjectException):
     pass
 
 
@@ -188,4 +188,13 @@ class ProjectInvestmentPhoneMaxAmountException(ValidationException, ProjectInves
 
 
 class ProjectInvestmentPhoneNotFoundException(NotFoundException, ProjectInvestmentPhoneException):
+    pass
+
+
+# ==== Project Government Grant Exceptions ====
+class ProjectGoverntmentGrantException(ProjectException):
+    pass
+
+
+class ProjectGovernmentGrantMaxAmountException(ValidationException, ProjectGoverntmentGrantException):
     pass
