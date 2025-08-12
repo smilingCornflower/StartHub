@@ -5,18 +5,18 @@ from domain.models.base import BaseModel
 
 
 class ProjectGovernmentGrant(BaseModel):
-    name = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
-    name_slug = AutoSlugField(populate_from="name", unique=True, max_length=CHAR_FIELD_MAX_LENGTH)
+    grant_name = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
+    grant_name_slug = AutoSlugField(populate_from="grant_name", unique=True, max_length=CHAR_FIELD_MAX_LENGTH)
 
     amount = models.FloatField()
     organization_name = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
-    organization_name_slug = AutoSlugField(populate_from="name", unique=True, max_length=CHAR_FIELD_MAX_LENGTH)
+    organization_name_slug = AutoSlugField(populate_from="organization_name", unique=True, max_length=CHAR_FIELD_MAX_LENGTH)
 
     class Meta:
         db_table = "project_government_grants"
 
     def __str__(self) -> str:
-        return f"{self.organization_name} {self.name}"
+        return f"{self.organization_name} {self.grant_name}"
 
     @classmethod
     def get_permission_key(cls) -> str:
