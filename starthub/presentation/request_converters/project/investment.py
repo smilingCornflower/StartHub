@@ -20,6 +20,7 @@ def request_to_project_investment_create_command(request: Request) -> ProjectInv
         organization_name=ProjectInvestmentOrganizationName(value=get_required_field(data, "organization_name")),
         amount=ProjectInvestmentAmount(value=float(get_required_field(data, "amount"))),
         social_links=[SocialLink(platform=k, link=v) for k, v in get_required_field(data, "social_links").items()],
+        phone_numbers=[PhoneNumber(value=i) for i in get_required_field(data, "phone_numbers")],
     )
     logger.debug(f"command: \n {pformat(command.__dict__)}")
     return command

@@ -147,6 +147,7 @@ def _extract_investment(raw_data: dict[str, str]) -> ProjectInvestmentCreateComm
         social_links=[
             SocialLink(platform=k, link=v) for k, v in get_required_field(investment_data, "social_links").items()
         ],
+        phone_numbers=[PhoneNumber(value=i) for i in get_required_field(investment_data, "phone_numbers")],
     )
     return command
 

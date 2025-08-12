@@ -8,7 +8,9 @@ from application.builders.domain_service.project_management import (
     ProjectCrowdfundingServiceBuilder,
     ProjectImageServiceBuilder,
     ProjectIncubatorServiceBuilder,
+    ProjectInvestmentPhoneServiceBuilder,
     ProjectInvestmentServiceBuilder,
+    ProjectInvestmentSocialLinkServiceBuilder,
     ProjectPhoneServiceBuilder,
     ProjectSocialLinkServiceBuilder,
     ProjectStepServiceBuilder,
@@ -38,6 +40,8 @@ class ProjectCreatedEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):
             accelerator_service=ProjectAcceleratorServiceBuilder.create_service(),
             crowdfunding_service=ProjectCrowdfundingServiceBuilder.create_service(),
             investment_service=ProjectInvestmentServiceBuilder.create_service(),
+            investment_social_link_service=ProjectInvestmentSocialLinkServiceBuilder.create_service(),
+            investment_phone_number_service=ProjectInvestmentPhoneServiceBuilder.create_service(),
         )
 
 
