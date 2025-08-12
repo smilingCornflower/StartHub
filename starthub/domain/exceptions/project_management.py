@@ -119,7 +119,7 @@ class ProjectStepMaxAmountException(ProjectStepException):
 
 
 # ==== Project Incubator Exceptions ====
-class ProjectIncubatorException(ProjectException):
+class ProjectIncubatorException(CustomException):
     pass
 
 
@@ -128,7 +128,7 @@ class ProjectIncubatorNotFoundException(ProjectIncubatorException, NotFoundExcep
 
 
 # ==== Project Accelerator Exceptions ====
-class ProjectAcceleratorException(ProjectException):
+class ProjectAcceleratorException(CustomException):
     pass
 
 
@@ -141,7 +141,7 @@ class ProjectAcceleratorAlreadyExists(AlreadyExistsException, ProjectAccelerator
 
 
 # ==== Project Crowdfunding Exceptions ====
-class ProjectCrowdfundingException(ProjectException):
+class ProjectCrowdfundingException(CustomException):
     pass
 
 
@@ -154,4 +154,38 @@ class ProjectCrowdfundingNotFoundException(NotFoundException, ProjectCrowdfundin
 
 
 class ProjectCrowdfundingAlreadyExistsException(AlreadyExistsException, ProjectCrowdfundingException):
+    pass
+
+
+# ==== Project Investment Exceptions ====
+class ProjectInvestmentException(CustomException):
+    pass
+
+
+class ProjectInvestmentNotFoundException(NotFoundException, ProjectInvestmentException):
+    pass
+
+
+class ProjectInvestmentMaxAmountException(ValidationException, ProjectInvestmentException):
+    pass
+
+
+class ProjectInvestmentDoesNotBelongToProjectException(ValidationException, ProjectInvestmentException):
+    pass
+
+
+# ==== Project Investment Phone Exceptions ====
+class ProjectInvestmentPhoneException(CustomException):
+    pass
+
+
+class ProjectInvestmentPhoneAlreadyExistsException(AlreadyExistsException, ProjectInvestmentPhoneException):
+    pass
+
+
+class ProjectInvestmentPhoneMaxAmountException(ValidationException, ProjectInvestmentPhoneException):
+    pass
+
+
+class ProjectInvestmentPhoneNotFoundException(NotFoundException, ProjectInvestmentPhoneException):
     pass

@@ -18,6 +18,7 @@ from domain.value_objects.project.accelerator import ProjectAcceleratorCreateCom
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage, ProjectStatus
 from domain.value_objects.project.crowdfunding import ProjectCrowdfundingCreateCommand
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorUpdatePayload
+from domain.value_objects.project.investment import ProjectInvestmentCreateCommand
 from domain.value_objects.project.step import ProjectStepCreateCommand
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
 
@@ -41,6 +42,7 @@ class ProjectCreateCommand(BaseCommand):
     incubator: IncubatorCreateCommand | None
     accelerator: ProjectAcceleratorCreateCommand | None
     crowdunding: ProjectCrowdfundingCreateCommand | None
+    investment: ProjectInvestmentCreateCommand | None
 
     company_name: CompanyName
     country_code: CountryCode

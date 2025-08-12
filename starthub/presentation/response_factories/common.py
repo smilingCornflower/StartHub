@@ -29,6 +29,12 @@ from domain.exceptions.project_management import (
     ProjectCrowdfundingMaxAmountException,
     ProjectCrowdfundingNotFoundException,
     ProjectImageMaxAmountException,
+    ProjectInvestmentDoesNotBelongToProjectException,
+    ProjectInvestmentMaxAmountException,
+    ProjectInvestmentNotFoundException,
+    ProjectInvestmentPhoneAlreadyExistsException,
+    ProjectInvestmentPhoneMaxAmountException,
+    ProjectInvestmentPhoneNotFoundException,
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
     ProjectPlanNotFoundException,
@@ -184,4 +190,18 @@ class CrowdfundingErrorResponseFactory(CommonErrorResponseFactory):
         ProjectCrowdfundingNotFoundException: ("PROJECT_CROWDFUNDING_NOT_FOUND", 404),
         ProjectCrowdfundingAlreadyExistsException: ("PROJECT_CROWDFUNDING_ALREADY_EXISTS", 409),
         ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+    }
+
+
+class ProjectInvestmentErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        DisallowedSocialLinkException: ("DISALLOWED_SOCIAL_PLATFORM", 422),
+        StringIsTooLongException: ("STRING_TOO_LONG", 422),
+        ProjectInvestmentMaxAmountException: ("MAX_INVESTMENT_AMOUNT_EXCEEDED", 422),
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+        ProjectInvestmentDoesNotBelongToProjectException: ("INVESTMENT_DOES_NOT_BELONG_TO_PROJECT", 422),
+        ProjectInvestmentNotFoundException: ("INVESTMENT_NOT_FOUND", 404),
+        ProjectInvestmentPhoneAlreadyExistsException: ("INVESTMENT_PHONE_ALREADY_EXISTS", 409),
+        ProjectInvestmentPhoneMaxAmountException: ("MAX_INVESTMENT_PHONE_AMOUNT_EXCEEDED", 422),
+        ProjectInvestmentPhoneNotFoundException: ("INVESTMENT_PHONE_NOT_FOUND", 404),
     }

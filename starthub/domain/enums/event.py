@@ -6,5 +6,8 @@ class EventType:
         CREATED = "project_created"
         DELETED = "project_deleted"
 
+    class ProjectInvestment(StrEnum):
+        CREATED = "project_investment_created"
 
-AnyEventType = EventType.Project
+
+AnyEventType = EventType.Project | EventType.ProjectInvestment

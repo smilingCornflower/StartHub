@@ -22,6 +22,11 @@ from domain.value_objects.project.crowdfunding import (
     ProjectCrowdfundingName,
 )
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorName
+from domain.value_objects.project.investment import (
+    ProjectInvestmentAmount,
+    ProjectInvestmentCreateCommand,
+    ProjectInvestmentOrganizationName,
+)
 from domain.value_objects.project.project import ProjectCreateCommand
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
 from loguru import logger
@@ -83,6 +88,10 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
     if "crowdfunding" in data:
         crowdfunding = _extract_crowdfunding(raw_data=data)
 
+    investment: ProjectInvestmentCreateCommand | None = None
+    if "investment" in data:
+        investment = _extract_investment(raw_data=data)
+
     command = ProjectCreateCommand(
         **project_info,
         **company_info,
@@ -93,6 +102,7 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
         incubator=incubator,
         accelerator=accelerator,
         crowdunding=crowdfunding,
+        investment=investment,
     )
 
     logger.debug(f"command: \n{pformat(command.__dict__)}")
@@ -124,6 +134,22 @@ def _extract_project_info(project_data: dict[str, Any], user_id: int) -> dict[st
         "steps": extract_steps(project_data),
         "phone_number": PhoneNumber(value=get_required_field(project_data, "phone_number")),
     }
+
+
+def _extract_investment(raw_data: dict[str, str]) -> ProjectInvestmentCreateCommand:
+    investment_data = _parse_json_field(raw_data, "investment")
+
+    command = ProjectInvestmentCreateCommand(
+        organization_name=ProjectInvestmentOrganizationName(
+            value=get_required_field(investment_data, "organization_name")
+        ),
+        amount=ProjectInvestmentAmount(value=float(get_required_field(investment_data, "amount"))),
+        social_links=[
+            SocialLink(platform=k, link=v) for k, v in get_required_field(investment_data, "social_links").items()
+        ],
+        phone_numbers=[PhoneNumber(value=i) for i in get_required_field(investment_data, "phone_numbers")],
+    )
+    return command
 
 
 def _extract_crowdfunding(raw_data: dict[str, str]) -> ProjectCrowdfundingCreateCommand:

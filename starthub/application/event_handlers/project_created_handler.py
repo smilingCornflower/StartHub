@@ -11,6 +11,11 @@ from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management.accelerator import ProjectAcceleratorService
 from domain.services.project_management.crowdfunding import ProjectCrowdfundingService
 from domain.services.project_management.incubator import IncubatorService
+from domain.services.project_management.investment import (
+    ProjectInvestmentPhoneService,
+    ProjectInvestmentService,
+    ProjectInvestmentSocialLinkService,
+)
 from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
 from domain.services.project_management.project_social_link import ProjectSocialLinkService
@@ -22,8 +27,15 @@ from domain.value_objects.project.accelerator import ProjectAcceleratorCreateCom
 from domain.value_objects.project.crowdfunding import ProjectCrowdfundingCreateCommand, ProjectCrowdfundingCreatePayload
 from domain.value_objects.project.image import ProjectImageCreateCommand
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorCreatePayload
+from domain.value_objects.project.investment import (
+    ProjectInvestmentCreateCommand,
+    ProjectInvestmentCreatePayload,
+    ProjectInvestmentId,
+)
 from domain.value_objects.project.phone import ProjectPhoneCreatePayload
 from domain.value_objects.project.project import ProjectCreateCommand
+from domain.value_objects.project.project_investment_phone import ProjectInvestmentPhoneCreatePayload
+from domain.value_objects.project.project_investment_social_link import ProjectInvestmentSocialLinkCreatePayload
 from domain.value_objects.project.social_link import ProjectSocialLinkCreatePayload
 from domain.value_objects.project.step import ProjectStepCreatePaylaod
 from loguru import logger
@@ -43,6 +55,9 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         incubator_service: IncubatorService,
         accelerator_service: ProjectAcceleratorService,
         crowdfunding_service: ProjectCrowdfundingService,
+        investment_service: ProjectInvestmentService,
+        investment_social_link_service: ProjectInvestmentSocialLinkService,
+        investment_phone_number_service: ProjectInvestmentPhoneService,
     ):
         self._company_service = company_service
         self._company_founder_service = company_founder_service
@@ -55,6 +70,9 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         self._incubator_service = incubator_service
         self._accelerator_service = accelerator_service
         self._crowdfunding_service = crowdfunding_service
+        self._investment_service = investment_service
+        self._investment_social_link_service = investment_social_link_service
+        self._investment_phone_number_service = investment_phone_number_service
 
     def handle(self, event: ProjectCreatedEvent) -> None:
         logger.info(f"Event: {event.event_type} caught.")
@@ -77,11 +95,47 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
             self._create_project_accelerator(
                 user=user, project=project, accelerator_command=command.accelerator, project_id=project_id
             )
-
         if command.crowdunding is not None:
             self._create_project_crowdfunding(user=user, project=project, crowdfunding_command=command.crowdunding)
 
+        if command.investment is not None:
+            self._create_project_investment(user=user, project=project, investment_command=command.investment)
+
         logger.info("All related models are created.")
+
+    def _create_project_investment(
+        self,
+        user: User,
+        project: Project,
+        investment_command: ProjectInvestmentCreateCommand,
+    ) -> None:
+        payload = ProjectInvestmentCreatePayload(
+            project_id=Id(value=project.id),
+            organization_name=investment_command.organization_name,
+            amount=investment_command.amount,
+        )
+        investment = self._investment_service.create(user=user, project=project, payload=payload)
+        logger.info("Project investment created successfully.")
+
+        for sl in investment_command.social_links:
+            self._investment_social_link_service.create(
+                user=user,
+                project=project,
+                payload=ProjectInvestmentSocialLinkCreatePayload(
+                    investment_id=ProjectInvestmentId(value=investment.id),
+                    social_link=sl,
+                ),
+            )
+
+        for pn in investment_command.phone_numbers:
+            self._investment_phone_number_service.create(
+                user=user,
+                project=project,
+                payload=ProjectInvestmentPhoneCreatePayload(
+                    investment_id=ProjectInvestmentId(value=investment.id),
+                    phone_number=pn,
+                ),
+            )
 
     def _create_project_crowdfunding(
         self, user: User, project: Project, crowdfunding_command: ProjectCrowdfundingCreateCommand

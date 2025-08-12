@@ -26,7 +26,6 @@ class PermissionService(AbstractDomainService):
         permissions: list[Permission] = self._permission_read_repository.get_all(PermissionFilter(user=user))
         permission_names = {p.name for p in permissions}
 
-        logger.debug(f"user {user.email}, permissions: {permission_names}")
         return permission_vo.value in permission_names
 
     def has_permission(self, user_id: Id, permission_vo: PermissionVo) -> bool:
@@ -36,7 +35,6 @@ class PermissionService(AbstractDomainService):
         self._user_read_repository.get_by_id(id_=user_id)  # check
         permissions: list[Permission] = self._permission_read_repository.get_all(PermissionFilter(user_id=user_id))
         permission_names = {p.name for p in permissions}
-        logger.debug(f"user_id: {user_id.value}, permissions: {permission_names}")
         return permission_vo.value in permission_names
 
     @classmethod

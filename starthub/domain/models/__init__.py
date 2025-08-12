@@ -15,6 +15,9 @@ ProjectStep = import_module("domain.models.project_management.step").ProjectStep
 ProjectIncubator = import_module("domain.models.project_management.incubator").ProjectIncubator
 ProjectAccelerator = import_module("domain.models.project_management.accelerator").ProjectAccelerator
 ProjectCrowdfunding = import_module("domain.models.project_management.crowdfunding").ProjectCrowdfunding
+ProjectInvestment = import_module("domain.models.project_management.investment").ProjectInvestment
+ProjectInvestmentSocialLink = import_module("domain.models.project_management.investment").ProjectInvestmentSocialLink
+ProjectInvestmentPhone = import_module("domain.models.project_management.investment").ProjectInvestmentPhone
 
 FundingModel = import_module("domain.models.project_management.funding_model").FundingModel
 Company = import_module("domain.models.company").Company
