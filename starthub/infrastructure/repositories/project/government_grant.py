@@ -67,3 +67,6 @@ class DjProjectGovernmentGrantWriteRepository(ProjectGovernmentGrantWriteReposit
 
     def delete_by_id(self, id_: ProjectGovernmentGrantId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")
+
+    def delete(self, government_grant: ProjectGovernmentGrant) -> None:
+        government_grant.delete()

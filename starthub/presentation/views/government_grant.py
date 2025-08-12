@@ -7,6 +7,7 @@ from domain.value_objects.project.government_grant import (
     ProjectGoverntmentGrantUpdateCommand,
 )
 from infrastructure.auth.user import get_user_id_or_raises
+from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.request_converters.project.government_grant import (
     request_to_project_government_grant_create_command,
@@ -21,6 +22,8 @@ from rest_framework.views import APIView
 
 class GovernmentGrantView(APIView):
     def post(self, request: Request, project_id: int) -> Response:
+        print()
+        logger.info(f"GovermentGrant POST, {project_id=}")
         try:
             user_id: Id = get_user_id_or_raises(request=request)
             command: ProjectGoverntmentGrantCreateCommand = request_to_project_government_grant_create_command(
@@ -35,6 +38,8 @@ class GovernmentGrantView(APIView):
             return ProjectGovernmentGrantErrorResponseFactory.create_response(exception=e)
 
     def patch(self, request: Request, government_grant_id: int) -> Response:
+        print()
+        logger.info(f"GovermentGrant PATCH, {government_grant_id=}")
         try:
             user_id: Id = get_user_id_or_raises(request=request)
             command: ProjectGoverntmentGrantUpdateCommand = request_to_project_government_grant_update_command(
@@ -45,6 +50,19 @@ class GovernmentGrantView(APIView):
                 government_grant_id=ProjectGovernmentGrantId(value=government_grant_id),
                 command=command,
             )
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+        except CustomException as e:
+            return ProjectGovernmentGrantErrorResponseFactory.create_response(exception=e)
+
+    def delete(self, request: Request, government_grant_id: int) -> Response:
+        print()
+        logger.info(f"GovernmentGrant DELETE, {government_grant_id=}")
+        try:
+            user_id: Id = get_user_id_or_raises(request=request)
+            gateway.project_government_grant_app_service.delete(
+                user_id=user_id, government_grant_id=ProjectGovernmentGrantId(value=government_grant_id)
+            )
+
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
         except CustomException as e:
             return ProjectGovernmentGrantErrorResponseFactory.create_response(exception=e)

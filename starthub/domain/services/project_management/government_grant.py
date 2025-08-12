@@ -1,5 +1,9 @@
 from domain.enums.permission import ActionEnum, ScopeEnum
-from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
+from domain.exceptions.permissions import (
+    AddDeniedPermissionException,
+    DeleteDeniedPermissionException,
+    UpdateDeniedPermissionException,
+)
 from domain.models.project_management.government_grant import ProjectGovernmentGrant
 from domain.models.project_management.project import Project
 from domain.models.user import User
@@ -31,7 +35,21 @@ class ProjectGovernmentGrantService(AbstractDomainService):
         self._write_repository.update(data=payload)
 
     def delete(self, user: User, government_grant: ProjectGovernmentGrant) -> None:
-        pass
+        self._check_delete_permission(user=user, government_grant=government_grant)
+        self._write_repository.delete(government_grant=government_grant)
+
+    def _check_delete_permission(self, user: User, government_grant: ProjectGovernmentGrant) -> None:
+        """:raises DeniedPermissionException:"""
+        permission = self._permission_service.create_permission_vo(
+            model=ProjectGovernmentGrant, action=ActionEnum.DELETE, scope=ScopeEnum.OWN
+        )
+        has_permission = self._permission_service.has_user_permission(user=user, permission_vo=permission)
+        if has_permission and government_grant.project.creator == user:
+            return None
+        logger.exception(
+            f"User(id={user.id}) doesn't have enough permission to delete government grant with id = {government_grant.id}."
+        )
+        raise DeleteDeniedPermissionException("You don't have enough permission to delete this resource.")
 
     def _check_create_permission(self, user: User, project: Project) -> None:
         """:raisess AddDeniedPermissionException:"""

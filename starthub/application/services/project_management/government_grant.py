@@ -68,6 +68,18 @@ class GovernmentGrantAppService(AbstractAppService):
         self._government_grant_service.update(user=user, government_grant=government_grant, payload=payload)
         logger.info("Government grant updated successfully.")
 
+    def delete(self, user_id: Id, government_grant_id: ProjectGovernmentGrantId) -> None:
+        """
+        :raises UserNotFoundException:
+        :raises ProjectGovernmentGrantNotFoundException:
+        """
+        user: User = self._user_read_repository.get_by_id(id_=user_id)
+        government_grant: ProjectGovernmentGrant = self._government_grant_read_repository.get_by_id(
+            id_=government_grant_id
+        )
+        self._government_grant_service.delete(user=user, government_grant=government_grant)
+        logger.info(f"GovernmentGrant(id={government_grant_id.value}) deleted successfully.")
+
     def _convert_create_command_to_payload(
         self, command: ProjectGoverntmentGrantCreateCommand, project_id: Id
     ) -> ProjectGoverntmentGrantCreatePayload:

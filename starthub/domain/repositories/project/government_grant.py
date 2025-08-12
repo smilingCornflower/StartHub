@@ -45,3 +45,7 @@ class ProjectGovernmentGrantWriteRepository(
     @abstractmethod
     def delete_by_id(self, id_: ProjectGovernmentGrantId) -> None:
         pass
+
+    @abstractmethod
+    def delete(self, government_grant: ProjectGovernmentGrant) -> None:
+        pass
