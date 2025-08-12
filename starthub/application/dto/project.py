@@ -71,6 +71,22 @@ class CrowdfundingDto:
 
 
 @dataclass(frozen=True)
+class SocialLinkDto:
+    platform: str
+    url: str
+
+
+@dataclass(frozen=True)
+class ProjectInvestmentDto:
+    id: int
+    organization_name: str
+    slug: str
+    amount: float
+    social_links: list[SocialLinkDto]
+    phones: list[str]
+
+
+@dataclass(frozen=True)
 class ProjectDto:
     id: int
     name: str
@@ -96,3 +112,5 @@ class ProjectFullDto(ProjectDto):
     incubator: IncubatorDto | None = None
     accelerator: AcceleratorDto | None = None
     crowdfunding: CrowdfundingDto | None = None
+    investments: list[ProjectInvestmentDto] | None = None
+    total_investment_amount: float = 0
