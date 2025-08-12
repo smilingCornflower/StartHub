@@ -4,6 +4,7 @@ from application.converters.resposne_converters.project import project_to_dto
 from application.dto.project import (
     AcceleratorDto,
     CrowdfundingDto,
+    GovernmentGrantDto,
     IncubatorDto,
     ProjectDto,
     ProjectFullDto,
@@ -24,6 +25,7 @@ from domain.models.company import Company
 from domain.models.project_management.accelerator import ProjectAccelerator
 from domain.models.project_management.category import ProjectCategory
 from domain.models.project_management.crowdfunding import ProjectCrowdfunding
+from domain.models.project_management.government_grant import ProjectGovernmentGrant
 from domain.models.project_management.image import ProjectImage
 from domain.models.project_management.incubator import ProjectIncubator
 from domain.models.project_management.investment import (
@@ -43,6 +45,7 @@ from domain.repositories.project.accelerator import ProjectAcceleratorReadReposi
 from domain.repositories.project.category import ProjectCategoryReadRepository
 from domain.repositories.project.crowdfunding import ProjectCrowdfundingReadRepository
 from domain.repositories.project.funding_model import FundingModelReadRepository
+from domain.repositories.project.government_grant import ProjectGovernmentGrantReadRepository
 from domain.repositories.project.image import ProjectImageReadRepository
 from domain.repositories.project.incubator import PojectIncubatorReadRepository
 from domain.repositories.project.investment import (
@@ -71,6 +74,7 @@ from domain.value_objects.filter import (
     ProjectCategoryFilter,
     ProjectCrowdfundingFilter,
     ProjectFilter,
+    ProjectGovernmentGrantFilter,
     ProjectImageFilter,
     ProjectIncubatorFilter,
     ProjectInvestmentFilter,
@@ -229,6 +233,7 @@ class ProjectGetAppService(AbstractAppService):
         project_investment_read_repository: ProjectInvestmentReadRepository,
         project_investment_social_link_read_repository: ProjectInvestmentSocialLinkReadRepository,
         project_investment_phone_read_repository: ProjectInvestmentPhoneReadRepository,
+        project_government_grant_read_repository: ProjectGovernmentGrantReadRepository,
         project_search_service: ProjectSearchService,
         cloud_storage: AbstractCloudStorage,
     ):
@@ -236,7 +241,6 @@ class ProjectGetAppService(AbstractAppService):
         self._project_image_read_repository = project_image_read_repository
         self._project_category_read_repository = project_category_read_repository
         self._user_favorite_read_repository = user_favorite_read_repository
-
         self._project_step_read_repository = project_step_read_repository
         self._project_incubator_read_repository = project_incubator_read_repository
         self._project_accelerator_read_repository = project_accelerator_read_repository
@@ -244,6 +248,7 @@ class ProjectGetAppService(AbstractAppService):
         self._project_investment_read_repository = project_investment_read_repository
         self._project_investment_social_link_read_repository = project_investment_social_link_read_repository
         self._project_investment_phone_read_repository = project_investment_phone_read_repository
+        self._project_government_grant_read_repository = project_government_grant_read_repository
         self._project_search_service = project_search_service
         self._cloud_storage = cloud_storage
 
@@ -287,6 +292,8 @@ class ProjectGetAppService(AbstractAppService):
         accelerator: AcceleratorDto | None = self._get_accelerator_dto_if_present(project_id=project_id)
         crowdfunding: CrowdfundingDto | None = self._get_crowdfunding_dto_if_present(project_id=project_id)
         investments: list[ProjectInvestmentDto] | None = self._get_investment_dto_if_present(project_id=project_id)
+        grants: list[GovernmentGrantDto] | None = self._get_government_dtos_if_present(project_id=project_id)
+
         total_investment_amount = sum([i.amount for i in investments]) if investments is not None else 0
         return ProjectFullDto(
             **asdict(project_dto),
@@ -295,8 +302,30 @@ class ProjectGetAppService(AbstractAppService):
             accelerator=accelerator,
             crowdfunding=crowdfunding,
             investments=investments,
+            government_grants=grants,
             total_investment_amount=total_investment_amount,
         )
+
+    def _get_government_dtos_if_present(self, project_id: Id) -> list[GovernmentGrantDto] | None:
+        result = list()
+        governments: list[ProjectGovernmentGrant] = self._project_government_grant_read_repository.get_all(
+            filter_=ProjectGovernmentGrantFilter(project_id=project_id)
+        )
+        if not governments:
+            return None
+
+        for g in governments:
+            result.append(
+                GovernmentGrantDto(
+                    id=g.id,
+                    grant_name=g.grant_name,
+                    grant_name_slug=g.grant_name_slug,
+                    amount=g.amount,
+                    organization_name=g.organization_name,
+                    organization_name_slug=g.organization_name_slug,
+                )
+            )
+        return result
 
     def _get_investment_dto_if_present(self, project_id: Id) -> list[ProjectInvestmentDto] | None:
         result = list()
@@ -304,6 +333,8 @@ class ProjectGetAppService(AbstractAppService):
             filter_=ProjectInvestmentFilter(project_id=project_id)
         )
         logger.debug(f"{investments=}")
+        if not investments:
+            return None
         for investment in investments:
             investment_id = ProjectInvestmentId(value=investment.id)
             phones: list[ProjectInvestmentPhone] = self._project_investment_phone_read_repository.get_all(

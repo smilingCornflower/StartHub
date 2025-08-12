@@ -7,7 +7,6 @@ from domain.models import ProjectPhone, User
 from domain.models.company import Company, CompanyFounder
 from domain.models.geo.address import Address
 from domain.models.project_management.image import ProjectImage
-from domain.models.project_management.project import Project
 from domain.models.project_management.step import ProjectStep
 from domain.ports.event import AbstractEventHandler
 from domain.services.address import AddressService

@@ -20,6 +20,7 @@ from infrastructure.repositories.project.accelerator import DjProjectAccelerator
 from infrastructure.repositories.project.category import DjProjectCategoryReadRepository
 from infrastructure.repositories.project.crowdfunding import DjProjectCrowdFundingReadRepository
 from infrastructure.repositories.project.funding_model import DjFundingModelReadRepository
+from infrastructure.repositories.project.government_grant import DjProjectGovernmentGrantReadRepository
 from infrastructure.repositories.project.image import DjProjectImageReadRepository
 from infrastructure.repositories.project.incubator import DjProjectIncubatorReadRepository
 from infrastructure.repositories.project.investment import (
@@ -86,6 +87,7 @@ class ProjectGetAppServiceBuilder(AbstractAppServiceBuilder[ProjectGetAppService
             project_investment_read_repository=DjProjectInvestmentReadRepository(),
             project_investment_social_link_read_repository=DjProjectInvestmentSocialLinkReadRepository(),
             project_investment_phone_read_repository=DjProjectInvestmentPhoneReadRepository(),
+            project_government_grant_read_repository=DjProjectGovernmentGrantReadRepository(),
             cloud_storage=google_cloud_storage,
         )
 
