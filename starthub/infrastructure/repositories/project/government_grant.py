@@ -1,3 +1,4 @@
+from domain.exceptions.project_management import ProjectGovernmentGrantNotFoundException
 from domain.models.project_management.government_grant import ProjectGovernmentGrant
 from domain.repositories.project.government_grant import (
     ProjectGovernmentGrantReadRepository,
@@ -15,7 +16,11 @@ from infrastructure.repositories.pagination import apply_pagination
 
 class DjProjectGovernmentGrantReadRepository(ProjectGovernmentGrantReadRepository):
     def get_by_id(self, id_: ProjectGovernmentGrantId) -> ProjectGovernmentGrant:
-        raise NotImplementedError("The method get_by_id() is not implemented yet.")
+        """:raises ProjectGovernmentGrantNotFoundException:"""
+        grant: ProjectGovernmentGrant | None = ProjectGovernmentGrant.objects.filter(id=id_.value).first()
+        if grant is None:
+            raise ProjectGovernmentGrantNotFoundException(f"Government grant with id = {id_.value} not found.")
+        return grant
 
     def get_all(
         self, filter_: ProjectGovernmentGrantFilter, pagination: Pagination | None = None
@@ -40,7 +45,25 @@ class DjProjectGovernmentGrantWriteRepository(ProjectGovernmentGrantWriteReposit
         )
 
     def update(self, data: ProjectGovernmentGrantUpdatePayload) -> ProjectGovernmentGrant:
-        raise NotImplementedError("The method update() is not implemented yet.")
+        """:raises ProjectGovernmentGrantNotFoundException:"""
+
+        government_grant: ProjectGovernmentGrant | None = ProjectGovernmentGrant.objects.filter(
+            id=data.government_grant_id.value
+        ).first()
+        if government_grant is None:
+            raise ProjectGovernmentGrantNotFoundException(
+                f"Government grant with id = {data.government_grant_id.value} not found."
+            )
+
+        if data.grant_name is not None:
+            government_grant.grant_name = data.grant_name.value
+        if data.amount is not None:
+            government_grant.amount = data.amount.value
+        if data.organization_name is not None:
+            government_grant.organization_name = data.organization_name.value
+
+        government_grant.save()
+        return government_grant
 
     def delete_by_id(self, id_: ProjectGovernmentGrantId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")

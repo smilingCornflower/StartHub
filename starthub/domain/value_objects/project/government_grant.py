@@ -28,7 +28,10 @@ class ProjectGoverntmentGrantCreatePayload(AbstractCreatePayload):
 
 
 class ProjectGovernmentGrantUpdatePayload(AddressUpdatePayload):
-    pass
+    government_grant_id: ProjectGovernmentGrantId
+    grant_name: ProjectGrantName | None = None
+    organization_name: ProjectGrantOrganizationName | None = None
+    amount: ProjectGovernmentGrantAmount | None = None
 
 
 class ProjectGoverntmentGrantCreateCommand(BaseCommand):
@@ -38,4 +41,6 @@ class ProjectGoverntmentGrantCreateCommand(BaseCommand):
 
 
 class ProjectGoverntmentGrantUpdateCommand(BaseCommand):
-    pass
+    grant_name: ProjectGrantName | None = None
+    organization_name: ProjectGrantOrganizationName | None = None
+    amount: ProjectGovernmentGrantAmount | None = None

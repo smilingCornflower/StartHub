@@ -1,10 +1,17 @@
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id
-from domain.value_objects.project.government_grant import ProjectGoverntmentGrantCreateCommand
+from domain.value_objects.project.government_grant import (
+    ProjectGovernmentGrantId,
+    ProjectGoverntmentGrantCreateCommand,
+    ProjectGoverntmentGrantUpdateCommand,
+)
 from infrastructure.auth.user import get_user_id_or_raises
 from presentation.constants import SUCCESS
-from presentation.request_converters.project.government_grant import request_to_project_government_grant_create_command
+from presentation.request_converters.project.government_grant import (
+    request_to_project_government_grant_create_command,
+    request_to_project_government_grant_update_command,
+)
 from presentation.response_factories.common import ProjectGovernmentGrantErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
@@ -24,5 +31,20 @@ class GovernmentGrantView(APIView):
             )
 
             return Response({"code": SUCCESS}, status=status.HTTP_201_CREATED)
+        except CustomException as e:
+            return ProjectGovernmentGrantErrorResponseFactory.create_response(exception=e)
+
+    def patch(self, request: Request, government_grant_id: int) -> Response:
+        try:
+            user_id: Id = get_user_id_or_raises(request=request)
+            command: ProjectGoverntmentGrantUpdateCommand = request_to_project_government_grant_update_command(
+                request=request
+            )
+            gateway.project_government_grant_app_service.update(
+                user_id=user_id,
+                government_grant_id=ProjectGovernmentGrantId(value=government_grant_id),
+                command=command,
+            )
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
         except CustomException as e:
             return ProjectGovernmentGrantErrorResponseFactory.create_response(exception=e)

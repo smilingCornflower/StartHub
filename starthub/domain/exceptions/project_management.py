@@ -198,3 +198,7 @@ class ProjectGoverntmentGrantException(ProjectException):
 
 class ProjectGovernmentGrantMaxAmountException(ValidationException, ProjectGoverntmentGrantException):
     pass
+
+
+class ProjectGovernmentGrantNotFoundException(NotFoundException, ProjectGoverntmentGrantException):
+    pass

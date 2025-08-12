@@ -19,10 +19,13 @@ urlpatterns = [
     path("<int:project_id>/images/<int:image_order>", ProjectImageView.as_view()),
     path("<int:project_id>/accelerators/", AcceleratorView.as_view()),
     path("<int:project_id>/crowdfundings/", CrowdfundingView.as_view()),
+    # Investment
     path("<int:project_id>/investments/", ProjectInvestmentView.as_view()),
     path("<int:project_id>/investments/<int:investment_id>/", ProjectInvestmentView.as_view()),
     path("investments/<int:investment_id>/social-links/", ProjectInvestmentSocialLinkView.as_view()),
     path("investments/social-links/<int:social_link_id>/", ProjectInvestmentSocialLinkView.as_view()),
     path("investments/<int:investment_id>/phone/", ProjectInvestmentPhoneView.as_view()),
+    # Government Grant
     path("<int:project_id>/government-grants/", GovernmentGrantView.as_view()),
+    path("government-grants/<int:government_grant_id>/", GovernmentGrantView.as_view()),
 ]

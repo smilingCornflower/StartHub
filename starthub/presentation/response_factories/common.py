@@ -29,6 +29,7 @@ from domain.exceptions.project_management import (
     ProjectCrowdfundingMaxAmountException,
     ProjectCrowdfundingNotFoundException,
     ProjectGovernmentGrantMaxAmountException,
+    ProjectGovernmentGrantNotFoundException,
     ProjectImageMaxAmountException,
     ProjectInvestmentDoesNotBelongToProjectException,
     ProjectInvestmentMaxAmountException,
@@ -213,4 +214,7 @@ class ProjectGovernmentGrantErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
         ProjectGovernmentGrantMaxAmountException: ("MAX_GOVERNMENT_GRANT_AMOUNT_EXCEEDED", 422),
         NegativeNumberException: ("NEGATIVE_NUMBER", 422),
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+        ProjectGovernmentGrantNotFoundException: ("GOVERNMENT_GRANT_NOT_FOUND", 404),
+        StringIsTooLongException: ("STRING_TOO_LONG", 422),
     }

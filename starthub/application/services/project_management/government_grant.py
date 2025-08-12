@@ -11,8 +11,11 @@ from domain.services.project_management.government_grant import ProjectGovernmen
 from domain.value_objects.common import Id
 from domain.value_objects.filter import ProjectGovernmentGrantFilter
 from domain.value_objects.project.government_grant import (
+    ProjectGovernmentGrantId,
+    ProjectGovernmentGrantUpdatePayload,
     ProjectGoverntmentGrantCreateCommand,
     ProjectGoverntmentGrantCreatePayload,
+    ProjectGoverntmentGrantUpdateCommand,
 )
 from loguru import logger
 
@@ -46,11 +49,40 @@ class GovernmentGrantAppService(AbstractAppService):
         )
         logger.info(f"{grant.__class__.__name__}(id={grant.id}) created successfully.")
 
+    def update(
+        self, user_id: Id, government_grant_id: ProjectGovernmentGrantId, command: ProjectGoverntmentGrantUpdateCommand
+    ) -> None:
+        """
+        :raises UserNotFoundException:
+        :raises ProjectNotFoundException:
+        :raises ProjectGovernmentGrantNotFoundException:
+        """
+        government_grant: ProjectGovernmentGrant = self._government_grant_read_repository.get_by_id(
+            id_=government_grant_id
+        )
+        user: User = self._user_read_repository.get_by_id(id_=user_id)
+        payload: ProjectGovernmentGrantUpdatePayload = self._convert_update_command_to_payload(
+            command=command, government_grant_id=government_grant_id
+        )
+
+        self._government_grant_service.update(user=user, government_grant=government_grant, payload=payload)
+        logger.info("Government grant updated successfully.")
+
     def _convert_create_command_to_payload(
         self, command: ProjectGoverntmentGrantCreateCommand, project_id: Id
     ) -> ProjectGoverntmentGrantCreatePayload:
         return ProjectGoverntmentGrantCreatePayload(
             project_id=project_id,
+            grant_name=command.grant_name,
+            organization_name=command.organization_name,
+            amount=command.amount,
+        )
+
+    def _convert_update_command_to_payload(
+        self, command: ProjectGoverntmentGrantUpdateCommand, government_grant_id: ProjectGovernmentGrantId
+    ) -> ProjectGovernmentGrantUpdatePayload:
+        return ProjectGovernmentGrantUpdatePayload(
+            government_grant_id=government_grant_id,
             grant_name=command.grant_name,
             organization_name=command.organization_name,
             amount=command.amount,
