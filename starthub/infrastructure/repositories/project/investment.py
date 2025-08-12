@@ -103,7 +103,15 @@ class DjProjectInvestmentSocialLinkReadRepository(ProjectInvestmentSocialLinkRea
     def get_all(
         self, filter_: ProjectInvestmentSocialLinkFilter, pagination: Pagination | None = None
     ) -> list[ProjectInvestmentSocialLink]:
-        raise NotImplementedError("The method  list() is not implemented yet.")
+        queryset = ProjectInvestmentSocialLink.objects.all()
+
+        if filter_.investment_id is not None:
+            queryset = queryset.filter(investment_id=filter_.investment_id.value)
+
+        if pagination:
+            return apply_pagination(queryset=queryset, pagination=pagination)
+
+        return list(queryset)
 
 
 class DjProjectInvestmentSocialLinkWriteRepository(ProjectInvestmentSocialLinkWriteRepository):

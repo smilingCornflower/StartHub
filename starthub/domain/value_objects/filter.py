@@ -135,7 +135,7 @@ class ProjectInvestmentFilter(AbstractFilter):
 
 
 class ProjectInvestmentSocialLinkFilter(AbstractFilter):
-    pass
+    investment_id: ProjectInvestmentId | None = None
 
 
 class ProjectInvestmentPhoneFilter(AbstractFilter):

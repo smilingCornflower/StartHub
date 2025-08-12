@@ -7,7 +7,9 @@ from application.dto.project import (
     IncubatorDto,
     ProjectDto,
     ProjectFullDto,
+    ProjectInvestmentDto,
     ProjectStepDto,
+    SocialLinkDto,
 )
 from application.ports.service import AbstractAppService
 from django.db import transaction
@@ -24,6 +26,11 @@ from domain.models.project_management.category import ProjectCategory
 from domain.models.project_management.crowdfunding import ProjectCrowdfunding
 from domain.models.project_management.image import ProjectImage
 from domain.models.project_management.incubator import ProjectIncubator
+from domain.models.project_management.investment import (
+    ProjectInvestment,
+    ProjectInvestmentPhone,
+    ProjectInvestmentSocialLink,
+)
 from domain.models.project_management.project import Project
 from domain.models.project_management.step import ProjectStep
 from domain.models.user import User
@@ -38,6 +45,11 @@ from domain.repositories.project.crowdfunding import ProjectCrowdfundingReadRepo
 from domain.repositories.project.funding_model import FundingModelReadRepository
 from domain.repositories.project.image import ProjectImageReadRepository
 from domain.repositories.project.incubator import PojectIncubatorReadRepository
+from domain.repositories.project.investment import (
+    ProjectInvestmentPhoneReadRepository,
+    ProjectInvestmentReadRepository,
+    ProjectInvestmentSocialLinkReadRepository,
+)
 from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.project.step import ProjectStepReadRepository
 from domain.repositories.user import UserReadRepository
@@ -61,11 +73,15 @@ from domain.value_objects.filter import (
     ProjectFilter,
     ProjectImageFilter,
     ProjectIncubatorFilter,
+    ProjectInvestmentFilter,
+    ProjectInvestmentPhoneFilter,
+    ProjectInvestmentSocialLinkFilter,
     ProjectStepFilter,
 )
 from domain.value_objects.geo import CityId, RegionId
 from domain.value_objects.project.common import ProjectStatus
 from domain.value_objects.project.incubator import IncubatorCreatePayload, IncubatorUpdatePayload
+from domain.value_objects.project.investment import ProjectInvestmentId
 from domain.value_objects.project.project import (
     ProjectCreateCommand,
     ProjectCreatePayload,
@@ -210,6 +226,9 @@ class ProjectGetAppService(AbstractAppService):
         project_incubator_read_repository: PojectIncubatorReadRepository,
         project_accelerator_read_repository: ProjectAcceleratorReadRepository,
         project_crowdfunding_read_repository: ProjectCrowdfundingReadRepository,
+        project_investment_read_repository: ProjectInvestmentReadRepository,
+        project_investment_social_link_read_repository: ProjectInvestmentSocialLinkReadRepository,
+        project_investment_phone_read_repository: ProjectInvestmentPhoneReadRepository,
         project_search_service: ProjectSearchService,
         cloud_storage: AbstractCloudStorage,
     ):
@@ -222,7 +241,9 @@ class ProjectGetAppService(AbstractAppService):
         self._project_incubator_read_repository = project_incubator_read_repository
         self._project_accelerator_read_repository = project_accelerator_read_repository
         self._project_crowdfunding_read_repository = project_crowdfunding_read_repository
-
+        self._project_investment_read_repository = project_investment_read_repository
+        self._project_investment_social_link_read_repository = project_investment_social_link_read_repository
+        self._project_investment_phone_read_repository = project_investment_phone_read_repository
         self._project_search_service = project_search_service
         self._cloud_storage = cloud_storage
 
@@ -265,10 +286,45 @@ class ProjectGetAppService(AbstractAppService):
         incubator: IncubatorDto | None = self._get_incubator_dto_if_present(project_id=project_id)
         accelerator: AcceleratorDto | None = self._get_accelerator_dto_if_present(project_id=project_id)
         crowdfunding: CrowdfundingDto | None = self._get_crowdfunding_dto_if_present(project_id=project_id)
-
+        investments: list[ProjectInvestmentDto] | None = self._get_investment_dto_if_present(project_id=project_id)
+        total_investment_amount = sum([i.amount for i in investments]) if investments is not None else 0
         return ProjectFullDto(
-            **asdict(project_dto), steps=steps, incubator=incubator, accelerator=accelerator, crowdfunding=crowdfunding
+            **asdict(project_dto),
+            steps=steps,
+            incubator=incubator,
+            accelerator=accelerator,
+            crowdfunding=crowdfunding,
+            investments=investments,
+            total_investment_amount=total_investment_amount,
         )
+
+    def _get_investment_dto_if_present(self, project_id: Id) -> list[ProjectInvestmentDto] | None:
+        result = list()
+        investments: list[ProjectInvestment] = self._project_investment_read_repository.get_all(
+            filter_=ProjectInvestmentFilter(project_id=project_id)
+        )
+        logger.debug(f"{investments=}")
+        for investment in investments:
+            investment_id = ProjectInvestmentId(value=investment.id)
+            phones: list[ProjectInvestmentPhone] = self._project_investment_phone_read_repository.get_all(
+                filter_=ProjectInvestmentPhoneFilter(investment_id=investment_id)
+            )
+            social_links: list[ProjectInvestmentSocialLink] = (
+                self._project_investment_social_link_read_repository.get_all(
+                    filter_=ProjectInvestmentSocialLinkFilter(investment_id=investment_id)
+                )
+            )
+            result.append(
+                ProjectInvestmentDto(
+                    id=investment.id,
+                    organization_name=investment.organization_name,
+                    slug=investment.slug,
+                    amount=investment.amount,
+                    social_links=[SocialLinkDto(platform=i.platform, url=i.url) for i in social_links],
+                    phones=[i.number for i in phones],
+                )
+            )
+        return result
 
     def _get_crowdfunding_dto_if_present(self, project_id: Id) -> CrowdfundingDto | None:
         crowdfundings: list[ProjectCrowdfunding] = self._project_crowdfunding_read_repository.get_all(
