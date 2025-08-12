@@ -34,6 +34,7 @@ from domain.exceptions.project_management import (
     ProjectInvestmentNotFoundException,
     ProjectInvestmentPhoneAlreadyExistsException,
     ProjectInvestmentPhoneMaxAmountException,
+    ProjectInvestmentPhoneNotFoundException,
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
     ProjectPlanNotFoundException,
@@ -202,4 +203,5 @@ class ProjectInvestmentErrorResponseFactory(CommonErrorResponseFactory):
         ProjectInvestmentNotFoundException: ("INVESTMENT_NOT_FOUND", 404),
         ProjectInvestmentPhoneAlreadyExistsException: ("INVESTMENT_PHONE_ALREADY_EXISTS", 409),
         ProjectInvestmentPhoneMaxAmountException: ("MAX_INVESTMENT_PHONE_AMOUNT_EXCEEDED", 422),
+        ProjectInvestmentPhoneNotFoundException: ("INVESTMENT_PHONE_NOT_FOUND", 404),
     }

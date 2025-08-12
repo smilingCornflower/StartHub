@@ -3,8 +3,9 @@ from domain.constants import PROJECT_INVESTMENTS_PHONE_MAX_AMOUNT
 from domain.exceptions.project_management import (
     ProjectInvestmentPhoneAlreadyExistsException,
     ProjectInvestmentPhoneMaxAmountException,
+    ProjectInvestmentPhoneNotFoundException,
 )
-from domain.models.project_management.investment import ProjectInvestment
+from domain.models.project_management.investment import ProjectInvestment, ProjectInvestmentPhone
 from domain.models.project_management.project import Project
 from domain.models.user import User
 from domain.repositories.project.investment import ProjectInvestmentPhoneReadRepository, ProjectInvestmentReadRepository
@@ -72,5 +73,19 @@ class ProjectInvestmentPhoneAppService(AbstractAppService):
         if phones:
             raise ProjectInvestmentPhoneAlreadyExistsException("This number already exists for this investment.")
 
-    def delete(self) -> None:
-        pass
+    def delete(self, user_id: Id, investment_id: ProjectInvestmentId, phone_number: PhoneNumber) -> None:
+        """:raises ProjectInvestmentPhoneNotFoundException:"""
+
+        user: User = self._user_read_repository.get_by_id(id_=user_id)
+        investment: ProjectInvestment = self._investment_read_repository.get_by_id(id_=investment_id)
+        project: Project = self._project_read_repository.get_by_id(id_=Id(value=investment.project_id))
+
+        investment_phones: list[ProjectInvestmentPhone] = self._project_investment_phone_read_repository.get_all(
+            filter_=ProjectInvestmentPhoneFilter(number=phone_number)
+        )
+        if investment_phones:
+            self._project_investment_phone_service.delete(user=user, project=project, phone_number=investment_phones[0])
+        else:
+            raise ProjectInvestmentPhoneNotFoundException(
+                f"Phone number {phone_number.value} for the investment {investment.organization_name} does not exist."
+            )

@@ -185,3 +185,7 @@ class ProjectInvestmentPhoneAlreadyExistsException(AlreadyExistsException, Proje
 
 class ProjectInvestmentPhoneMaxAmountException(ValidationException, ProjectInvestmentPhoneException):
     pass
+
+
+class ProjectInvestmentPhoneNotFoundException(NotFoundException, ProjectInvestmentPhoneException):
+    pass

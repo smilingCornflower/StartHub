@@ -158,3 +158,6 @@ class DjProjectInvestmentPhoneWriteRepository(ProjectInvestmentPhoneWriteReposit
 
     def delete_by_id(self, id_: ProjectInvestmentId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")
+
+    def delete(self, investment_phone: ProjectInvestmentPhone) -> None:
+        investment_phone.delete()

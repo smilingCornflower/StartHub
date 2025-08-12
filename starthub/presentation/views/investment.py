@@ -86,3 +86,17 @@ class ProjectInvestmentPhoneView(APIView):
             return Response({"code": SUCCESS}, status=status.HTTP_201_CREATED)
         except CustomException as e:
             return ProjectInvestmentErrorResponseFactory.create_response(exception=e)
+
+    def delete(self, request: Request, investment_id: int) -> Response:
+        try:
+            user_id: Id = get_user_id_or_raises(request=request)
+            phone_number: PhoneNumber = request_to_phone(request=request)
+            logger.debug(f"{phone_number=}")
+
+            gateway.project_investment_phone_app_service.delete(
+                user_id=user_id, investment_id=ProjectInvestmentId(value=investment_id), phone_number=phone_number
+            )
+
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+        except CustomException as e:
+            return ProjectInvestmentErrorResponseFactory.create_response(exception=e)

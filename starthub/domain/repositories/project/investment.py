@@ -136,3 +136,7 @@ class ProjectInvestmentPhoneWriteRepository(
     @abstractmethod
     def delete_by_id(self, id_: ProjectInvestmentId) -> None:
         pass
+
+    @abstractmethod
+    def delete(self, investment_phone: ProjectInvestmentPhone) -> None:
+        pass
