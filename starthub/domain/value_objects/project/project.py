@@ -17,6 +17,7 @@ from domain.value_objects.geo import AddressCreateCommand
 from domain.value_objects.project.accelerator import ProjectAcceleratorCreateCommand
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage, ProjectStatus
 from domain.value_objects.project.crowdfunding import ProjectCrowdfundingCreateCommand
+from domain.value_objects.project.government_grant import ProjectGovernmentGrantCreateCommand
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorUpdatePayload
 from domain.value_objects.project.investment import ProjectInvestmentCreateCommand
 from domain.value_objects.project.step import ProjectStepCreateCommand
@@ -43,6 +44,7 @@ class ProjectCreateCommand(BaseCommand):
     accelerator: ProjectAcceleratorCreateCommand | None
     crowdunding: ProjectCrowdfundingCreateCommand | None
     investment: ProjectInvestmentCreateCommand | None
+    government_grant: ProjectGovernmentGrantCreateCommand | None
 
     company_name: CompanyName
     country_code: CountryCode

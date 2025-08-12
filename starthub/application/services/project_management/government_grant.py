@@ -11,9 +11,9 @@ from domain.services.project_management.government_grant import ProjectGovernmen
 from domain.value_objects.common import Id
 from domain.value_objects.filter import ProjectGovernmentGrantFilter
 from domain.value_objects.project.government_grant import (
+    ProjectGovernmentGrantCreateCommand,
     ProjectGovernmentGrantId,
     ProjectGovernmentGrantUpdatePayload,
-    ProjectGoverntmentGrantCreateCommand,
     ProjectGoverntmentGrantCreatePayload,
     ProjectGoverntmentGrantUpdateCommand,
 )
@@ -33,7 +33,7 @@ class GovernmentGrantAppService(AbstractAppService):
         self._project_read_repository = project_read_repository
         self._government_grant_read_repository = government_grant_read_repository
 
-    def create(self, user_id: Id, project_id: Id, command: ProjectGoverntmentGrantCreateCommand) -> None:
+    def create(self, user_id: Id, project_id: Id, command: ProjectGovernmentGrantCreateCommand) -> None:
         """
         :raises ProjectGovernmentGrantMaxAmountException:
         :raises UserNotFoundException:
@@ -81,7 +81,7 @@ class GovernmentGrantAppService(AbstractAppService):
         logger.info(f"GovernmentGrant(id={government_grant_id.value}) deleted successfully.")
 
     def _convert_create_command_to_payload(
-        self, command: ProjectGoverntmentGrantCreateCommand, project_id: Id
+        self, command: ProjectGovernmentGrantCreateCommand, project_id: Id
     ) -> ProjectGoverntmentGrantCreatePayload:
         return ProjectGoverntmentGrantCreatePayload(
             project_id=project_id,

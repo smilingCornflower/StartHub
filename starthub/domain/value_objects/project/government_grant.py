@@ -34,7 +34,7 @@ class ProjectGovernmentGrantUpdatePayload(AddressUpdatePayload):
     amount: ProjectGovernmentGrantAmount | None = None
 
 
-class ProjectGoverntmentGrantCreateCommand(BaseCommand):
+class ProjectGovernmentGrantCreateCommand(BaseCommand):
     grant_name: ProjectGrantName
     organization_name: ProjectGrantOrganizationName
     amount: ProjectGovernmentGrantAmount

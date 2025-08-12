@@ -2,8 +2,8 @@ from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id
 from domain.value_objects.project.government_grant import (
+    ProjectGovernmentGrantCreateCommand,
     ProjectGovernmentGrantId,
-    ProjectGoverntmentGrantCreateCommand,
     ProjectGoverntmentGrantUpdateCommand,
 )
 from infrastructure.auth.user import get_user_id_or_raises
@@ -26,7 +26,7 @@ class GovernmentGrantView(APIView):
         logger.info(f"GovermentGrant POST, {project_id=}")
         try:
             user_id: Id = get_user_id_or_raises(request=request)
-            command: ProjectGoverntmentGrantCreateCommand = request_to_project_government_grant_create_command(
+            command: ProjectGovernmentGrantCreateCommand = request_to_project_government_grant_create_command(
                 request=request
             )
             gateway.project_government_grant_app_service.create(

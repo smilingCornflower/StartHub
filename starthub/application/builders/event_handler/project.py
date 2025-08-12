@@ -1,16 +1,15 @@
 from typing import Any
 
+from application.builders.app_service.accelerator import AcceleratorAppServiceBuilder
+from application.builders.app_service.crowdfunding import CrowdfundingAppServiceBuilder
+from application.builders.app_service.government_grant import GovernmentGrantAppServiceBuilder
+from application.builders.app_service.investment import ProjectInvestmentAppServiceBuilder
 from application.builders.domain_service.address import AddressServiceBuilder
 from application.builders.domain_service.project_management import (
     CompanyFounderServiceBuilder,
     CompanyServiceBuilder,
-    ProjectAcceleratorServiceBuilder,
-    ProjectCrowdfundingServiceBuilder,
     ProjectImageServiceBuilder,
     ProjectIncubatorServiceBuilder,
-    ProjectInvestmentPhoneServiceBuilder,
-    ProjectInvestmentServiceBuilder,
-    ProjectInvestmentSocialLinkServiceBuilder,
     ProjectPhoneServiceBuilder,
     ProjectSocialLinkServiceBuilder,
     ProjectStepServiceBuilder,
@@ -37,11 +36,10 @@ class ProjectCreatedEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):
             address_service=AddressServiceBuilder.create_service(),
             project_step_service=ProjectStepServiceBuilder.create_service(),
             incubator_service=ProjectIncubatorServiceBuilder.create_service(),
-            accelerator_service=ProjectAcceleratorServiceBuilder.create_service(),
-            crowdfunding_service=ProjectCrowdfundingServiceBuilder.create_service(),
-            investment_service=ProjectInvestmentServiceBuilder.create_service(),
-            investment_social_link_service=ProjectInvestmentSocialLinkServiceBuilder.create_service(),
-            investment_phone_number_service=ProjectInvestmentPhoneServiceBuilder.create_service(),
+            accelerator_app_service=AcceleratorAppServiceBuilder.create_service(),
+            crowdfunding_app_service=CrowdfundingAppServiceBuilder.create_service(),
+            investment_app_service=ProjectInvestmentAppServiceBuilder.create_service(),
+            government_grant_app_service=GovernmentGrantAppServiceBuilder.create_service(),
         )
 
 
