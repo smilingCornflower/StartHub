@@ -1,5 +1,6 @@
 from application.builders.app_service.accelerator import AcceleratorAppServiceBuilder
 from application.builders.app_service.auth import AuthAppServiceBuilder, RegistrationAppServiceBuilder
+from application.builders.app_service.bank_loan import ProjectBankLoanAppServiceBuilder
 from application.builders.app_service.bootstrap import ProjectBootstrapAppServiceBuilder
 from application.builders.app_service.company import CompanyAppServiceBuilder
 from application.builders.app_service.crowdfunding import CrowdfundingAppServiceBuilder
@@ -23,6 +24,7 @@ from application.services.auth import AuthAppService, RegistrationAppService
 from application.services.company import CompanyAppService
 from application.services.news import NewsAppService
 from application.services.project_management.accelerator import AcceleratorAppService
+from application.services.project_management.bank_loan import ProjectBankLoanAppService
 from application.services.project_management.bootsrtap import ProjectBootstrapAppService
 from application.services.project_management.crowdfunding import CrowdfundingAppService
 from application.services.project_management.government_grant import GovernmentGrantAppService
@@ -63,6 +65,7 @@ class Gateway:
     _project_investment_phone_app_service: ProjectInvestmentPhoneAppService | None = None
     _proejct_government_grant_app_service: GovernmentGrantAppService | None = None
     _project_bootstrap_app_service: ProjectBootstrapAppService | None = None
+    _project_bank_load_app_service: ProjectBankLoanAppService | None = None
 
     _cookie_service: CookieService | None = None
 
@@ -175,6 +178,12 @@ class Gateway:
         if self._project_bootstrap_app_service is None:
             self._project_bootstrap_app_service = ProjectBootstrapAppServiceBuilder.create_service()
         return self._project_bootstrap_app_service
+
+    @property
+    def project_bank_loan_app_service(self) -> ProjectBankLoanAppService:
+        if self._project_bank_load_app_service is None:
+            self._project_bank_load_app_service = ProjectBankLoanAppServiceBuilder.create_service()
+        return self._project_bank_load_app_service
 
     @property
     def cookie_service(self) -> CookieService:

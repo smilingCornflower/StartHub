@@ -24,6 +24,8 @@ from domain.exceptions.project_management import (
     NegativeProjectGoalSumException,
     ProjectAcceleratorAlreadyExists,
     ProjectAcceleratorNotFoundException,
+    ProjectBankLoanMaxAmountException,
+    ProjectBankLoanNotFoundException,
     ProjectBootstrapNotFoundException,
     ProjectCategoryNotFoundException,
     ProjectCrowdfundingAlreadyExistsException,
@@ -224,4 +226,13 @@ class ProjectGovernmentGrantErrorResponseFactory(CommonErrorResponseFactory):
 class ProjectBootstrapErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
         ProjectBootstrapNotFoundException: ("BOOTSTRAP_NOT_FOUND", 404),
+    }
+
+
+class ProjectBankLoanErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectBankLoanMaxAmountException: ("MAX_BANK_LOAN_AMOUNT_EXCEEDED", 422),
+        ProjectBankLoanNotFoundException: ("BANK_LOAN_NOT_FOUND", 404),
+        NegativeNumberException: ("NEGATIVE_NUMBER", 422),
+        StringIsTooLongException: ("STRING_TOO_LONG", 422),
     }

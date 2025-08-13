@@ -1,6 +1,6 @@
 from domain.exceptions import CustomException
 from domain.exceptions.repository import AlreadyExistsException, NotFoundException
-from domain.exceptions.validation import NegativeNumberException, ValidationException
+from domain.exceptions.validation import NegativeNumberException, StringIsTooLongException, ValidationException
 
 
 class ProjectException(CustomException):
@@ -219,4 +219,16 @@ class ProjectBankLoanException(ProjectException):
 
 
 class ProjectBankLoanNotFoundException(NotFoundException, ProjectBankLoanException):
+    pass
+
+
+class ProjectBankLoanMaxAmountException(ValidationException, ProjectBankLoanException):
+    pass
+
+
+class LoanOrganizationNameIsTooLongException(StringIsTooLongException, ProjectBankLoanException):
+    pass
+
+
+class BankLoanAmountNegative(NegativeNumberException, ProjectBankLoanException):
     pass
