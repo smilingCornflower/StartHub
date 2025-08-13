@@ -3,7 +3,7 @@ from typing import Any, List, Type
 from django.core.management.base import BaseCommand
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.enums.role import RoleEnum
-from domain.models import ProjectBootstrap, ProjectIncubator
+from domain.models import ProjectBootstrap, ProjectIncubator, ProjectBankLoan
 from domain.models.base import BaseModel
 from domain.models.permission import Permission
 from domain.models.project_management.accelerator import ProjectAccelerator
@@ -28,6 +28,7 @@ class Command(BaseCommand):
         self._assign_project_investment_permission_for_users()
         self._assign_project_government_grant_permission_for_users()
         self._assign_bootstrap_permission_for_users()
+        self._assign_bank_loan_permission_for_users()
 
     def assing_project_permissions_for_users(self) -> None:
         self._assign_permissions_for_model(
@@ -53,6 +54,14 @@ class Command(BaseCommand):
             user_role.permissions.add(permission)
 
         logger.info(log_end_message)
+
+    def _assign_bank_loan_permission_for_users(self) -> None:
+        self._assign_permissions_for_model(
+            model=ProjectBankLoan,
+            actions=[ActionEnum.ADD, ActionEnum.CHANGE, ActionEnum.DELETE],
+            log_start_message="Started command: _assign_bank_loan_permission_for_users()",
+            log_end_message="User permissions for project bank loan grant initialized",
+        )
 
     def _assign_bootstrap_permission_for_users(self) -> None:
         self._assign_permissions_for_model(
