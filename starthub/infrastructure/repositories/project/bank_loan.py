@@ -59,5 +59,5 @@ class DjProjectBankLoanWriteRepository(ProjectBankLoanWriteRepository):
     def delete_by_id(self, id_: ProjectBankLoanId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")
 
-    def delete(self, bank_load: ProjectBankLoan) -> None:
-        bank_load.delete()
+    def delete(self, bank_loan: ProjectBankLoan) -> None:
+        bank_loan.delete()

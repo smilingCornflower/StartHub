@@ -2,6 +2,7 @@ from application.builders.domain_service.permission import PermissionServiceBuil
 from application.ports.domain_service_builder import AbstractDomainServiceBuilder
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management.accelerator import ProjectAcceleratorService
+from domain.services.project_management.bank_loan import ProjectBankLoanService
 from domain.services.project_management.bootsrtap import ProjectBootstrapService
 from domain.services.project_management.crowdfunding import ProjectCrowdfundingService
 from domain.services.project_management.government_grant import ProjectGovernmentGrantService
@@ -27,6 +28,7 @@ from infrastructure.repositories.company import (
 from infrastructure.repositories.geo.address import DjAddressWriteRepository
 from infrastructure.repositories.geo.country import DjCountryReadRepository
 from infrastructure.repositories.project.accelerator import DjProjectAcceleratorWriteRepository
+from infrastructure.repositories.project.bank_loan import DjProjectBankLoanWriteRepository
 from infrastructure.repositories.project.bootsrtap import DjProjectBootstrapWriteRepository
 from infrastructure.repositories.project.crowdfunding import DjProjectCrowdfundingWriteRepository
 from infrastructure.repositories.project.government_grant import DjProjectGovernmentGrantWriteRepository
@@ -193,5 +195,14 @@ class ProjectBootstrapServiceBuilder(AbstractDomainServiceBuilder[ProjectBootstr
     def create_service() -> ProjectBootstrapService:
         return ProjectBootstrapService(
             write_repository=DjProjectBootstrapWriteRepository(),
+            permission_service=PermissionServiceBuilder.create_service(),
+        )
+
+
+class ProjectBankLoanServiceBuilder(AbstractDomainServiceBuilder[ProjectBankLoanService]):
+    @staticmethod
+    def create_service() -> ProjectBankLoanService:
+        return ProjectBankLoanService(
+            write_repository=DjProjectBankLoanWriteRepository(),
             permission_service=PermissionServiceBuilder.create_service(),
         )

@@ -42,5 +42,5 @@ class ProjectBankLoanWriteRepository(
         pass
 
     @abstractmethod
-    def delete(self, bank_load: ProjectBankLoan) -> None:
+    def delete(self, bank_loan: ProjectBankLoan) -> None:
         pass
