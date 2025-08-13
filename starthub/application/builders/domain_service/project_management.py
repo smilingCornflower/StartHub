@@ -2,6 +2,7 @@ from application.builders.domain_service.permission import PermissionServiceBuil
 from application.ports.domain_service_builder import AbstractDomainServiceBuilder
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management.accelerator import ProjectAcceleratorService
+from domain.services.project_management.bootsrtap import ProjectBootstrapService
 from domain.services.project_management.crowdfunding import ProjectCrowdfundingService
 from domain.services.project_management.government_grant import ProjectGovernmentGrantService
 from domain.services.project_management.incubator import IncubatorService
@@ -26,6 +27,7 @@ from infrastructure.repositories.company import (
 from infrastructure.repositories.geo.address import DjAddressWriteRepository
 from infrastructure.repositories.geo.country import DjCountryReadRepository
 from infrastructure.repositories.project.accelerator import DjProjectAcceleratorWriteRepository
+from infrastructure.repositories.project.bootsrtap import DjProjectBootstrapWriteRepository
 from infrastructure.repositories.project.crowdfunding import DjProjectCrowdfundingWriteRepository
 from infrastructure.repositories.project.government_grant import DjProjectGovernmentGrantWriteRepository
 from infrastructure.repositories.project.image import DjProjectImageReadRepository, DjProjectImageWriteRepository
@@ -182,5 +184,14 @@ class ProjectGovernmentGrantServiceBuilder(AbstractDomainServiceBuilder[ProjectG
     def create_service() -> ProjectGovernmentGrantService:
         return ProjectGovernmentGrantService(
             write_repository=DjProjectGovernmentGrantWriteRepository(),
+            permission_service=PermissionServiceBuilder.create_service(),
+        )
+
+
+class ProjectBootstrapServiceBuilder(AbstractDomainServiceBuilder[ProjectBootstrapService]):
+    @staticmethod
+    def create_service() -> ProjectBootstrapService:
+        return ProjectBootstrapService(
+            write_repository=DjProjectBootstrapWriteRepository(),
             permission_service=PermissionServiceBuilder.create_service(),
         )

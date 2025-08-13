@@ -3,7 +3,7 @@ from typing import Any, List, Type
 from django.core.management.base import BaseCommand
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.enums.role import RoleEnum
-from domain.models import ProjectIncubator
+from domain.models import ProjectBootstrap, ProjectIncubator
 from domain.models.base import BaseModel
 from domain.models.permission import Permission
 from domain.models.project_management.accelerator import ProjectAccelerator
@@ -27,6 +27,15 @@ class Command(BaseCommand):
         self._assign_project_crowdfunding_permission_for_users()
         self._assign_project_investment_permission_for_users()
         self._assign_project_government_grant_permission_for_users()
+        self._assign_bootstrap_permission_for_users()
+
+    def assing_project_permissions_for_users(self) -> None:
+        self._assign_permissions_for_model(
+            model=Project,
+            actions=[ActionEnum.CHANGE, ActionEnum.DELETE],
+            log_start_message="Started command: assing_project_permissions_for_users()",
+            log_end_message="User permissions for project initialized",
+        )
 
     def _assign_permissions_for_model(
         self, model: Type[BaseModel], actions: List[ActionEnum], log_start_message: str, log_end_message: str
@@ -45,12 +54,12 @@ class Command(BaseCommand):
 
         logger.info(log_end_message)
 
-    def assing_project_permissions_for_users(self) -> None:
+    def _assign_bootstrap_permission_for_users(self) -> None:
         self._assign_permissions_for_model(
-            model=Project,
-            actions=[ActionEnum.CHANGE, ActionEnum.DELETE],
-            log_start_message="Started command: assing_project_permissions_for_users()",
-            log_end_message="User permissions for project initialized",
+            model=ProjectBootstrap,
+            actions=[ActionEnum.ADD, ActionEnum.CHANGE, ActionEnum.DELETE],
+            log_start_message="Started command: _assign_bootstrap_permission_for_users()",
+            log_end_message="User permissions for project bootstrap grant initialized",
         )
 
     def _assign_project_government_grant_permission_for_users(self) -> None:

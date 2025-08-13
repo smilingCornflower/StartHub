@@ -24,6 +24,7 @@ from domain.exceptions.project_management import (
     NegativeProjectGoalSumException,
     ProjectAcceleratorAlreadyExists,
     ProjectAcceleratorNotFoundException,
+    ProjectBootstrapNotFoundException,
     ProjectCategoryNotFoundException,
     ProjectCrowdfundingAlreadyExistsException,
     ProjectCrowdfundingMaxAmountException,
@@ -217,4 +218,10 @@ class ProjectGovernmentGrantErrorResponseFactory(CommonErrorResponseFactory):
         ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
         ProjectGovernmentGrantNotFoundException: ("GOVERNMENT_GRANT_NOT_FOUND", 404),
         StringIsTooLongException: ("STRING_TOO_LONG", 422),
+    }
+
+
+class ProjectBootstrapErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectBootstrapNotFoundException: ("BOOTSTRAP_NOT_FOUND", 404),
     }

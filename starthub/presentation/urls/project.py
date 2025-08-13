@@ -1,5 +1,6 @@
 from django.urls import path
 from presentation.views.accelerator import AcceleratorView
+from presentation.views.bootstrap import ProjectBootstrapView
 from presentation.views.crowdfunding import CrowdfundingView
 from presentation.views.government_grant import GovernmentGrantView
 from presentation.views.investment import (
@@ -28,4 +29,7 @@ urlpatterns = [
     # Government Grant
     path("<int:project_id>/government-grants/", GovernmentGrantView.as_view()),
     path("government-grants/<int:government_grant_id>/", GovernmentGrantView.as_view()),
+    # Bootstrap
+    path("<int:project_id>/bootstraps/", ProjectBootstrapView.as_view()),
+    path("bootstraps/<int:bootstrap_id>/", ProjectBootstrapView.as_view()),
 ]

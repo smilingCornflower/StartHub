@@ -145,3 +145,7 @@ class ProjectInvestmentPhoneFilter(AbstractFilter):
 
 class ProjectGovernmentGrantFilter(AbstractFilter):
     project_id: Id | None = None
+
+
+class ProjectBootstrapFilter(AbstractFilter):
+    pass

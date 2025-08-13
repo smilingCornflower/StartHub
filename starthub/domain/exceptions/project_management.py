@@ -202,3 +202,12 @@ class ProjectGovernmentGrantMaxAmountException(ValidationException, ProjectGover
 
 class ProjectGovernmentGrantNotFoundException(NotFoundException, ProjectGoverntmentGrantException):
     pass
+
+
+# ==== Project Bootsrtap Exception ====
+class ProjectBootstrapException(ProjectException):
+    pass
+
+
+class ProjectBootstrapNotFoundException(NotFoundException, ProjectBootstrapException):
+    pass
