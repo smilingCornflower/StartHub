@@ -211,3 +211,12 @@ class ProjectBootstrapException(ProjectException):
 
 class ProjectBootstrapNotFoundException(NotFoundException, ProjectBootstrapException):
     pass
+
+
+# ==== Project Bank Loan Exceptions ====
+class ProjectBankLoanException(ProjectException):
+    pass
+
+
+class ProjectBankLoanNotFoundException(NotFoundException, ProjectBankLoanException):
+    pass

@@ -3,7 +3,7 @@ from typing import Any, List, Type
 from django.core.management.base import BaseCommand
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.enums.role import RoleEnum
-from domain.models import ProjectBootstrap, ProjectIncubator, ProjectBankLoan
+from domain.models import ProjectBankLoan, ProjectBootstrap, ProjectIncubator
 from domain.models.base import BaseModel
 from domain.models.permission import Permission
 from domain.models.project_management.accelerator import ProjectAccelerator

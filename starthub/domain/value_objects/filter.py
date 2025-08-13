@@ -149,3 +149,7 @@ class ProjectGovernmentGrantFilter(AbstractFilter):
 
 class ProjectBootstrapFilter(AbstractFilter):
     project_id: Id | None = None
+
+
+class ProjectBankLoanFilter(AbstractFilter):
+    project_id: Id | None = None

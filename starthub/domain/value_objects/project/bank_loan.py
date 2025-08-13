@@ -1,0 +1,34 @@
+from domain.ports.payload import AbstractCreatePayload
+from domain.value_objects import BaseVo
+from domain.value_objects.common import Id, LongString, PositiveNumber
+from domain.value_objects.geo import AddressUpdatePayload
+
+
+class ProjectBankLoanId(Id):
+    pass
+
+
+class OrganizationName(LongString):
+    pass
+
+
+class LoanAmount(PositiveNumber):
+    pass
+
+
+class LoanTerms(BaseVo):
+    value: str
+
+
+class ProjectBankLoanCreatePaylod(AbstractCreatePayload):
+    project_id: Id
+    organization_name: OrganizationName
+    amount: LoanAmount
+    terms: LoanTerms
+
+
+class ProjectBankLoanUpdatePayload(AddressUpdatePayload):
+    loan_id: ProjectBankLoanId
+    organization_name: OrganizationName | None
+    amount: LoanAmount | None
+    terms: LoanTerms | None
