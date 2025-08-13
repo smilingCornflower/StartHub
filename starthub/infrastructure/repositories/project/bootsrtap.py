@@ -23,6 +23,9 @@ class DjProjectBootstrapReadRepository(ProjectBootstrapReadRepository):
     def get_all(self, filter_: ProjectBootstrapFilter, pagination: Pagination | None = None) -> list[ProjectBootstrap]:
         queryset = ProjectBootstrap.objects.all()
 
+        if filter_.project_id is not None:
+            queryset = queryset.filter(project_id=filter_.project_id.value)
+
         if pagination is not None:
             return apply_pagination(queryset=queryset, pagination=pagination)
 

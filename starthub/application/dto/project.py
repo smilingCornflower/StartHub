@@ -97,6 +97,12 @@ class GovernmentGrantDto:
 
 
 @dataclass(frozen=True)
+class BootstrapDto:
+    id: int
+    description: str
+
+
+@dataclass(frozen=True)
 class ProjectDto:
     id: int
     name: str
@@ -124,4 +130,5 @@ class ProjectFullDto(ProjectDto):
     crowdfunding: CrowdfundingDto | None = None
     investments: list[ProjectInvestmentDto] | None = None
     government_grants: list[GovernmentGrantDto] | None = None
+    bootstraps: list[BootstrapDto] | None = None
     total_investment_amount: float = 0

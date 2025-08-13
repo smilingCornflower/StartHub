@@ -148,4 +148,4 @@ class ProjectGovernmentGrantFilter(AbstractFilter):
 
 
 class ProjectBootstrapFilter(AbstractFilter):
-    pass
+    project_id: Id | None = None

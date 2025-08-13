@@ -3,6 +3,7 @@ from dataclasses import asdict
 from application.converters.resposne_converters.project import project_to_dto
 from application.dto.project import (
     AcceleratorDto,
+    BootstrapDto,
     CrowdfundingDto,
     GovernmentGrantDto,
     IncubatorDto,
@@ -23,6 +24,7 @@ from domain.exceptions.user_favorite import UserFavoriteNotFoundException
 from domain.models import Country
 from domain.models.company import Company
 from domain.models.project_management.accelerator import ProjectAccelerator
+from domain.models.project_management.bootstrap import ProjectBootstrap
 from domain.models.project_management.category import ProjectCategory
 from domain.models.project_management.crowdfunding import ProjectCrowdfunding
 from domain.models.project_management.government_grant import ProjectGovernmentGrant
@@ -42,6 +44,7 @@ from domain.repositories.country import CountryReadRepository
 from domain.repositories.geo.city import CityReadRepository
 from domain.repositories.geo.region import RegionReadRepository
 from domain.repositories.project.accelerator import ProjectAcceleratorReadRepository
+from domain.repositories.project.bootstrap import ProjectBootstrapReadRepository
 from domain.repositories.project.category import ProjectCategoryReadRepository
 from domain.repositories.project.crowdfunding import ProjectCrowdfundingReadRepository
 from domain.repositories.project.funding_model import FundingModelReadRepository
@@ -71,6 +74,7 @@ from domain.value_objects.filter import (
     CompanyFilter,
     CountryFilter,
     ProjectAcceleratorFilter,
+    ProjectBootstrapFilter,
     ProjectCategoryFilter,
     ProjectCrowdfundingFilter,
     ProjectFilter,
@@ -234,6 +238,7 @@ class ProjectGetAppService(AbstractAppService):
         project_investment_social_link_read_repository: ProjectInvestmentSocialLinkReadRepository,
         project_investment_phone_read_repository: ProjectInvestmentPhoneReadRepository,
         project_government_grant_read_repository: ProjectGovernmentGrantReadRepository,
+        project_bootstrap_read_repository: ProjectBootstrapReadRepository,
         project_search_service: ProjectSearchService,
         cloud_storage: AbstractCloudStorage,
     ):
@@ -249,6 +254,7 @@ class ProjectGetAppService(AbstractAppService):
         self._project_investment_social_link_read_repository = project_investment_social_link_read_repository
         self._project_investment_phone_read_repository = project_investment_phone_read_repository
         self._project_government_grant_read_repository = project_government_grant_read_repository
+        self._project_bootstrap_read_repository = project_bootstrap_read_repository
         self._project_search_service = project_search_service
         self._cloud_storage = cloud_storage
 
@@ -293,6 +299,7 @@ class ProjectGetAppService(AbstractAppService):
         crowdfunding: CrowdfundingDto | None = self._get_crowdfunding_dto_if_present(project_id=project_id)
         investments: list[ProjectInvestmentDto] | None = self._get_investment_dto_if_present(project_id=project_id)
         grants: list[GovernmentGrantDto] | None = self._get_government_dtos_if_present(project_id=project_id)
+        bootstraps: list[BootstrapDto] | None = self._get_bootstrap_dtos_if_present(project_id=project_id)
 
         total_investment_amount = sum([i.amount for i in investments]) if investments is not None else 0
         return ProjectFullDto(
@@ -304,7 +311,20 @@ class ProjectGetAppService(AbstractAppService):
             investments=investments,
             government_grants=grants,
             total_investment_amount=total_investment_amount,
+            bootstraps=bootstraps,
         )
+
+    def _get_bootstrap_dtos_if_present(self, project_id: Id) -> list[BootstrapDto] | None:
+        result = list()
+        bootstraps: list[ProjectBootstrap] = self._project_bootstrap_read_repository.get_all(
+            filter_=ProjectBootstrapFilter(project_id=project_id)
+        )
+        if not bootstraps:
+            return None
+
+        for b in bootstraps:
+            result.append(BootstrapDto(id=b.id, description=b.description))
+        return result
 
     def _get_government_dtos_if_present(self, project_id: Id) -> list[GovernmentGrantDto] | None:
         result = list()
