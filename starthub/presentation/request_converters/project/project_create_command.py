@@ -15,6 +15,12 @@ from domain.value_objects.company import (
 from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.project.accelerator import AcceleratorName, ProjectAcceleratorCreateCommand
+from domain.value_objects.project.bank_loan import (
+    BankLoanOrganizationName,
+    LoanAmount,
+    LoanTerms,
+    ProjectBankLoanCreateCommand,
+)
 from domain.value_objects.project.bootstrap import ProjectBootstrapCreateCommand
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
 from domain.value_objects.project.crowdfunding import (
@@ -96,6 +102,7 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
         investment=_extract_investment_if_present(raw_data=data),
         government_grant=_extract_government_create_command_if_presents(raw_data=data),
         bootstrap=_extract_bootstrap_create_command_if_presents(raw_data=data),
+        bank_loan=_extract_bank_loan_create_command_if_presents(raw_data=data),
     )
 
     logger.debug(f"command: \n{pformat(command.__dict__)}")
@@ -127,6 +134,19 @@ def _extract_project_info(project_data: dict[str, Any], user_id: int) -> dict[st
         "steps": extract_steps(project_data),
         "phone_number": PhoneNumber(value=get_required_field(project_data, "phone_number")),
     }
+
+
+def _extract_bank_loan_create_command_if_presents(raw_data: dict[str, str]) -> ProjectBankLoanCreateCommand | None:
+    if "bank_loan" not in raw_data:
+        return None
+    bank_loan_data = _parse_json_field(raw_data, "bank_loan")
+
+    command = ProjectBankLoanCreateCommand(
+        organization_name=BankLoanOrganizationName(value=get_required_field(bank_loan_data, "organization_name")),
+        amount=LoanAmount(value=get_required_field(bank_loan_data, "amount")),
+        terms=LoanTerms(value=get_required_field(bank_loan_data, "terms")),
+    )
+    return command
 
 
 def _extract_bootstrap_create_command_if_presents(raw_data: dict[str, str]) -> ProjectBootstrapCreateCommand | None:

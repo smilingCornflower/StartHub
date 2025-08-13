@@ -9,7 +9,7 @@ class ProjectBankLoanId(Id):
     pass
 
 
-class OrganizationName(LongString):
+class BankLoanOrganizationName(LongString):
     pass
 
 
@@ -23,25 +23,25 @@ class LoanTerms(BaseVo):
 
 class ProjectBankLoanCreatePaylod(AbstractCreatePayload):
     project_id: Id
-    organization_name: OrganizationName
+    organization_name: BankLoanOrganizationName
     amount: LoanAmount
     terms: LoanTerms
 
 
 class ProjectBankLoanUpdatePayload(AddressUpdatePayload):
     loan_id: ProjectBankLoanId
-    organization_name: OrganizationName | None
+    organization_name: BankLoanOrganizationName | None
     amount: LoanAmount | None
     terms: LoanTerms | None
 
 
 class ProjectBankLoanCreateCommand(BaseCommand):
-    organization_name: OrganizationName
+    organization_name: BankLoanOrganizationName
     amount: LoanAmount
     terms: LoanTerms
 
 
 class ProjectBankLoanUpdateCommand(BaseCommand):
-    organization_name: OrganizationName | None
+    organization_name: BankLoanOrganizationName | None
     amount: LoanAmount | None
     terms: LoanTerms | None

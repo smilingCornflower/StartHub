@@ -1,6 +1,7 @@
 from typing import Any
 
 from application.builders.app_service.accelerator import AcceleratorAppServiceBuilder
+from application.builders.app_service.bank_loan import ProjectBankLoanAppServiceBuilder
 from application.builders.app_service.bootstrap import ProjectBootstrapAppServiceBuilder
 from application.builders.app_service.crowdfunding import CrowdfundingAppServiceBuilder
 from application.builders.app_service.government_grant import GovernmentGrantAppServiceBuilder
@@ -16,6 +17,7 @@ from application.builders.domain_service.project_management import (
     ProjectStepServiceBuilder,
 )
 from application.event_handlers.project_created.accelerator_handler import ProjectCreatedAcceleratorHandler
+from application.event_handlers.project_created.bank_loan_handler import ProjectCreatedBankLoanHandler
 from application.event_handlers.project_created.bootstrap import ProjectCreatedBootstrapHandler
 from application.event_handlers.project_created.company_handler import ProjectCreatedCompanyHandler
 from application.event_handlers.project_created.crowdfunding_handler import ProjectCreatedCrowdfundingHandler
@@ -109,6 +111,12 @@ class ProjectCreatedSocialLinkHandlerBuilder(AbstractEventHandlerBuilder[Any]):
         return ProjectCreatedSocialLinkHandler(
             project_social_link_service=ProjectSocialLinkServiceBuilder.create_service()
         )
+
+
+class ProjectCreatedBankLoanHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> ProjectCreatedBankLoanHandler:
+        return ProjectCreatedBankLoanHandler(bank_loan_app_service=ProjectBankLoanAppServiceBuilder.create_service())
 
 
 class ProjectDeletedEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):

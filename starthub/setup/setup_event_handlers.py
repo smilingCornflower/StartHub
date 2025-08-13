@@ -1,5 +1,6 @@
 from application.builders.event_handler.project import (
     ProjectCreatedAcceleratorHandlerBuilder,
+    ProjectCreatedBankLoanHandlerBuilder,
     ProjectCreatedBootstrapHandlerBuilder,
     ProjectCreatedCompanyHandlerBuilder,
     ProjectCreatedCrowdfundingHandlerBuilder,
@@ -31,18 +32,24 @@ def setup_project_created_handlers() -> None:
     phone_handler = ProjectCreatedPhoneHandlerBuilder.create_handler()
     project_step_handler = ProjectCreatedProjectStepHandlerBuilder.create_handler()
     social_link_handler = ProjectCreatedSocialLinkHandlerBuilder.create_handler()
+    bank_loan_handler = ProjectCreatedBankLoanHandlerBuilder.create_handler()
 
-    bus.subscribe(event_type=EventType.Project.CREATED, handler=accelerator_handler)
-    bus.subscribe(event_type=EventType.Project.CREATED, handler=bootstrap_handler)
-    bus.subscribe(event_type=EventType.Project.CREATED, handler=company_handler)
-    bus.subscribe(event_type=EventType.Project.CREATED, handler=crowdfunding_handler)
-    bus.subscribe(event_type=EventType.Project.CREATED, handler=government_grant_handler)
-    bus.subscribe(event_type=EventType.Project.CREATED, handler=incubator_handler)
-    bus.subscribe(event_type=EventType.Project.CREATED, handler=investment_handler)
-    bus.subscribe(event_type=EventType.Project.CREATED, handler=image_handler)
-    bus.subscribe(event_type=EventType.Project.CREATED, handler=phone_handler)
-    bus.subscribe(event_type=EventType.Project.CREATED, handler=project_step_handler)
-    bus.subscribe(event_type=EventType.Project.CREATED, handler=social_link_handler)
+    handlers = [
+        accelerator_handler,
+        bootstrap_handler,
+        company_handler,
+        crowdfunding_handler,
+        government_grant_handler,
+        incubator_handler,
+        investment_handler,
+        image_handler,
+        phone_handler,
+        project_step_handler,
+        social_link_handler,
+        bank_loan_handler,
+    ]
+    for i in handlers:
+        bus.subscribe(event_type=EventType.Project.CREATED, handler=i)
 
 
 def setup_event_handlers() -> None:
