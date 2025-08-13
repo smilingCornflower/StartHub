@@ -23,8 +23,9 @@ class EventBus(AbstractEventBus):
 
         for handler in handlers:
             try:
-                logger.debug(f"Handling event '{event.event_type}' with handler {handler.__class__.__name__}")
+                logger.info(f"Started handling event '{event.event_type}' with handler {handler.__class__.__name__}")
                 handler.handle(event)
+
             except Exception as e:
                 logger.error(f"Error handling event {event.event_type}: {e} \n" f"Handler: {handler}")
                 raise e

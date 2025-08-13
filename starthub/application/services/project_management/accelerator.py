@@ -56,6 +56,7 @@ class AcceleratorAppService(AbstractAppService):
                 description=command.description,
             ),
         )
+        logger.info(f"Accelerator for the Project(id={project_id.value}) created successfully.")
 
     def update(self, user_id: Id, project_id: Id, command: ProjectAcceleratorUpdateCommand) -> None:
         """

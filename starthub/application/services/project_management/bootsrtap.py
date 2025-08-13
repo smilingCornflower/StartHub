@@ -42,6 +42,7 @@ class ProjectBootstrapAppService(AbstractAppService):
             project=project,
             payload=ProjectBootstrapCreatePayload(project_id=project_id, description=command.description),
         )
+        logger.info(f"Bootstrap for the Project(id={project_id.value}) created successfully.")
 
     def update(self, user_id: Id, bootstrap_id: ProjectBootstrapId, command: ProjectBootstrapUpdateCommand) -> None:
         user: User = self._user_read_repository.get_by_id(id_=user_id)

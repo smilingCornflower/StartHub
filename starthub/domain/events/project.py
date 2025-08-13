@@ -10,8 +10,8 @@ from pydantic import Field
 
 # ==== Project =====
 class ProjectCreatedEvent(DomainEvent):
-    user: User
-    project: Project
+    user_id: Id
+    project_id: Id
     command: ProjectCreateCommand
     event_type: EventType.Project = Field(default=EventType.Project.CREATED)
 

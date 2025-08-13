@@ -137,11 +137,11 @@ class ProjectCreateAppService(AbstractAppService):
         plan_path: str = self._upload_plan(plan_file=command.plan_file)
         create_payload: ProjectCreatePayload = self._convert_command_to_payload(command=command, plan_path=plan_path)
 
-        user: User = self._user_read_repository.get_by_id(id_=user_id)
+        self._user_read_repository.get_by_id(id_=user_id)
         with transaction.atomic():
             project: Project = self._project_service.create(payload=create_payload)
 
-            event = ProjectCreatedEvent(user=user, project=project, command=command)
+            event = ProjectCreatedEvent(user_id=user_id, project_id=Id(value=project.id), command=command)
             EventBus().publish(event)
 
         return project

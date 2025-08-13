@@ -60,6 +60,7 @@ class CrowdfundingAppService(AbstractAppService):
                 amount=command.amount,
             ),
         )
+        logger.info(f"Crowdfunding for the Project(id={project_id.value}) created successfully.")
 
     def delete(self, user_id: Id, project_id: Id) -> None:
         """:raises UserNotFoundException:"""
