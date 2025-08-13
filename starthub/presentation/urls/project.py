@@ -35,4 +35,5 @@ urlpatterns = [
     path("bootstraps/<int:bootstrap_id>/", ProjectBootstrapView.as_view()),
     # Bank Loan
     path("<int:project_id>/bank-loans/", ProjectBankLoanView.as_view()),
+    path("bank-loans/<int:bank_loan_id>/", ProjectBankLoanView.as_view()),
 ]

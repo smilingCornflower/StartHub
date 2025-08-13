@@ -15,6 +15,7 @@ from domain.value_objects.project.bank_loan import (
     ProjectBankLoanCreatePaylod,
     ProjectBankLoanId,
     ProjectBankLoanUpdateCommand,
+    ProjectBankLoanUpdatePayload,
 )
 from loguru import logger
 
@@ -43,10 +44,18 @@ class ProjectBankLoanAppService(AbstractAppService):
         logger.info(f"{ProjectBankLoan.__name__} for the Project(id={project_id.value}) created successfully.")
 
     def update(self, user_id: Id, bank_loan_id: ProjectBankLoanId, command: ProjectBankLoanUpdateCommand) -> None:
-        pass
+        user: User = self._user_read_repository.get_by_id(id_=user_id)
+        bank_loan: ProjectBankLoan = self._bank_loan_read_repository.get_by_id(id_=bank_loan_id)
+        payload = self._convert_update_command_to_payload(command=command, loan_id=bank_loan_id)
+        self._bank_load_service.update(user=user, bank_loan=bank_loan, payload=payload)
+        logger.info("BankLoan updated successfully.")
 
     def delete(self, user_id: Id, bank_loan_id: ProjectBankLoanId) -> None:
-        pass
+        user: User = self._user_read_repository.get_by_id(id_=user_id)
+        bank_loan: ProjectBankLoan = self._bank_loan_read_repository.get_by_id(id_=bank_loan_id)
+
+        self._bank_load_service.delete(user=user, bank_loan=bank_loan)
+        logger.info("ProjectBankLoan deleted successfully.")
 
     def _convert_create_command_to_payload(
         self,
@@ -55,6 +64,18 @@ class ProjectBankLoanAppService(AbstractAppService):
     ) -> ProjectBankLoanCreatePaylod:
         return ProjectBankLoanCreatePaylod(
             project_id=project_id,
+            organization_name=command.organization_name,
+            amount=command.amount,
+            terms=command.terms,
+        )
+
+    def _convert_update_command_to_payload(
+        self,
+        command: ProjectBankLoanUpdateCommand,
+        loan_id: ProjectBankLoanId,
+    ) -> ProjectBankLoanUpdatePayload:
+        return ProjectBankLoanUpdatePayload(
+            loan_id=loan_id,
             organization_name=command.organization_name,
             amount=command.amount,
             terms=command.terms,

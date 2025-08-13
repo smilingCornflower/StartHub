@@ -30,7 +30,7 @@ class ProjectBankLoanCreatePaylod(AbstractCreatePayload):
 
 class ProjectBankLoanUpdatePayload(AddressUpdatePayload):
     loan_id: ProjectBankLoanId
-    organization_name: OrganizationName
+    organization_name: OrganizationName | None
     amount: LoanAmount | None
     terms: LoanTerms | None
 

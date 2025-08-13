@@ -1,10 +1,17 @@
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id
-from domain.value_objects.project.bank_loan import ProjectBankLoanCreateCommand
+from domain.value_objects.project.bank_loan import (
+    ProjectBankLoanCreateCommand,
+    ProjectBankLoanId,
+    ProjectBankLoanUpdateCommand,
+)
 from infrastructure.auth.user import get_user_id_or_raises
 from presentation.constants import SUCCESS
-from presentation.request_converters.project.bank_loan import request_to_bank_loan_create_command
+from presentation.request_converters.project.bank_loan import (
+    request_to_bank_loan_create_command,
+    request_to_bank_loan_update_command,
+)
 from presentation.response_factories.common import ProjectBankLoanErrorResponseFactory
 from pydantic import ValidationError
 from rest_framework import status
@@ -23,5 +30,30 @@ class ProjectBankLoanView(APIView):
             )
 
             return Response({"code": SUCCESS}, status=status.HTTP_201_CREATED)
+        except (CustomException, ValidationError) as e:
+            return ProjectBankLoanErrorResponseFactory.create_response(exception=e)
+
+    def patch(self, request: Request, bank_loan_id: int) -> Response:
+        try:
+            user_id: Id = get_user_id_or_raises(request=request)
+            command: ProjectBankLoanUpdateCommand = request_to_bank_loan_update_command(request=request)
+            gateway.project_bank_loan_app_service.update(
+                user_id=user_id, bank_loan_id=ProjectBankLoanId(value=bank_loan_id), command=command
+            )
+
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+
+        except (CustomException, ValidationError) as e:
+            return ProjectBankLoanErrorResponseFactory.create_response(exception=e)
+
+    def delete(self, request: Request, bank_loan_id: int) -> Response:
+        try:
+            user_id: Id = get_user_id_or_raises(request=request)
+            gateway.project_bank_loan_app_service.delete(
+                user_id=user_id, bank_loan_id=ProjectBankLoanId(value=bank_loan_id)
+            )
+
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+
         except (CustomException, ValidationError) as e:
             return ProjectBankLoanErrorResponseFactory.create_response(exception=e)
