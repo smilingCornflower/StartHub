@@ -3,6 +3,7 @@ from dataclasses import asdict
 from application.converters.resposne_converters.project import project_to_dto
 from application.dto.project import (
     AcceleratorDto,
+    BankLoanDto,
     BootstrapDto,
     CrowdfundingDto,
     GovernmentGrantDto,
@@ -24,6 +25,7 @@ from domain.exceptions.user_favorite import UserFavoriteNotFoundException
 from domain.models import Country
 from domain.models.company import Company
 from domain.models.project_management.accelerator import ProjectAccelerator
+from domain.models.project_management.bank_loan import ProjectBankLoan
 from domain.models.project_management.bootstrap import ProjectBootstrap
 from domain.models.project_management.category import ProjectCategory
 from domain.models.project_management.crowdfunding import ProjectCrowdfunding
@@ -44,6 +46,7 @@ from domain.repositories.country import CountryReadRepository
 from domain.repositories.geo.city import CityReadRepository
 from domain.repositories.geo.region import RegionReadRepository
 from domain.repositories.project.accelerator import ProjectAcceleratorReadRepository
+from domain.repositories.project.bank_loan import ProjectBankLoanReadRepository
 from domain.repositories.project.bootstrap import ProjectBootstrapReadRepository
 from domain.repositories.project.category import ProjectCategoryReadRepository
 from domain.repositories.project.crowdfunding import ProjectCrowdfundingReadRepository
@@ -74,6 +77,7 @@ from domain.value_objects.filter import (
     CompanyFilter,
     CountryFilter,
     ProjectAcceleratorFilter,
+    ProjectBankLoanFilter,
     ProjectBootstrapFilter,
     ProjectCategoryFilter,
     ProjectCrowdfundingFilter,
@@ -239,6 +243,7 @@ class ProjectGetAppService(AbstractAppService):
         project_investment_phone_read_repository: ProjectInvestmentPhoneReadRepository,
         project_government_grant_read_repository: ProjectGovernmentGrantReadRepository,
         project_bootstrap_read_repository: ProjectBootstrapReadRepository,
+        project_bank_loan_read_repository: ProjectBankLoanReadRepository,
         project_search_service: ProjectSearchService,
         cloud_storage: AbstractCloudStorage,
     ):
@@ -255,6 +260,7 @@ class ProjectGetAppService(AbstractAppService):
         self._project_investment_phone_read_repository = project_investment_phone_read_repository
         self._project_government_grant_read_repository = project_government_grant_read_repository
         self._project_bootstrap_read_repository = project_bootstrap_read_repository
+        self._project_bank_loan_read_repository = project_bank_loan_read_repository
         self._project_search_service = project_search_service
         self._cloud_storage = cloud_storage
 
@@ -300,6 +306,7 @@ class ProjectGetAppService(AbstractAppService):
         investments: list[ProjectInvestmentDto] | None = self._get_investment_dto_if_present(project_id=project_id)
         grants: list[GovernmentGrantDto] | None = self._get_government_dtos_if_present(project_id=project_id)
         bootstraps: list[BootstrapDto] | None = self._get_bootstrap_dtos_if_present(project_id=project_id)
+        bank_loans: list[BankLoanDto] | None = self._get_bank_loan_dtos_if_present(project_id=project_id)
 
         total_investment_amount = sum([i.amount for i in investments]) if investments is not None else 0
         return ProjectFullDto(
@@ -312,7 +319,24 @@ class ProjectGetAppService(AbstractAppService):
             government_grants=grants,
             total_investment_amount=total_investment_amount,
             bootstraps=bootstraps,
+            bank_loans=bank_loans,
         )
+
+    def _get_bank_loan_dtos_if_present(self, project_id: Id) -> list[BankLoanDto] | None:
+        result = list()
+        loans: list[ProjectBankLoan] = self._project_bank_loan_read_repository.get_all(
+            filter_=ProjectBankLoanFilter(project_id=project_id)
+        )
+
+        if not loans:
+            return None
+
+        for loan in loans:
+            result.append(
+                BankLoanDto(id=loan.id, organization_name=loan.organization_name, amount=loan.amount, terms=loan.terms)
+            )
+
+        return result
 
     def _get_bootstrap_dtos_if_present(self, project_id: Id) -> list[BootstrapDto] | None:
         result = list()

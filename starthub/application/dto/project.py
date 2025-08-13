@@ -103,6 +103,14 @@ class BootstrapDto:
 
 
 @dataclass(frozen=True)
+class BankLoanDto:
+    id: int
+    organization_name: str
+    amount: float
+    terms: str
+
+
+@dataclass(frozen=True)
 class ProjectDto:
     id: int
     name: str
@@ -131,4 +139,6 @@ class ProjectFullDto(ProjectDto):
     investments: list[ProjectInvestmentDto] | None = None
     government_grants: list[GovernmentGrantDto] | None = None
     bootstraps: list[BootstrapDto] | None = None
+    bank_loans: list[BankLoanDto] | None = None
+
     total_investment_amount: float = 0
