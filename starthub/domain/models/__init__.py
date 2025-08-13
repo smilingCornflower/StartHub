@@ -20,6 +20,8 @@ ProjectInvestmentSocialLink = import_module("domain.models.project_management.in
 ProjectInvestmentPhone = import_module("domain.models.project_management.investment").ProjectInvestmentPhone
 ProjectGovernmentGrant = import_module("domain.models.project_management.government_grant").ProjectGovernmentGrant
 ProjectBootstrap = import_module("domain.models.project_management.bootstrap").ProjectBootstrap
+ProjectBankLoan = import_module("domain.models.project_management.bank_loan").ProjectBankLoan
+
 FundingModel = import_module("domain.models.project_management.funding_model").FundingModel
 Company = import_module("domain.models.company").Company
 
