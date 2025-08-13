@@ -15,6 +15,7 @@ from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.geo import AddressCreateCommand
 from domain.value_objects.project.accelerator import ProjectAcceleratorCreateCommand
+from domain.value_objects.project.bootstrap import ProjectBootstrapCreateCommand
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage, ProjectStatus
 from domain.value_objects.project.crowdfunding import ProjectCrowdfundingCreateCommand
 from domain.value_objects.project.government_grant import ProjectGovernmentGrantCreateCommand
@@ -45,6 +46,7 @@ class ProjectCreateCommand(BaseCommand):
     crowdunding: ProjectCrowdfundingCreateCommand | None
     investment: ProjectInvestmentCreateCommand | None
     government_grant: ProjectGovernmentGrantCreateCommand | None
+    bootstrap: ProjectBootstrapCreateCommand | None
 
     company_name: CompanyName
     country_code: CountryCode

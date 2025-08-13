@@ -1,4 +1,5 @@
 from application.services.project_management.accelerator import AcceleratorAppService
+from application.services.project_management.bootsrtap import ProjectBootstrapAppService
 from application.services.project_management.crowdfunding import CrowdfundingAppService
 from application.services.project_management.government_grant import GovernmentGrantAppService
 from application.services.project_management.investment import ProjectInvestmentAppService
@@ -44,6 +45,7 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         crowdfunding_app_service: CrowdfundingAppService,
         investment_app_service: ProjectInvestmentAppService,
         government_grant_app_service: GovernmentGrantAppService,
+        bootstrap_app_service: ProjectBootstrapAppService,
     ):
         self._company_service = company_service
         self._company_founder_service = company_founder_service
@@ -58,6 +60,7 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
         self._crowdfunding_app_service = crowdfunding_app_service
         self._investment_app_service = investment_app_service
         self._government_grant_app_service = government_grant_app_service
+        self._bootstrap_app_service = bootstrap_app_service
 
     def handle(self, event: ProjectCreatedEvent) -> None:
         logger.info(f"Event: {event.event_type} caught.")
@@ -85,6 +88,8 @@ class ProjectCreatedEventHandler(AbstractEventHandler[ProjectCreatedEvent]):
             self._government_grant_app_service.create(
                 user_id=user_id, project_id=project_id, command=command.government_grant
             )
+        if command.bootstrap is not None:
+            self._bootstrap_app_service.create(user_id=user_id, project_id=project_id, command=command.bootstrap)
 
         logger.info("All related models are created.")
 

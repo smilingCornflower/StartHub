@@ -15,6 +15,7 @@ from domain.value_objects.company import (
 from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.project.accelerator import AcceleratorName, ProjectAcceleratorCreateCommand
+from domain.value_objects.project.bootstrap import ProjectBootstrapCreateCommand
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
 from domain.value_objects.project.crowdfunding import (
     ProjectCrowdfundingAmount,
@@ -93,7 +94,8 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
         accelerator=_extract_accelerator_if_present(raw_data=data),
         crowdunding=_extract_crowdfunding_if_present(raw_data=data),
         investment=_extract_investment_if_present(raw_data=data),
-        government_grant=_extract_government_create_command(raw_data=data),
+        government_grant=_extract_government_create_command_if_presents(raw_data=data),
+        bootstrap=_extract_bootstrap_create_command_if_presents(raw_data=data),
     )
 
     logger.debug(f"command: \n{pformat(command.__dict__)}")
@@ -127,20 +129,31 @@ def _extract_project_info(project_data: dict[str, Any], user_id: int) -> dict[st
     }
 
 
-def _extract_government_create_command(raw_data: dict[str, str]) -> ProjectGovernmentGrantCreateCommand | None:
+def _extract_bootstrap_create_command_if_presents(raw_data: dict[str, str]) -> ProjectBootstrapCreateCommand | None:
+    if "bootstrap" not in raw_data:
+        return None
+    bootstrap_data = _parse_json_field(raw_data, "bootstrap")
+
+    command = ProjectBootstrapCreateCommand(
+        description=Description(value=get_required_field(bootstrap_data, "description"))
+    )
+    return command
+
+
+def _extract_government_create_command_if_presents(
+    raw_data: dict[str, str],
+) -> ProjectGovernmentGrantCreateCommand | None:
     if "government_grant" not in raw_data:
         return None
     government_grant_data = _parse_json_field(raw_data, "government_grant")
 
-    command = ProjectGovernmentGrantCreateCommand(
+    return ProjectGovernmentGrantCreateCommand(
         grant_name=ProjectGrantName(value=get_required_field(government_grant_data, "grant_name")),
         amount=ProjectGovernmentGrantAmount(value=get_required_field(government_grant_data, "amount")),
         organization_name=ProjectGrantOrganizationName(
             value=get_required_field(government_grant_data, "organization_name")
         ),
     )
-    logger.debug(f"command: \n{pformat(command.__dict__)}")
-    return command
 
 
 def _extract_investment_if_present(raw_data: dict[str, str]) -> ProjectInvestmentCreateCommand | None:

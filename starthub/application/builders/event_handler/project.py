@@ -1,6 +1,7 @@
 from typing import Any
 
 from application.builders.app_service.accelerator import AcceleratorAppServiceBuilder
+from application.builders.app_service.bootstrap import ProjectBootstrapAppServiceBuilder
 from application.builders.app_service.crowdfunding import CrowdfundingAppServiceBuilder
 from application.builders.app_service.government_grant import GovernmentGrantAppServiceBuilder
 from application.builders.app_service.investment import ProjectInvestmentAppServiceBuilder
@@ -40,6 +41,7 @@ class ProjectCreatedEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):
             crowdfunding_app_service=CrowdfundingAppServiceBuilder.create_service(),
             investment_app_service=ProjectInvestmentAppServiceBuilder.create_service(),
             government_grant_app_service=GovernmentGrantAppServiceBuilder.create_service(),
+            bootstrap_app_service=ProjectBootstrapAppServiceBuilder.create_service(),
         )
 
 
