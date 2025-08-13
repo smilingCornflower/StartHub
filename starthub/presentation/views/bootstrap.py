@@ -22,6 +22,7 @@ from rest_framework.views import APIView
 
 class ProjectBootstrapView(APIView):
     def post(self, request: Request, project_id: int) -> Response:
+        print()
         logger.info(f"POST /projects/{project_id}/bootstraps/")
         try:
             user_id: Id = get_user_id_or_raises(request=request)
@@ -34,12 +35,26 @@ class ProjectBootstrapView(APIView):
             return ProjectBootstrapErrorResponseFactory.create_response(exception=e)
 
     def patch(self, request: Request, bootstrap_id: int) -> Response:
+        print()
         logger.info(f"PATCH /projects/bootstraps/{bootstrap_id}/")
         try:
             user_id: Id = get_user_id_or_raises(request=request)
             command: ProjectBootstrapUpdateCommand = request_to_project_bootstrap_update_command(request=request)
             gateway.project_bootstrap_app_service.update(
                 user_id=user_id, bootstrap_id=ProjectBootstrapId(value=bootstrap_id), command=command
+            )
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+        except CustomException as e:
+            return ProjectBootstrapErrorResponseFactory.create_response(exception=e)
+
+    def delete(self, request: Request, bootstrap_id: int) -> Response:
+        print()
+        logger.info(f"DELETE /projects/bootstraps/{bootstrap_id}/")
+        try:
+            user_id: Id = get_user_id_or_raises(request=request)
+            gateway.project_bootstrap_app_service.delete(
+                user_id=user_id,
+                bootstrap_id=ProjectBootstrapId(value=bootstrap_id),
             )
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
         except CustomException as e:

@@ -1,5 +1,9 @@
 from domain.enums.permission import ActionEnum, ScopeEnum
-from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
+from domain.exceptions.permissions import (
+    AddDeniedPermissionException,
+    DeleteDeniedPermissionException,
+    UpdateDeniedPermissionException,
+)
 from domain.models.project_management.bootstrap import ProjectBootstrap
 from domain.models.project_management.project import Project
 from domain.models.user import User
@@ -31,16 +35,30 @@ class ProjectBootstrapPermissionService(AbstractDomainService):
     def _check_update_permission(self, user: User, bootstrap: ProjectBootstrap) -> None:
         """:raises UpdateDeniedPermissionException:"""
 
-        delete_permission = self._permission_service.create_permission_vo(
-            model=ProjectBootstrap, action=ActionEnum.ADD, scope=ScopeEnum.OWN
+        update_permission = self._permission_service.create_permission_vo(
+            model=ProjectBootstrap, action=ActionEnum.CHANGE, scope=ScopeEnum.OWN
         )
-        has_permission = self._permission_service.has_user_permission(user=user, permission_vo=delete_permission)
+        has_permission = self._permission_service.has_user_permission(user=user, permission_vo=update_permission)
         if has_permission and bootstrap.project.creator == user:
             return None
         logger.exception(
             f"User(id={user.id}) doesn't have enough permission to update {bootstrap.__class__.__name__}(id={bootstrap.id})"
         )
         raise UpdateDeniedPermissionException("You don't have enough permission to update this resource.")
+
+    def _check_delete_permission(self, user: User, bootstrap: ProjectBootstrap) -> None:
+        """:raises DeleteDeniedPermissionException:"""
+
+        delete_permission = self._permission_service.create_permission_vo(
+            model=ProjectBootstrap, action=ActionEnum.DELETE, scope=ScopeEnum.OWN
+        )
+        has_permission = self._permission_service.has_user_permission(user=user, permission_vo=delete_permission)
+        if has_permission and bootstrap.project.creator == user:
+            return None
+        logger.exception(
+            f"User(id={user.id}) doesn't have enough permission to delete {bootstrap.__class__.__name__}(id={bootstrap.id})"
+        )
+        raise DeleteDeniedPermissionException("You don't have enough permission to delete this resource.")
 
 
 class ProjectBootstrapService(ProjectBootstrapPermissionService):
@@ -57,4 +75,5 @@ class ProjectBootstrapService(ProjectBootstrapPermissionService):
         self._write_repository.update(data=payload)
 
     def delete(self, user: User, bootstrap: ProjectBootstrap) -> None:
-        pass
+        self._check_delete_permission(user=user, bootstrap=bootstrap)
+        self._write_repository.delete(bootstrap=bootstrap)

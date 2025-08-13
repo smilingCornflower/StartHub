@@ -47,5 +47,5 @@ class DjProjectBootstrapWriteRepository(ProjectBootstrapWriteRepository):
     def delete_by_id(self, id_: ProjectBootstrapId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented.")
 
-    def delete(self, bootsrtap: ProjectBootstrap) -> None:
-        bootsrtap.delete()
+    def delete(self, bootstrap: ProjectBootstrap) -> None:
+        bootstrap.delete()

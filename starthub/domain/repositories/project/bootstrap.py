@@ -42,5 +42,5 @@ class ProjectBootstrapWriteRepository(
         pass
 
     @abstractmethod
-    def delete(self, bootsrtap: ProjectBootstrap) -> None:
+    def delete(self, bootstrap: ProjectBootstrap) -> None:
         pass

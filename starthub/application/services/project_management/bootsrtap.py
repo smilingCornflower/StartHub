@@ -55,3 +55,8 @@ class ProjectBootstrapAppService(AbstractAppService):
             ),
         )
         logger.info("ProjectBootstrap updated successfully.")
+
+    def delete(self, user_id: Id, bootstrap_id: ProjectBootstrapId) -> None:
+        user: User = self._user_read_repository.get_by_id(id_=user_id)
+        bootstrap: ProjectBootstrap = self._bootstrap_read_repository.get_by_id(id_=bootstrap_id)
+        self._bootstrap_service.delete(user=user, bootstrap=bootstrap)
