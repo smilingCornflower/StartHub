@@ -26,6 +26,17 @@ class Project(BaseModel):
     plan = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH, blank=True, null=True)
     is_active = models.BooleanField(default=True)
 
+    ltv = models.FloatField(null=True)
+    arpu = models.FloatField(null=True)
+    arppu = models.FloatField(null=True)
+    cac = models.FloatField(null=True)
+    nps = models.FloatField(null=True)
+    roi = models.FloatField(null=True)
+    aov = models.FloatField(null=True)
+    churn_rate = models.FloatField(null=True)
+    retention_rate = models.FloatField(null=True)
+    conversion_rate = models.FloatField(null=True)
+
     def __str__(self) -> str:
         return self.name
 

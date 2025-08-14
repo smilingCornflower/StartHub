@@ -60,6 +60,16 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             goal_sum=data.goal_sum.value,
             deadline=data.deadline,
             plan=data.plan_path,
+            ltv=data.ltv.value if data.ltv is not None else None,
+            arpu=data.arpu.value if data.arpu is not None else None,
+            arppu=data.arppu.value if data.arppu is not None else None,
+            cac=data.cac.value if data.cac is not None else None,
+            nps=data.nps.value if data.nps is not None else None,
+            roi=data.roi.value if data.roi is not None else None,
+            aov=data.aov.value if data.aov is not None else None,
+            churn_rate=data.churn_rate.value if data.churn_rate is not None else None,
+            retention_rate=data.retention_rate.value if data.retention_rate is not None else None,
+            conversion_rate=data.conversion_rate.value if data.conversion_rate is not None else None,
         )
         project.categories.set([i.value for i in data.category_ids])
         return project
@@ -89,6 +99,27 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             project.funding_model_id = data.funding_model_id.value
         if data.plan_path is not None:
             project.plan = data.plan_path
+
+        if data.ltv is not None:
+            project.ltv = data.ltv.value
+        if data.arpu is not None:
+            project.arpu = data.arpu.value
+        if data.arppu is not None:
+            project.arppu = data.arppu.value
+        if data.cac is not None:
+            project.cac = data.cac.value
+        if data.nps is not None:
+            project.nps = data.nps.value
+        if data.roi is not None:
+            project.roi = data.roi.value
+        if data.aov is not None:
+            project.aov = data.aov.value
+        if data.churn_rate is not None:
+            project.churn_rate = data.churn_rate.value
+        if data.retention_rate is not None:
+            project.retention_rate = data.retention_rate.value
+        if data.conversion_rate is not None:
+            project.conversion_rate = data.conversion_rate.value
 
         project.save()
         return project
