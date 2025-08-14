@@ -22,6 +22,18 @@ from domain.value_objects.project.crowdfunding import ProjectCrowdfundingCreateC
 from domain.value_objects.project.government_grant import ProjectGovernmentGrantCreateCommand
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorUpdatePayload
 from domain.value_objects.project.investment import ProjectInvestmentCreateCommand
+from domain.value_objects.project.metric import (
+    Aov,
+    Arppu,
+    Arpu,
+    Cac,
+    ChurnRate,
+    ConversionRate,
+    Ltv,
+    Nps,
+    RetentionRate,
+    Roi,
+)
 from domain.value_objects.project.step import ProjectStepCreateCommand
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
 
@@ -60,6 +72,17 @@ class ProjectCreateCommand(BaseCommand):
     team_members: list[TeamMemberCreateCommand]
     company_founder: CompanyFounderCreateCommand
 
+    ltv: Ltv | None = None
+    arpu: Arpu | None = None
+    arppu: Arppu | None = None
+    cac: Cac | None = None
+    nps: Nps | None = None
+    roi: Roi | None = None
+    aov: Aov | None = None
+    churn_rate: ChurnRate | None = None
+    retention_rate: RetentionRate | None = None
+    conversion_rate: ConversionRate | None = None
+
 
 class ProjectUpdateCommand(BaseCommand):
     project_id: Id
@@ -77,6 +100,17 @@ class ProjectUpdateCommand(BaseCommand):
 
     incubator: IncubatorUpdatePayload | None = None
 
+    ltv: Ltv | None = None
+    arpu: Arpu | None = None
+    arppu: Arppu | None = None
+    cac: Cac | None = None
+    nps: Nps | None = None
+    roi: Roi | None = None
+    aov: Aov | None = None
+    churn_rate: ChurnRate | None = None
+    retention_rate: RetentionRate | None = None
+    conversion_rate: ConversionRate | None = None
+
 
 class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
     name: ProjectName
@@ -91,6 +125,17 @@ class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
     deadline: date
     plan_path: str
 
+    ltv: Ltv | None = None
+    arpu: Arpu | None = None
+    arppu: Arppu | None = None
+    cac: Cac | None = None
+    nps: Nps | None = None
+    roi: Roi | None = None
+    aov: Aov | None = None
+    churn_rate: ChurnRate | None = None
+    retention_rate: RetentionRate | None = None
+    conversion_rate: ConversionRate | None = None
+
 
 class ProjectUpdatePayload(AbstractUpdatePayload, BaseVo):
     id_: Id
@@ -103,3 +148,14 @@ class ProjectUpdatePayload(AbstractUpdatePayload, BaseVo):
     stage: ProjectStage | None = None
     deadline: DeadlineDate | None = None
     plan_path: str | None = None
+
+    ltv: Ltv | None = None
+    arpu: Arpu | None = None
+    arppu: Arppu | None = None
+    cac: Cac | None = None
+    nps: Nps | None = None
+    roi: Roi | None = None
+    aov: Aov | None = None
+    churn_rate: ChurnRate | None = None
+    retention_rate: RetentionRate | None = None
+    conversion_rate: ConversionRate | None = None

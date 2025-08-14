@@ -140,5 +140,14 @@ class ProjectFullDto(ProjectDto):
     government_grants: list[GovernmentGrantDto] | None = None
     bootstraps: list[BootstrapDto] | None = None
     bank_loans: list[BankLoanDto] | None = None
-
+    ltv: float | None = None
+    arpu: float | None = None
+    arppu: float | None = None
+    cac: float | None = None
+    nps: float | None = None
+    roi: float | None = None
+    aov: float | None = None
+    churn_rate: float | None = None
+    retention_rate: float | None = None
+    conversion_rate: float | None = None
     total_investment_amount: float = 0

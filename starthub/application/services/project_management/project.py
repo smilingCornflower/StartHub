@@ -213,6 +213,16 @@ class ProjectCreateAppService(AbstractAppService):
             goal_sum=command.goal_sum,
             deadline=command.deadline.value,
             plan_path=plan_path,
+            ltv=command.ltv,
+            arpu=command.arpu,
+            arppu=command.arppu,
+            cac=command.cac,
+            nps=command.nps,
+            roi=command.roi,
+            aov=command.aov,
+            churn_rate=command.churn_rate,
+            retention_rate=command.retention_rate,
+            conversion_rate=command.conversion_rate,
         )
         return payload
 
@@ -320,6 +330,16 @@ class ProjectGetAppService(AbstractAppService):
             total_investment_amount=total_investment_amount,
             bootstraps=bootstraps,
             bank_loans=bank_loans,
+            ltv=project.ltv,
+            arpu=project.arpu,
+            arppu=project.arppu,
+            cac=project.cac,
+            nps=project.nps,
+            roi=project.roi,
+            aov=project.aov,
+            churn_rate=project.churn_rate,
+            retention_rate=project.retention_rate,
+            conversion_rate=project.conversion_rate,
         )
 
     def _get_bank_loan_dtos_if_present(self, project_id: Id) -> list[BankLoanDto] | None:
@@ -645,4 +665,14 @@ class ProjectUpdateAppService(AbstractAppService):
             goal_sum=command.goal_sum,
             deadline=command.deadline,
             plan_path=plan_path,
+            ltv=command.ltv,
+            arpu=command.arpu,
+            arppu=command.arppu,
+            cac=command.cac,
+            nps=command.nps,
+            roi=command.roi,
+            aov=command.aov,
+            churn_rate=command.churn_rate,
+            retention_rate=command.retention_rate,
+            conversion_rate=command.conversion_rate,
         )

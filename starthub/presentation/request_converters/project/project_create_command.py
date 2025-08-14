@@ -40,6 +40,18 @@ from domain.value_objects.project.investment import (
     ProjectInvestmentCreateCommand,
     ProjectInvestmentOrganizationName,
 )
+from domain.value_objects.project.metric import (
+    Aov,
+    Arppu,
+    Arpu,
+    Cac,
+    ChurnRate,
+    ConversionRate,
+    Ltv,
+    Nps,
+    RetentionRate,
+    Roi,
+)
 from domain.value_objects.project.project import ProjectCreateCommand
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
 from loguru import logger
@@ -133,6 +145,20 @@ def _extract_project_info(project_data: dict[str, Any], user_id: int) -> dict[st
         ],
         "steps": extract_steps(project_data),
         "phone_number": PhoneNumber(value=get_required_field(project_data, "phone_number")),
+        "ltv": Ltv(value=project_data["ltv"]) if "ltv" in project_data else None,
+        "arpu": Arpu(value=project_data["arpu"]) if "arpu" in project_data else None,
+        "arppu": Arppu(value=project_data["arppu"]) if "arppu" in project_data else None,
+        "cac": Cac(value=project_data["cac"]) if "cac" in project_data else None,
+        "nps": Nps(value=project_data["nps"]) if "nps" in project_data else None,
+        "roi": Roi(value=project_data["roi"]) if "roi" in project_data else None,
+        "aov": Aov(value=project_data["aov"]) if "aov" in project_data else None,
+        "churn_rate": ChurnRate(value=project_data["churn_rate"]) if "churn_rate" in project_data else None,
+        "retention_rate": (
+            RetentionRate(value=project_data["retention_rate"]) if "retention_rate" in project_data else None
+        ),
+        "conversion_rate": (
+            ConversionRate(value=project_data["conversion_rate"]) if "conversion_rate" in project_data else None
+        ),
     }
 
 

@@ -9,6 +9,7 @@ from presentation.views.investment import (
     ProjectInvestmentSocialLinkView,
     ProjectInvestmentView,
 )
+from presentation.views.metric import MetricView
 from presentation.views.project import MeProjectView, ProjectImageView, ProjectPlanView, ProjectSearchView, ProjectView
 
 urlpatterns = [
@@ -36,4 +37,6 @@ urlpatterns = [
     # Bank Loan
     path("<int:project_id>/bank-loans/", ProjectBankLoanView.as_view()),
     path("bank-loans/<int:bank_loan_id>/", ProjectBankLoanView.as_view()),
+    # Metrics
+    path("metrics/", MetricView.as_view()),
 ]
