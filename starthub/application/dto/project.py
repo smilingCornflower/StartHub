@@ -87,6 +87,30 @@ class ProjectInvestmentDto:
 
 
 @dataclass(frozen=True)
+class GovernmentGrantDto:
+    id: int
+    grant_name: str
+    grant_name_slug: str
+    amount: float
+    organization_name: str
+    organization_name_slug: str
+
+
+@dataclass(frozen=True)
+class BootstrapDto:
+    id: int
+    description: str
+
+
+@dataclass(frozen=True)
+class BankLoanDto:
+    id: int
+    organization_name: str
+    amount: float
+    terms: str
+
+
+@dataclass(frozen=True)
 class ProjectDto:
     id: int
     name: str
@@ -113,4 +137,8 @@ class ProjectFullDto(ProjectDto):
     accelerator: AcceleratorDto | None = None
     crowdfunding: CrowdfundingDto | None = None
     investments: list[ProjectInvestmentDto] | None = None
+    government_grants: list[GovernmentGrantDto] | None = None
+    bootstraps: list[BootstrapDto] | None = None
+    bank_loans: list[BankLoanDto] | None = None
+
     total_investment_amount: float = 0

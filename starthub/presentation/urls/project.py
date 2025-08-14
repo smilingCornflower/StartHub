@@ -1,6 +1,9 @@
 from django.urls import path
 from presentation.views.accelerator import AcceleratorView
+from presentation.views.bank_loan import ProjectBankLoanView
+from presentation.views.bootstrap import ProjectBootstrapView
 from presentation.views.crowdfunding import CrowdfundingView
+from presentation.views.government_grant import GovernmentGrantView
 from presentation.views.investment import (
     ProjectInvestmentPhoneView,
     ProjectInvestmentSocialLinkView,
@@ -18,9 +21,19 @@ urlpatterns = [
     path("<int:project_id>/images/<int:image_order>", ProjectImageView.as_view()),
     path("<int:project_id>/accelerators/", AcceleratorView.as_view()),
     path("<int:project_id>/crowdfundings/", CrowdfundingView.as_view()),
+    # Investment
     path("<int:project_id>/investments/", ProjectInvestmentView.as_view()),
     path("<int:project_id>/investments/<int:investment_id>/", ProjectInvestmentView.as_view()),
     path("investments/<int:investment_id>/social-links/", ProjectInvestmentSocialLinkView.as_view()),
     path("investments/social-links/<int:social_link_id>/", ProjectInvestmentSocialLinkView.as_view()),
     path("investments/<int:investment_id>/phone/", ProjectInvestmentPhoneView.as_view()),
+    # Government Grant
+    path("<int:project_id>/government-grants/", GovernmentGrantView.as_view()),
+    path("government-grants/<int:government_grant_id>/", GovernmentGrantView.as_view()),
+    # Bootstrap
+    path("<int:project_id>/bootstraps/", ProjectBootstrapView.as_view()),
+    path("bootstraps/<int:bootstrap_id>/", ProjectBootstrapView.as_view()),
+    # Bank Loan
+    path("<int:project_id>/bank-loans/", ProjectBankLoanView.as_view()),
+    path("bank-loans/<int:bank_loan_id>/", ProjectBankLoanView.as_view()),
 ]

@@ -15,11 +15,24 @@ from domain.value_objects.company import (
 from domain.value_objects.country import CountryCode
 from domain.value_objects.file import ImageFile, PdfFile
 from domain.value_objects.project.accelerator import AcceleratorName, ProjectAcceleratorCreateCommand
+from domain.value_objects.project.bank_loan import (
+    BankLoanOrganizationName,
+    LoanAmount,
+    LoanTerms,
+    ProjectBankLoanCreateCommand,
+)
+from domain.value_objects.project.bootstrap import ProjectBootstrapCreateCommand
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
 from domain.value_objects.project.crowdfunding import (
     ProjectCrowdfundingAmount,
     ProjectCrowdfundingCreateCommand,
     ProjectCrowdfundingName,
+)
+from domain.value_objects.project.government_grant import (
+    ProjectGovernmentGrantAmount,
+    ProjectGovernmentGrantCreateCommand,
+    ProjectGrantName,
+    ProjectGrantOrganizationName,
 )
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorName
 from domain.value_objects.project.investment import (
@@ -76,22 +89,6 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
     team_members = _extract_team_members(data)
     company_founder = _extract_company_founder(data)
 
-    incubator: IncubatorCreateCommand | None = None
-    if "incubator" in data:
-        incubator = _extract_incubator(raw_data=data)
-
-    accelerator: ProjectAcceleratorCreateCommand | None = None
-    if "accelerator" in data:
-        accelerator = _extract_accelerator(raw_data=data)
-
-    crowdfunding: ProjectCrowdfundingCreateCommand | None = None
-    if "crowdfunding" in data:
-        crowdfunding = _extract_crowdfunding(raw_data=data)
-
-    investment: ProjectInvestmentCreateCommand | None = None
-    if "investment" in data:
-        investment = _extract_investment(raw_data=data)
-
     command = ProjectCreateCommand(
         **project_info,
         **company_info,
@@ -99,10 +96,13 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
         images=project_images,
         team_members=team_members,
         company_founder=company_founder,
-        incubator=incubator,
-        accelerator=accelerator,
-        crowdunding=crowdfunding,
-        investment=investment,
+        incubator=_extract_incubator_if_present(raw_data=data),
+        accelerator=_extract_accelerator_if_present(raw_data=data),
+        crowdunding=_extract_crowdfunding_if_present(raw_data=data),
+        investment=_extract_investment_if_present(raw_data=data),
+        government_grant=_extract_government_create_command_if_presents(raw_data=data),
+        bootstrap=_extract_bootstrap_create_command_if_presents(raw_data=data),
+        bank_loan=_extract_bank_loan_create_command_if_presents(raw_data=data),
     )
 
     logger.debug(f"command: \n{pformat(command.__dict__)}")
@@ -136,7 +136,49 @@ def _extract_project_info(project_data: dict[str, Any], user_id: int) -> dict[st
     }
 
 
-def _extract_investment(raw_data: dict[str, str]) -> ProjectInvestmentCreateCommand:
+def _extract_bank_loan_create_command_if_presents(raw_data: dict[str, str]) -> ProjectBankLoanCreateCommand | None:
+    if "bank_loan" not in raw_data:
+        return None
+    bank_loan_data = _parse_json_field(raw_data, "bank_loan")
+
+    command = ProjectBankLoanCreateCommand(
+        organization_name=BankLoanOrganizationName(value=get_required_field(bank_loan_data, "organization_name")),
+        amount=LoanAmount(value=get_required_field(bank_loan_data, "amount")),
+        terms=LoanTerms(value=get_required_field(bank_loan_data, "terms")),
+    )
+    return command
+
+
+def _extract_bootstrap_create_command_if_presents(raw_data: dict[str, str]) -> ProjectBootstrapCreateCommand | None:
+    if "bootstrap" not in raw_data:
+        return None
+    bootstrap_data = _parse_json_field(raw_data, "bootstrap")
+
+    command = ProjectBootstrapCreateCommand(
+        description=Description(value=get_required_field(bootstrap_data, "description"))
+    )
+    return command
+
+
+def _extract_government_create_command_if_presents(
+    raw_data: dict[str, str],
+) -> ProjectGovernmentGrantCreateCommand | None:
+    if "government_grant" not in raw_data:
+        return None
+    government_grant_data = _parse_json_field(raw_data, "government_grant")
+
+    return ProjectGovernmentGrantCreateCommand(
+        grant_name=ProjectGrantName(value=get_required_field(government_grant_data, "grant_name")),
+        amount=ProjectGovernmentGrantAmount(value=get_required_field(government_grant_data, "amount")),
+        organization_name=ProjectGrantOrganizationName(
+            value=get_required_field(government_grant_data, "organization_name")
+        ),
+    )
+
+
+def _extract_investment_if_present(raw_data: dict[str, str]) -> ProjectInvestmentCreateCommand | None:
+    if "investment" not in raw_data:
+        return None
     investment_data = _parse_json_field(raw_data, "investment")
 
     command = ProjectInvestmentCreateCommand(
@@ -152,7 +194,9 @@ def _extract_investment(raw_data: dict[str, str]) -> ProjectInvestmentCreateComm
     return command
 
 
-def _extract_crowdfunding(raw_data: dict[str, str]) -> ProjectCrowdfundingCreateCommand:
+def _extract_crowdfunding_if_present(raw_data: dict[str, str]) -> ProjectCrowdfundingCreateCommand | None:
+    if "crowdfunding" not in raw_data:
+        return None
     crowdfunding_data = _parse_json_field(raw_data, "crowdfunding")
     logger.debug(f"crowdfunding_data = {crowdfunding_data}")
 
@@ -165,7 +209,9 @@ def _extract_crowdfunding(raw_data: dict[str, str]) -> ProjectCrowdfundingCreate
     return crowdfunding
 
 
-def _extract_accelerator(raw_data: dict[str, str]) -> ProjectAcceleratorCreateCommand:
+def _extract_accelerator_if_present(raw_data: dict[str, str]) -> ProjectAcceleratorCreateCommand | None:
+    if "accelerator" not in raw_data:
+        return None
     accelerator_data = _parse_json_field(raw_data, "accelerator")
     logger.debug(f"accelerator_data = {accelerator_data}")
 
@@ -176,7 +222,9 @@ def _extract_accelerator(raw_data: dict[str, str]) -> ProjectAcceleratorCreateCo
     return accelerator
 
 
-def _extract_incubator(raw_data: dict[str, str]) -> IncubatorCreateCommand:
+def _extract_incubator_if_present(raw_data: dict[str, str]) -> IncubatorCreateCommand | None:
+    if "incubator" not in raw_data:
+        return None
     incubator_data = _parse_json_field(raw_data, "incubator")
     logger.debug(f"incubator_data = {incubator_data}")
 

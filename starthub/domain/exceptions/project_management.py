@@ -1,6 +1,6 @@
 from domain.exceptions import CustomException
 from domain.exceptions.repository import AlreadyExistsException, NotFoundException
-from domain.exceptions.validation import NegativeNumberException, ValidationException
+from domain.exceptions.validation import NegativeNumberException, StringIsTooLongException, ValidationException
 
 
 class ProjectException(CustomException):
@@ -175,7 +175,7 @@ class ProjectInvestmentDoesNotBelongToProjectException(ValidationException, Proj
 
 
 # ==== Project Investment Phone Exceptions ====
-class ProjectInvestmentPhoneException(CustomException):
+class ProjectInvestmentPhoneException(ProjectException):
     pass
 
 
@@ -188,4 +188,47 @@ class ProjectInvestmentPhoneMaxAmountException(ValidationException, ProjectInves
 
 
 class ProjectInvestmentPhoneNotFoundException(NotFoundException, ProjectInvestmentPhoneException):
+    pass
+
+
+# ==== Project Government Grant Exceptions ====
+class ProjectGoverntmentGrantException(ProjectException):
+    pass
+
+
+class ProjectGovernmentGrantMaxAmountException(ValidationException, ProjectGoverntmentGrantException):
+    pass
+
+
+class ProjectGovernmentGrantNotFoundException(NotFoundException, ProjectGoverntmentGrantException):
+    pass
+
+
+# ==== Project Bootsrtap Exception ====
+class ProjectBootstrapException(ProjectException):
+    pass
+
+
+class ProjectBootstrapNotFoundException(NotFoundException, ProjectBootstrapException):
+    pass
+
+
+# ==== Project Bank Loan Exceptions ====
+class ProjectBankLoanException(ProjectException):
+    pass
+
+
+class ProjectBankLoanNotFoundException(NotFoundException, ProjectBankLoanException):
+    pass
+
+
+class ProjectBankLoanMaxAmountException(ValidationException, ProjectBankLoanException):
+    pass
+
+
+class LoanOrganizationNameIsTooLongException(StringIsTooLongException, ProjectBankLoanException):
+    pass
+
+
+class BankLoanAmountNegative(NegativeNumberException, ProjectBankLoanException):
     pass

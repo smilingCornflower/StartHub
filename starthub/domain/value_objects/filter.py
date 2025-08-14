@@ -141,3 +141,15 @@ class ProjectInvestmentSocialLinkFilter(AbstractFilter):
 class ProjectInvestmentPhoneFilter(AbstractFilter):
     investment_id: ProjectInvestmentId | None = None
     number: PhoneNumber | None = None
+
+
+class ProjectGovernmentGrantFilter(AbstractFilter):
+    project_id: Id | None = None
+
+
+class ProjectBootstrapFilter(AbstractFilter):
+    project_id: Id | None = None
+
+
+class ProjectBankLoanFilter(AbstractFilter):
+    project_id: Id | None = None

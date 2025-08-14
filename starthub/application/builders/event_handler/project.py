@@ -1,22 +1,33 @@
 from typing import Any
 
+from application.builders.app_service.accelerator import AcceleratorAppServiceBuilder
+from application.builders.app_service.bank_loan import ProjectBankLoanAppServiceBuilder
+from application.builders.app_service.bootstrap import ProjectBootstrapAppServiceBuilder
+from application.builders.app_service.crowdfunding import CrowdfundingAppServiceBuilder
+from application.builders.app_service.government_grant import GovernmentGrantAppServiceBuilder
+from application.builders.app_service.investment import ProjectInvestmentAppServiceBuilder
 from application.builders.domain_service.address import AddressServiceBuilder
 from application.builders.domain_service.project_management import (
     CompanyFounderServiceBuilder,
     CompanyServiceBuilder,
-    ProjectAcceleratorServiceBuilder,
-    ProjectCrowdfundingServiceBuilder,
     ProjectImageServiceBuilder,
     ProjectIncubatorServiceBuilder,
-    ProjectInvestmentPhoneServiceBuilder,
-    ProjectInvestmentServiceBuilder,
-    ProjectInvestmentSocialLinkServiceBuilder,
     ProjectPhoneServiceBuilder,
     ProjectSocialLinkServiceBuilder,
     ProjectStepServiceBuilder,
-    TeamMemberServiceBuilder,
 )
-from application.event_handlers.project_created_handler import ProjectCreatedEventHandler
+from application.event_handlers.project_created.accelerator_handler import ProjectCreatedAcceleratorHandler
+from application.event_handlers.project_created.bank_loan_handler import ProjectCreatedBankLoanHandler
+from application.event_handlers.project_created.bootstrap import ProjectCreatedBootstrapHandler
+from application.event_handlers.project_created.company_handler import ProjectCreatedCompanyHandler
+from application.event_handlers.project_created.crowdfunding_handler import ProjectCreatedCrowdfundingHandler
+from application.event_handlers.project_created.government_grant_handler import ProjectCreatedGovernmentGrantHandler
+from application.event_handlers.project_created.incubator_handler import ProjectCreatedIncubatorHandler
+from application.event_handlers.project_created.investment_handler import ProjectCreatedInvestmentHandler
+from application.event_handlers.project_created.project_image_handler import ProjectCreatedProjectImageHandler
+from application.event_handlers.project_created.project_phone_handler import ProjectCreatedPhoneHandler
+from application.event_handlers.project_created.project_step_handler import ProjectCreatedProjectStepsHandler
+from application.event_handlers.project_created.social_link_handler import ProjectCreatedSocialLinkHandler
 from application.event_handlers.project_deleted_handler import ProjectDeletedEventHandler
 from application.ports.event_handler_builder import AbstractEventHandlerBuilder
 from domain.events.project import ProjectCreatedEvent, ProjectDeletedEvent
@@ -24,25 +35,88 @@ from domain.ports.event import AbstractEventHandler
 from infrastructure.cloud_storages.google import google_cloud_storage
 
 
-class ProjectCreatedEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+class ProjectCreatedAcceleratorHandlerBuilder(AbstractEventHandlerBuilder[Any]):
     @staticmethod
     def create_handler() -> AbstractEventHandler[ProjectCreatedEvent]:
-        return ProjectCreatedEventHandler(
+        return ProjectCreatedAcceleratorHandler(accelerator_app_service=AcceleratorAppServiceBuilder.create_service())
+
+
+class ProjectCreatedBootstrapHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> AbstractEventHandler[ProjectCreatedEvent]:
+        return ProjectCreatedBootstrapHandler(bootstrap_app_service=ProjectBootstrapAppServiceBuilder.create_service())
+
+
+class ProjectCreatedCompanyHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> AbstractEventHandler[ProjectCreatedEvent]:
+        return ProjectCreatedCompanyHandler(
             company_service=CompanyServiceBuilder.create_service(),
             company_founder_service=CompanyFounderServiceBuilder.create_service(),
-            project_image_service=ProjectImageServiceBuilder.create_service(),
-            team_member_service=TeamMemberServiceBuilder.create_service(),
-            project_phone_service=ProjectPhoneServiceBuilder.create_service(),
-            social_link_service=ProjectSocialLinkServiceBuilder.create_service(),
             address_service=AddressServiceBuilder.create_service(),
-            project_step_service=ProjectStepServiceBuilder.create_service(),
-            incubator_service=ProjectIncubatorServiceBuilder.create_service(),
-            accelerator_service=ProjectAcceleratorServiceBuilder.create_service(),
-            crowdfunding_service=ProjectCrowdfundingServiceBuilder.create_service(),
-            investment_service=ProjectInvestmentServiceBuilder.create_service(),
-            investment_social_link_service=ProjectInvestmentSocialLinkServiceBuilder.create_service(),
-            investment_phone_number_service=ProjectInvestmentPhoneServiceBuilder.create_service(),
         )
+
+
+class ProjectCreatedCrowdfundingHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> AbstractEventHandler[ProjectCreatedEvent]:
+        return ProjectCreatedCrowdfundingHandler(
+            crowdfunding_app_service=CrowdfundingAppServiceBuilder.create_service()
+        )
+
+
+class ProjectCreatedGovernmentGrantHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> AbstractEventHandler[ProjectCreatedEvent]:
+        return ProjectCreatedGovernmentGrantHandler(
+            government_grant_app_service=GovernmentGrantAppServiceBuilder.create_service()
+        )
+
+
+class ProjectCreatedIncubatorHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> AbstractEventHandler[ProjectCreatedEvent]:
+        return ProjectCreatedIncubatorHandler(incubator_service=ProjectIncubatorServiceBuilder.create_service())
+
+
+class ProjectCreatedInvestmentHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> AbstractEventHandler[ProjectCreatedEvent]:
+        return ProjectCreatedInvestmentHandler(
+            investment_app_service=ProjectInvestmentAppServiceBuilder.create_service()
+        )
+
+
+class ProjectCreatedImageHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> AbstractEventHandler[ProjectCreatedEvent]:
+        return ProjectCreatedProjectImageHandler(project_image_service=ProjectImageServiceBuilder.create_service())
+
+
+class ProjectCreatedPhoneHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> AbstractEventHandler[ProjectCreatedEvent]:
+        return ProjectCreatedPhoneHandler(project_phone_service=ProjectPhoneServiceBuilder.create_service())
+
+
+class ProjectCreatedProjectStepHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> AbstractEventHandler[ProjectCreatedEvent]:
+        return ProjectCreatedProjectStepsHandler(project_step_service=ProjectStepServiceBuilder.create_service())
+
+
+class ProjectCreatedSocialLinkHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> AbstractEventHandler[ProjectCreatedEvent]:
+        return ProjectCreatedSocialLinkHandler(
+            project_social_link_service=ProjectSocialLinkServiceBuilder.create_service()
+        )
+
+
+class ProjectCreatedBankLoanHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> ProjectCreatedBankLoanHandler:
+        return ProjectCreatedBankLoanHandler(bank_loan_app_service=ProjectBankLoanAppServiceBuilder.create_service())
 
 
 class ProjectDeletedEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):

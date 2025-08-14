@@ -24,10 +24,15 @@ from domain.exceptions.project_management import (
     NegativeProjectGoalSumException,
     ProjectAcceleratorAlreadyExists,
     ProjectAcceleratorNotFoundException,
+    ProjectBankLoanMaxAmountException,
+    ProjectBankLoanNotFoundException,
+    ProjectBootstrapNotFoundException,
     ProjectCategoryNotFoundException,
     ProjectCrowdfundingAlreadyExistsException,
     ProjectCrowdfundingMaxAmountException,
     ProjectCrowdfundingNotFoundException,
+    ProjectGovernmentGrantMaxAmountException,
+    ProjectGovernmentGrantNotFoundException,
     ProjectImageMaxAmountException,
     ProjectInvestmentDoesNotBelongToProjectException,
     ProjectInvestmentMaxAmountException,
@@ -52,6 +57,7 @@ from domain.exceptions.validation import (
     InvalidSocialLinkException,
     LastNameIsTooLongException,
     MissingFileExcpetion,
+    NegativeNumberException,
     StringIsTooLongException,
     ValidationException,
 )
@@ -204,4 +210,29 @@ class ProjectInvestmentErrorResponseFactory(CommonErrorResponseFactory):
         ProjectInvestmentPhoneAlreadyExistsException: ("INVESTMENT_PHONE_ALREADY_EXISTS", 409),
         ProjectInvestmentPhoneMaxAmountException: ("MAX_INVESTMENT_PHONE_AMOUNT_EXCEEDED", 422),
         ProjectInvestmentPhoneNotFoundException: ("INVESTMENT_PHONE_NOT_FOUND", 404),
+    }
+
+
+class ProjectGovernmentGrantErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectGovernmentGrantMaxAmountException: ("MAX_GOVERNMENT_GRANT_AMOUNT_EXCEEDED", 422),
+        NegativeNumberException: ("NEGATIVE_NUMBER", 422),
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+        ProjectGovernmentGrantNotFoundException: ("GOVERNMENT_GRANT_NOT_FOUND", 404),
+        StringIsTooLongException: ("STRING_TOO_LONG", 422),
+    }
+
+
+class ProjectBootstrapErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectBootstrapNotFoundException: ("BOOTSTRAP_NOT_FOUND", 404),
+    }
+
+
+class ProjectBankLoanErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectBankLoanMaxAmountException: ("MAX_BANK_LOAN_AMOUNT_EXCEEDED", 422),
+        ProjectBankLoanNotFoundException: ("BANK_LOAN_NOT_FOUND", 404),
+        NegativeNumberException: ("NEGATIVE_NUMBER", 422),
+        StringIsTooLongException: ("STRING_TOO_LONG", 422),
     }
