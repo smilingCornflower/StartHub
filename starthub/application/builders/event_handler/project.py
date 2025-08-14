@@ -6,6 +6,7 @@ from application.builders.app_service.bootstrap import ProjectBootstrapAppServic
 from application.builders.app_service.crowdfunding import CrowdfundingAppServiceBuilder
 from application.builders.app_service.government_grant import GovernmentGrantAppServiceBuilder
 from application.builders.app_service.investment import ProjectInvestmentAppServiceBuilder
+from application.builders.app_service.project_file import ProjectFileAppServiceBuilder
 from application.builders.domain_service.address import AddressServiceBuilder
 from application.builders.domain_service.project_management import (
     CompanyFounderServiceBuilder,
@@ -24,6 +25,7 @@ from application.event_handlers.project_created.crowdfunding_handler import Proj
 from application.event_handlers.project_created.government_grant_handler import ProjectCreatedGovernmentGrantHandler
 from application.event_handlers.project_created.incubator_handler import ProjectCreatedIncubatorHandler
 from application.event_handlers.project_created.investment_handler import ProjectCreatedInvestmentHandler
+from application.event_handlers.project_created.project_file_handler import ProjectCreatedProjectFileHandler
 from application.event_handlers.project_created.project_image_handler import ProjectCreatedProjectImageHandler
 from application.event_handlers.project_created.project_phone_handler import ProjectCreatedPhoneHandler
 from application.event_handlers.project_created.project_step_handler import ProjectCreatedProjectStepsHandler
@@ -117,6 +119,12 @@ class ProjectCreatedBankLoanHandlerBuilder(AbstractEventHandlerBuilder[Any]):
     @staticmethod
     def create_handler() -> ProjectCreatedBankLoanHandler:
         return ProjectCreatedBankLoanHandler(bank_loan_app_service=ProjectBankLoanAppServiceBuilder.create_service())
+
+
+class ProjectCreatedProjectFileHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> ProjectCreatedProjectFileHandler:
+        return ProjectCreatedProjectFileHandler(project_file_app_servcie=ProjectFileAppServiceBuilder.create_service())
 
 
 class ProjectDeletedEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):

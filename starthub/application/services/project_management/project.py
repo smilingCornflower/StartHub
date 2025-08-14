@@ -138,8 +138,7 @@ class ProjectCreateAppService(AbstractAppService):
         self._validate_dependencies(command=command)
         self._project_step_service.check_project_max_steps_limit(project_steps=command.steps)
 
-        plan_path: str = self._upload_plan(plan_file=command.plan_file)
-        create_payload: ProjectCreatePayload = self._convert_command_to_payload(command=command, plan_path=plan_path)
+        create_payload: ProjectCreatePayload = self._convert_command_to_payload(command=command)
 
         self._user_read_repository.get_by_id(id_=user_id)
         with transaction.atomic():
@@ -200,7 +199,7 @@ class ProjectCreateAppService(AbstractAppService):
             self._project_category_read_repository.get_by_id(id_=category_id)
             logger.debug(f"Category with id = {category_id.value} exists.")
 
-    def _convert_command_to_payload(self, command: ProjectCreateCommand, plan_path: str) -> ProjectCreatePayload:
+    def _convert_command_to_payload(self, command: ProjectCreateCommand) -> ProjectCreatePayload:
         payload = ProjectCreatePayload(
             name=command.name,
             goal_description=command.goal_description,
@@ -212,7 +211,6 @@ class ProjectCreateAppService(AbstractAppService):
             status=ProjectStatus(value=ProjectStatusEnum.UNDER_MODERATION),
             goal_sum=command.goal_sum,
             deadline=command.deadline.value,
-            plan_path=plan_path,
             ltv=command.ltv,
             arpu=command.arpu,
             arppu=command.arppu,

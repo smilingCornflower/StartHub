@@ -232,3 +232,16 @@ class LoanOrganizationNameIsTooLongException(StringIsTooLongException, ProjectBa
 
 class BankLoanAmountNegative(NegativeNumberException, ProjectBankLoanException):
     pass
+
+
+# ==== Project Files Exception ====
+class ProjectFileException(ProjectException):
+    pass
+
+
+class ProjectFileMaxAmountException(ValidationException, ProjectException):
+    pass
+
+
+class ProjectFileNotFoundException(NotFoundException, ProjectException):
+    pass

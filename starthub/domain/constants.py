@@ -1,7 +1,5 @@
 import re
 
-from config.settings import MODE
-
 MEGABYTE = 1024 * 1024  # in kilobytes
 
 CHAR_FIELD_MAX_LENGTH = 255
@@ -49,6 +47,7 @@ PDF_MAX_SIZE_IN_BYTES = 20 * MEGABYTE
 IMAGE_MAX_SIZE_IN_BYTES = 5 * MEGABYTE
 PROJECT_IMAGES_MAX_AMOUNT = 7
 PROJECT_STEPS_MAX_AMOUNT = 10
+PROJECT_FILES_MAX_AMOUNT = 10
 
 DESCRIPTION_MAX_LENGTH = 2_000
 
@@ -58,10 +57,3 @@ NEWS_IMAGES_MAX_AMOUNT = 10
 
 # ==== Pagination ====
 PAGINNATION_MAX_LMIT = 50
-
-
-# TODO: Move this attributes to domain PathProvider
-class StorageLocations:
-    PROFILE_PICTURE_PATH = MODE + "/profile_pictures"  # + /user_id.jpg
-    PROJECT_PHOTO_PATH = MODE + "/projects/photos"  # + /photo_order.jpg
-    NEWS_IMAGE_PATH = MODE + "/news"  # + news_id/image_uuid.jpg

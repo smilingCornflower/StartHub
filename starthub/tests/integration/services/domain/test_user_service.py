@@ -4,10 +4,10 @@ from typing import Any, Callable, cast
 from application.builders.domain_service.user import UserServiceBuilder
 from config.settings import BASE_DIR
 from django.test import TestCase
-from domain.constants import StorageLocations
 from domain.exceptions.user import UserNotFoundException, UserPhoneAlreadyExistException
 from domain.models.user import User
 from domain.services.user_management import UserService
+from domain.utils.path_provider import StorageLocations
 from domain.value_objects.common import Description, FirstName, Id, LastName, PhoneNumber
 from domain.value_objects.user import ProfilePictureUploadCommand, RawPassword, UserProfile, UserUpdateCommand
 from loguru import logger

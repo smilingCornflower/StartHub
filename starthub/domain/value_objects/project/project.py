@@ -12,7 +12,7 @@ from domain.value_objects.company import (
     PatentNumber,
 )
 from domain.value_objects.country import CountryCode
-from domain.value_objects.file import ImageFile, PdfFile
+from domain.value_objects.file import FileVo, ImageFile, PdfFile
 from domain.value_objects.geo import AddressCreateCommand
 from domain.value_objects.project.accelerator import ProjectAcceleratorCreateCommand
 from domain.value_objects.project.bank_loan import ProjectBankLoanCreateCommand
@@ -51,8 +51,8 @@ class ProjectCreateCommand(BaseCommand):
     deadline: DeadlineDate
     social_links: list[SocialLink]
     phone_number: PhoneNumber
-    plan_file: PdfFile
     images: list[ImageFile]
+    files: list[FileVo]
 
     incubator: IncubatorCreateCommand | None
     accelerator: ProjectAcceleratorCreateCommand | None
@@ -123,7 +123,6 @@ class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
     status: ProjectStatus
     goal_sum: GoalSum
     deadline: date
-    plan_path: str
 
     ltv: Ltv | None = None
     arpu: Arpu | None = None

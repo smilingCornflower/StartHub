@@ -59,7 +59,6 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             status=data.status.value,
             goal_sum=data.goal_sum.value,
             deadline=data.deadline,
-            plan=data.plan_path,
             ltv=data.ltv.value if data.ltv is not None else None,
             arpu=data.arpu.value if data.arpu is not None else None,
             arppu=data.arppu.value if data.arppu is not None else None,

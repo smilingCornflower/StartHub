@@ -14,9 +14,11 @@ from loguru import logger
 from pydantic import field_validator
 
 
-class ImageFile(BaseVo):
+class FileVo(BaseVo):
     value: bytes
 
+
+class ImageFile(FileVo):
     # noinspection PyNestedDecorators
     @field_validator("value", mode="after")
     @classmethod
@@ -56,9 +58,7 @@ class JpgImage(Image):
         return file
 
 
-class PdfFile(BaseVo):
-    value: bytes
-
+class PdfFile(FileVo):
     # noinspection PyNestedDecorators
     @field_validator("value", mode="after")
     @classmethod
