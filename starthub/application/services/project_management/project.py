@@ -60,6 +60,7 @@ from domain.repositories.project.investment import (
     ProjectInvestmentReadRepository,
     ProjectInvestmentSocialLinkReadRepository,
 )
+from domain.repositories.project.media import ProjectMediaReadRepository
 from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.project.project_file import ProjectFileReadRepository
 from domain.repositories.project.step import ProjectStepReadRepository
@@ -91,6 +92,7 @@ from domain.value_objects.filter import (
     ProjectInvestmentFilter,
     ProjectInvestmentPhoneFilter,
     ProjectInvestmentSocialLinkFilter,
+    ProjectMediaFilter,
     ProjectStepFilter,
 )
 from domain.value_objects.geo import CityId, RegionId
@@ -242,7 +244,7 @@ class ProjectGetAppService(AbstractAppService):
     def __init__(
         self,
         project_read_repository: ProjectReadRepository,
-        project_image_read_repository: ProjectImageReadRepository,
+        project_media_read_repository: ProjectMediaReadRepository,
         project_file_read_repository: ProjectFileReadRepository,
         project_category_read_repository: ProjectCategoryReadRepository,
         user_favorite_read_repository: UserFavoriteReadRepository,
@@ -260,7 +262,7 @@ class ProjectGetAppService(AbstractAppService):
         cloud_storage: AbstractCloudStorage,
     ):
         self._project_read_repository = project_read_repository
-        self._project_image_read_repository = project_image_read_repository
+        self._project_media_read_repository = project_media_read_repository
         self._project_file_read_repository = project_file_read_repository
         self._project_category_read_repository = project_category_read_repository
         self._user_favorite_read_repository = user_favorite_read_repository
@@ -303,10 +305,10 @@ class ProjectGetAppService(AbstractAppService):
         project_id: Id = Id(value=project.id)
 
         categories: list[ProjectCategory] = self._get_categories(project_id=project_id)
-        image_urls: list[str] = self._get_image_urls(project_id=project_id)
+        media_urls: list[str] = self._get_media_urls(project_id=project_id)
         is_favorite: bool = self._is_project_favorite(project_id=project_id, user_id=user_id)
 
-        return project_to_dto(project=project, categories=categories, image_links=image_urls, is_favorite=is_favorite)
+        return project_to_dto(project=project, categories=categories, media_links=media_urls, is_favorite=is_favorite)
 
     def _create_full_dto(self, project: Project, user_id: Id | None = None) -> ProjectFullDto:
         project_id: Id = Id(value=project.id)
@@ -490,17 +492,16 @@ class ProjectGetAppService(AbstractAppService):
     def _get_categories(self, project_id: Id) -> list[ProjectCategory]:
         return self._project_category_read_repository.get_all(filter_=ProjectCategoryFilter(project_id=project_id))
 
-    def _get_image_urls(self, project_id: Id) -> list[str]:
-        image_urls: list[str] = list()
-        images: list[ProjectImage] = self._project_image_read_repository.get_all(
-            filter_=ProjectImageFilter(project_id=project_id)
-        )
+    def _get_media_urls(self, project_id: Id) -> list[str]:
+        media_urls: list[str] = list()
 
-        for img in images:
-            img_url: str = self._cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=img.file_path))
-            image_urls.append(img_url)
+        media = self._project_media_read_repository.get_all(filter_=ProjectMediaFilter(project_id=project_id))
 
-        return image_urls
+        for m in media:
+            media_url: str = self._cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=m.file_path))
+            media_urls.append(media_url)
+
+        return media_urls
 
     def search(
         self, search_params: ProjectSearchParams, offset_pagination: OffsetPagination, user_id: Id | None = None

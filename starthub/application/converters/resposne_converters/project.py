@@ -4,7 +4,7 @@ from domain.models.project_management.project import Project
 
 
 def project_to_dto(
-    project: Project, categories: list[ProjectCategory], image_links: list[str] | None = None, is_favorite: bool = False
+    project: Project, categories: list[ProjectCategory], media_links: list[str] | None = None, is_favorite: bool = False
 ) -> ProjectDto:
     return ProjectDto(
         id=project.id,
@@ -26,7 +26,7 @@ def project_to_dto(
                 description=project.company.founder.description,
             ),
         ),
-        images=list() if image_links is None else image_links,
+        media=list() if media_links is None else media_links,
         categories=[
             CategoryDto(
                 id=category.id,
