@@ -12,6 +12,7 @@ from domain.services.project_management.investment import (
     ProjectInvestmentService,
     ProjectInvestmentSocialLinkService,
 )
+from domain.services.project_management.media import ProjectMediaService
 from domain.services.project_management.project import ProjectService
 from domain.services.project_management.project_file import ProjectFileService
 from domain.services.project_management.project_image import ProjectImageService
@@ -41,6 +42,7 @@ from infrastructure.repositories.project.investment import (
     DjProjectInvestmentSocialLinkWriteRepository,
     DjProjectInvestmentWriteRepository,
 )
+from infrastructure.repositories.project.media import DjProjectMediaReadRepository, DjProjectMediaWriteRepository
 from infrastructure.repositories.project.phone import DjProjectPhoneReadRepository, DjProjectPhoneWriteRepository
 from infrastructure.repositories.project.project import DjProjectReadRepository, DjProjectWriteRepository
 from infrastructure.repositories.project.project_file import DjProjectFileWriteRepository
@@ -217,4 +219,15 @@ class ProjectFileServiceBuilder(AbstractDomainServiceBuilder[ProjectFileService]
             permission_service=PermissionServiceBuilder.create_service(),
             cloud_storage=google_cloud_storage,
             write_repository=DjProjectFileWriteRepository(),
+        )
+
+
+class ProjectMediaServiceBuilder(AbstractDomainServiceBuilder[ProjectMediaService]):
+    @staticmethod
+    def create_service() -> ProjectMediaService:
+        return ProjectMediaService(
+            write_repository=DjProjectMediaWriteRepository(),
+            read_repository=DjProjectMediaReadRepository(),
+            permission_service=PermissionServiceBuilder.create_service(),
+            clous_storage=google_cloud_storage,
         )

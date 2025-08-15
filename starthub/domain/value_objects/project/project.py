@@ -22,6 +22,7 @@ from domain.value_objects.project.crowdfunding import ProjectCrowdfundingCreateC
 from domain.value_objects.project.government_grant import ProjectGovernmentGrantCreateCommand
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorUpdatePayload
 from domain.value_objects.project.investment import ProjectInvestmentCreateCommand
+from domain.value_objects.project.media import MediaFile
 from domain.value_objects.project.metric import (
     Aov,
     Arppu,
@@ -53,6 +54,7 @@ class ProjectCreateCommand(BaseCommand):
     phone_number: PhoneNumber
     images: list[ImageFile]
     files: list[FileVo]
+    media: list[MediaFile]
 
     incubator: IncubatorCreateCommand | None
     accelerator: ProjectAcceleratorCreateCommand | None

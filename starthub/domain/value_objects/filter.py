@@ -157,3 +157,7 @@ class ProjectBankLoanFilter(AbstractFilter):
 
 class ProjectFileFilter(AbstractFilter):
     project_id: Id | None = None
+
+
+class ProjectMediaFilter(AbstractFilter):
+    project_id: Id | None = None

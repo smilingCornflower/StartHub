@@ -245,3 +245,12 @@ class ProjectFileMaxAmountException(ValidationException, ProjectException):
 
 class ProjectFileNotFoundException(NotFoundException, ProjectException):
     pass
+
+
+# ==== Project Media Exceptions ====
+class ProjectMediaException(ProjectException):
+    pass
+
+
+class ProjectMediaMaxAmountException(ValidationException, ProjectMediaException):
+    pass

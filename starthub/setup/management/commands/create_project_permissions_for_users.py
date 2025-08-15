@@ -10,6 +10,7 @@ from domain.models.project_management.accelerator import ProjectAccelerator
 from domain.models.project_management.crowdfunding import ProjectCrowdfunding
 from domain.models.project_management.government_grant import ProjectGovernmentGrant
 from domain.models.project_management.investment import ProjectInvestment
+from domain.models.project_management.media import ProjectMedia
 from domain.models.project_management.project import Project
 from domain.models.role import Role
 from domain.services.permission import PermissionService
@@ -30,6 +31,7 @@ class Command(BaseCommand):
         self._assign_bootstrap_permission_for_users()
         self._assign_bank_loan_permission_for_users()
         self._assign_project_file_permission_for_users()
+        self._assign_project_media_permission_for_users()
 
     def assing_project_permissions_for_users(self) -> None:
         self._assign_permissions_for_model(
@@ -55,6 +57,14 @@ class Command(BaseCommand):
             user_role.permissions.add(permission)
 
         logger.info(log_end_message)
+
+    def _assign_project_media_permission_for_users(self) -> None:
+        self._assign_permissions_for_model(
+            model=ProjectMedia,
+            actions=[ActionEnum.ADD, ActionEnum.CHANGE, ActionEnum.DELETE],
+            log_start_message="Started command: _assign_project_media_permission_for_users()",
+            log_end_message="User permissions for project media initialized",
+        )
 
     def _assign_project_file_permission_for_users(self) -> None:
         self._assign_permissions_for_model(

@@ -40,6 +40,7 @@ from domain.value_objects.project.investment import (
     ProjectInvestmentCreateCommand,
     ProjectInvestmentOrganizationName,
 )
+from domain.value_objects.project.media import MediaFile
 from domain.value_objects.project.metric import (
     Aov,
     Arppu,
@@ -96,6 +97,7 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
     # Process files
     project_images = _extract_project_images(files=files)
     project_files = _extract_project_files(files=files)
+    project_media = _extract_project_media(files=files)
 
     # Process related entities
     team_members = _extract_team_members(data)
@@ -106,6 +108,7 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
         **company_info,
         images=project_images,
         files=project_files,
+        media=project_media,
         team_members=team_members,
         company_founder=company_founder,
         incubator=_extract_incubator_if_present(raw_data=data),
@@ -297,6 +300,19 @@ def _extract_project_images(files: MultiValueDict[str, UploadedFile]) -> list[Im
 
     logger.debug("request.FILES -> ImageFile conversion OK")
     return project_images
+
+
+def _extract_project_media(files: MultiValueDict[str, UploadedFile]) -> list[MediaFile]:
+    """Extract and convert project images to ImageFile list."""
+    project_media: list[MediaFile] = list()
+    media: list[UploadedFile] = files.getlist("media")
+
+    for m in media:
+        m.seek(0)
+        project_media.append(MediaFile(value=m.read()))
+
+    logger.debug("request.FILES -> MediaFile conversion OK")
+    return project_media
 
 
 def _extract_project_files(files: MultiValueDict[str, UploadedFile]) -> list[FileVo]:

@@ -244,3 +244,7 @@ class ProjectFileErrorResponseFactory(CommonErrorResponseFactory):
         ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
         ProjectFileNotFoundException: ("PROJECT_FILE_NOT_FOUND", 404),
     }
+
+
+class ProjectMediaErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {}
