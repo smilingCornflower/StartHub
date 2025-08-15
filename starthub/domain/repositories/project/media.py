@@ -31,3 +31,7 @@ class ProjectMediaWriteRepository(
     @abstractmethod
     def delete_by_id(self, id_: ProjectMediaId) -> None:
         pass
+
+    @abstractmethod
+    def delete(self, project_media: ProjectMedia) -> None:
+        pass

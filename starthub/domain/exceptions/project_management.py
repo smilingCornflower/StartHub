@@ -254,3 +254,7 @@ class ProjectMediaException(ProjectException):
 
 class ProjectMediaMaxAmountException(ValidationException, ProjectMediaException):
     pass
+
+
+class ProjectMediaNotFoundException(NotFoundException, ProjectMediaException):
+    pass

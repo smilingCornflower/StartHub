@@ -125,3 +125,8 @@ class ProjectMediaService(ProjectMediaPermissionService):
 
     def get_media_count(self, project_id: Id) -> int:
         return len(self._read_repository.get_all(filter_=ProjectMediaFilter(project_id=project_id)))
+
+    # ======================================================================================================================
+    def delete(self, user: User, project_media: ProjectMedia) -> None:
+        self._check_delete_permission(user=user, project_media=project_media)
+        self._write_repository.delete(project_media=project_media)

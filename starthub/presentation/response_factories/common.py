@@ -41,6 +41,7 @@ from domain.exceptions.project_management import (
     ProjectInvestmentPhoneAlreadyExistsException,
     ProjectInvestmentPhoneMaxAmountException,
     ProjectInvestmentPhoneNotFoundException,
+    ProjectMediaNotFoundException,
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
     ProjectPlanNotFoundException,
@@ -247,4 +248,6 @@ class ProjectFileErrorResponseFactory(CommonErrorResponseFactory):
 
 
 class ProjectMediaErrorResponseFactory(CommonErrorResponseFactory):
-    error_codes = CommonErrorResponseFactory.error_codes | {}
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectMediaNotFoundException: ("PROJECT_MEDIA_NOT_FOUND", 404),
+    }

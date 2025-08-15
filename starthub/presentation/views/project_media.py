@@ -2,7 +2,7 @@ import pydantic
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id
-from domain.value_objects.project.media import ProjectMediaCreateCommand
+from domain.value_objects.project.media import ProjectMediaCreateCommand, ProjectMediaId
 from infrastructure.auth.user import get_user_id_or_raises
 from presentation.constants import SUCCESS
 from presentation.request_converters.project.media import request_to_project_media_create_command
@@ -21,5 +21,15 @@ class ProjectMediaView(APIView):
             gateway.project_media_app_service.create(user_id=user_id, project_id=Id(value=project_id), command=command)
             return Response({"code": SUCCESS}, status=status.HTTP_201_CREATED)
 
+        except (CustomException, pydantic.ValidationError) as e:
+            return ProjectMediaErrorResponseFactory.create_response(exception=e)
+
+    def delete(self, request: Request, project_media_id: int) -> Response:
+        try:
+            user_id: Id = get_user_id_or_raises(request=request)
+            gateway.project_media_app_service.delete(
+                user_id=user_id, project_media_id=ProjectMediaId(value=project_media_id)
+            )
+            return Response({"code": SUCCESS}, status=status.HTTP_201_CREATED)
         except (CustomException, pydantic.ValidationError) as e:
             return ProjectMediaErrorResponseFactory.create_response(exception=e)

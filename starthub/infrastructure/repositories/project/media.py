@@ -1,3 +1,4 @@
+from domain.exceptions.project_management import ProjectMediaNotFoundException
 from domain.models.project_management.media import ProjectMedia
 from domain.repositories.project.media import ProjectMediaReadRepository, ProjectMediaWriteRepository
 from domain.value_objects.common import Pagination
@@ -8,7 +9,13 @@ from infrastructure.repositories.pagination import apply_pagination
 
 class DjProjectMediaReadRepository(ProjectMediaReadRepository):
     def get_by_id(self, id_: ProjectMediaId) -> ProjectMedia:
-        raise NotImplementedError("The method get_by_id() is not implemented yet.")
+        """:raises ProjectMediaNotFoundException:"""
+        project_media: ProjectMedia | None = ProjectMedia.objects.filter(id=id_.value).first()
+
+        if project_media is None:
+            raise ProjectMediaNotFoundException(f"Project media with id = {id_.value} not found.")
+
+        return project_media
 
     def get_all(self, filter_: ProjectMediaFilter, pagination: Pagination | None = None) -> list[ProjectMedia]:
         queryset = ProjectMedia.objects.all()
@@ -35,3 +42,6 @@ class DjProjectMediaWriteRepository(ProjectMediaWriteRepository):
 
     def delete_by_id(self, id_: ProjectMediaId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")
+
+    def delete(self, project_media: ProjectMedia) -> None:
+        project_media.delete()
