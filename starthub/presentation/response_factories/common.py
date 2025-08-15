@@ -31,6 +31,7 @@ from domain.exceptions.project_management import (
     ProjectCrowdfundingAlreadyExistsException,
     ProjectCrowdfundingMaxAmountException,
     ProjectCrowdfundingNotFoundException,
+    ProjectFileNotFoundException,
     ProjectGovernmentGrantMaxAmountException,
     ProjectGovernmentGrantNotFoundException,
     ProjectImageMaxAmountException,
@@ -40,6 +41,7 @@ from domain.exceptions.project_management import (
     ProjectInvestmentPhoneAlreadyExistsException,
     ProjectInvestmentPhoneMaxAmountException,
     ProjectInvestmentPhoneNotFoundException,
+    ProjectMediaNotFoundException,
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
     ProjectPlanNotFoundException,
@@ -235,4 +237,17 @@ class ProjectBankLoanErrorResponseFactory(CommonErrorResponseFactory):
         ProjectBankLoanNotFoundException: ("BANK_LOAN_NOT_FOUND", 404),
         NegativeNumberException: ("NEGATIVE_NUMBER", 422),
         StringIsTooLongException: ("STRING_TOO_LONG", 422),
+    }
+
+
+class ProjectFileErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+        ProjectFileNotFoundException: ("PROJECT_FILE_NOT_FOUND", 404),
+    }
+
+
+class ProjectMediaErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectMediaNotFoundException: ("PROJECT_MEDIA_NOT_FOUND", 404),
     }

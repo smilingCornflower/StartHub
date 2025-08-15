@@ -1,6 +1,6 @@
 import json
 from pprint import pformat
-from typing import Any, cast
+from typing import Any
 
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.datastructures import MultiValueDict
@@ -13,7 +13,7 @@ from domain.value_objects.company import (
     PatentNumber,
 )
 from domain.value_objects.country import CountryCode
-from domain.value_objects.file import ImageFile, PdfFile
+from domain.value_objects.file import FileVo
 from domain.value_objects.project.accelerator import AcceleratorName, ProjectAcceleratorCreateCommand
 from domain.value_objects.project.bank_loan import (
     BankLoanOrganizationName,
@@ -40,6 +40,7 @@ from domain.value_objects.project.investment import (
     ProjectInvestmentCreateCommand,
     ProjectInvestmentOrganizationName,
 )
+from domain.value_objects.project.media import MediaFile
 from domain.value_objects.project.metric import (
     Aov,
     Arppu,
@@ -94,8 +95,8 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
     company_info = _extract_company_info(company_data)
 
     # Process files
-    project_plan = _extract_project_plan(files)
-    project_images = _extract_project_images(files)
+    project_files = _extract_project_files(files=files)
+    project_media = _extract_project_media(files=files)
 
     # Process related entities
     team_members = _extract_team_members(data)
@@ -104,8 +105,8 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
     command = ProjectCreateCommand(
         **project_info,
         **company_info,
-        plan_file=project_plan,
-        images=project_images,
+        files=project_files,
+        media=project_media,
         team_members=team_members,
         company_founder=company_founder,
         incubator=_extract_incubator_if_present(raw_data=data),
@@ -286,29 +287,29 @@ def _extract_company_info(company_data: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _extract_project_plan(files: MultiValueDict[str, UploadedFile]) -> PdfFile:
-    """Extract and convert project plan file to PdfFile."""
-    project_plan_file: UploadedFile = get_required_field(cast(dict[str, UploadedFile], files), field="project_plan")
-
-    logger.debug(f"{project_plan_file=}")
-    project_plan_file.seek(0)
-    pdf_file = PdfFile(value=project_plan_file.read())
-    logger.debug(f"{pdf_file=}")
-
-    return pdf_file
-
-
-def _extract_project_images(files: MultiValueDict[str, UploadedFile]) -> list[ImageFile]:
+def _extract_project_media(files: MultiValueDict[str, UploadedFile]) -> list[MediaFile]:
     """Extract and convert project images to ImageFile list."""
-    project_images: list[ImageFile] = []
-    images: list[UploadedFile] = files.getlist("images")
+    project_media: list[MediaFile] = list()
+    media: list[UploadedFile] = files.getlist("media")
 
-    for image in images:
-        image.seek(0)
-        project_images.append(ImageFile(value=image.read()))
+    for m in media:
+        m.seek(0)
+        project_media.append(MediaFile(value=m.read()))
 
-    logger.debug("request.FILES -> ImageFile conversion OK")
-    return project_images
+    logger.debug("request.FILES -> MediaFile conversion OK")
+    return project_media
+
+
+def _extract_project_files(files: MultiValueDict[str, UploadedFile]) -> list[FileVo]:
+    project_files: list[FileVo] = []
+    files_: list[UploadedFile] = files.getlist("files")
+
+    for file in files_:
+        file.seek(0)
+        project_files.append(FileVo(value=file.read()))
+
+    logger.debug("request.FILES -> FileVo conversion OK")
+    return project_files
 
 
 def _extract_team_members(data: dict[str, str]) -> list[TeamMemberCreateCommand]:

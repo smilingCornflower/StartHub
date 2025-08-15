@@ -30,7 +30,9 @@ from infrastructure.repositories.project.investment import (
     DjProjectInvestmentReadRepository,
     DjProjectInvestmentSocialLinkReadRepository,
 )
+from infrastructure.repositories.project.media import DjProjectMediaReadRepository
 from infrastructure.repositories.project.project import DjProjectReadRepository
+from infrastructure.repositories.project.project_file import DjProjectFileReadRepository
 from infrastructure.repositories.project.step import DjProjectStepReadRepository
 from infrastructure.repositories.user import DjUserReadRepository
 from infrastructure.repositories.user_favorite import DjUserFavoriteReadRepository
@@ -78,7 +80,8 @@ class ProjectGetAppServiceBuilder(AbstractAppServiceBuilder[ProjectGetAppService
     def create_service() -> ProjectGetAppService:
         return ProjectGetAppService(
             project_read_repository=DjProjectReadRepository(),
-            project_image_read_repository=DjProjectImageReadRepository(),
+            project_media_read_repository=DjProjectMediaReadRepository(),
+            project_file_read_repository=DjProjectFileReadRepository(),
             project_category_read_repository=DjProjectCategoryReadRepository(),
             user_favorite_read_repository=DjUserFavoriteReadRepository(),
             project_step_read_repository=DjProjectStepReadRepository(),

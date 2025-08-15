@@ -47,7 +47,7 @@ class GoogleCloudStorage(AbstractCloudStorage):
 
         :param payload: Upload payload containing file data and destination path
         :return: Full path to the uploaded file in GCS
-        :raises GoogleCloudError: If upload operation fails
+        :raises GoogleCloudError: If upload_file operation fails
         """
         logger.warning("Started uploading a file into the bucket.")
 

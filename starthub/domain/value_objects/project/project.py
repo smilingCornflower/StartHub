@@ -12,7 +12,7 @@ from domain.value_objects.company import (
     PatentNumber,
 )
 from domain.value_objects.country import CountryCode
-from domain.value_objects.file import ImageFile, PdfFile
+from domain.value_objects.file import FileVo, PdfFile
 from domain.value_objects.geo import AddressCreateCommand
 from domain.value_objects.project.accelerator import ProjectAcceleratorCreateCommand
 from domain.value_objects.project.bank_loan import ProjectBankLoanCreateCommand
@@ -22,6 +22,7 @@ from domain.value_objects.project.crowdfunding import ProjectCrowdfundingCreateC
 from domain.value_objects.project.government_grant import ProjectGovernmentGrantCreateCommand
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorUpdatePayload
 from domain.value_objects.project.investment import ProjectInvestmentCreateCommand
+from domain.value_objects.project.media import MediaFile
 from domain.value_objects.project.metric import (
     Aov,
     Arppu,
@@ -51,8 +52,8 @@ class ProjectCreateCommand(BaseCommand):
     deadline: DeadlineDate
     social_links: list[SocialLink]
     phone_number: PhoneNumber
-    plan_file: PdfFile
-    images: list[ImageFile]
+    files: list[FileVo]
+    media: list[MediaFile]
 
     incubator: IncubatorCreateCommand | None
     accelerator: ProjectAcceleratorCreateCommand | None
@@ -123,7 +124,6 @@ class ProjectCreatePayload(AbstractCreatePayload, BaseVo):
     status: ProjectStatus
     goal_sum: GoalSum
     deadline: date
-    plan_path: str
 
     ltv: Ltv | None = None
     arpu: Arpu | None = None

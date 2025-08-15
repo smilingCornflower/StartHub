@@ -6,6 +6,10 @@ class FileException(CustomException):
     pass
 
 
+class UnsupportedFileExtensionException(CustomException):
+    pass
+
+
 class NotPdfFileException(FileException):
     pass
 

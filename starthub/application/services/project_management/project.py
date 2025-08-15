@@ -38,6 +38,7 @@ from domain.models.project_management.investment import (
     ProjectInvestmentSocialLink,
 )
 from domain.models.project_management.project import Project
+from domain.models.project_management.project_file import ProjectFile
 from domain.models.project_management.step import ProjectStep
 from domain.models.user import User
 from domain.ports.cloud_storage import AbstractCloudStorage
@@ -59,7 +60,9 @@ from domain.repositories.project.investment import (
     ProjectInvestmentReadRepository,
     ProjectInvestmentSocialLinkReadRepository,
 )
+from domain.repositories.project.media import ProjectMediaReadRepository
 from domain.repositories.project.project import ProjectReadRepository
+from domain.repositories.project.project_file import ProjectFileReadRepository
 from domain.repositories.project.step import ProjectStepReadRepository
 from domain.repositories.user import UserReadRepository
 from domain.repositories.user_favorite import UserFavoriteReadRepository
@@ -81,6 +84,7 @@ from domain.value_objects.filter import (
     ProjectBootstrapFilter,
     ProjectCategoryFilter,
     ProjectCrowdfundingFilter,
+    ProjectFileFilter,
     ProjectFilter,
     ProjectGovernmentGrantFilter,
     ProjectImageFilter,
@@ -88,6 +92,7 @@ from domain.value_objects.filter import (
     ProjectInvestmentFilter,
     ProjectInvestmentPhoneFilter,
     ProjectInvestmentSocialLinkFilter,
+    ProjectMediaFilter,
     ProjectStepFilter,
 )
 from domain.value_objects.geo import CityId, RegionId
@@ -138,8 +143,7 @@ class ProjectCreateAppService(AbstractAppService):
         self._validate_dependencies(command=command)
         self._project_step_service.check_project_max_steps_limit(project_steps=command.steps)
 
-        plan_path: str = self._upload_plan(plan_file=command.plan_file)
-        create_payload: ProjectCreatePayload = self._convert_command_to_payload(command=command, plan_path=plan_path)
+        create_payload: ProjectCreatePayload = self._convert_command_to_payload(command=command)
 
         self._user_read_repository.get_by_id(id_=user_id)
         with transaction.atomic():
@@ -200,7 +204,7 @@ class ProjectCreateAppService(AbstractAppService):
             self._project_category_read_repository.get_by_id(id_=category_id)
             logger.debug(f"Category with id = {category_id.value} exists.")
 
-    def _convert_command_to_payload(self, command: ProjectCreateCommand, plan_path: str) -> ProjectCreatePayload:
+    def _convert_command_to_payload(self, command: ProjectCreateCommand) -> ProjectCreatePayload:
         payload = ProjectCreatePayload(
             name=command.name,
             goal_description=command.goal_description,
@@ -212,7 +216,6 @@ class ProjectCreateAppService(AbstractAppService):
             status=ProjectStatus(value=ProjectStatusEnum.UNDER_MODERATION),
             goal_sum=command.goal_sum,
             deadline=command.deadline.value,
-            plan_path=plan_path,
             ltv=command.ltv,
             arpu=command.arpu,
             arppu=command.arppu,
@@ -241,7 +244,8 @@ class ProjectGetAppService(AbstractAppService):
     def __init__(
         self,
         project_read_repository: ProjectReadRepository,
-        project_image_read_repository: ProjectImageReadRepository,
+        project_media_read_repository: ProjectMediaReadRepository,
+        project_file_read_repository: ProjectFileReadRepository,
         project_category_read_repository: ProjectCategoryReadRepository,
         user_favorite_read_repository: UserFavoriteReadRepository,
         project_step_read_repository: ProjectStepReadRepository,
@@ -258,7 +262,8 @@ class ProjectGetAppService(AbstractAppService):
         cloud_storage: AbstractCloudStorage,
     ):
         self._project_read_repository = project_read_repository
-        self._project_image_read_repository = project_image_read_repository
+        self._project_media_read_repository = project_media_read_repository
+        self._project_file_read_repository = project_file_read_repository
         self._project_category_read_repository = project_category_read_repository
         self._user_favorite_read_repository = user_favorite_read_repository
         self._project_step_read_repository = project_step_read_repository
@@ -300,10 +305,10 @@ class ProjectGetAppService(AbstractAppService):
         project_id: Id = Id(value=project.id)
 
         categories: list[ProjectCategory] = self._get_categories(project_id=project_id)
-        image_urls: list[str] = self._get_image_urls(project_id=project_id)
+        media_urls: list[str] = self._get_media_urls(project_id=project_id)
         is_favorite: bool = self._is_project_favorite(project_id=project_id, user_id=user_id)
 
-        return project_to_dto(project=project, categories=categories, image_links=image_urls, is_favorite=is_favorite)
+        return project_to_dto(project=project, categories=categories, media_links=media_urls, is_favorite=is_favorite)
 
     def _create_full_dto(self, project: Project, user_id: Id | None = None) -> ProjectFullDto:
         project_id: Id = Id(value=project.id)
@@ -317,10 +322,11 @@ class ProjectGetAppService(AbstractAppService):
         grants: list[GovernmentGrantDto] | None = self._get_government_dtos_if_present(project_id=project_id)
         bootstraps: list[BootstrapDto] | None = self._get_bootstrap_dtos_if_present(project_id=project_id)
         bank_loans: list[BankLoanDto] | None = self._get_bank_loan_dtos_if_present(project_id=project_id)
-
+        project_file_urls: list[str] | None = self._get_project_file_urls(project_id=project_id)
         total_investment_amount = sum([i.amount for i in investments]) if investments is not None else 0
         return ProjectFullDto(
             **asdict(project_dto),
+            file_urls=project_file_urls,
             steps=steps,
             incubator=incubator,
             accelerator=accelerator,
@@ -341,6 +347,18 @@ class ProjectGetAppService(AbstractAppService):
             retention_rate=project.retention_rate,
             conversion_rate=project.conversion_rate,
         )
+
+    def _get_project_file_urls(self, project_id: Id) -> list[str] | None:
+        project_files: list[ProjectFile] = self._project_file_read_repository.get_all(
+            filter_=ProjectFileFilter(project_id=project_id)
+        )
+        if not project_files:
+            return None
+        project_file_urls = list()
+        for i in project_files:
+            file_url = self._cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=i.file_path))
+            project_file_urls.append(file_url)
+        return project_file_urls
 
     def _get_bank_loan_dtos_if_present(self, project_id: Id) -> list[BankLoanDto] | None:
         result = list()
@@ -474,17 +492,16 @@ class ProjectGetAppService(AbstractAppService):
     def _get_categories(self, project_id: Id) -> list[ProjectCategory]:
         return self._project_category_read_repository.get_all(filter_=ProjectCategoryFilter(project_id=project_id))
 
-    def _get_image_urls(self, project_id: Id) -> list[str]:
-        image_urls: list[str] = list()
-        images: list[ProjectImage] = self._project_image_read_repository.get_all(
-            filter_=ProjectImageFilter(project_id=project_id)
-        )
+    def _get_media_urls(self, project_id: Id) -> list[str]:
+        media_urls: list[str] = list()
 
-        for img in images:
-            img_url: str = self._cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=img.file_path))
-            image_urls.append(img_url)
+        media = self._project_media_read_repository.get_all(filter_=ProjectMediaFilter(project_id=project_id))
 
-        return image_urls
+        for m in media:
+            media_url: str = self._cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=m.file_path))
+            media_urls.append(media_url)
+
+        return media_urls
 
     def search(
         self, search_params: ProjectSearchParams, offset_pagination: OffsetPagination, user_id: Id | None = None

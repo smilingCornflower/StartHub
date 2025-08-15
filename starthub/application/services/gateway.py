@@ -17,7 +17,9 @@ from application.builders.app_service.project import (
     ProjectGetAppServiceBuilder,
     ProjectUpdateAppServiceBuilder,
 )
+from application.builders.app_service.project_file import ProjectFileAppServiceBuilder
 from application.builders.app_service.project_image import ProjectImageAppServiceBuilder
+from application.builders.app_service.project_media import ProjectMediaAppServiceBuilder
 from application.builders.app_service.user import UserAppServiceBuilder
 from application.builders.app_service.user_favorite import UserFavoriteAppAppServiceBuilder
 from application.services.auth import AuthAppService, RegistrationAppService
@@ -35,9 +37,11 @@ from application.services.project_management.project import (
     ProjectGetAppService,
     ProjectUpdateAppService,
 )
+from application.services.project_management.project_file import ProjectFileAppService
 from application.services.project_management.project_image import ProjectImageAppService
 from application.services.project_management.project_investment_phone import ProjectInvestmentPhoneAppService
 from application.services.project_management.project_investment_social_link import ProjectInvestmentSocialLinkAppService
+from application.services.project_management.project_media import ProjectMediaAppService
 from application.services.user import UserAppService
 from application.services.user_favorite import UserFavoriteAppService
 from infrastructure.services.cookie import CookieService, cookie_service
@@ -66,6 +70,8 @@ class Gateway:
     _proejct_government_grant_app_service: GovernmentGrantAppService | None = None
     _project_bootstrap_app_service: ProjectBootstrapAppService | None = None
     _project_bank_load_app_service: ProjectBankLoanAppService | None = None
+    _project_file_app_service: ProjectFileAppService | None = None
+    _project_media_app_service: ProjectMediaAppService | None = None
 
     _cookie_service: CookieService | None = None
 
@@ -184,6 +190,18 @@ class Gateway:
         if self._project_bank_load_app_service is None:
             self._project_bank_load_app_service = ProjectBankLoanAppServiceBuilder.create_service()
         return self._project_bank_load_app_service
+
+    @property
+    def project_file_app_service(self) -> ProjectFileAppService:
+        if self._project_file_app_service is None:
+            self._project_file_app_service = ProjectFileAppServiceBuilder.create_service()
+        return self._project_file_app_service
+
+    @property
+    def project_media_app_service(self) -> ProjectMediaAppService:
+        if self._project_media_app_service is None:
+            self._project_media_app_service = ProjectMediaAppServiceBuilder.create_service()
+        return self._project_media_app_service
 
     @property
     def cookie_service(self) -> CookieService:

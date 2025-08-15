@@ -191,10 +191,10 @@ class NewsAppService(AbstractAppService):
                 )
             )
 
-            # upload cover
+            # upload_file cover
             self._update_cover(cover=news_create_command.cover, news_id=Id(value=news.id))
 
-            # upload images
+            # upload_file images
             for img in news_create_command.images:
                 self.upload_image(image=img, news_id=Id(value=news.id), id_map=id_map)
             logger.info("All images uploaded successfully.")
@@ -330,7 +330,7 @@ class NewsAppService(AbstractAppService):
                             news_id=update_command.news_id, content=NewsContent(value=new_content)
                         )
                     )
-                else:  # It means no images to remove or upload, then updating only text part of the content
+                else:  # It means no images to remove or upload_file, then updating only text part of the content
                     self._news_service.update(
                         payload=NewsUpdatePayload(news_id=update_command.news_id, content=update_command.content)
                     )

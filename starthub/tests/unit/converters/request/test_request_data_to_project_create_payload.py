@@ -117,7 +117,6 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
         self.assertEqual(command.goal_sum.value, self.valid_data["project"]["goal_sum"])
         self.assertEqual(command.deadline.value.isoformat(), self.valid_data["project"]["deadline"])
         self.assertEqual(command.phone_number.value, self.valid_data["project"]["phone_number"])
-        self.assertTrue(isinstance(command.plan_file.value, bytes))
 
         # Team members
         self.assertEqual(len(command.team_members), len(self.valid_data["team_members"]))
@@ -202,11 +201,6 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
                 invalid_data["company_founder"].pop(field)
                 with self.assertRaises(MissingRequiredFieldException):
                     request_to_project_create_command(self.create_mock_request(invalid_data), self.user_id)
-
-        with self.subTest("missing project_plan file"):
-            with self.assertRaises(MissingRequiredFieldException):
-                request_to_project_create_command(self.create_mock_request(files={}), self.user_id)
-        self.check_raises(MissingRequiredFieldException)
 
     def test_invalid_goal_sum(self) -> None:
         self.valid_data["project"]["goal_sum"] = -100  # type: ignore
@@ -344,28 +338,3 @@ class TestProjectCreateCommandConversion(SimpleTestCase):
             with self.assertRaises(DateInFutureException):
                 request_to_project_create_command(self.create_mock_request(test_data), self.user_id)  # type: ignore
             self.check_raises(DateInFutureException)
-
-    def test_get_images(self):
-        image1: Path = BASE_DIR / "tests/images/frieren.jpg"
-        image2: Path = BASE_DIR / "tests/images/Kawaii.png"
-
-        with open(image1, mode="rb") as img1:
-            img1_data: bytes = img1.read()
-        with open(image2, mode="rb") as img2:
-            img2_data: bytes = img2.read()
-
-        img1_file = SimpleUploadedFile(
-            name="img1.jpg",
-            content=img1_data,
-            content_type="image/jpeg",
-        )
-        img2_file = SimpleUploadedFile(
-            name="img2.png",
-            content=img2_data,
-            content_type="image/png",
-        )
-        self.files.update(MultiValueDict({"images": [img1_file, img2_file]}))
-        command = request_to_project_create_command(self.create_mock_request(), user_id=self.user_id)
-        logger.debug(f"{command.images=}")
-        self.assertEqual(len(command.images), 2)
-        self.assertTrue(isinstance(command.images[0], ImageFile))
