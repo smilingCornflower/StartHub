@@ -13,7 +13,7 @@ from domain.value_objects.company import (
     PatentNumber,
 )
 from domain.value_objects.country import CountryCode
-from domain.value_objects.file import FileVo, ImageFile
+from domain.value_objects.file import FileVo
 from domain.value_objects.project.accelerator import AcceleratorName, ProjectAcceleratorCreateCommand
 from domain.value_objects.project.bank_loan import (
     BankLoanOrganizationName,
@@ -95,7 +95,6 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
     company_info = _extract_company_info(company_data)
 
     # Process files
-    project_images = _extract_project_images(files=files)
     project_files = _extract_project_files(files=files)
     project_media = _extract_project_media(files=files)
 
@@ -106,7 +105,6 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
     command = ProjectCreateCommand(
         **project_info,
         **company_info,
-        images=project_images,
         files=project_files,
         media=project_media,
         team_members=team_members,
@@ -287,19 +285,6 @@ def _extract_company_info(company_data: dict[str, Any]) -> dict[str, Any]:
         ),
         "patent_number": patent_number,
     }
-
-
-def _extract_project_images(files: MultiValueDict[str, UploadedFile]) -> list[ImageFile]:
-    """Extract and convert project images to ImageFile list."""
-    project_images: list[ImageFile] = []
-    images: list[UploadedFile] = files.getlist("images")
-
-    for image in images:
-        image.seek(0)
-        project_images.append(ImageFile(value=image.read()))
-
-    logger.debug("request.FILES -> ImageFile conversion OK")
-    return project_images
 
 
 def _extract_project_media(files: MultiValueDict[str, UploadedFile]) -> list[MediaFile]:

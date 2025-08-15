@@ -7,11 +7,11 @@ from application.builders.app_service.crowdfunding import CrowdfundingAppService
 from application.builders.app_service.government_grant import GovernmentGrantAppServiceBuilder
 from application.builders.app_service.investment import ProjectInvestmentAppServiceBuilder
 from application.builders.app_service.project_file import ProjectFileAppServiceBuilder
+from application.builders.app_service.project_media import ProjectMediaAppServiceBuilder
 from application.builders.domain_service.address import AddressServiceBuilder
 from application.builders.domain_service.project_management import (
     CompanyFounderServiceBuilder,
     CompanyServiceBuilder,
-    ProjectImageServiceBuilder,
     ProjectIncubatorServiceBuilder,
     ProjectPhoneServiceBuilder,
     ProjectSocialLinkServiceBuilder,
@@ -25,8 +25,8 @@ from application.event_handlers.project_created.crowdfunding_handler import Proj
 from application.event_handlers.project_created.government_grant_handler import ProjectCreatedGovernmentGrantHandler
 from application.event_handlers.project_created.incubator_handler import ProjectCreatedIncubatorHandler
 from application.event_handlers.project_created.investment_handler import ProjectCreatedInvestmentHandler
+from application.event_handlers.project_created.media_handler import ProjectCreatedProjectMediaHandler
 from application.event_handlers.project_created.project_file_handler import ProjectCreatedProjectFileHandler
-from application.event_handlers.project_created.project_image_handler import ProjectCreatedProjectImageHandler
 from application.event_handlers.project_created.project_phone_handler import ProjectCreatedPhoneHandler
 from application.event_handlers.project_created.project_step_handler import ProjectCreatedProjectStepsHandler
 from application.event_handlers.project_created.social_link_handler import ProjectCreatedSocialLinkHandler
@@ -89,12 +89,6 @@ class ProjectCreatedInvestmentHandlerBuilder(AbstractEventHandlerBuilder[Any]):
         )
 
 
-class ProjectCreatedImageHandlerBuilder(AbstractEventHandlerBuilder[Any]):
-    @staticmethod
-    def create_handler() -> AbstractEventHandler[ProjectCreatedEvent]:
-        return ProjectCreatedProjectImageHandler(project_image_service=ProjectImageServiceBuilder.create_service())
-
-
 class ProjectCreatedPhoneHandlerBuilder(AbstractEventHandlerBuilder[Any]):
     @staticmethod
     def create_handler() -> AbstractEventHandler[ProjectCreatedEvent]:
@@ -125,6 +119,14 @@ class ProjectCreatedProjectFileHandlerBuilder(AbstractEventHandlerBuilder[Any]):
     @staticmethod
     def create_handler() -> ProjectCreatedProjectFileHandler:
         return ProjectCreatedProjectFileHandler(project_file_app_servcie=ProjectFileAppServiceBuilder.create_service())
+
+
+class ProjectCreatedProjectMediaHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> ProjectCreatedProjectMediaHandler:
+        return ProjectCreatedProjectMediaHandler(
+            project_media_app_service=ProjectMediaAppServiceBuilder.create_service()
+        )
 
 
 class ProjectDeletedEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):

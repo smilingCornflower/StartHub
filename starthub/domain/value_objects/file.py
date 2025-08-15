@@ -17,6 +17,12 @@ from pydantic import field_validator
 class FileVo(BaseVo):
     value: bytes
 
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__} {len(self.value)} bytes"
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(bytes_len={len(self.value)})"
+
 
 class ImageFile(FileVo):
     # noinspection PyNestedDecorators
