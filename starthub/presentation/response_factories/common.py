@@ -236,3 +236,7 @@ class ProjectBankLoanErrorResponseFactory(CommonErrorResponseFactory):
         NegativeNumberException: ("NEGATIVE_NUMBER", 422),
         StringIsTooLongException: ("STRING_TOO_LONG", 422),
     }
+
+
+class ProjectFileErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {}

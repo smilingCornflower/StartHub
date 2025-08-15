@@ -132,6 +132,8 @@ class ProjectDto:
 
 @dataclass(frozen=True)
 class ProjectFullDto(ProjectDto):
+    file_urls: list[str] | None = None
+
     steps: list[ProjectStepDto] | None = None
     incubator: IncubatorDto | None = None
     accelerator: AcceleratorDto | None = None
@@ -150,4 +152,5 @@ class ProjectFullDto(ProjectDto):
     churn_rate: float | None = None
     retention_rate: float | None = None
     conversion_rate: float | None = None
+
     total_investment_amount: float = 0
