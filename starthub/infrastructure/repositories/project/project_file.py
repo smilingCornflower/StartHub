@@ -40,3 +40,6 @@ class DjProjectFileWriteRepository(ProjectFileWriteRepository):
 
     def delete_by_id(self, id_: ProjectFileId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")
+
+    def delete(self, project_file: ProjectFile) -> None:
+        project_file.delete()

@@ -11,6 +11,7 @@ from presentation.views.investment import (
 )
 from presentation.views.metric import MetricView
 from presentation.views.project import MeProjectView, ProjectImageView, ProjectPlanView, ProjectSearchView, ProjectView
+from presentation.views.project_files import ProjectFileView
 
 urlpatterns = [
     path("", ProjectView.as_view(), name="projects"),
@@ -39,4 +40,7 @@ urlpatterns = [
     path("bank-loans/<int:bank_loan_id>/", ProjectBankLoanView.as_view()),
     # Metrics
     path("metrics/", MetricView.as_view()),
+    # Files
+    path("<int:project_id>/files/", ProjectFileView.as_view()),
+    path("files/<int:project_file_id>/", ProjectFileView.as_view()),
 ]

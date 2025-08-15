@@ -31,6 +31,7 @@ from domain.exceptions.project_management import (
     ProjectCrowdfundingAlreadyExistsException,
     ProjectCrowdfundingMaxAmountException,
     ProjectCrowdfundingNotFoundException,
+    ProjectFileNotFoundException,
     ProjectGovernmentGrantMaxAmountException,
     ProjectGovernmentGrantNotFoundException,
     ProjectImageMaxAmountException,
@@ -239,4 +240,7 @@ class ProjectBankLoanErrorResponseFactory(CommonErrorResponseFactory):
 
 
 class ProjectFileErrorResponseFactory(CommonErrorResponseFactory):
-    error_codes = CommonErrorResponseFactory.error_codes | {}
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectNotFoundException: ("PROJECT_NOT_FOUND", 404),
+        ProjectFileNotFoundException: ("PROJECT_FILE_NOT_FOUND", 404),
+    }

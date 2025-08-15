@@ -31,3 +31,7 @@ class ProjectFileWriteRepository(
     @abstractmethod
     def delete_by_id(self, id_: ProjectFileId) -> None:
         pass
+
+    @abstractmethod
+    def delete(self, project_file: ProjectFile) -> None:
+        pass
