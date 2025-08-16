@@ -3,10 +3,7 @@ from pathlib import Path
 from pprint import pformat
 from typing import Any, cast
 
-from application.converters.request_converters.news import (
-    request_to_news_create_command,
-    request_to_news_update_command,
-)
+from application.converters.request_converters.news import request_to_news_update_command
 from application.converters.resposne_converters.news import news_to_full_dto, news_to_short_dto
 from application.dto.news import NewsFullDto, NewsImageDto, NewsShortDto
 from application.ports.service import AbstractAppService
@@ -27,6 +24,7 @@ from domain.exceptions.permissions import (
     UpdateDeniedPermissionException,
 )
 from domain.models.news import News, NewsImage
+from domain.repositories.news import NewsReadRepository
 from domain.services.cloud_storage import StorageService
 from domain.services.file import ImageService
 from domain.services.news import NewsImageService, NewsService
@@ -53,61 +51,9 @@ from domain.value_objects.user import PermissionVo
 from loguru import logger
 
 
-class NewsAppService(AbstractAppService):
-    def __init__(
-        self,
-        news_service: NewsService,
-        news_image_service: NewsImageService,
-        permission_service: PermissionService,
-        image_service: ImageService,
-        storage_service: StorageService,
-        unit_of_work: AbstractUnitOfWork,
-    ):
-        self._news_service = news_service
-        self._news_image_service = news_image_service
+class NewsPermissionAppService(AbstractAppService):
+    def __init__(self, permission_service: PermissionService):
         self._permission_service = permission_service
-        self._image_service = image_service
-        self._storage_service = storage_service
-        self._uow = unit_of_work
-
-    def get(self, news_id: int | None = None, pagination: Pagination | None = None) -> NewsFullDto | list[NewsShortDto]:
-        if news_id:
-            return self._get_one(news_id=news_id)
-        if pagination:
-            return self._get_many(pagination=pagination)
-        return list()
-
-    def _get_one(self, news_id: int) -> NewsFullDto:
-        logger.debug("_get_one()")
-        news: News = self._news_service.get_one(id_=Id(value=news_id))
-
-        cover_url: str = self._storage_service.create_url(
-            payload=CloudStorageCreateUrlPayload(file_path=cast(str, news.cover))
-        )
-
-        news_images: list[NewsImage] = self._news_image_service.get(filter_=NewsImageFilter(news_id=Id(value=news.id)))
-        img_dtos: list[NewsImageDto] = list()
-        for img in news_images:
-            img_dtos.append(
-                NewsImageDto(
-                    image_name=self._news_image_service.extract_image_name(news_image=img),
-                    image_url=self._storage_service.create_url(CloudStorageCreateUrlPayload(file_path=img.image)),
-                )
-            )
-        news_dto: NewsFullDto = news_to_full_dto(news, cover_url=cover_url, news_image_dtos=img_dtos)
-
-        return news_dto
-
-    def _get_many(self, pagination: Pagination) -> list[NewsShortDto]:
-        logger.debug("_get_many()")
-
-        news_lst: list[News] = self._news_service.get_many(filter_=NewsFilter(), pagination=pagination)
-        cover_urls: list[str] = [
-            self._storage_service.create_url(payload=CloudStorageCreateUrlPayload(file_path=cast(str, i.cover)))
-            for i in news_lst
-        ]
-
-        return [news_to_short_dto(news, cover) for news, cover in zip(news_lst, cover_urls)]
 
     def _check_permission_to_add_news(self, user_id: Id) -> None:
         """:raises AddDeniedPermissionException:"""
@@ -148,6 +94,67 @@ class NewsAppService(AbstractAppService):
             logger.exception("User does not have permission to change news.")
             raise UpdateDeniedPermissionException("User does not have permission to change news.")
 
+
+class NewsAppService(NewsPermissionAppService):
+    def __init__(
+        self,
+        news_service: NewsService,
+        news_image_service: NewsImageService,
+        permission_service: PermissionService,
+        image_service: ImageService,
+        storage_service: StorageService,
+        news_read_repository: NewsReadRepository,
+        unit_of_work: AbstractUnitOfWork,
+    ):
+        super().__init__(permission_service=permission_service)
+        self._news_service = news_service
+        self._news_image_service = news_image_service
+        self._image_service = image_service
+        self._storage_service = storage_service
+        self._news_read_repository = news_read_repository
+        self._uow = unit_of_work
+
+    def get(self, news_id: int | None = None, pagination: Pagination | None = None) -> NewsFullDto | list[NewsShortDto]:
+        if news_id:
+            return self._get_one(news_id=news_id)
+        if pagination:
+            return self._get_many(pagination=pagination)
+        return list()
+
+    def _get_one(self, news_id: int) -> NewsFullDto:
+        logger.debug("_get_one()")
+        news: News = self._news_read_repository.get_by_id(id_=Id(value=news_id))
+
+        cover_url: str = self._storage_service.create_url(
+            payload=CloudStorageCreateUrlPayload(file_path=cast(str, news.cover))
+        )
+
+        news_images: list[NewsImage] = self._news_image_service.get(filter_=NewsImageFilter(news_id=Id(value=news.id)))
+        img_dtos: list[NewsImageDto] = list()
+        for img in news_images:
+            img_dtos.append(
+                NewsImageDto(
+                    image_name=self._news_image_service.extract_image_name(news_image=img),
+                    image_url=self._storage_service.create_url(CloudStorageCreateUrlPayload(file_path=img.image)),
+                )
+            )
+        news_dto: NewsFullDto = news_to_full_dto(news, cover_url=cover_url, news_image_dtos=img_dtos)
+
+        return news_dto
+
+    def _get_many(self, pagination: Pagination) -> list[NewsShortDto]:
+        logger.debug("_get_many()")
+
+        news_lst: list[News] = self._news_read_repository.get_all(filter_=NewsFilter(), pagination=pagination)
+        logger.debug(f"Found {len(news_lst)} news.")
+
+        cover_urls: list[str] = [
+            self._storage_service.create_url(payload=CloudStorageCreateUrlPayload(file_path=cast(str, i.cover)))
+            for i in news_lst
+        ]
+
+        return [news_to_short_dto(news, cover) for news, cover in zip(news_lst, cover_urls)]
+
     def _update_cover(self, news_id: Id, cover: Image) -> None:
         cover_jpg: BytesIO = self._image_service.convert_to_jpg(file_obj=BytesIO(cover.file.value))
         cover_path: str = PathProvider.get_news_cover_path(news_id=news_id)
@@ -159,7 +166,9 @@ class NewsAppService(AbstractAppService):
         logger.debug("cover field updated in news")
 
     def create(
-        self, request_data: dict[str, Any], request_files: MultiValueDict[str, UploadedFile], user_id: int
+        self,
+        user_id: Id,
+        news_create_command: NewsCreateCommand,
     ) -> int:
         """
         :raises MissingRequiredFieldException:
@@ -168,12 +177,8 @@ class NewsAppService(AbstractAppService):
         :raises ValidationError: if fields has invalid data types (pydantic.ValidationError)
         """
 
-        self._check_permission_to_add_news(user_id=Id(value=user_id))
+        self._check_permission_to_add_news(user_id=user_id)
         logger.info("User has permissions to add news.")
-
-        news_create_command: NewsCreateCommand = request_to_news_create_command(
-            request_data=request_data, request_files=request_files, user_id=user_id
-        )
         logger.debug(f"command = {pformat(news_create_command)}")
 
         new_content, id_map = self._news_service.replace_filenames_with_id(md=news_create_command.content.value)
@@ -187,7 +192,7 @@ class NewsAppService(AbstractAppService):
                 NewsCreatePayload(
                     title=news_create_command.title,
                     content=NewsContent(value=new_content),
-                    author_id=Id(value=user_id),
+                    author_id=user_id,
                 )
             )
 
@@ -350,7 +355,7 @@ class NewsAppService(AbstractAppService):
         """:raises DeleteDeniedPermissionException:"""
         self._check_permission_to_delete_news(user_id=Id(value=user_id))
         try:
-            news = self._news_service.get_one(id_=Id(value=news_id))
+            news = self._news_read_repository.get_by_id(id_=Id(value=news_id))
 
             self._storage_service.delete_file(payload=CloudStorageDeletePayload(file_path=cast(str, news.cover)))
             logger.info(f"Cover deleted: {news.cover}")

@@ -12,9 +12,9 @@ from domain.repositories.news import (
     NewsReadRepository,
     NewsWriteRepository,
 )
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import Id
 from domain.value_objects.file import Image
-from domain.value_objects.filter import NewsFilter, NewsImageFilter
+from domain.value_objects.filter import NewsImageFilter
 from domain.value_objects.news import (
     NewsContent,
     NewsCreatePayload,
@@ -35,15 +35,6 @@ class NewsService(AbstractDomainService):
     ):
         self._news_read_repository = news_read_repository
         self._news_write_repository = news_write_repository
-
-    def get_one(self, id_: Id) -> News:
-        """:raises NewsNotFoundException:"""
-        return self._news_read_repository.get_by_id(id_=id_)
-
-    def get_many(self, filter_: NewsFilter, pagination: Pagination) -> list[News]:
-        news: list[News] = self._news_read_repository.get_all(filter_=filter_, pagination=pagination)
-        logger.debug(f"Found {len(news)} news")
-        return news
 
     def create(self, payload: NewsCreatePayload) -> News:
         news: News = self._news_write_repository.create(data=payload)

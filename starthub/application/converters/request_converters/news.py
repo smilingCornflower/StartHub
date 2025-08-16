@@ -8,15 +8,16 @@ from domain.value_objects.filter import NewsFilter
 from domain.value_objects.news import NewsContent, NewsCreateCommand, NewsTitle, NewsUpdateCommand
 from loguru import logger
 from presentation.request_converters.common import get_required_field
+from rest_framework.request import Request
 
 
-def request_to_news_create_command(
-    request_data: dict[str, Any], request_files: MultiValueDict[str, UploadedFile], user_id: int
-) -> NewsCreateCommand:
+def request_to_news_create_command(request: Request, user_id: Id) -> NewsCreateCommand:
     """
     :raises MissingRequiredFieldException:
     :raises NotSupportedImageFormatException:
     """
+    request_data: dict[str, Any] = request.data
+    request_files: MultiValueDict[str, UploadedFile] = request.FILES
 
     cover_file: UploadedFile = get_required_field(request_files, "cover")
     cover_file.seek(0)
@@ -34,7 +35,7 @@ def request_to_news_create_command(
     return NewsCreateCommand(
         title=NewsTitle(value=get_required_field(request_data, "title")),
         content=NewsContent(value=get_required_field(request_data, "content")),
-        author_id=Id(value=user_id),
+        author_id=user_id,
         cover=cover,
         images=news_images,
     )

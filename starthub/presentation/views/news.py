@@ -1,11 +1,13 @@
 from dataclasses import asdict
 
 import pydantic
+from application.converters.request_converters.news import request_to_news_create_command
 from application.dto.news import NewsFullDto, NewsShortDto
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Pagination
 from infrastructure.auth.token import get_access_payload_dto_from_headers
+from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.request_converters.common import request_to_pagination
@@ -39,11 +41,11 @@ class NewsView(APIView):
         logger.info(f"POST /news/ \n\t request.data: {request.data}\n\t request_files: {request.FILES}")
 
         try:
-            access_dto = get_access_payload_dto_from_headers(request.headers)
-            logger.debug(f"user_id = {int(access_dto.sub)}")
-            news_id: int = gateway.news_app_service.create(
-                request_data=request.data, request_files=request.FILES, user_id=int(access_dto.sub)
-            )
+            user_id = get_user_id_or_raises(request=request)
+            logger.debug(f"user_id = {user_id.value}")
+
+            command = request_to_news_create_command(request=request, user_id=user_id)
+            news_id: int = gateway.news_app_service.create(user_id=user_id, news_create_command=command)
 
         except (CustomException, pydantic.ValidationError) as e:
             return NewsErrorResponseFactory.create_response(e)

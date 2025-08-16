@@ -100,7 +100,7 @@ else:
 # =====================================================================================================================
 
 if os.getenv("RUN_MAIN") == "true":
-    logger.warning(f"{DEBUG=}")
+    logger.warning(f"{DEBUG=} & {MODE=}")
     logger.warning(f"{ALLOWED_HOSTS=}")
     logger.warning(f"{CSRF_TRUSTED_ORIGINS=}")
     logger.warning(f"{CORS_ALLOWED_ORIGINS=}")
