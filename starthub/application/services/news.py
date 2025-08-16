@@ -63,10 +63,11 @@ class NewsPermissionAppService(AbstractAppService):
         has_permission: bool = self._permission_service.has_permission(
             user_id=user_id, permission_vo=add_news_permission
         )
-        logger.debug(f"user_id = {user_id}; has_permission = {has_permission}")
         if not has_permission:
             logger.exception("User does not have permission to add news")
             raise AddDeniedPermissionException("User does not have permission to add news")
+        logger.debug(f"User(id={user_id.value}) has permissions to add news.")
+        return None
 
     def _check_permission_to_delete_news(self, user_id: Id) -> None:
         """:raises DeleteDeniedPermissionException:"""
@@ -176,16 +177,16 @@ class NewsAppService(NewsPermissionAppService):
         :raises NotSupportedImageFormatException:
         :raises ValidationError: if fields has invalid data types (pydantic.ValidationError)
         """
-
         self._check_permission_to_add_news(user_id=user_id)
-        logger.info("User has permissions to add news.")
-        logger.debug(f"command = {pformat(news_create_command)}")
+        self._validate_images_amount_in_content(content=news_create_command.content)
+        self._validate_image_files_used(content=news_create_command.content, images=news_create_command.images)
+        self._validate_images_in_content_exist_in_files_or_database(
+            content=news_create_command.content, images=news_create_command.images
+        )
 
         new_content, id_map = self._news_service.replace_filenames_with_id(md=news_create_command.content.value)
         logger.debug(f"id_map = {pformat(id_map)}")
         logger.debug(f"news_content = {pformat(new_content)}")
-
-        self._news_service.check_image_presence(id_map.keys(), news_create_command.images)
 
         with self._uow:
             news: News = self._news_service.create(
@@ -213,64 +214,74 @@ class NewsAppService(NewsPermissionAppService):
             author_id=author_id,
         )
 
-    def _validate_images_amount_in_content(self, command: NewsUpdateCommand) -> None:
-        """:raises NewsImagesMaxAmountException:"""
+    def _validate_images_amount_in_content(self, content: NewsContent) -> None:
+        """
+        Validates that the number of images in the content does not exceed the allowed limit.
+        :raises NewsImagesMaxAmountException: if the number of images exceeds NEWS_IMAGES_MAX_AMOUNT
+        """
         logger.debug("_validate_images_amount_in_content()")
-        if command.content:
-            if self._news_service.get_images_amount_in_content(content=command.content) > NEWS_IMAGES_MAX_AMOUNT:
-                logger.exception(f"News images max limit is {NEWS_IMAGES_MAX_AMOUNT}.")
-                raise NewsImagesMaxAmountException(f"News images max limit is {NEWS_IMAGES_MAX_AMOUNT}.")
+        if self._news_service.get_images_amount_in_content(content=content) > NEWS_IMAGES_MAX_AMOUNT:
+            logger.exception(f"News images max limit is {NEWS_IMAGES_MAX_AMOUNT}.")
+            raise NewsImagesMaxAmountException(f"News images max limit is {NEWS_IMAGES_MAX_AMOUNT}.")
 
-    def _validate_image_files_used(self, command: NewsUpdateCommand) -> None:
-        """:raises NewsImageContentAndFileMismatchException:"""
+    def _validate_image_files_used(self, content: NewsContent, images: list[Image] | None) -> None:
+        """
+        Validates that all provided image files are referenced in the content.
+        :raises NewsImageContentAndFileMismatchException: if any image file is not used in the content
+        """
         logger.debug("_validate_image_files_used()")
-        if command.content:
-            all_image_names_in_content: list[str] = self._news_service.get_all_image_names_from_content(
-                content=command.content
-            )
-            if command.images is not None:
-                for i in command.images:
-                    if i.name not in all_image_names_in_content:
-                        logger.exception(
-                            f"Each image file must be referenced in the content. Missing reference for: {i.name}"
-                        )
-                        raise NewsImageContentAndFileMismatchException(
-                            f"Each image file must be referenced in the content. Missing reference for: {i.name}"
-                        )
-
-            logger.info("All images in files are used in content")
-        else:
-            logger.debug("Content does not provided")
-
-    def _validate_images_in_content_exist_in_files_or_database(self, command: NewsUpdateCommand) -> None:
-        """:raises NewsImageContentAndFileMismatchException:"""
-        logger.debug("_validate_images_in_content_exist_in_files_or_database()")
-        if command.content:
-            content_image_names: list[str] = self._news_service.get_all_image_names_from_content(
-                content=command.content
-            )
-            logger.debug(f"content_image_names: {pformat(content_image_names)}")
-            news_current_images: list[NewsImage] = self._news_image_service.get(
-                filter_=NewsImageFilter(news_id=command.news_id)
-            )
-            news_current_image_names: list[str] = [Path(i.image).name for i in news_current_images]
-            logger.debug(f"news_current_image_names: {pformat(news_current_image_names)}")
-
-            image_names_in_files: list[str] = [i.name for i in command.images] if command.images else list()
-            logger.debug(f"image_names_in_files: {pformat(image_names_in_files)}")
-            for img in content_image_names:
-                if img not in news_current_image_names and img not in image_names_in_files:
-                    logger.debug(f"{content_image_names=}")
-                    logger.debug(f"{image_names_in_files=}")
-                    logger.debug(f"{news_current_image_names=}")
-
+        all_image_names_in_content: list[str] = self._news_service.get_all_image_names_from_content(content=content)
+        if images is not None:
+            for i in images:
+                if i.name not in all_image_names_in_content:
                     logger.exception(
-                        f"Content references image '{img}', but it's missing in both uploaded files and existing records."
+                        f"Each image file must be referenced in the content. Missing reference for: {i.name}"
                     )
                     raise NewsImageContentAndFileMismatchException(
-                        f"Content references image '{img}', but it's missing in both uploaded files and existing records."
+                        f"Each image file must be referenced in the content. Missing reference for: {i.name}"
                     )
-            logger.debug("All images in content exist in files or in database")
+
+        logger.info("All images in files are used in content")
+
+    def _validate_images_in_content_exist_in_files_or_database(
+        self, content: NewsContent, images: list[Image] | None, news_id: Id | None = None
+    ) -> None:
+        """
+        Validates that all images referenced in the content exist either in the database or in the provided files.
+        If an image is missing in both, an exception is raised.
+        When `news_id` is None, only the files are checked because there are no database records.
+
+        :raises NewsImageContentAndFileMismatchException: If a content image is missing in both database and files
+        """
+        logger.debug("_validate_images_in_content_exist_in_files_or_database()")
+
+        content_image_names: list[str] = self._news_service.get_all_image_names_from_content(content=content)
+        logger.debug(f"content_image_names: {pformat(content_image_names)}")
+
+        news_image_names_in_database = list()
+        if news_id is not None:
+            news_images_in_database: list[NewsImage] = self._news_image_service.get(
+                filter_=NewsImageFilter(news_id=news_id)
+            )
+            news_image_names_in_database = [Path(i.image).name for i in news_images_in_database]
+            logger.debug(f"news_image_names_in_database: {pformat(news_image_names_in_database)}")
+
+        image_names_in_files: list[str] = [i.name for i in images] if images else list()
+        logger.debug(f"image_names_in_files: {pformat(image_names_in_files)}")
+
+        for img in content_image_names:
+            if img not in news_image_names_in_database and img not in image_names_in_files:
+                logger.debug(f"{content_image_names=}")
+                logger.debug(f"{image_names_in_files=}")
+                logger.debug(f"{news_image_names_in_database=}")
+
+                logger.exception(
+                    f"Content references image '{img}', but it's missing in both uploaded files and existing records."
+                )
+                raise NewsImageContentAndFileMismatchException(
+                    f"Content references image '{img}', but it's missing in both uploaded files and existing records."
+                )
+        logger.debug("All images in content exist in files or in database")
 
     def _get_images_to_remove(self, command: NewsUpdateCommand) -> list[str]:
         logger.debug("_get_images_to_remove()")
@@ -315,9 +326,11 @@ class NewsAppService(NewsPermissionAppService):
                 self._update_cover(cover=update_command.cover, news_id=Id(value=news_id))
 
             if update_command.content:
-                self._validate_images_amount_in_content(update_command)
-                self._validate_image_files_used(update_command)
-                self._validate_images_in_content_exist_in_files_or_database(command=update_command)
+                self._validate_images_amount_in_content(content=update_command.content)
+                self._validate_image_files_used(content=update_command.content, images=update_command.images)
+                self._validate_images_in_content_exist_in_files_or_database(
+                    content=update_command.content, news_id=update_command.news_id, images=update_command.images
+                )
 
                 image_names_to_remove: list[str] = self._get_images_to_remove(command=update_command)
                 logger.info(f"{image_names_to_remove=}")

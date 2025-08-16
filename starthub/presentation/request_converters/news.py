@@ -34,7 +34,7 @@ def request_to_news_create_command(request: Request, user_id: Id) -> NewsCreateC
 
     return NewsCreateCommand(
         title=NewsTitle(value=get_required_field(request_data, "title")),
-        subtitle=NewsSubtitle(value=get_required_field(request_data, "subtitle")),
+        subtitle=NewsSubtitle(value=request_data["subtitle"]) if 'subtitle' in request_data else None,
         content=NewsContent(value=get_required_field(request_data, "content")),
         author_id=user_id,
         cover=cover,

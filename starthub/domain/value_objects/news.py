@@ -32,7 +32,7 @@ class NewsContent(StringVo):
 
 class NewsCreatePayload(AbstractCreatePayload):
     title: NewsTitle
-    subtitle: NewsSubtitle
+    subtitle: NewsSubtitle | None
     content: NewsContent
     author_id: Id
 
@@ -46,7 +46,7 @@ class NewsUpdatePayload(AbstractUpdatePayload):
 
 class NewsCreateCommand(BaseCommand):
     title: NewsTitle
-    subtitle: NewsSubtitle
+    subtitle: NewsSubtitle | None
     content: NewsContent
     author_id: Id
     cover: Image

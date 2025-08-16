@@ -3,7 +3,6 @@ import uuid
 from pathlib import Path
 from typing import Iterable
 
-from domain.exceptions.validation import MissingFileExcpetion
 from domain.models.news import News, NewsImage
 from domain.ports.service import AbstractDomainService
 from domain.repositories.news import (
@@ -13,7 +12,6 @@ from domain.repositories.news import (
     NewsWriteRepository,
 )
 from domain.value_objects.common import Id
-from domain.value_objects.file import Image
 from domain.value_objects.filter import NewsImageFilter
 from domain.value_objects.news import (
     NewsContent,
@@ -96,13 +94,6 @@ class NewsService(AbstractDomainService):
         for mathed in self.IMAGES_PATTERN.finditer(content.value):
             result.append(mathed.group(2))
         return result
-
-    @staticmethod
-    def check_image_presence(images_in_content: Iterable[str], images_in_files: Iterable[Image]) -> None:
-        """:raises MissingFileExcpetion:"""
-        for img in images_in_content:
-            if img not in [i.name for i in images_in_files]:
-                raise MissingFileExcpetion(f"Image {img} not provided in files.")
 
     def update(self, payload: NewsUpdatePayload) -> None:
         self._news_write_repository.update(data=payload)
