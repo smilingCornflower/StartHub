@@ -40,6 +40,7 @@ class NewsCreatePayload(AbstractCreatePayload):
 class NewsUpdatePayload(AbstractUpdatePayload):
     news_id: Id
     title: NewsTitle | None = None
+    subtitle: NewsSubtitle | None = None
     content: NewsContent | None = None
     cover_path: str | None = None
 
@@ -62,9 +63,8 @@ class NewsCreateCommand(BaseCommand):
 
 
 class NewsUpdateCommand(BaseCommand):
-    user_id: Id
-    news_id: Id
     title: NewsTitle | None = None
+    subtitle: NewsSubtitle | None = None
     content: NewsContent | None = None
     cover: Image | None = None
     images: list[Image] | None = None

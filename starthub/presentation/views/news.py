@@ -4,13 +4,13 @@ import pydantic
 from application.dto.news import NewsFullDto, NewsShortDto
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import Id, Pagination
 from infrastructure.auth.token import get_access_payload_dto_from_headers
 from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.request_converters.common import request_to_pagination
-from presentation.request_converters.news import request_to_news_create_command
+from presentation.request_converters.news import request_to_news_create_command, request_to_news_update_command
 from presentation.response_factories.common import NewsErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
@@ -57,8 +57,9 @@ class NewsView(APIView):
         logger.debug("PATCH /news/{news_id}/ \n\t request.data = {request.data}")
 
         try:
-            access_dto = get_access_payload_dto_from_headers(request.headers)
-            gateway.news_app_service.update(request.data, request.FILES, news_id=news_id, user_id=int(access_dto.sub))
+            user_id = get_user_id_or_raises(request=request)
+            command = request_to_news_update_command(request=request)
+            gateway.news_app_service.update(update_command=command, news_id=Id(value=news_id), user_id=user_id)
 
         except (CustomException, pydantic.ValidationError) as e:
             return NewsErrorResponseFactory.create_response(e)

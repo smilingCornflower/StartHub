@@ -52,6 +52,8 @@ class DjNewsWriteRepository(NewsWriteRepository):
 
         if data.title:
             news.title = data.title.value
+        if data.subtitle:
+            news.subtitle = data.subtitle.value
         if data.content:
             news.content = data.content.value
         if data.cover_path:

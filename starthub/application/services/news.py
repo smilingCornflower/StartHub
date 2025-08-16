@@ -1,14 +1,12 @@
 from io import BytesIO
 from pathlib import Path
 from pprint import pformat
-from typing import Any, cast
+from typing import cast
 
 from application.converters.resposne_converters.news import news_to_full_dto, news_to_short_dto
 from application.dto.news import NewsFullDto, NewsImageDto, NewsShortDto
 from application.ports.service import AbstractAppService
 from application.ports.uow import AbstractUnitOfWork
-from django.core.files.uploadedfile import UploadedFile
-from django.utils.datastructures import MultiValueDict
 from domain.constants import NEWS_IMAGES_MAX_AMOUNT
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.cloud_storage import FileNotFoundCloudStorageException
@@ -48,7 +46,6 @@ from domain.value_objects.news import (
 )
 from domain.value_objects.user import PermissionVo
 from loguru import logger
-from presentation.request_converters.news import request_to_news_update_command
 
 
 class NewsPermissionAppService(AbstractAppService):
@@ -283,24 +280,44 @@ class NewsAppService(NewsPermissionAppService):
                 )
         logger.debug("All images in content exist in files or in database")
 
-    def _get_images_to_remove(self, command: NewsUpdateCommand) -> list[str]:
+    def _get_images_to_remove(self, content: NewsContent, news_id: Id) -> list[str]:
+        """
+        Get list of image paths that should be removed from storage and database.
+
+        Compares images currently stored in database with images referenced in new content.
+        Returns paths of images that exist in database but are no longer referenced in content.
+
+        Example:
+            Previous content had img1, img2, img3
+            New content has only img1, img2 and img4
+            Returns path for img3 to be removed
+
+        Args:
+            content: New news content with image references
+            news_id: News identifier
+
+        Returns:
+            List of image file paths to remove from storage and database
+        """
         logger.debug("_get_images_to_remove()")
-        if command.content:
-            command_image_names: list[str] = self._news_service.get_all_image_names_from_content(command.content)
-            news_current_images: list[NewsImage] = self._news_image_service.get(
-                filter_=NewsImageFilter(news_id=command.news_id)
-            )
 
-            result: list[str] = list()
+        command_image_names: list[str] = self._news_service.get_all_image_names_from_content(content)
+        news_images_in_database: list[NewsImage] = self._news_image_service.get(
+            filter_=NewsImageFilter(news_id=news_id)
+        )
 
-            for img in news_current_images:
-                if Path(img.image).name not in command_image_names:
-                    result.append(img.image)
-            return result
-        return list()
+        result: list[str] = list()
+
+        for img in news_images_in_database:
+            if Path(img.image).name not in command_image_names:
+                result.append(img.image)
+        return result
 
     def update(
-        self, request_data: dict[str, Any], request_files: MultiValueDict[str, UploadedFile], news_id: int, user_id: int
+        self,
+        update_command: NewsUpdateCommand,
+        news_id: Id,
+        user_id: Id,
     ) -> None:
         """
         :raises UpdateDeniedPermissionException:
@@ -309,30 +326,29 @@ class NewsAppService(NewsPermissionAppService):
         :raises NewsImageContentAndFileMismatchException:
         """
         logger.info("Started news update()")
-        self._check_permission_to_update_news(user_id=Id(value=user_id))
+        self._check_permission_to_update_news(user_id=user_id)
 
         with self._uow:
-            update_command: NewsUpdateCommand = request_to_news_update_command(
-                request_data=request_data, request_files=request_files, news_id=news_id, user_id=user_id
-            )
-            logger.debug(f"update_command = {update_command.__class__.__name__}(\n{pformat(update_command.__dict__)})")
-
-            if update_command.title is not None:
+            if update_command.title or update_command.subtitle:
                 self._news_service.update(
-                    payload=NewsUpdatePayload(news_id=update_command.news_id, title=update_command.title)
+                    payload=NewsUpdatePayload(
+                        news_id=news_id, title=update_command.title, subtitle=update_command.subtitle
+                    )
                 )
 
             if update_command.cover is not None:
-                self._update_cover(cover=update_command.cover, news_id=Id(value=news_id))
+                self._update_cover(cover=update_command.cover, news_id=news_id)
 
             if update_command.content:
                 self._validate_images_amount_in_content(content=update_command.content)
                 self._validate_image_files_used(content=update_command.content, images=update_command.images)
                 self._validate_images_in_content_exist_in_files_or_database(
-                    content=update_command.content, news_id=update_command.news_id, images=update_command.images
+                    content=update_command.content, news_id=news_id, images=update_command.images
                 )
 
-                image_names_to_remove: list[str] = self._get_images_to_remove(command=update_command)
+                image_names_to_remove: list[str] = self._get_images_to_remove(
+                    content=update_command.content, news_id=news_id
+                )
                 logger.info(f"{image_names_to_remove=}")
 
                 for img in image_names_to_remove:
@@ -349,16 +365,14 @@ class NewsAppService(NewsPermissionAppService):
                 )
                 if update_command.images:
                     for image in update_command.images:
-                        self.upload_image(image=image, news_id=update_command.news_id, id_map=images_id_map)
+                        self.upload_image(image=image, news_id=news_id, id_map=images_id_map)
 
                     self._news_service.update(
-                        payload=NewsUpdatePayload(
-                            news_id=update_command.news_id, content=NewsContent(value=new_content)
-                        )
+                        payload=NewsUpdatePayload(news_id=news_id, content=NewsContent(value=new_content))
                     )
                 else:  # It means no images to remove or upload_file, then updating only text part of the content
                     self._news_service.update(
-                        payload=NewsUpdatePayload(news_id=update_command.news_id, content=update_command.content)
+                        payload=NewsUpdatePayload(news_id=news_id, content=update_command.content)
                     )
 
     def upload_image(self, image: Image, news_id: Id, id_map: dict[str, str]) -> None:

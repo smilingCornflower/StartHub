@@ -1,3 +1,4 @@
+from pprint import pformat
 from typing import Any, cast
 
 from django.core.files.uploadedfile import UploadedFile
@@ -34,7 +35,7 @@ def request_to_news_create_command(request: Request, user_id: Id) -> NewsCreateC
 
     return NewsCreateCommand(
         title=NewsTitle(value=get_required_field(request_data, "title")),
-        subtitle=NewsSubtitle(value=request_data["subtitle"]) if 'subtitle' in request_data else None,
+        subtitle=NewsSubtitle(value=request_data["subtitle"]) if "subtitle" in request_data else None,
         content=NewsContent(value=get_required_field(request_data, "content")),
         author_id=user_id,
         cover=cover,
@@ -42,9 +43,10 @@ def request_to_news_create_command(request: Request, user_id: Id) -> NewsCreateC
     )
 
 
-def request_to_news_update_command(
-    request_data: dict[str, Any], request_files: MultiValueDict[str, UploadedFile], news_id: int, user_id: int
-) -> NewsUpdateCommand:
+def request_to_news_update_command(request: Request) -> NewsUpdateCommand:
+    request_data: dict[str, Any] = request.data
+    request_files: MultiValueDict[str, UploadedFile] = request.FILES
+
     images: list[Image] | None = None
     if "images" in request_files:
         images = list()
@@ -59,14 +61,15 @@ def request_to_news_update_command(
             name=cover_file.name if cover_file.name else "default_cover_name", file=ImageFile(value=cover_file.read())
         )
 
-    return NewsUpdateCommand(
-        user_id=Id(value=user_id),
-        news_id=Id(value=news_id),
+    command = NewsUpdateCommand(
         title=NewsTitle(value=request_data["title"]) if "title" in request_data else None,
+        subtitle=NewsSubtitle(value=request_data["subtitle"]) if "subtitle" in request_data else None,
         content=NewsContent(value=request_data["content"]) if "content" in request_data else None,
         cover=cover,
         images=images,
     )
+    logger.debug(f"update_command: \n{pformat(command.__dict__)}")
+    return command
 
 
 def request_to_news_filter(request_data: dict[str, Any]) -> NewsFilter:
