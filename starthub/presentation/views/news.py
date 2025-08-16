@@ -1,7 +1,6 @@
 from dataclasses import asdict
 
 import pydantic
-from application.converters.request_converters.news import request_to_news_create_command
 from application.dto.news import NewsFullDto, NewsShortDto
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
@@ -11,6 +10,7 @@ from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.request_converters.common import request_to_pagination
+from presentation.request_converters.news import request_to_news_create_command
 from presentation.response_factories.common import NewsErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request

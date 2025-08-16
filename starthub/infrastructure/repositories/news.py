@@ -39,6 +39,7 @@ class DjNewsWriteRepository(NewsWriteRepository):
     def create(self, data: NewsCreatePayload) -> News:
         return News.objects.create(
             title=data.title.value,
+            subtitle=data.subtitle.value,
             content=data.content.value,
             author_id=data.author_id.value,
         )

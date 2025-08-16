@@ -3,7 +3,6 @@ from pathlib import Path
 from pprint import pformat
 from typing import Any, cast
 
-from application.converters.request_converters.news import request_to_news_update_command
 from application.converters.resposne_converters.news import news_to_full_dto, news_to_short_dto
 from application.dto.news import NewsFullDto, NewsImageDto, NewsShortDto
 from application.ports.service import AbstractAppService
@@ -49,6 +48,7 @@ from domain.value_objects.news import (
 )
 from domain.value_objects.user import PermissionVo
 from loguru import logger
+from presentation.request_converters.news import request_to_news_update_command
 
 
 class NewsPermissionAppService(AbstractAppService):
@@ -189,10 +189,8 @@ class NewsAppService(NewsPermissionAppService):
 
         with self._uow:
             news: News = self._news_service.create(
-                NewsCreatePayload(
-                    title=news_create_command.title,
-                    content=NewsContent(value=new_content),
-                    author_id=user_id,
+                self._convert_create_command_to_payload(
+                    command=news_create_command, new_content=new_content, author_id=user_id
                 )
             )
 
@@ -204,6 +202,16 @@ class NewsAppService(NewsPermissionAppService):
                 self.upload_image(image=img, news_id=Id(value=news.id), id_map=id_map)
             logger.info("All images uploaded successfully.")
         return news.id
+
+    def _convert_create_command_to_payload(
+        self, command: NewsCreateCommand, new_content: str, author_id: Id
+    ) -> NewsCreatePayload:
+        return NewsCreatePayload(
+            title=command.title,
+            subtitle=command.subtitle,
+            content=NewsContent(value=new_content),
+            author_id=author_id,
+        )
 
     def _validate_images_amount_in_content(self, command: NewsUpdateCommand) -> None:
         """:raises NewsImagesMaxAmountException:"""

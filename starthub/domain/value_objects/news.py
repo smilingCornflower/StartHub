@@ -1,59 +1,38 @@
+from typing import ClassVar
+
 from domain.constants import CHAR_FIELD_MAX_LENGTH, NEWS_CONTENT_MAX_LENGTH, NEWS_IMAGES_MAX_AMOUNT
+from domain.exceptions import CustomException
 from domain.exceptions.news import (
     NewsContentIsTooLongException,
     NewsImagesMaxAmountException,
+    NewsSubtitleIsTooLongException,
     NewsTitleIsTooLongException,
 )
-from domain.exceptions.validation import EmptyStringException
 from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractDeletePayload, AbstractUpdatePayload
-from domain.value_objects import BaseVo
-from domain.value_objects.common import Id
+from domain.value_objects.common import Id, StringVo
 from domain.value_objects.file import Image, ImageFile
 from pydantic import field_validator
 
 
-class NewsTitle(BaseVo):
-    value: str
-
-    # noinspection PyNestedDecorators
-    @field_validator("value", mode="after")
-    @classmethod
-    def is_valid_name(cls, value: str) -> str:
-        """
-        :raises EmptyStringException:
-        :raises NewsTitleIsTooLongException:
-        """
-        if not value:
-            raise EmptyStringException("News title cannot be empty.")
-        if len(value) > CHAR_FIELD_MAX_LENGTH:
-            raise NewsTitleIsTooLongException(f"News title must be at most {CHAR_FIELD_MAX_LENGTH} characters long.")
-        return value
+class NewsTitle(StringVo):
+    max_length: ClassVar[int] = CHAR_FIELD_MAX_LENGTH
+    too_long_string_exception: ClassVar[type[CustomException]] = NewsTitleIsTooLongException
 
 
-class NewsContent(BaseVo):
-    value: str
+class NewsSubtitle(StringVo):
+    max_length: ClassVar[int] = CHAR_FIELD_MAX_LENGTH
+    too_long_string_exception: ClassVar[type[CustomException]] = NewsSubtitleIsTooLongException
 
-    # noinspection PyNestedDecorators
-    @field_validator("value", mode="after")
-    @classmethod
-    def is_valid_name(cls, value: str) -> str:
-        """
-        :raises EmptyStringException:
-        :raises NewsContentIsTooLongException:
-        """
-        if not value:
-            raise EmptyStringException("News title cannot be empty.")
-        if len(value) > NEWS_CONTENT_MAX_LENGTH:
-            raise NewsContentIsTooLongException(
-                f"New content must be at most {NEWS_CONTENT_MAX_LENGTH} characters long."
-            )
 
-        return value
+class NewsContent(StringVo):
+    max_length: ClassVar[int] = NEWS_CONTENT_MAX_LENGTH
+    too_long_string_exception: ClassVar[type[CustomException]] = NewsContentIsTooLongException
 
 
 class NewsCreatePayload(AbstractCreatePayload):
     title: NewsTitle
+    subtitle: NewsSubtitle
     content: NewsContent
     author_id: Id
 
@@ -67,6 +46,7 @@ class NewsUpdatePayload(AbstractUpdatePayload):
 
 class NewsCreateCommand(BaseCommand):
     title: NewsTitle
+    subtitle: NewsSubtitle
     content: NewsContent
     author_id: Id
     cover: Image

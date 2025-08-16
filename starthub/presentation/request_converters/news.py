@@ -5,7 +5,7 @@ from django.utils.datastructures import MultiValueDict
 from domain.value_objects.common import Id
 from domain.value_objects.file import Image, ImageFile
 from domain.value_objects.filter import NewsFilter
-from domain.value_objects.news import NewsContent, NewsCreateCommand, NewsTitle, NewsUpdateCommand
+from domain.value_objects.news import NewsContent, NewsCreateCommand, NewsSubtitle, NewsTitle, NewsUpdateCommand
 from loguru import logger
 from presentation.request_converters.common import get_required_field
 from rest_framework.request import Request
@@ -34,6 +34,7 @@ def request_to_news_create_command(request: Request, user_id: Id) -> NewsCreateC
 
     return NewsCreateCommand(
         title=NewsTitle(value=get_required_field(request_data, "title")),
+        subtitle=NewsSubtitle(value=get_required_field(request_data, "subtitle")),
         content=NewsContent(value=get_required_field(request_data, "content")),
         author_id=user_id,
         cover=cover,
