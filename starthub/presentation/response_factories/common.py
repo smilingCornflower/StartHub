@@ -14,6 +14,7 @@ from domain.exceptions.news import (
     NewsImageContentAndFileMismatchException,
     NewsImagesMaxAmountException,
     NewsNotFoundException,
+    NewsSubtitleIsTooLongException,
     NewsTitleIsTooLongException,
 )
 from domain.exceptions.pagination import PaginationMaxLimitException
@@ -171,6 +172,7 @@ class NewsErrorResponseFactory(CommonErrorResponseFactory):
         NotSupportedImageFormatException: ("UNSUPPORTED_IMAGE_FORMAT", 400),
         ImageFileTooLargeException: ("IMAGE_TOO_LARGE", 422),
         NewsTitleIsTooLongException: ("NEWS_TITLE_TOO_LONG", 422),
+        NewsSubtitleIsTooLongException: ("NEWS_SUBTITLE_TOO_LONG", 422),
         NewsContentIsTooLongException: ("NEWS_CONTENT_TOO_LONG", 422),
         pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
         NewsNotFoundException: ("NEWS_NOT_FOUND", 404),

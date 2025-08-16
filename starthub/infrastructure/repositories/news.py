@@ -39,6 +39,7 @@ class DjNewsWriteRepository(NewsWriteRepository):
     def create(self, data: NewsCreatePayload) -> News:
         return News.objects.create(
             title=data.title.value,
+            subtitle=data.subtitle.value if data.subtitle else None,
             content=data.content.value,
             author_id=data.author_id.value,
         )
@@ -51,6 +52,8 @@ class DjNewsWriteRepository(NewsWriteRepository):
 
         if data.title:
             news.title = data.title.value
+        if data.subtitle:
+            news.subtitle = data.subtitle.value
         if data.content:
             news.content = data.content.value
         if data.cover_path:

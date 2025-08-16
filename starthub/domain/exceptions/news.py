@@ -11,6 +11,10 @@ class NewsTitleIsTooLongException(ValidationException, NewsException):
     pass
 
 
+class NewsSubtitleIsTooLongException(ValidationException, NewsException):
+    pass
+
+
 class NewsContentIsTooLongException(StringIsTooLongException, NewsException):
     pass
 

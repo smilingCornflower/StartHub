@@ -5,7 +5,7 @@ from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.news import NewsAppService
 from domain.services.file import ImageService
 from domain.services.news import NewsImageService
-from infrastructure.repositories.news import DjNewsImageReadRepository, DjNewsImageWriteRepository
+from infrastructure.repositories.news import DjNewsImageReadRepository, DjNewsImageWriteRepository, DjNewsReadRepository
 from infrastructure.uow import DjangoUnitOfWork
 
 
@@ -21,5 +21,6 @@ class NewsAppServiceBuilder(AbstractAppServiceBuilder[NewsAppService]):
             permission_service=PermissionServiceBuilder.create_service(),
             image_service=ImageService(),
             storage_service=StorageServiceBuilder.create_service(),
+            news_read_repository=DjNewsReadRepository(),
             unit_of_work=DjangoUnitOfWork(),
         )

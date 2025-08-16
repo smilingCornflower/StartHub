@@ -1,6 +1,7 @@
 import re
 import uuid
 from datetime import date
+from typing import ClassVar
 
 import phonenumbers
 from domain.constants import (
@@ -11,6 +12,7 @@ from domain.constants import (
     PAGINNATION_MAX_LMIT,
 )
 from domain.enums.social_links import SocialPlatform
+from domain.exceptions import CustomException
 from domain.exceptions.pagination import PaginationMaxLimitException
 from domain.exceptions.validation import (
     DeadlineInPastException,
@@ -40,6 +42,37 @@ class Uuid(BaseVo):
 
 class Slug(BaseVo):
     value: str
+
+
+class StringVo(BaseVo):
+    value: str
+
+    empty_string_exception: ClassVar[type[CustomException]] = EmptyStringException
+    too_long_string_exception: ClassVar[type[CustomException]] = StringIsTooLongException
+    max_length: ClassVar[int | None] = None
+
+    @classmethod
+    def get_empty_string_msg(cls) -> str:
+        return "String cannot be empty."
+
+    @classmethod
+    def get_too_long_string_msg(cls) -> str:
+        if cls.max_length:
+            return f"String must be no longer than {cls.max_length} characters."
+        return "String is too long."
+
+    @field_validator("value", mode="after")
+    @classmethod
+    def validate_string(cls, value: str) -> str:
+        if not value.strip():
+            msg = cls.get_empty_string_msg()
+            raise cls.empty_string_exception(msg)
+
+        if cls.max_length and len(value) > cls.max_length:
+            msg = cls.get_too_long_string_msg()
+            raise cls.too_long_string_exception(msg)
+
+        return value
 
 
 class MediumString(BaseVo):

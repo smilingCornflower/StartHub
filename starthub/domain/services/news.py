@@ -3,7 +3,6 @@ import uuid
 from pathlib import Path
 from typing import Iterable
 
-from domain.exceptions.validation import MissingFileExcpetion
 from domain.models.news import News, NewsImage
 from domain.ports.service import AbstractDomainService
 from domain.repositories.news import (
@@ -12,9 +11,8 @@ from domain.repositories.news import (
     NewsReadRepository,
     NewsWriteRepository,
 )
-from domain.value_objects.common import Id, Pagination
-from domain.value_objects.file import Image
-from domain.value_objects.filter import NewsFilter, NewsImageFilter
+from domain.value_objects.common import Id
+from domain.value_objects.filter import NewsImageFilter
 from domain.value_objects.news import (
     NewsContent,
     NewsCreatePayload,
@@ -35,15 +33,6 @@ class NewsService(AbstractDomainService):
     ):
         self._news_read_repository = news_read_repository
         self._news_write_repository = news_write_repository
-
-    def get_one(self, id_: Id) -> News:
-        """:raises NewsNotFoundException:"""
-        return self._news_read_repository.get_by_id(id_=id_)
-
-    def get_many(self, filter_: NewsFilter, pagination: Pagination) -> list[News]:
-        news: list[News] = self._news_read_repository.get_all(filter_=filter_, pagination=pagination)
-        logger.debug(f"Found {len(news)} news")
-        return news
 
     def create(self, payload: NewsCreatePayload) -> News:
         news: News = self._news_write_repository.create(data=payload)
@@ -105,13 +94,6 @@ class NewsService(AbstractDomainService):
         for mathed in self.IMAGES_PATTERN.finditer(content.value):
             result.append(mathed.group(2))
         return result
-
-    @staticmethod
-    def check_image_presence(images_in_content: Iterable[str], images_in_files: Iterable[Image]) -> None:
-        """:raises MissingFileExcpetion:"""
-        for img in images_in_content:
-            if img not in [i.name for i in images_in_files]:
-                raise MissingFileExcpetion(f"Image {img} not provided in files.")
 
     def update(self, payload: NewsUpdatePayload) -> None:
         self._news_write_repository.update(data=payload)
