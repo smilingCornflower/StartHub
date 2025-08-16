@@ -12,6 +12,7 @@ def get_default_datetime_now() -> datetime:
 
 class News(BaseModel):
     title = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
+    sub_title = models.TextField(null=True)
     content = models.TextField()
     author = models.ForeignKey("domain.User", on_delete=models.CASCADE)
     published_at = models.DateTimeField(default=get_default_datetime_now)
