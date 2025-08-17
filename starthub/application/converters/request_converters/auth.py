@@ -87,9 +87,7 @@ def extract_token_from_headers(headers: dict[str, str]) -> str:
     bearer_token_regex = r"^Bearer\s(.+)$"
     match: re.Match[str] | None = re.match(bearer_token_regex, auth_header)
     if match:
-        logger.debug("Bearer Token provided.")
         token: str = match.group(1)
-        logger.debug(f"token = {token}")
         return token
     logger.exception("Failed to get Bearer token from Authorization headers.")
     raise MissingRequiredFieldException("Failed to get Bearer token from Authorization headers.")

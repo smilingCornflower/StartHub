@@ -1,9 +1,8 @@
-import io
+from io import BytesIO
 
-from domain.constants import PROJECT_MEDIA_MAX_AMOUNT
-from domain.enums.file_extension import FileExtensionEnum
+from domain.constants import IMAGE_FILE_FORMATS, PROJECT_MEDIA_MAX_AMOUNT, VIDEO_FILE_FORMATS
 from domain.enums.permission import ActionEnum, ScopeEnum
-from domain.exceptions.file import UnsupportedFileExtensionException
+from domain.exceptions import CustomException
 from domain.exceptions.permissions import (
     AddDeniedPermissionException,
     DeleteDeniedPermissionException,
@@ -16,19 +15,20 @@ from domain.models.user import User
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project.media import ProjectMediaReadRepository, ProjectMediaWriteRepository
+from domain.services.file import ImageService, VideoService
 from domain.services.permission import PermissionService
 from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageDeletePayload, CloudStorageUploadPayload
 from domain.value_objects.common import Id, Order
 from domain.value_objects.filter import ProjectMediaFilter
 from domain.value_objects.project.media import (
+    MediaFile,
     ProjectMediaCreateCommand,
     ProjectMediaCreatePayload,
     ProjectMediaId,
     ProjectMediaUpdateCommand,
     ProjectMediaUpdatePayload,
 )
-from filetype import guess
 from loguru import logger
 
 
@@ -83,8 +83,6 @@ class ProjectMediaPermissionService(AbstractDomainService):
 
 
 class ProjectMediaService(ProjectMediaPermissionService):
-    SUPPORTED_FILES = (FileExtensionEnum.PDF, FileExtensionEnum.JPG, FileExtensionEnum.PNG, FileExtensionEnum.MP4)
-
     def __init__(
         self,
         write_repository: ProjectMediaWriteRepository,
@@ -103,14 +101,8 @@ class ProjectMediaService(ProjectMediaPermissionService):
 
         self._check_max_amount_of_media(project_id=project_id)
         self._check_create_permission(user=user, project=project)
-        file_ext = self._validate_file_extesnsion(command.media.value)
 
-        file_path: str = PathProvider.get_project_media_path(project_id=project_id, file_extension=file_ext)
-
-        self._cloud_storage.upload_file(
-            payload=CloudStorageUploadPayload(file_data=command.media.value, file_path=file_path)
-        )
-        logger.info("Media was uploaded")
+        file_path = self._upload_media(media=command.media, project_id=project_id)
 
         media_order = self.get_media_count(project_id=project_id) + 1
         project_media = self._write_repository.create(
@@ -123,6 +115,39 @@ class ProjectMediaService(ProjectMediaPermissionService):
         logger.info("Project media created.")
 
         return project_media
+
+    def _upload_media(self, media: MediaFile, project_id: Id) -> str:
+        if media.file_extension in IMAGE_FILE_FORMATS:
+            compressed_media_obj = ImageService.compress_image(file_obj=BytesIO(media.value))
+        elif media.file_extension in VIDEO_FILE_FORMATS:
+            compressed_media_obj = VideoService.compress_video(file_obj=BytesIO(media.value))
+        else:
+            logger.critical(f"File extension {media.file_extension} is neither image nor video format")
+            raise CustomException(f"Unsupported media type: {media.file_extension}")
+
+        logger.debug("MediaFile compressed successfully")
+
+        file_path: str = PathProvider.get_project_media_path(project_id=project_id, file_extension=media.file_extension)
+        self._cloud_storage.upload_file(
+            payload=CloudStorageUploadPayload(file_data=compressed_media_obj.read(), file_path=file_path)
+        )
+        logger.info(f"Media was uploaded by the path: {file_path}")
+
+        return file_path
+
+    def _check_max_amount_of_media(self, project_id: Id) -> None:
+        project_media: list[ProjectMedia] = self._read_repository.get_all(
+            filter_=ProjectMediaFilter(project_id=project_id)
+        )
+
+        if not (len(project_media) < PROJECT_MEDIA_MAX_AMOUNT):
+            raise ProjectMediaMaxAmountException(
+                f"Maximum amount of media for project {project_id} is {PROJECT_MEDIA_MAX_AMOUNT}"
+            )
+        return None
+
+    def get_media_count(self, project_id: Id) -> int:
+        return len(self._read_repository.get_all(filter_=ProjectMediaFilter(project_id=project_id)))
 
     # DELETE ===========================================================================================================
     def delete(self, user: User, project_media: ProjectMedia) -> None:
@@ -167,32 +192,3 @@ class ProjectMediaService(ProjectMediaPermissionService):
                 data=ProjectMediaUpdatePayload(media_id=ProjectMediaId(value=media.id), order=new_ord)
             )
         logger.info("Order updated successfully.")
-
-    # OTHERS ===========================================================================================================
-    def _validate_file_extesnsion(self, file_data: bytes) -> str:
-        """Validates file type and returns file extension"""
-        kind = guess(io.BytesIO(file_data))
-        file_ext: str | None = kind.extension if kind else None
-        logger.debug(f"{file_ext=}")
-
-        if file_ext not in self.SUPPORTED_FILES:
-            logger.exception(f"Unsupported file type: {file_ext}. Expected: {', '.join(self.SUPPORTED_FILES)}")
-            raise UnsupportedFileExtensionException(
-                f"Unsupported file type: {file_ext}. Expected: {', '.join(self.SUPPORTED_FILES)}"
-            )
-
-        return file_ext
-
-    def _check_max_amount_of_media(self, project_id: Id) -> None:
-        project_media: list[ProjectMedia] = self._read_repository.get_all(
-            filter_=ProjectMediaFilter(project_id=project_id)
-        )
-
-        if not (len(project_media) < PROJECT_MEDIA_MAX_AMOUNT):
-            raise ProjectMediaMaxAmountException(
-                f"Maximum amount of media for project {project_id} is {PROJECT_MEDIA_MAX_AMOUNT}"
-            )
-        return None
-
-    def get_media_count(self, project_id: Id) -> int:
-        return len(self._read_repository.get_all(filter_=ProjectMediaFilter(project_id=project_id)))

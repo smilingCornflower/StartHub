@@ -4,7 +4,13 @@ from typing import cast
 import pydantic
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
-from domain.exceptions.file import ImageFileTooLargeException, NotPdfFileException, NotSupportedImageFormatException
+from domain.exceptions.file import (
+    ImageFileTooLargeException,
+    NotPdfFileException,
+    NotSupportedImageFormatException,
+    UnsupportedFileExtensionException,
+    VideoFileTooLargeException,
+)
 from domain.exceptions.geo.city import CityNotFoundException
 from domain.exceptions.geo.country import CountryNotFoundException, InvalidCountryCodeException
 from domain.exceptions.geo.geo import GeographicalInconsistencyException
@@ -42,6 +48,7 @@ from domain.exceptions.project_management import (
     ProjectInvestmentPhoneAlreadyExistsException,
     ProjectInvestmentPhoneMaxAmountException,
     ProjectInvestmentPhoneNotFoundException,
+    ProjectMediaMaxAmountException,
     ProjectMediaNotFoundException,
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
@@ -252,4 +259,8 @@ class ProjectFileErrorResponseFactory(CommonErrorResponseFactory):
 class ProjectMediaErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
         ProjectMediaNotFoundException: ("PROJECT_MEDIA_NOT_FOUND", 404),
+        UnsupportedFileExtensionException: ("UNSUPPORTED_MEDIA_FORMAT", 422),
+        ProjectMediaMaxAmountException: ("MAX_MEDIA_AMOUNT_EXCEEDED", 409),
+        ImageFileTooLargeException: ("IMAGE_TOO_LARGE", 422),
+        VideoFileTooLargeException: ("VIDEO_TOO_LARGE", 422),
     }
