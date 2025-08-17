@@ -29,3 +29,16 @@ class NotSupportedImageFormatException(ImageException):
 
 class ImageFileTooLargeException(ImageException):
     pass
+
+
+# ==== Video Exception ====
+class VideoException(FileException):
+    pass
+
+
+class NotSupportedVideoFormatException(VideoException):
+    pass
+
+
+class VideoFileTooLargeException(VideoException):
+    pass

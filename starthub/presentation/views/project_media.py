@@ -2,11 +2,16 @@ import pydantic
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id
-from domain.value_objects.project.media import ProjectMediaCreateCommand, ProjectMediaId
+from domain.value_objects.project.media import ProjectMediaCreateCommand, ProjectMediaId, ProjectMediaUpdateCommand
 from infrastructure.auth.user import get_user_id_or_raises
+from loguru import logger
 from presentation.constants import SUCCESS
-from presentation.request_converters.project.media import request_to_project_media_create_command
+from presentation.request_converters.project.media import (
+    request_to_project_media_create_command,
+    request_to_project_media_to_update_command,
+)
 from presentation.response_factories.common import ProjectMediaErrorResponseFactory
+from pydantic import ValidationError
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -15,6 +20,9 @@ from rest_framework.views import APIView
 
 class ProjectMediaView(APIView):
     def post(self, request: Request, project_id: int) -> Response:
+        print()
+        logger.info("POST /projects/media/")
+
         try:
             user_id: Id = get_user_id_or_raises(request=request)
             command: ProjectMediaCreateCommand = request_to_project_media_create_command(request=request)
@@ -24,7 +32,23 @@ class ProjectMediaView(APIView):
         except (CustomException, pydantic.ValidationError) as e:
             return ProjectMediaErrorResponseFactory.create_response(exception=e)
 
+    def patch(self, request: Request, project_id: int) -> Response:
+        print()
+        logger.info(f"PATCH /projects/{project_id}/media/")
+
+        try:
+            user_id: Id = get_user_id_or_raises(request=request)
+            command: ProjectMediaUpdateCommand = request_to_project_media_to_update_command(request=request)
+            gateway.project_media_app_service.update(user_id=user_id, project_id=Id(value=project_id), command=command)
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+
+        except (CustomException, ValidationError) as e:
+            return ProjectMediaErrorResponseFactory.create_response(exception=e)
+
     def delete(self, request: Request, project_media_id: int) -> Response:
+        print()
+        logger.info(f"DELETE /projects/media/{project_media_id}/")
+
         try:
             user_id: Id = get_user_id_or_raises(request=request)
             gateway.project_media_app_service.delete(

@@ -1,5 +1,8 @@
 import re
 
+from config.settings import BASE_DIR
+from domain.enums.file_extension import FileExtensionEnum
+
 MEGABYTE = 1024 * 1024  # in kilobytes
 
 CHAR_FIELD_MAX_LENGTH = 255
@@ -46,9 +49,20 @@ KZ_BIN_LENGTH = 12
 
 PDF_MAX_SIZE_IN_BYTES = 20 * MEGABYTE
 IMAGE_MAX_SIZE_IN_BYTES = 5 * MEGABYTE
+VIDEO_MAX_SIZE_IN_BYTES = 50 * MEGABYTE
+
+MEDIA_SUPPORTED_FILES_FORMATS = (FileExtensionEnum.JPG, FileExtensionEnum.PNG, FileExtensionEnum.MP4)
+
+IMAGE_FILE_FORMATS = (FileExtensionEnum.JPG, FileExtensionEnum.PNG, FileExtensionEnum.WEBP, FileExtensionEnum.AVIF)
+VIDEO_FILE_FORMATS = (FileExtensionEnum.MP4,)
+
+IMAGE_COMPRESSION_QUALITY = 70
+VIDEO_COMPRESSION_BITRATE = 1_000
 PROJECT_IMAGES_MAX_AMOUNT = 7
 PROJECT_STEPS_MAX_AMOUNT = 10
 PROJECT_FILES_MAX_AMOUNT = 10
+
+TEMP_FILE_PATH = BASE_DIR / "../temp_files/"
 
 DESCRIPTION_MAX_LENGTH = 2_000
 
