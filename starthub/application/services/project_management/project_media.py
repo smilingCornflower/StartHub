@@ -4,7 +4,7 @@ from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.user import UserReadRepository
 from domain.services.project_management.media import ProjectMediaService
 from domain.value_objects.common import Id
-from domain.value_objects.project.media import ProjectMediaCreateCommand, ProjectMediaId
+from domain.value_objects.project.media import ProjectMediaCreateCommand, ProjectMediaId, ProjectMediaUpdateCommand
 from loguru import logger
 
 
@@ -26,6 +26,11 @@ class ProjectMediaAppService(AbstractAppService):
         project = self._project_read_repository.get_by_id(id_=project_id)
         self._project_media_service.create(user=user, project=project, command=command)
         logger.info("Project media created successfully.")
+
+    def update(self, user_id: Id, project_id: Id, command: ProjectMediaUpdateCommand) -> None:
+        user = self._user_read_repository.get_by_id(id_=user_id)
+        project = self._project_read_repository.get_by_id(id_=project_id)
+        self._project_media_service.update(user=user, project=project, command=command)
 
     def delete(self, user_id: Id, project_media_id: ProjectMediaId) -> None:
         user = self._user_read_repository.get_by_id(id_=user_id)

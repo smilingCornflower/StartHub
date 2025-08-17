@@ -38,7 +38,15 @@ class DjProjectMediaWriteRepository(ProjectMediaWriteRepository):
         )
 
     def update(self, data: ProjectMediaUpdatePayload) -> ProjectMedia:
-        raise NotImplementedError("The method update() is not implemented yet.")
+        media: ProjectMedia | None = ProjectMedia.objects.filter(id=data.media_id.value).first()
+        if media is None:
+            raise ProjectMediaNotFoundException(f"Media with id = {data.media_id.value} does not found.")
+
+        if data.order is not None:
+            media.order = data.order.value
+
+        media.save()
+        return media
 
     def delete_by_id(self, id_: ProjectMediaId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")

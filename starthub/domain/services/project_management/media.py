@@ -4,7 +4,11 @@ from domain.constants import PROJECT_MEDIA_MAX_AMOUNT
 from domain.enums.file_extension import FileExtensionEnum
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.file import UnsupportedFileExtensionException
-from domain.exceptions.permissions import AddDeniedPermissionException, DeleteDeniedPermissionException
+from domain.exceptions.permissions import (
+    AddDeniedPermissionException,
+    DeleteDeniedPermissionException,
+    UpdateDeniedPermissionException,
+)
 from domain.exceptions.project_management import ProjectMediaMaxAmountException
 from domain.models.project_management.media import ProjectMedia
 from domain.models.project_management.project import Project
@@ -14,10 +18,16 @@ from domain.ports.service import AbstractDomainService
 from domain.repositories.project.media import ProjectMediaReadRepository, ProjectMediaWriteRepository
 from domain.services.permission import PermissionService
 from domain.utils.path_provider import PathProvider
-from domain.value_objects.cloud_storage import CloudStorageUploadPayload
-from domain.value_objects.common import Id
+from domain.value_objects.cloud_storage import CloudStorageDeletePayload, CloudStorageUploadPayload
+from domain.value_objects.common import Id, Order
 from domain.value_objects.filter import ProjectMediaFilter
-from domain.value_objects.project.media import ProjectMediaCreateCommand, ProjectMediaCreatePayload
+from domain.value_objects.project.media import (
+    ProjectMediaCreateCommand,
+    ProjectMediaCreatePayload,
+    ProjectMediaId,
+    ProjectMediaUpdateCommand,
+    ProjectMediaUpdatePayload,
+)
 from filetype import guess
 from loguru import logger
 
@@ -56,6 +66,21 @@ class ProjectMediaPermissionService(AbstractDomainService):
         )
         raise DeleteDeniedPermissionException("You don't have enoug permissions to delete this recource.")
 
+    def _check_update_permission(self, user: User, project: Project) -> None:
+        """:raises DeleteDeniedPermissionException:"""
+        update_permission = self._permission_service.create_permission_vo(
+            model=ProjectMedia,
+            action=ActionEnum.CHANGE,
+            scope=ScopeEnum.OWN,
+        )
+        has_permission = self._permission_service.has_user_permission(user=user, permission_vo=update_permission)
+        if has_permission and project.creator == user:
+            return None
+        logger.exception(
+            f"User(id={user.id}) doesn't have enough permissions to change media for the Project(id={project.id})."
+        )
+        raise UpdateDeniedPermissionException("You don't have enoug permissions to update this recource.")
+
 
 class ProjectMediaService(ProjectMediaPermissionService):
     SUPPORTED_FILES = (FileExtensionEnum.PDF, FileExtensionEnum.JPG, FileExtensionEnum.PNG, FileExtensionEnum.MP4)
@@ -72,6 +97,7 @@ class ProjectMediaService(ProjectMediaPermissionService):
         self._write_repository = write_repository
         self._cloud_storage = clous_storage
 
+    # CREATE ===========================================================================================================
     def create(self, user: User, project: Project, command: ProjectMediaCreateCommand) -> ProjectMedia:
         project_id = Id(value=project.id)
 
@@ -98,6 +124,51 @@ class ProjectMediaService(ProjectMediaPermissionService):
 
         return project_media
 
+    # DELETE ===========================================================================================================
+    def delete(self, user: User, project_media: ProjectMedia) -> None:
+        self._check_delete_permission(user=user, project_media=project_media)
+
+        self._write_repository.delete(project_media=project_media)
+        self._reorder_media(project_id=Id(value=project_media.project.id))
+        logger.debug("Media record deleted from a database")
+
+        self._cloud_storage.delete_file(payload=CloudStorageDeletePayload(file_path=project_media.file_path))
+        logger.debug("Media file deleted from a storage.")
+
+    def _reorder_media(self, project_id: Id) -> None:
+        media_lst: list[ProjectMedia] = self._read_repository.get_all(filter_=ProjectMediaFilter(project_id=project_id))
+        for i, media in enumerate(media_lst, start=1):
+            if i != media.order:
+                logger.debug(
+                    f"project_media with id: {media.id} does not match with right order."
+                    f"\tMedia order: {media.order}, need: {i}."
+                    f"\tStarted updating order."
+                )
+                self._write_repository.update(
+                    data=ProjectMediaUpdatePayload(media_id=ProjectMediaId(value=media.id), order=Order(value=i))
+                )
+                logger.debug("Media order updated successfully.")
+            logger.info("Media order reorganized")
+
+    # UPDATE ===========================================================================================================
+    def update(self, user: User, project: Project, command: ProjectMediaUpdateCommand) -> None:
+        self._check_update_permission(user=user, project=project)
+        if command.new_order:
+            self._update_order(project=project, new_order=command.new_order)
+
+    def _update_order(self, project: Project, new_order: list[Order]) -> None:
+        media_lst: list[ProjectMedia] = self._read_repository.get_all(
+            filter_=ProjectMediaFilter(project_id=Id(value=project.id))
+        )
+        media_lst.sort(key=lambda x: x.order)
+        for media, new_ord in zip(media_lst, new_order):
+            logger.debug(f"media_id = {media.id}, new_ord = {new_ord}")
+            self._write_repository.update(
+                data=ProjectMediaUpdatePayload(media_id=ProjectMediaId(value=media.id), order=new_ord)
+            )
+        logger.info("Order updated successfully.")
+
+    # OTHERS ===========================================================================================================
     def _validate_file_extesnsion(self, file_data: bytes) -> str:
         """Validates file type and returns file extension"""
         kind = guess(io.BytesIO(file_data))
@@ -125,8 +196,3 @@ class ProjectMediaService(ProjectMediaPermissionService):
 
     def get_media_count(self, project_id: Id) -> int:
         return len(self._read_repository.get_all(filter_=ProjectMediaFilter(project_id=project_id)))
-
-    # ======================================================================================================================
-    def delete(self, user: User, project_media: ProjectMedia) -> None:
-        self._check_delete_permission(user=user, project_media=project_media)
-        self._write_repository.delete(project_media=project_media)

@@ -1,6 +1,6 @@
 from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
-from domain.value_objects.common import Id
+from domain.value_objects.common import Id, Order
 from domain.value_objects.file import FileVo
 
 
@@ -19,7 +19,8 @@ class ProjectMediaCreatePayload(AbstractCreatePayload):
 
 
 class ProjectMediaUpdatePayload(AbstractUpdatePayload):
-    pass
+    media_id: ProjectMediaId
+    order: Order
 
 
 class ProjectMediaCreateCommand(BaseCommand):
@@ -27,4 +28,4 @@ class ProjectMediaCreateCommand(BaseCommand):
 
 
 class ProjectMediaUpdateCommand(BaseCommand):
-    pass
+    new_order: list[Order] | None
