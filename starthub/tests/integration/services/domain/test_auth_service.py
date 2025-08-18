@@ -7,6 +7,7 @@ from domain.services.auth import AuthService, TokenService
 from domain.value_objects.auth import LoginCredentials
 from domain.value_objects.token import AccessTokenVo, RefreshTokenVo, TokenPairVo
 from domain.value_objects.user import Email, RawPassword
+from infrastructure.repositories.role import DjRoleReadRepository
 from infrastructure.repositories.user import DjUserReadRepository, DjUserWriteRepository
 from loguru import logger
 
@@ -17,7 +18,11 @@ class TestAuthService(TestCase):
 
     @classmethod
     def setUpTestData(cls) -> None:
-        cls.service = AuthService(TokenService(secret_key="secret"), DjUserReadRepository(), DjUserWriteRepository())
+        cls.service = AuthService(
+            TokenService(secret_key="secret", role_read_repository=DjRoleReadRepository()),
+            DjUserReadRepository(),
+            DjUserWriteRepository(),
+        )
         cls.user_data = {
             "first_name": "first_name",
             "last_name": "last_name",
@@ -74,7 +79,7 @@ class TestAuthService(TestCase):
 
     def test_reissue_with_expired_token(self) -> None:
         auth_service = AuthService(
-            TokenService(secret_key="secret", refresh_token_lifetime=-100),
+            TokenService(secret_key="secret", refresh_token_lifetime=-100, role_read_repository=DjRoleReadRepository()),
             DjUserReadRepository(),
             DjUserWriteRepository(),
         )
