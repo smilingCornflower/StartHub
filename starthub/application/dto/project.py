@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import date
 
 from application.dto.geo import AddressDto
+from application.dto.user import UserDto
 
 
 @dataclass
@@ -120,7 +121,7 @@ class ProjectDto:
     media: list[str]
     categories: list[CategoryDto]
     company: CompanyDto
-    creator_id: int
+    user: UserDto
     funding_model: FundingModelDto
     goal_sum: float
     current_sum: float
