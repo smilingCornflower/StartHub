@@ -16,6 +16,7 @@ def access_token_to_dto(access_token: AccessTokenVo) -> AccessTokenDto:
 def access_payload_to_dto(access_payload: AccessPayload) -> AccessPayloadDto:
     return AccessPayloadDto(
         sub=access_payload.sub,
+        roles=access_payload.roles,
         email=access_payload.email,
         iat=access_payload.iat,
         exp=access_payload.exp,
