@@ -78,7 +78,7 @@ class PermissionFilter(AbstractFilter):
 
 
 class RoleFilter(AbstractFilter):
-    pass
+    user_id: Id | None = None
 
 
 class NewsFilter(AbstractFilter):

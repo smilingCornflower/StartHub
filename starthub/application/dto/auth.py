@@ -32,6 +32,7 @@ class PayloadDto:
 @dataclass(frozen=True)
 class AccessPayloadDto(PayloadDto):
     sub: str
+    roles: list[str]
     email: str
     iat: int
     exp: int

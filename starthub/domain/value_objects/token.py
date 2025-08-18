@@ -27,6 +27,7 @@ class TokenPairVo:
 @dataclass(frozen=True)
 class AccessPayload:
     sub: str
+    roles: list[str]
     email: str
     iat: int
     exp: int

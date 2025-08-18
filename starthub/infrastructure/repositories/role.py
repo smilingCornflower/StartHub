@@ -10,4 +10,7 @@ class DjRoleReadRepository(RoleReadRepository):
 
     def get_all(self, filter_: RoleFilter, pagination: Pagination | None = None) -> list[Role]:
         queryset = Role.objects.all()
+        if filter_.user_id:
+            queryset = queryset.filter(users__id=filter_.user_id.value)
+
         return list(queryset.distinct())
