@@ -1,12 +1,9 @@
 from django.core.validators import RegexValidator
 from django.db import models
+from django.db.models import Manager
 from domain.constants import COUNTRY_CODE_LENGTH
 from domain.models.base import BaseModel
-from django.db.models import Manager, QuerySet
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from domain.models.geo.region import Region
 
 class Country(BaseModel):  # type: ignore[django-manager-missing]
     objects: Manager["Country"]

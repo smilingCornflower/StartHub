@@ -119,7 +119,6 @@ INSTALLED_APPS = [
     "corsheaders",
     "modeltranslation",
 ]
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -129,6 +128,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -181,16 +181,16 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK: dict[str, list[str]] = {
     "DEFAULT_AUTHENTICATION_CLASSES": [],
 }
+USE_I18N = True
 LANGUAGES = (
     ("ru", "Russian"),
-    ("kz", "Kazakh"),
+    ("kk", "Kazakh"),
     ("en", "English"),
 )
-MODELTRANSLATION_DEFAULT_LANGUAGE = "en"
-
 LANGUAGE_CODE = "en-us"
+
+
 TIME_ZONE = "UTC"
-USE_I18N = True
 USE_TZ = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

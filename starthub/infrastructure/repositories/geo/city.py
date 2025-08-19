@@ -3,6 +3,7 @@ from domain.models.geo.city import City
 from domain.repositories.geo.city import CityReadRepository
 from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import CityFilter
+from infrastructure.repositories.pagination import apply_pagination
 
 
 class DjCityReadRepository(CityReadRepository):
@@ -15,4 +16,12 @@ class DjCityReadRepository(CityReadRepository):
         return city
 
     def get_all(self, filter_: CityFilter, pagination: Pagination | None = None) -> list[City]:
-        raise NotImplementedError("The method get_all() not implemented yet.")
+        queryset = City.objects.all()
+
+        if filter_.region_name is not None:
+            queryset = queryset.filter(region__name=filter_.region_name.value)
+
+        if pagination:
+            return apply_pagination(queryset, pagination=pagination)
+
+        return list(queryset)

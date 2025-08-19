@@ -4,6 +4,7 @@ from application.builders.app_service.bank_loan import ProjectBankLoanAppService
 from application.builders.app_service.bootstrap import ProjectBootstrapAppServiceBuilder
 from application.builders.app_service.company import CompanyAppServiceBuilder
 from application.builders.app_service.crowdfunding import CrowdfundingAppServiceBuilder
+from application.builders.app_service.geo import CityAppServiceBuilder, RegionAppServiceBuilder
 from application.builders.app_service.government_grant import GovernmentGrantAppServiceBuilder
 from application.builders.app_service.investment import (
     ProjectInvestmentAppServiceBuilder,
@@ -24,6 +25,8 @@ from application.builders.app_service.user import UserAppServiceBuilder
 from application.builders.app_service.user_favorite import UserFavoriteAppAppServiceBuilder
 from application.services.auth import AuthAppService, RegistrationAppService
 from application.services.company import CompanyAppService
+from application.services.geo.city import CityAppService
+from application.services.geo.region import RegionAppService
 from application.services.news import NewsAppService
 from application.services.project_management.accelerator import AcceleratorAppService
 from application.services.project_management.bank_loan import ProjectBankLoanAppService
@@ -72,6 +75,9 @@ class Gateway:
     _project_bank_load_app_service: ProjectBankLoanAppService | None = None
     _project_file_app_service: ProjectFileAppService | None = None
     _project_media_app_service: ProjectMediaAppService | None = None
+
+    _region_app_service: RegionAppService | None = None
+    _city_app_service: CityAppService | None = None
 
     _cookie_service: CookieService | None = None
 
@@ -202,6 +208,18 @@ class Gateway:
         if self._project_media_app_service is None:
             self._project_media_app_service = ProjectMediaAppServiceBuilder.create_service()
         return self._project_media_app_service
+
+    @property
+    def region_app_service(self) -> RegionAppService:
+        if self._region_app_service is None:
+            self._region_app_service = RegionAppServiceBuilder.create_service()
+        return self._region_app_service
+
+    @property
+    def city_app_service(self) -> CityAppService:
+        if self._city_app_service is None:
+            self._city_app_service = CityAppServiceBuilder.create_service()
+        return self._city_app_service
 
     @property
     def cookie_service(self) -> CookieService:

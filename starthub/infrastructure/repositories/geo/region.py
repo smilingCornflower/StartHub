@@ -3,6 +3,7 @@ from domain.models.geo.region import Region
 from domain.repositories.geo.region import RegionReadRepository
 from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import RegionFilter
+from infrastructure.repositories.pagination import apply_pagination
 
 
 class DjRegionReadRepository(RegionReadRepository):
@@ -15,4 +16,9 @@ class DjRegionReadRepository(RegionReadRepository):
         return city
 
     def get_all(self, filter_: RegionFilter, pagination: Pagination | None = None) -> list[Region]:
-        raise NotImplementedError("The method get_all() is not implemented yet.")
+        queryset = Region.objects.all()
+
+        if pagination:
+            return apply_pagination(queryset, pagination=pagination)
+
+        return list(queryset)

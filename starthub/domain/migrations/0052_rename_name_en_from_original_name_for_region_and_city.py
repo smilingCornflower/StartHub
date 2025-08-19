@@ -3,21 +3,21 @@ from django.db import migrations
 from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 from django.db.migrations.state import StateApps
 
-from domain.models.geo.region import Region
-from domain.models.geo.city import City
-
 
 def rename_name_en_from_original_name_for_region_and_city(
-        apps: StateApps, schema_editor: BaseDatabaseSchemaEditor
+    apps: StateApps, schema_editor: BaseDatabaseSchemaEditor
 ) -> None:
+    Region = apps.get_model("domain", "Region")
+    City = apps.get_model("domain", "City")
+
     for region in Region.objects.all():
         original_name = region.__dict__["name"]
-        region.name_en = original_name  # type: ignore[attr-defined]
+        region.name_en = original_name
         region.save()
 
     for city in City.objects.all():
         original_name = city.__dict__["name"]
-        city.name_en = original_name  # type: ignore[attr-defined]
+        city.name_en = original_name
         city.save()
 
 

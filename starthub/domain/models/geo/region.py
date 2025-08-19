@@ -1,16 +1,9 @@
-from idlelib.query import Query
-
 from django.db import models
+from django.db.models import Manager
 from domain.constants import CHAR_FIELD_MEDIUM_LENGTH
 from domain.models.base import BaseModel
-from django.db.models import Manager, QuerySet
-
-
 from domain.models.geo.country import Country
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from domain.models.geo.city import City
 
 class Region(BaseModel):  # type: ignore[django-manager-missing]
     objects: Manager["Region"]
