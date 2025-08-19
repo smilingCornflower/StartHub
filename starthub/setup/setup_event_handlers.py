@@ -12,6 +12,7 @@ from application.builders.event_handler.project import (
     ProjectCreatedProjectMediaHandlerBuilder,
     ProjectCreatedProjectStepHandlerBuilder,
     ProjectCreatedSocialLinkHandlerBuilder,
+    ProjectCreatedUsefulLinkHandlerBuilder,
     ProjectDeletedEventHandlerBuilder,
 )
 from application.builders.event_handler.project_investment import ProjectInvestmentCreatedEventHandlerBuilder
@@ -35,6 +36,7 @@ def setup_project_created_handlers() -> None:
     bank_loan_handler = ProjectCreatedBankLoanHandlerBuilder.create_handler()
     project_file_handler = ProjectCreatedProjectFileHandlerBuilder.create_handler()
     project_media_handler = ProjectCreatedProjectMediaHandlerBuilder.create_handler()
+    useful_link_hadnler = ProjectCreatedUsefulLinkHandlerBuilder.create_handler()
 
     handlers = [
         accelerator_handler,
@@ -50,6 +52,7 @@ def setup_project_created_handlers() -> None:
         bank_loan_handler,
         project_file_handler,
         project_media_handler,
+        useful_link_hadnler,
     ]
     for i in handlers:
         bus.subscribe(event_type=EventType.Project.CREATED, handler=i)
