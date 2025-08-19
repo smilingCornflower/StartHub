@@ -28,8 +28,6 @@ class Command(BaseCommand):
                 region.name_ru = region_ru  # type: ignore[attr-defined]
                 region.save()
 
-            logger.debug(f"Region with name {region.name} created successfully.")
-
             for city_kz, city_ru, city_en in zip(data["kz"][region_kk], data["ru"][region_ru], data["en"][region_en]):
                 city, _ = City.objects.get_or_create(name_en=city_en, region=region)
                 if city.name_kk != city_kz or city.name_ru != city_ru:  # type: ignore[attr-defined]
@@ -37,4 +35,4 @@ class Command(BaseCommand):
                     city.name_ru = city_ru  # type: ignore[attr-defined]
                     city.save()
 
-            logger.info("All cities and regions for Kazakhstan have been created or already existed.")
+        logger.info("All cities and regions for Kazakhstan have been created or already existed.")

@@ -20,6 +20,7 @@ from domain.services.project_management.project_phone import ProjectPhoneService
 from domain.services.project_management.project_social_link import ProjectSocialLinkService
 from domain.services.project_management.step import ProjectStepService
 from domain.services.project_management.team_member import TamMemberService
+from domain.services.project_management.useful_link import ProjectUsefulLinkService
 from infrastructure.cloud_storages.google import google_cloud_storage
 from infrastructure.repositories.company import (
     DjCompanyFounderReadRepository,
@@ -52,6 +53,10 @@ from infrastructure.repositories.project.social_link import (
 )
 from infrastructure.repositories.project.step import DjProjectStepReadRepository, DjProjectStepWriteRepositroy
 from infrastructure.repositories.project.team_member import DjTeamMemberReadRepository, DjTeamMemberWriteRepository
+from infrastructure.repositories.project.useful_link import (
+    DjProjectUsefulLinkReadRepository,
+    DjProjectUsefulLinkWriteRepository,
+)
 
 
 class ProjectServiceBuilder(AbstractDomainServiceBuilder[ProjectService]):
@@ -230,4 +235,14 @@ class ProjectMediaServiceBuilder(AbstractDomainServiceBuilder[ProjectMediaServic
             read_repository=DjProjectMediaReadRepository(),
             permission_service=PermissionServiceBuilder.create_service(),
             clous_storage=google_cloud_storage,
+        )
+
+
+class ProjectUsefulLinkServiceBuilder(AbstractDomainServiceBuilder[ProjectUsefulLinkService]):
+    @staticmethod
+    def create_service() -> ProjectUsefulLinkService:
+        return ProjectUsefulLinkService(
+            permission_service=PermissionServiceBuilder.create_service(),
+            write_repository=DjProjectUsefulLinkWriteRepository(),
+            read_repository=DjProjectUsefulLinkReadRepository(),
         )

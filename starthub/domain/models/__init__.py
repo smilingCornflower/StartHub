@@ -10,6 +10,7 @@ TeamMember = import_module("domain.models.project_management.team_member").TeamM
 ProjectPhone = import_module("domain.models.project_management.phone").ProjectPhone
 ProjectImage = import_module("domain.models.project_management.image").ProjectImage
 ProjectSocialLink = import_module("domain.models.project_management.social_link").ProjectSocialLink
+ProjectUsefulLink = import_module("domain.models.project_management.useful_link").ProjectUsefulLink
 ProjectCategory = import_module("domain.models.project_management.category").ProjectCategory
 ProjectStep = import_module("domain.models.project_management.step").ProjectStep
 ProjectIncubator = import_module("domain.models.project_management.incubator").ProjectIncubator

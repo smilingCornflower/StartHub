@@ -112,6 +112,13 @@ class BankLoanDto:
 
 
 @dataclass(frozen=True)
+class UsefulLinkDto:
+    id: int
+    name: str
+    url: str
+
+
+@dataclass(frozen=True)
 class ProjectDto:
     id: int
     name: str
@@ -152,5 +159,6 @@ class ProjectFullDto(ProjectDto):
     churn_rate: float | None = None
     retention_rate: float | None = None
     conversion_rate: float | None = None
+    useful_links: list[UsefulLinkDto] | None = None
 
     total_investment_amount: float = 0

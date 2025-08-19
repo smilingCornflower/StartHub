@@ -258,3 +258,20 @@ class ProjectMediaMaxAmountException(ValidationException, ProjectMediaException)
 
 class ProjectMediaNotFoundException(NotFoundException, ProjectMediaException):
     pass
+
+
+# ==== Project UsefulLink Exceptions ====
+class ProjectUsefulLinkException(ProjectException):
+    pass
+
+
+class ProjectUsefulLinkNotFoundException(NotFoundException, ProjectUsefulLinkException):
+    pass
+
+
+class ProjectUsefulLinkAlreadyExistsException(ProjectException):
+    pass
+
+
+class ProjectUsefulLinkMaxAmountException(ValidationException, ProjectUsefulLinkException):
+    pass

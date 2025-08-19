@@ -55,6 +55,7 @@ from domain.value_objects.project.metric import (
 )
 from domain.value_objects.project.project import ProjectCreateCommand
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
+from domain.value_objects.project.useful_link import UsefulLinkCreateCommand, UsefulLinkName
 from loguru import logger
 from presentation.request_converters.common import build_address_create_command, get_required_field, parse_date
 from presentation.request_converters.project.common import extract_steps
@@ -98,17 +99,13 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
     project_files = _extract_project_files(files=files)
     project_media = _extract_project_media(files=files)
 
-    # Process related entities
-    team_members = _extract_team_members(data)
-    company_founder = _extract_company_founder(data)
-
     command = ProjectCreateCommand(
         **project_info,
         **company_info,
         files=project_files,
         media=project_media,
-        team_members=team_members,
-        company_founder=company_founder,
+        team_members=_extract_team_members(data),
+        company_founder=_extract_company_founder(data),
         incubator=_extract_incubator_if_present(raw_data=data),
         accelerator=_extract_accelerator_if_present(raw_data=data),
         crowdunding=_extract_crowdfunding_if_present(raw_data=data),
@@ -116,6 +113,7 @@ def request_to_project_create_command(request: Request, user_id: int) -> Project
         government_grant=_extract_government_create_command_if_presents(raw_data=data),
         bootstrap=_extract_bootstrap_create_command_if_presents(raw_data=data),
         bank_loan=_extract_bank_loan_create_command_if_presents(raw_data=data),
+        useful_links=_extract_useful_links_if_present(raw_data=data),
     )
 
     logger.debug(f"command: \n{pformat(command.__dict__)}")
@@ -161,6 +159,20 @@ def _extract_project_info(project_data: dict[str, Any], user_id: int) -> dict[st
             ConversionRate(value=project_data["conversion_rate"]) if "conversion_rate" in project_data else None
         ),
     }
+
+
+def _extract_useful_links_if_present(raw_data: dict[str, str]) -> list[UsefulLinkCreateCommand] | None:
+    if "useful_links" not in raw_data:
+        return None
+    useful_links_data = _parse_json_field(raw_data, "useful_links")
+    result = [
+        UsefulLinkCreateCommand(
+            name=UsefulLinkName(value=get_required_field(useful_link, "name", "useful_link.name")),
+            url=get_required_field(useful_link, "url", "useful_link.url"),
+        )
+        for useful_link in useful_links_data
+    ]
+    return result
 
 
 def _extract_bank_loan_create_command_if_presents(raw_data: dict[str, str]) -> ProjectBankLoanCreateCommand | None:
@@ -225,7 +237,6 @@ def _extract_crowdfunding_if_present(raw_data: dict[str, str]) -> ProjectCrowdfu
     if "crowdfunding" not in raw_data:
         return None
     crowdfunding_data = _parse_json_field(raw_data, "crowdfunding")
-    logger.debug(f"crowdfunding_data = {crowdfunding_data}")
 
     crowdfunding = ProjectCrowdfundingCreateCommand(
         name=ProjectCrowdfundingName(value=get_required_field(crowdfunding_data, "name", "crowdfunding.name")),
@@ -240,7 +251,6 @@ def _extract_accelerator_if_present(raw_data: dict[str, str]) -> ProjectAccelera
     if "accelerator" not in raw_data:
         return None
     accelerator_data = _parse_json_field(raw_data, "accelerator")
-    logger.debug(f"accelerator_data = {accelerator_data}")
 
     accelerator = ProjectAcceleratorCreateCommand(
         name=AcceleratorName(value=get_required_field(accelerator_data, "name")),
@@ -253,7 +263,6 @@ def _extract_incubator_if_present(raw_data: dict[str, str]) -> IncubatorCreateCo
     if "incubator" not in raw_data:
         return None
     incubator_data = _parse_json_field(raw_data, "incubator")
-    logger.debug(f"incubator_data = {incubator_data}")
 
     incubator = IncubatorCreateCommand(
         name=IncubatorName(value=get_required_field(incubator_data, "name", "incubator.name")),

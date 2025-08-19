@@ -34,6 +34,7 @@ from infrastructure.repositories.project.media import DjProjectMediaReadReposito
 from infrastructure.repositories.project.project import DjProjectReadRepository
 from infrastructure.repositories.project.project_file import DjProjectFileReadRepository
 from infrastructure.repositories.project.step import DjProjectStepReadRepository
+from infrastructure.repositories.project.useful_link import DjProjectUsefulLinkReadRepository
 from infrastructure.repositories.user import DjUserReadRepository
 from infrastructure.repositories.user_favorite import DjUserFavoriteReadRepository
 from infrastructure.services.project_search import ProjectSearchService
@@ -95,6 +96,7 @@ class ProjectGetAppServiceBuilder(AbstractAppServiceBuilder[ProjectGetAppService
             project_government_grant_read_repository=DjProjectGovernmentGrantReadRepository(),
             project_bank_loan_read_repository=DjProjectBankLoanReadRepository(),
             project_bootstrap_read_repository=DjProjectBootstrapReadRepository(),
+            project_useful_link_read_repository=DjProjectUsefulLinkReadRepository(),
             cloud_storage=google_cloud_storage,
         )
 
