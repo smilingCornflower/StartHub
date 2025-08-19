@@ -4,7 +4,6 @@ from django.db.backends.base.schema import BaseDatabaseSchemaEditor
 from django.db.migrations.state import StateApps
 
 
-
 def rename_name_en_from_original_name_for_region_and_city(
     apps: StateApps, schema_editor: BaseDatabaseSchemaEditor
 ) -> None:
@@ -13,12 +12,12 @@ def rename_name_en_from_original_name_for_region_and_city(
 
     for region in Region.objects.all():
         original_name = region.__dict__["name"]
-        region.name_en = original_name  # type: ignore[attr-defined]
+        region.name_en = original_name
         region.save()
 
     for city in City.objects.all():
         original_name = city.__dict__["name"]
-        city.name_en = original_name  # type: ignore[attr-defined]
+        city.name_en = original_name
         city.save()
 
 
