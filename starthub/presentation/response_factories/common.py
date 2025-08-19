@@ -54,6 +54,9 @@ from domain.exceptions.project_management import (
     ProjectNotFoundException,
     ProjectPlanNotFoundException,
     ProjectStepMaxAmountException,
+    ProjectUsefulLinkAlreadyExistsException,
+    ProjectUsefulLinkMaxAmountException,
+    ProjectUsefulLinkNotFoundException,
 )
 from domain.exceptions.user import EmailAlreadyExistsException, UserNotFoundException, UserPhoneAlreadyExistException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException, UserFavoriteNotFoundException
@@ -263,4 +266,12 @@ class ProjectMediaErrorResponseFactory(CommonErrorResponseFactory):
         ProjectMediaMaxAmountException: ("MAX_MEDIA_AMOUNT_EXCEEDED", 409),
         ImageFileTooLargeException: ("IMAGE_TOO_LARGE", 422),
         VideoFileTooLargeException: ("VIDEO_TOO_LARGE", 422),
+    }
+
+
+class ProjectUsefulLinkErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {
+        ProjectUsefulLinkNotFoundException: ("PROJECT_USEFUL_LINK_NOT_FOUND", 404),
+        ProjectUsefulLinkAlreadyExistsException: ("USEFUL_LINK_ALREADY_EXISTS", 409),
+        ProjectUsefulLinkMaxAmountException: ("MAX_USEFUL_LINK_AMOUNT_EXCEEDED", 409),
     }

@@ -8,7 +8,6 @@ from domain.repositories.user import UserReadRepository
 from domain.value_objects.common import Id
 from domain.value_objects.filter import PermissionFilter
 from domain.value_objects.user import PermissionVo
-from loguru import logger
 
 
 class PermissionService(AbstractDomainService):
@@ -55,5 +54,4 @@ class PermissionService(AbstractDomainService):
         else:
             permission_value = f"{action}.{scope}.{model.get_permission_key()}"
 
-        logger.debug(f"{permission_value=}")
         return PermissionVo(value=permission_value)

@@ -13,6 +13,7 @@ from presentation.views.metric import MetricView
 from presentation.views.project import MeProjectView, ProjectImageView, ProjectPlanView, ProjectSearchView, ProjectView
 from presentation.views.project_files import ProjectFileView
 from presentation.views.project_media import ProjectMediaView
+from presentation.views.project_useful_link import ProjectUsefulLinkView
 
 urlpatterns = [
     path("", ProjectView.as_view(), name="projects"),
@@ -47,4 +48,6 @@ urlpatterns = [
     # Media
     path("<int:project_id>/media/", ProjectMediaView.as_view()),
     path("media/<int:project_media_id>/", ProjectMediaView.as_view()),
+    # Useful Links
+    path("<int:project_id>/useful_links/", ProjectUsefulLinkView.as_view()),
 ]

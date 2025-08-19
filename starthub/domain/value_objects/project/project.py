@@ -37,6 +37,7 @@ from domain.value_objects.project.metric import (
 )
 from domain.value_objects.project.step import ProjectStepCreateCommand
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
+from domain.value_objects.project.useful_link import UsefulLink
 
 
 class ProjectCreateCommand(BaseCommand):
@@ -83,6 +84,7 @@ class ProjectCreateCommand(BaseCommand):
     churn_rate: ChurnRate | None = None
     retention_rate: RetentionRate | None = None
     conversion_rate: ConversionRate | None = None
+    useful_links: list[UsefulLink] | None = None
 
 
 class ProjectUpdateCommand(BaseCommand):
