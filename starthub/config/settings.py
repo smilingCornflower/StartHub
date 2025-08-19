@@ -113,10 +113,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
+    "domain",
     "setup",
     "rest_framework",
-    "domain",
     "corsheaders",
+    "modeltranslation",
 ]
 
 MIDDLEWARE = [
@@ -180,6 +181,12 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK: dict[str, list[str]] = {
     "DEFAULT_AUTHENTICATION_CLASSES": [],
 }
+LANGUAGES = (
+    ("ru", "Russian"),
+    ("kz", "Kazakh"),
+    ("en", "English"),
+)
+MODELTRANSLATION_DEFAULT_LANGUAGE = "en"
 
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
@@ -195,6 +202,3 @@ class CookiesPolicy:
         SAMESITE = "Lax"
         HTTPONLY = True
         SECURE = False
-
-
-# =====================================================================================================================

@@ -1,11 +1,22 @@
+from idlelib.query import Query
+
 from django.db import models
 from domain.constants import CHAR_FIELD_MEDIUM_LENGTH
 from domain.models.base import BaseModel
+from django.db.models import Manager, QuerySet
 
 
-class Region(BaseModel):
+from domain.models.geo.country import Country
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from domain.models.geo.city import City
+
+class Region(BaseModel):  # type: ignore[django-manager-missing]
+    objects: Manager["Region"]
+
     name = models.CharField(max_length=CHAR_FIELD_MEDIUM_LENGTH)
-    country = models.ForeignKey("domain.Country", on_delete=models.RESTRICT, related_name="regions")
+    country = models.ForeignKey(Country, on_delete=models.RESTRICT, related_name="regions")
 
     class Meta:
         db_table = "regions"
