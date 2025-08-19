@@ -3,7 +3,7 @@ from domain.ports.filter import AbstractFilter
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
 from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode, CountryId
-from domain.value_objects.geo import AddressId, CityId, RegionId
+from domain.value_objects.geo import AddressId, CityId, RegionId, RegionName
 from domain.value_objects.project.common import ProjectStage, ProjectStatus
 from domain.value_objects.project.investment import ProjectInvestmentId
 from domain.value_objects.user import Email
@@ -107,7 +107,7 @@ class AddressFilter(AbstractFilter):
 
 
 class CityFilter(AbstractFilter):
-    pass
+    region_name: RegionName | None = None
 
 
 class RegionFilter(AbstractFilter):

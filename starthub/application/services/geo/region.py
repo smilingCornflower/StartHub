@@ -18,7 +18,7 @@ class RegionAppService(AbstractAppService):
     def get(
         self, command: RegionGetCommand, pagination: Pagination | None = None
     ) -> list[RegionDto | RegionAllLangDto]:
-        region_filter = self.convert_command_to_filter(command=command)
+        region_filter = self._convert_command_to_filter(command=command)
         regions = self._region_read_repository.get_all(filter_=region_filter, pagination=pagination)
 
         if command.all_languages is True:
@@ -37,5 +37,5 @@ class RegionAppService(AbstractAppService):
     def _create_dto(self, region: Region) -> RegionDto:
         return RegionDto(id=region.id, name=region.name)
 
-    def convert_command_to_filter(self, command: RegionGetCommand) -> RegionFilter:
+    def _convert_command_to_filter(self, command: RegionGetCommand) -> RegionFilter:
         return RegionFilter()

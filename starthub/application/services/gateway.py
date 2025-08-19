@@ -4,7 +4,7 @@ from application.builders.app_service.bank_loan import ProjectBankLoanAppService
 from application.builders.app_service.bootstrap import ProjectBootstrapAppServiceBuilder
 from application.builders.app_service.company import CompanyAppServiceBuilder
 from application.builders.app_service.crowdfunding import CrowdfundingAppServiceBuilder
-from application.builders.app_service.geo import RegionAppServiceBuilder
+from application.builders.app_service.geo import CityAppServiceBuilder, RegionAppServiceBuilder
 from application.builders.app_service.government_grant import GovernmentGrantAppServiceBuilder
 from application.builders.app_service.investment import (
     ProjectInvestmentAppServiceBuilder,
@@ -25,6 +25,7 @@ from application.builders.app_service.user import UserAppServiceBuilder
 from application.builders.app_service.user_favorite import UserFavoriteAppAppServiceBuilder
 from application.services.auth import AuthAppService, RegistrationAppService
 from application.services.company import CompanyAppService
+from application.services.geo.city import CityAppService
 from application.services.geo.region import RegionAppService
 from application.services.news import NewsAppService
 from application.services.project_management.accelerator import AcceleratorAppService
@@ -76,6 +77,7 @@ class Gateway:
     _project_media_app_service: ProjectMediaAppService | None = None
 
     _region_app_service: RegionAppService | None = None
+    _city_app_service: CityAppService | None = None
 
     _cookie_service: CookieService | None = None
 
@@ -212,6 +214,12 @@ class Gateway:
         if self._region_app_service is None:
             self._region_app_service = RegionAppServiceBuilder.create_service()
         return self._region_app_service
+
+    @property
+    def city_app_service(self) -> CityAppService:
+        if self._city_app_service is None:
+            self._city_app_service = CityAppServiceBuilder.create_service()
+        return self._city_app_service
 
     @property
     def cookie_service(self) -> CookieService:

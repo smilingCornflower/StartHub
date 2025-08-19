@@ -69,3 +69,8 @@ class AddressUpdatePayload(AbstractUpdatePayload):
 
 class RegionGetCommand(BaseCommand):
     all_languages: bool = False
+
+
+class CityGetCommand(BaseCommand):
+    all_languages: bool = False
+    region_name: RegionName | None

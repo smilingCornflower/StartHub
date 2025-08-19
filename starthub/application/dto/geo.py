@@ -33,3 +33,11 @@ class RegionAllLangDto:
 class CityDto:
     id: int
     name: str
+
+
+@dataclass(frozen=True)
+class CityAllLangDto:
+    id: int
+    name_kk: str
+    name_ru: str
+    name_en: str
