@@ -65,3 +65,7 @@ class AddressCreatePayload(AbstractCreatePayload):
 
 class AddressUpdatePayload(AbstractUpdatePayload):
     pass
+
+
+class RegionGetCommand(BaseCommand):
+    all_languages: bool = False

@@ -3,6 +3,7 @@ import re
 from config.settings import BASE_DIR
 from domain.enums.file_extension import FileExtensionEnum
 
+DEFAULT_NOT_AVAILABLE = "N/A"
 MEGABYTE = 1024 * 1024  # in kilobytes
 
 CHAR_FIELD_MAX_LENGTH = 255
