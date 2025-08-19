@@ -1,7 +1,12 @@
 import json
+from dataclasses import asdict
 
+from application.dto.geo import RegionDto
+from application.services.gateway import gateway
 from config.settings import BASE_DIR
+from django.utils import translation
 from loguru import logger
+from presentation.request_converters.geo import request_to_region_filter
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -35,7 +40,8 @@ class RegionView(APIView):
     def get(request: Request) -> Response:
         print()
         logger.info("GET /regions/")
+        logger.debug(f"current language = {translation.get_language()}")
 
-        with open(cities_and_regions_json_path) as f:
-            data = json.load(f)
-            return Response(list(data))
+        region_filter = request_to_region_filter(request=request)
+        regions: list[RegionDto] = gateway.region_app_service.get(filter_=region_filter)
+        return Response(map(asdict, regions))
