@@ -1,79 +1,129 @@
 {
-  "Abai": [
-    "Ayagoz",
-    "Kurchatov",
-    "Semey"
-  ],
-  "Akmola": [
-    "Kosshy",
-    "Stepnogorsk"
-  ],
-  "Aktobe": [
-    "Aktobe"
-  ],
-  "Almaty": [
-    "Almaty"
-  ],
-  "Astana": [
-    "Astana"
-  ],
-  "Atyrau": [
-    "Atyrau"
-  ],
-  "Baikonur": [
-    "Baikonur"
-  ],
-  "East Kazakhstan": [
-    "Ridder",
-    "Zaysanskaya"
-  ],
-  "Jetisu": [
-    "Taldykorgan",
-    "Tekeli"
-  ],
-  "Karaganda": [
-    "Balkhash",
-    "Karaganda",
-    "Saran",
-    "Shakhtinsk",
-    "Temirtau"
-  ],
-  "Kostanay": [
-    "Lisakovsk",
-    "Rudniy"
-  ],
-  "Kyzylorda": [
-    "Kyzylorda"
-  ],
-  "Mangystau": [
-    "Aktau",
-    "Zhanaozen"
-  ],
-  "North Kazakhstan": [
-    "Petropavlovsk"
-  ],
-  "Pavlodar": [
-    "Aksu",
-    "Ekibastuz",
-    "Pavlodar"
-  ],
-  "Shymkent": [
-    "Shymkent"
-  ],
-  "Turkistan": [
-    "Arys",
-    "Kentau",
-    "Turkestan"
-  ],
-  "Ulytau": [
-    "Karazhal",
-    "Satpayev",
-    "Zhezkazgan"
-  ],
-  "West Kazakhstan": [
-    "Uralsk"
-  ],
-  "Zhambyl": [
-    "Taraz"
-  ]
+    "kz": {
+        "Абай": [
+            "Аягөз", "Курчатов", "Семей"
+        ], "Ақмола": [
+            "Қосшы", "Степногорск"
+        ], "Ақтөбе": [
+            "Ақтөбе"
+        ], "Алматы": [
+            "Алматы"
+        ], "Астана": [
+            "Астана"
+        ], "Атырау": [
+            "Атырау"
+        ], "Байқоңыр": [
+            "Байқоңыр"
+        ], "Шығыс Қазақстан": [
+            "Риддер", "Зайсан"
+        ], "Жетісу": [
+            "Талдықорған", "Текелі"
+        ], "Қарағанды": [
+            "Балқаш", "Қарағанды", "Саран", "Шахтинск", "Теміртау"
+        ], "Қостанай": [
+            "Лисаковск", "Рудный"
+        ], "Қызылорда": [
+            "Қызылорда"
+        ], "Маңғыстау": [
+            "Ақтау", "Жаңаөзен"
+        ], "Солтүстік Қазақстан": [
+            "Петропавл"
+        ], "Павлодар": [
+            "Ақсу", "Екібастұз", "Павлодар"
+        ], "Шымкент": [
+            "Шымкент"
+        ], "Түркістан": [
+            "Арыс", "Кентау", "Түркістан"
+        ], "Ұлытау": [
+            "Қаражал", "Сәтбаев", "Жезқазған"
+        ], "Батыс Қазақстан": [
+            "Орал"
+        ], "Жамбыл": [
+            "Тараз"
+        ]
+    }, "ru": {
+    "Абай": [
+        "Аягоз", "Курчатов", "Семей"
+    ], "Акмолинская": [
+        "Косшы", "Степногорск"
+    ], "Актюбинская": [
+        "Актобе"
+    ], "Алматы": [
+        "Алматы"
+    ], "Астана": [
+        "Астана"
+    ], "Атырауская": [
+        "Атырау"
+    ], "Байконур": [
+        "Байконур"
+    ], "Восточно-Казахстанская": [
+        "Риддер", "Зайсан"
+    ], "Жетысуская": [
+        "Талдыкорган", "Текели"
+    ], "Карагандинская": [
+        "Балхаш", "Караганда", "Сарань", "Шахтинск", "Темиртау"
+    ], "Костанайская": [
+        "Лисаковск", "Рудный"
+    ], "Кызылординская": [
+        "Кызылорда"
+    ], "Мангистауская": [
+        "Актау", "Жанаозен"
+    ], "Северо-Казахстанская": [
+        "Петропавловск"
+    ], "Павлодарская": [
+        "Аксу", "Экибастуз", "Павлодар"
+    ], "Шымкент": [
+        "Шымкент"
+    ], "Туркестанская": [
+        "Арыс", "Кентау", "Туркестан"
+    ], "Улытауская": [
+        "Каражал", "Сатпаев", "Жезказган"
+    ], "Западно-Казахстанская": [
+        "Уральск"
+    ], "Жамбылская": [
+        "Тараз"
+    ]
+}, "en": {
+    "Abai": [
+        "Ayagoz", "Kurchatov", "Semey"
+    ], "Akmola": [
+        "Kosshy", "Stepnogorsk"
+    ], "Aktobe": [
+        "Aktobe"
+    ], "Almaty": [
+        "Almaty"
+    ], "Astana": [
+        "Astana"
+    ], "Atyrau": [
+        "Atyrau"
+    ], "Baikonur": [
+        "Baikonur"
+    ], "East Kazakhstan": [
+        "Ridder", "Zaysanskaya"
+    ], "Jetisu": [
+        "Taldykorgan", "Tekeli"
+    ], "Karaganda": [
+        "Balkhash", "Karaganda", "Saran", "Shakhtinsk", "Temirtau"
+    ], "Kostanay": [
+        "Lisakovsk", "Rudniy"
+    ], "Kyzylorda": [
+        "Kyzylorda"
+    ], "Mangystau": [
+        "Aktau", "Zhanaozen"
+    ], "North Kazakhstan": [
+        "Petropavlovsk"
+    ], "Pavlodar": [
+        "Aksu", "Ekibastuz", "Pavlodar"
+    ], "Shymkent": [
+        "Shymkent"
+    ], "Turkistan": [
+        "Arys", "Kentau", "Turkestan"
+    ], "Ulytau": [
+        "Karazhal", "Satpayev", "Zhezkazgan"
+    ], "West Kazakhstan": [
+        "Uralsk"
+    ], "Zhambyl": [
+        "Taraz"
+    ]
+}
 }
