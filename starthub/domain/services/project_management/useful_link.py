@@ -1,6 +1,10 @@
 from domain.constants import USEFUL_LINKS_MAX_AMOUNT
 from domain.enums.permission import ActionEnum, ScopeEnum
-from domain.exceptions.permissions import AddDeniedPermissionException, DeleteDeniedPermissionException
+from domain.exceptions.permissions import (
+    AddDeniedPermissionException,
+    DeleteDeniedPermissionException,
+    UpdateDeniedPermissionException,
+)
 from domain.exceptions.project_management import ProjectUsefulLinkMaxAmountException
 from domain.models.project_management.project import Project
 from domain.models.project_management.useful_link import ProjectUsefulLink
@@ -36,7 +40,21 @@ class UsefulLinkPermissionService(AbstractDomainService):
 
     def _check_update_permission(self, user: User, useful_link: ProjectUsefulLink) -> None:
         """:raises UpdateDeniedPermissionException:"""
-        raise NotImplementedError
+
+        update_permission = self._permission_service.create_permission_vo(
+            model=ProjectUsefulLink,
+            action=ActionEnum.CHANGE,
+            scope=ScopeEnum.OWN,
+        )
+        has_permission = self._permission_service.has_user_permission(user=user, permission_vo=update_permission)
+
+        if has_permission and useful_link.project.creator == user:
+            return None
+        else:
+            logger.exception(
+                f"User(id={user.id}) doesn't have enough permissions to update ProjectUsefulLink(id={useful_link.id})."
+            )
+        raise UpdateDeniedPermissionException("You don't have enough permissions to change this resource.")
 
     def _check_delete_permission(self, user: User, useful_link: ProjectUsefulLink) -> None:
         """:raises DeleteDeniedPermissionException:"""
@@ -83,7 +101,8 @@ class ProjectUsefulLinkService(UsefulLinkPermissionService):
         return None
 
     def update(self, user: User, useful_link: ProjectUsefulLink, payload: UsefulLinkUpdatePayload) -> None:
-        raise NotImplementedError
+        self._check_update_permission(user=user, useful_link=useful_link)
+        self._write_repository.update(data=payload)
 
     def delete(self, user: User, useful_link: ProjectUsefulLink) -> None:
         self._check_delete_permission(user=user, useful_link=useful_link)

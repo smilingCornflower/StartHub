@@ -9,7 +9,13 @@ from domain.repositories.user import UserReadRepository
 from domain.services.project_management.useful_link import ProjectUsefulLinkService
 from domain.value_objects.common import Id
 from domain.value_objects.filter import ProjectUsefulLinkFilter
-from domain.value_objects.project.useful_link import UsefulLinkCreateCommand, UsefulLinkCreatePayload, UsefulLinkId
+from domain.value_objects.project.useful_link import (
+    UsefulLinkCreateCommand,
+    UsefulLinkCreatePayload,
+    UsefulLinkId,
+    UsefulLinkUpdateCommand,
+    UsefulLinkUpdatePayload,
+)
 
 
 class ProjectUsefulLinkAppService(AbstractAppService):
@@ -31,7 +37,7 @@ class ProjectUsefulLinkAppService(AbstractAppService):
 
         user: User = self._user_read_repository.get_by_id(id_=user_id)
         project: Project = self._project_read_repository.get_by_id(id_=project_id)
-        payload = self._convert_command_to_payload(command=command, project_id=project_id)
+        payload = self._convert_create_command_to_payload(command=command, project_id=project_id)
 
         self._service.create(user=user, project=project, payload=payload)
 
@@ -45,9 +51,28 @@ class ProjectUsefulLinkAppService(AbstractAppService):
 
         return None
 
-    def _convert_command_to_payload(self, command: UsefulLinkCreateCommand, project_id: Id) -> UsefulLinkCreatePayload:
+    def _convert_create_command_to_payload(
+        self, command: UsefulLinkCreateCommand, project_id: Id
+    ) -> UsefulLinkCreatePayload:
         return UsefulLinkCreatePayload(
             project_id=project_id,
+            name=command.name,
+            url=command.url,
+        )
+
+    # ==== UPDATE ======================================================================================================
+    def update(self, user_id: Id, useful_link_id: UsefulLinkId, command: UsefulLinkUpdateCommand) -> None:
+        user = self._user_read_repository.get_by_id(id_=user_id)
+        link = self._useful_link_read_repository.get_by_id(id_=useful_link_id)
+        payload = self._convert_update_command_to_payload(command=command, useful_link_id=useful_link_id)
+
+        self._service.update(user=user, useful_link=link, payload=payload)
+
+    def _convert_update_command_to_payload(
+        self, command: UsefulLinkUpdateCommand, useful_link_id: UsefulLinkId
+    ) -> UsefulLinkUpdatePayload:
+        return UsefulLinkUpdatePayload(
+            useful_link_id=useful_link_id,
             name=command.name,
             url=command.url,
         )

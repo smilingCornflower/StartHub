@@ -24,7 +24,9 @@ class UsefulLinkCreatePayload(AbstractCreatePayload):
 
 
 class UsefulLinkUpdatePayload(AbstractUpdatePayload):
-    pass
+    useful_link_id: UsefulLinkId
+    name: UsefulLinkName | None
+    url: str | None
 
 
 class UsefulLinkCreateCommand(BaseCommand):
@@ -33,4 +35,5 @@ class UsefulLinkCreateCommand(BaseCommand):
 
 
 class UsefulLinkUpdateCommand(BaseCommand):
-    pass
+    name: UsefulLinkName | None = None
+    url: str | None = None

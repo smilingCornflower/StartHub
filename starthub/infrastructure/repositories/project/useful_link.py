@@ -43,7 +43,20 @@ class DjProjectUsefulLinkWriteRepository(ProjectUsefulLinkWriteRepository):
         )
 
     def update(self, data: UsefulLinkUpdatePayload) -> ProjectUsefulLink:
-        raise NotImplementedError("The method update() is not implemented yet.")
+        """:raises ProjectUsefulLinkNotFoundException:"""
+        useful_link: ProjectUsefulLink | None = ProjectUsefulLink.objects.filter(id=data.useful_link_id.value).first()
+        if useful_link is None:
+            raise ProjectUsefulLinkNotFoundException(
+                f"Project useful link with id = {data.useful_link_id.value} not found."
+            )
+
+        if data.name is not None:
+            useful_link.name = data.name.value
+        if data.url is not None:
+            useful_link.url = data.url
+
+        useful_link.save()
+        return useful_link
 
     def delete_by_id(self, id_: UsefulLinkId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")
