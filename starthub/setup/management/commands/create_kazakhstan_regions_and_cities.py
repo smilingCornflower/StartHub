@@ -23,18 +23,18 @@ class Command(BaseCommand):
 
         for region_kz, region_ru, region_en in zip(data["kz"], data["ru"], data["en"]):
             region, _ = Region.objects.get_or_create(name_en=region_en, country=country)
-            if region.name_kz != region_kz or region.name_ru != region_ru:
-                region.name_kz = region_kz
-                region.name_ru = region_ru
+            if region.name_kz != region_kz or region.name_ru != region_ru:  # type: ignore[attr-defined]
+                region.name_kz = region_kz  # type: ignore[attr-defined]
+                region.name_ru = region_ru  # type: ignore[attr-defined]
                 region.save()
 
             logger.debug(f"Region with name {region.name} created successfully.")
 
             for city_kz, city_ru, city_en in zip(data["kz"][region_kz], data["ru"][region_ru], data["en"][region_en]):
                 city, _ = City.objects.get_or_create(name_en=city_en, region=region)
-                if city.name_kz != city_kz or city.name_ru != city_ru:
-                    city.name_kz = city_kz
-                    city.name_ru = city_ru
+                if city.name_kz != city_kz or city.name_ru != city_ru:  # type: ignore[attr-defined]
+                    city.name_kz = city_kz  # type: ignore[attr-defined]
+                    city.name_ru = city_ru  # type: ignore[attr-defined]
                     city.save()
 
             logger.info("All cities and regions for Kazakhstan have been created or already existed.")

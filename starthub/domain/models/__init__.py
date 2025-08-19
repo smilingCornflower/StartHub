@@ -28,8 +28,8 @@ FundingModel = import_module("domain.models.project_management.funding_model").F
 Company = import_module("domain.models.company").Company
 
 Country = import_module("domain.models.geo.country").Country
-Region = import_module("domain.models.geo.region").Region
 City = import_module("domain.models.geo.city").City
+Region = import_module("domain.models.geo.region").Region
 Address = import_module("domain.models.geo.address").Address
 
 News = import_module("domain.models.news").News

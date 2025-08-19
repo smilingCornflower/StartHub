@@ -57,6 +57,7 @@ warn_no_return = true
 cache_dir = ".mypy_cache"
 exclude = ["^migrations/.*", "bar.py", 'foo.py', 'tests/']
 
+
 [tool.django-stubs]
 django_settings_module = "config.settings"
 

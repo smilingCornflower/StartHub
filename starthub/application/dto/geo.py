@@ -13,3 +13,15 @@ class AddressDto:
     postal_code: str | None = None
 
     raw_address: str | None = None
+
+
+@dataclass(frozen=True)
+class RegionDto:
+    id: int
+    name: str
+
+
+@dataclass(frozen=True)
+class CityDto:
+    id: int
+    name: str
