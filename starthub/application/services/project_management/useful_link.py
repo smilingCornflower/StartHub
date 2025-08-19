@@ -1,6 +1,7 @@
 from application.ports.service import AbstractAppService
 from domain.exceptions.project_management import ProjectUsefulLinkAlreadyExistsException
 from domain.models.project_management.project import Project
+from domain.models.project_management.useful_link import ProjectUsefulLink
 from domain.models.user import User
 from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.project.useful_link import ProjectUsefulLinkReadRepository
@@ -8,7 +9,7 @@ from domain.repositories.user import UserReadRepository
 from domain.services.project_management.useful_link import ProjectUsefulLinkService
 from domain.value_objects.common import Id
 from domain.value_objects.filter import ProjectUsefulLinkFilter
-from domain.value_objects.project.useful_link import UsefulLinkCreateCommand, UsefulLinkCreatePayload
+from domain.value_objects.project.useful_link import UsefulLinkCreateCommand, UsefulLinkCreatePayload, UsefulLinkId
 
 
 class ProjectUsefulLinkAppService(AbstractAppService):
@@ -24,6 +25,7 @@ class ProjectUsefulLinkAppService(AbstractAppService):
         self._user_read_repository = user_read_repository
         self._project_read_repository = project_read_repository
 
+    # ==== CREATE ======================================================================================================
     def create(self, user_id: Id, project_id: Id, command: UsefulLinkCreateCommand) -> None:
         self._check_dublicate_links(project_id=project_id, link=command.url)
 
@@ -49,3 +51,10 @@ class ProjectUsefulLinkAppService(AbstractAppService):
             name=command.name,
             url=command.url,
         )
+
+    # ==== DELETE ======================================================================================================
+    def delete(self, user_id: Id, useful_link_id: UsefulLinkId) -> None:
+        user: User = self._user_read_repository.get_by_id(id_=user_id)
+        link: ProjectUsefulLink = self._useful_link_read_repository.get_by_id(id_=useful_link_id)
+
+        self._service.delete(user=user, useful_link=link)

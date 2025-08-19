@@ -50,4 +50,5 @@ urlpatterns = [
     path("media/<int:project_media_id>/", ProjectMediaView.as_view()),
     # Useful Links
     path("<int:project_id>/useful_links/", ProjectUsefulLinkView.as_view()),
+    path("useful_links/<int:useful_link_id>/", ProjectUsefulLinkView.as_view()),
 ]

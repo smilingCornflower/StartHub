@@ -1,6 +1,7 @@
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id
+from domain.value_objects.project.useful_link import UsefulLinkId
 from infrastructure.auth.user import get_user_id_or_raises
 from presentation.constants import SUCCESS
 from presentation.request_converters.project.useful_link import request_to_useful_link_create_command
@@ -23,5 +24,17 @@ class ProjectUsefulLinkView(APIView):
             )
 
             return Response({"code": SUCCESS}, status=status.HTTP_201_CREATED)
+        except (CustomException, ValidationError) as e:
+            return ProjectUsefulLinkErrorResponseFactory.create_response(exception=e)
+
+    @staticmethod
+    def delete(request: Request, useful_link_id: int) -> Response:
+        try:
+            user_id: Id = get_user_id_or_raises(request=request)
+            gateway.project_useful_link_app_service.delete(
+                user_id=user_id, useful_link_id=UsefulLinkId(value=useful_link_id)
+            )
+
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
         except (CustomException, ValidationError) as e:
             return ProjectUsefulLinkErrorResponseFactory.create_response(exception=e)
