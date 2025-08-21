@@ -26,6 +26,8 @@ class DjCityReadRepository(CityReadRepository):
                 field = f"region__name_{lang_code}"
                 q_objects |= Q(**{field: filter_.region_name.value})
 
+            queryset = queryset.filter(q_objects)
+
         if pagination:
             return apply_pagination(queryset, pagination=pagination)
 
