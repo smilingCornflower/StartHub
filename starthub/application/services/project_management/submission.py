@@ -24,3 +24,11 @@ class ProjectSubmissionAppService(AbstractAppService):
         project = self._project_read_repository.get_by_id(id_=project_id)
 
         self._project_submission_service.approve(user=user, project=project)
+
+    def reject(self, user_id: Id, project_id: Id) -> None:
+        logger.info(f"User(id={user_id.value}) is rejecting submission for the Project(id={project_id.value}).")
+
+        user = self._user_read_repository.get_by_id(id_=user_id)
+        project = self._project_read_repository.get_by_id(id_=project_id)
+
+        self._project_submission_service.reject(user=user, project=project)

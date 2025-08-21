@@ -1,6 +1,7 @@
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.enums.project_status import ProjectStatusEnum
 from domain.exceptions.permissions import UpdateDeniedPermissionException
+from domain.exceptions.project_management import ProjectSubmissionAlreadyProcessedException
 from domain.models.project_management.project import Project
 from domain.models.user import User
 from domain.ports.service import AbstractDomainService
@@ -18,7 +19,7 @@ class ProjectSubmissionPermissionService(AbstractDomainService):
     ):
         self._permission_service = permisison_service
 
-    def _check_approve_permission(self, user: User) -> None:
+    def _check_permission_to_change_project_status(self, user: User) -> None:
         """:raises UpdateDeniedPermissionException:"""
 
         change_any_project_status_permission = self._permission_service.create_permission_vo(
@@ -45,7 +46,22 @@ class ProjectSubmissionService(ProjectSubmissionPermissionService):
         self._project_write_repository = project_write_repository
 
     def approve(self, user: User, project: Project) -> None:
-        self._check_approve_permission(user=user)
+        self._check_submission_not_processed(project=project)
+        self._check_permission_to_change_project_status(user=user)
+
         approve_payload = ProjectUpdatePayload(id_=Id(value=project.id), status=ProjectStatusEnum.ACTIVE)
         self._project_write_repository.update(data=approve_payload)
         logger.info(f"Project(id={project.id}) has approved successfully.")
+
+    def reject(self, user: User, project: Project) -> None:
+        self._check_submission_not_processed(project=project)
+        self._check_permission_to_change_project_status(user=user)
+
+        reject_payload = ProjectUpdatePayload(id_=Id(value=project.id), status=ProjectStatusEnum.REJECTED)
+        self._project_write_repository.update(data=reject_payload)
+        logger.info(f"Project(id={project.id}) has rejected successfully.")
+
+    def _check_submission_not_processed(self, project: Project) -> None:
+        """:raises ProjectSubmissionAlreadyProcessedException:"""
+        if project.status != ProjectStatusEnum.UNDER_MODERATION:
+            raise ProjectSubmissionAlreadyProcessedException("This project's submission already processed.")

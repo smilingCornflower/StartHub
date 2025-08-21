@@ -24,3 +24,16 @@ class ProjectSubmissionApproveView(APIView):
 
         except (CustomException, pydantic.ValidationError) as e:
             return ProjectSubmissionErrorResponseFactory.create_response(exception=e)
+
+
+class ProjectSubmissionRejectedView(APIView):
+    @staticmethod
+    def patch(request: Request, project_id: int) -> Response:
+        print()
+        logger.warning(f"PATCH /admin/project-submissions/{project_id}/reject/")
+        try:
+            user_id: Id = get_user_id_or_raises(request=request)
+            gateway.project_submission_app_service.reject(user_id=user_id, project_id=Id(value=project_id))
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+        except (CustomException, pydantic.ValidationError) as e:
+            return ProjectSubmissionErrorResponseFactory.create_response(exception=e)

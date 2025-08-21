@@ -275,3 +275,20 @@ class ProjectUsefulLinkAlreadyExistsException(ProjectException):
 
 class ProjectUsefulLinkMaxAmountException(ValidationException, ProjectUsefulLinkException):
     pass
+
+
+# ==== Project Submission Exceptions ====
+class ProjectSubmissionException(ProjectException):
+    pass
+
+
+class ProjectSubmissionAlreadyProcessedException(ProjectException):
+    pass
+
+
+class ProjectSubmissionAlreadyApprovedException(ProjectSubmissionException):
+    pass
+
+
+class ProjectSubmissionAlreadyRejectedException(ProjectSubmissionException):
+    pass
