@@ -10,10 +10,18 @@ from loguru import logger
 
 
 class Command(BaseCommand):
-    help = 'Assigns "user" role only to users with NO roles at all'
+    """
+    Django management command to assign default roles to users.
+
+    This command finds all users who don't have any roles assigned
+    and gives them the default role from RoleEnum.get_default().
+    Uses atomic transaction to ensure data consistency.
+    """
+
+    help = "Assigns default role (user) for all users without any roles"
 
     def handle(self, *args: Any, **options: Any) -> None:
-        logger.warning("Started command: assing_default_role")
+        logger.warning("Started.")
         logger.info("Checking users without any roles...")
 
         user_role, _ = Role.objects.get_or_create(name=RoleEnum.get_default())

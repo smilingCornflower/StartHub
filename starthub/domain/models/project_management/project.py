@@ -46,3 +46,5 @@ class Project(BaseModel):
     @classmethod
     def get_permission_key(cls) -> str:
         return "project"
+
+    STATUS_FIELD = "status"

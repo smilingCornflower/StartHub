@@ -1,5 +1,6 @@
 from datetime import date
 
+from domain.enums.project_status import ProjectStatusEnum
 from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
@@ -150,6 +151,8 @@ class ProjectUpdatePayload(AbstractUpdatePayload, BaseVo):
     stage: ProjectStage | None = None
     deadline: DeadlineDate | None = None
     plan_path: str | None = None
+
+    status: ProjectStatusEnum | None = None
 
     ltv: Ltv | None = None
     arpu: Arpu | None = None

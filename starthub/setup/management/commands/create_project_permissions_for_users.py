@@ -23,6 +23,8 @@ class Command(BaseCommand):
     help = "Assigns project permissions for user"
 
     def handle(self, *args: Any, **options: Any) -> None:
+        logger.warning("Started.")
+
         self.assing_project_permissions_for_users()
         self._assign_project_accelerator_permission_for_users()
         self._assign_project_incubator_permission_for_users()

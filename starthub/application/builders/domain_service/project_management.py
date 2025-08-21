@@ -19,6 +19,7 @@ from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
 from domain.services.project_management.project_social_link import ProjectSocialLinkService
 from domain.services.project_management.step import ProjectStepService
+from domain.services.project_management.submission import ProjectSubmissionService
 from domain.services.project_management.team_member import TamMemberService
 from domain.services.project_management.useful_link import ProjectUsefulLinkService
 from infrastructure.cloud_storages.google import google_cloud_storage
@@ -245,4 +246,13 @@ class ProjectUsefulLinkServiceBuilder(AbstractDomainServiceBuilder[ProjectUseful
             permission_service=PermissionServiceBuilder.create_service(),
             write_repository=DjProjectUsefulLinkWriteRepository(),
             read_repository=DjProjectUsefulLinkReadRepository(),
+        )
+
+
+class ProjectSubmissionServiceBuilder(AbstractDomainServiceBuilder[ProjectSubmissionService]):
+    @staticmethod
+    def create_service() -> ProjectSubmissionService:
+        return ProjectSubmissionService(
+            permisison_service=PermissionServiceBuilder.create_service(),
+            project_write_repository=DjProjectWriteRepository(),
         )
