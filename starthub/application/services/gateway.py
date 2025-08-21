@@ -3,6 +3,7 @@ from application.builders.app_service.company import CompanyAppServiceBuilder
 from application.builders.app_service.geo import CityAppServiceBuilder, RegionAppServiceBuilder
 from application.builders.app_service.news import NewsAppServiceBuilder
 from application.builders.app_service.project_management.accelerator import AcceleratorAppServiceBuilder
+from application.builders.app_service.project_management.admin import ProjectAdminAppServiceBuilder
 from application.builders.app_service.project_management.bank_loan import ProjectBankLoanAppServiceBuilder
 from application.builders.app_service.project_management.bootstrap import ProjectBootstrapAppServiceBuilder
 from application.builders.app_service.project_management.crowdfunding import CrowdfundingAppServiceBuilder
@@ -21,7 +22,6 @@ from application.builders.app_service.project_management.project import (
 from application.builders.app_service.project_management.project_file import ProjectFileAppServiceBuilder
 from application.builders.app_service.project_management.project_image import ProjectImageAppServiceBuilder
 from application.builders.app_service.project_management.project_media import ProjectMediaAppServiceBuilder
-from application.builders.app_service.project_management.admin import ProjectAdminAppServiceBuilder
 from application.builders.app_service.project_management.useful_link import ProjectUsefulLinkAppServiceBuilder
 from application.builders.app_service.user import UserAppServiceBuilder
 from application.builders.app_service.user_favorite import UserFavoriteAppAppServiceBuilder

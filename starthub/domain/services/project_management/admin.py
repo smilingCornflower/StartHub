@@ -1,7 +1,10 @@
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.enums.project_status import ProjectStatusEnum
 from domain.exceptions.permissions import UpdateDeniedPermissionException
-from domain.exceptions.project_management import ProjectSubmissionAlreadyProcessedException
+from domain.exceptions.project_management import (
+    ProjectAlreadyDeactivatedException,
+    ProjectSubmissionAlreadyProcessedException,
+)
 from domain.models.project_management.project import Project
 from domain.models.user import User
 from domain.ports.service import AbstractDomainService
@@ -20,7 +23,10 @@ class ProjectSubmissionPermissionService(AbstractDomainService):
         self._permission_service = permisison_service
 
     def _check_permission_to_change_project_status(self, user: User) -> None:
-        """:raises UpdateDeniedPermissionException:"""
+        """
+        Check if user has permission to change project status.
+        :raises UpdateDeniedPermissionException:
+        """
 
         change_any_project_status_permission = self._permission_service.create_permission_vo(
             model=Project, action=ActionEnum.CHANGE, scope=ScopeEnum.ANY, field=Project.STATUS_FIELD
@@ -46,6 +52,9 @@ class ProjectAdminService(ProjectSubmissionPermissionService):
         self._project_write_repository = project_write_repository
 
     def approve_submission(self, user: User, project: Project) -> None:
+        """
+        Approve a project submission and set status to ACTIVE.
+        """
         self._check_submission_not_processed(project=project)
         self._check_permission_to_change_project_status(user=user)
 
@@ -54,6 +63,9 @@ class ProjectAdminService(ProjectSubmissionPermissionService):
         logger.info(f"Project(id={project.id}) has approved successfully.")
 
     def reject_submission(self, user: User, project: Project) -> None:
+        """
+        Reject a project submission and set status to REJECTED.
+        """
         self._check_submission_not_processed(project=project)
         self._check_permission_to_change_project_status(user=user)
 
@@ -61,7 +73,24 @@ class ProjectAdminService(ProjectSubmissionPermissionService):
         self._project_write_repository.update(data=reject_payload)
         logger.info(f"Project(id={project.id}) has rejected successfully.")
 
+    def deactivate(self, user: User, project: Project) -> None:
+        """
+        Deactivate a project by setting status to DEACTIVATED.
+        :raises ProjectAlreadyDeactivatedException:
+        """
+        self._check_permission_to_change_project_status(user=user)
+
+        if project.status == ProjectStatusEnum.DEACTIVATED:
+            raise ProjectAlreadyDeactivatedException("This project already deactivated.")
+
+        deactivate_payload = ProjectUpdatePayload(id_=Id(value=project.id), status=ProjectStatusEnum.DEACTIVATED)
+        self._project_write_repository.update(data=deactivate_payload)
+        logger.info(f"Project(id={project.id}) has deactivated successfully.")
+
     def _check_submission_not_processed(self, project: Project) -> None:
-        """:raises ProjectSubmissionAlreadyProcessedException:"""
+        """
+        Check that project status equals 'under_moderation'.
+        :raises ProjectSubmissionAlreadyProcessedException:
+        """
         if project.status != ProjectStatusEnum.UNDER_MODERATION:
             raise ProjectSubmissionAlreadyProcessedException("This project's submission already processed.")

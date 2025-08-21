@@ -286,9 +286,5 @@ class ProjectSubmissionAlreadyProcessedException(ProjectException):
     pass
 
 
-class ProjectSubmissionAlreadyApprovedException(ProjectSubmissionException):
-    pass
-
-
-class ProjectSubmissionAlreadyRejectedException(ProjectSubmissionException):
+class ProjectAlreadyDeactivatedException(ProjectException):
     pass

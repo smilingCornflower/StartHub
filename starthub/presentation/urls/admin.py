@@ -1,7 +1,8 @@
 from django.urls import path
-from presentation.views.admin import ProjectSubmissionApproveView, ProjectSubmissionRejectedView
+from presentation.views.admin import ProjectDeactivateView, ProjectSubmissionApproveView, ProjectSubmissionRejectedView
 
 urlpatterns = [
-    path("project-submissions/<int:project_id>/approve_submission/", ProjectSubmissionApproveView.as_view()),
-    path("project-submissions/<int:project_id>/reject_submission/", ProjectSubmissionRejectedView.as_view()),
+    path("projects/submissions/<int:project_id>/approve/", ProjectSubmissionApproveView.as_view()),
+    path("projects/submissions/<int:project_id>/reject/", ProjectSubmissionRejectedView.as_view()),
+    path("projects/<int:project_id>/deactivate/", ProjectDeactivateView.as_view()),
 ]

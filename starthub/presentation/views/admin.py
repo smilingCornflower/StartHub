@@ -37,3 +37,16 @@ class ProjectSubmissionRejectedView(APIView):
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
         except (CustomException, pydantic.ValidationError) as e:
             return ProjectSubmissionErrorResponseFactory.create_response(exception=e)
+
+
+class ProjectDeactivateView(APIView):
+    @staticmethod
+    def patch(request: Request, project_id: int) -> Response:
+        print()
+        logger.warning(f"PATCH /admin/projects/{project_id}/deactivate/")
+        try:
+            user_id: Id = get_user_id_or_raises(request=request)
+            gateway.project_submission_app_service.deactivate(user_id=user_id, project_id=Id(value=project_id))
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+        except (CustomException, pydantic.ValidationError) as e:
+            return ProjectSubmissionErrorResponseFactory.create_response(exception=e)

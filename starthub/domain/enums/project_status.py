@@ -10,3 +10,4 @@ class ProjectStatusEnum(StrEnum):
     SUSPENDED = "suspended"
     CANCELLED = "cancelled"
     REJECTED = "rejected"
+    DEACTIVATED = "deactivated"

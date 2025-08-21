@@ -1,8 +1,8 @@
 from application.builders.domain_service.permission import PermissionServiceBuilder
 from application.ports.domain_service_builder import AbstractDomainServiceBuilder
-from domain.admin import ProjectAdmin
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management.accelerator import ProjectAcceleratorService
+from domain.services.project_management.admin import ProjectAdminService
 from domain.services.project_management.bank_loan import ProjectBankLoanService
 from domain.services.project_management.bootsrtap import ProjectBootstrapService
 from domain.services.project_management.crowdfunding import ProjectCrowdfundingService
@@ -20,7 +20,6 @@ from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
 from domain.services.project_management.project_social_link import ProjectSocialLinkService
 from domain.services.project_management.step import ProjectStepService
-from domain.services.project_management.submission import ProjectAdminService
 from domain.services.project_management.team_member import TamMemberService
 from domain.services.project_management.useful_link import ProjectUsefulLinkService
 from infrastructure.cloud_storages.google import google_cloud_storage

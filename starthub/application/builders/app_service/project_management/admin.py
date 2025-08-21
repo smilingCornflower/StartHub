@@ -1,7 +1,6 @@
 from application.builders.domain_service.project_management import ProjectAdminServiceBuilder
 from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.project_management.submission import ProjectAdminAppService
-from domain.admin import ProjectAdmin
 from infrastructure.repositories.project.project import DjProjectReadRepository
 from infrastructure.repositories.user import DjUserReadRepository
 
