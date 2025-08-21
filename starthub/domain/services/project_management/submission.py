@@ -36,7 +36,7 @@ class ProjectSubmissionPermissionService(AbstractDomainService):
         raise UpdateDeniedPermissionException("You don't have enough permissions to change project status.")
 
 
-class ProjectSubmissionService(ProjectSubmissionPermissionService):
+class ProjectAdminService(ProjectSubmissionPermissionService):
     def __init__(
         self,
         permisison_service: PermissionService,
@@ -45,7 +45,7 @@ class ProjectSubmissionService(ProjectSubmissionPermissionService):
         super().__init__(permisison_service=permisison_service)
         self._project_write_repository = project_write_repository
 
-    def approve(self, user: User, project: Project) -> None:
+    def approve_submission(self, user: User, project: Project) -> None:
         self._check_submission_not_processed(project=project)
         self._check_permission_to_change_project_status(user=user)
 
@@ -53,7 +53,7 @@ class ProjectSubmissionService(ProjectSubmissionPermissionService):
         self._project_write_repository.update(data=approve_payload)
         logger.info(f"Project(id={project.id}) has approved successfully.")
 
-    def reject(self, user: User, project: Project) -> None:
+    def reject_submission(self, user: User, project: Project) -> None:
         self._check_submission_not_processed(project=project)
         self._check_permission_to_change_project_status(user=user)
 

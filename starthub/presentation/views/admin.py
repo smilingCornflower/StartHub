@@ -19,7 +19,7 @@ class ProjectSubmissionApproveView(APIView):
         logger.warning(f"PATCH /admin/project-submissions/{project_id}/approve/")
         try:
             user_id: Id = get_user_id_or_raises(request=request)
-            gateway.project_submission_app_service.approve(user_id=user_id, project_id=Id(value=project_id))
+            gateway.project_submission_app_service.approve_submission(user_id=user_id, project_id=Id(value=project_id))
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
 
         except (CustomException, pydantic.ValidationError) as e:
@@ -33,7 +33,7 @@ class ProjectSubmissionRejectedView(APIView):
         logger.warning(f"PATCH /admin/project-submissions/{project_id}/reject/")
         try:
             user_id: Id = get_user_id_or_raises(request=request)
-            gateway.project_submission_app_service.reject(user_id=user_id, project_id=Id(value=project_id))
+            gateway.project_submission_app_service.reject_submission(user_id=user_id, project_id=Id(value=project_id))
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
         except (CustomException, pydantic.ValidationError) as e:
             return ProjectSubmissionErrorResponseFactory.create_response(exception=e)

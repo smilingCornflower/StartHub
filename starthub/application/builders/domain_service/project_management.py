@@ -1,5 +1,6 @@
 from application.builders.domain_service.permission import PermissionServiceBuilder
 from application.ports.domain_service_builder import AbstractDomainServiceBuilder
+from domain.admin import ProjectAdmin
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management.accelerator import ProjectAcceleratorService
 from domain.services.project_management.bank_loan import ProjectBankLoanService
@@ -19,7 +20,7 @@ from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
 from domain.services.project_management.project_social_link import ProjectSocialLinkService
 from domain.services.project_management.step import ProjectStepService
-from domain.services.project_management.submission import ProjectSubmissionService
+from domain.services.project_management.submission import ProjectAdminService
 from domain.services.project_management.team_member import TamMemberService
 from domain.services.project_management.useful_link import ProjectUsefulLinkService
 from infrastructure.cloud_storages.google import google_cloud_storage
@@ -249,10 +250,10 @@ class ProjectUsefulLinkServiceBuilder(AbstractDomainServiceBuilder[ProjectUseful
         )
 
 
-class ProjectSubmissionServiceBuilder(AbstractDomainServiceBuilder[ProjectSubmissionService]):
+class ProjectAdminServiceBuilder(AbstractDomainServiceBuilder[ProjectAdminService]):
     @staticmethod
-    def create_service() -> ProjectSubmissionService:
-        return ProjectSubmissionService(
+    def create_service() -> ProjectAdminService:
+        return ProjectAdminService(
             permisison_service=PermissionServiceBuilder.create_service(),
             project_write_repository=DjProjectWriteRepository(),
         )
