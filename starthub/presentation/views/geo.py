@@ -1,6 +1,6 @@
 from dataclasses import asdict
 
-from application.dto.geo import RegionAllLangDto, RegionDto
+from application.dto.geo import RegionDto
 from application.services.gateway import gateway
 from config.settings import BASE_DIR
 from django.utils.translation import get_language
@@ -18,8 +18,7 @@ class CityView(APIView):
     def get(request: Request) -> Response:
         print()
         logger.info("GET /cities/")
-
-        logger.info(f"Current language = {get_language()}")
+        logger.debug(f"Current language = {get_language()}")
 
         command = request_to_city_get_command(request=request)
         cities = gateway.city_app_service.get(command=command)
@@ -31,7 +30,8 @@ class RegionView(APIView):
     def get(request: Request) -> Response:
         print()
         logger.info("GET /regions/")
+        logger.debug(f"Current language = {get_language()}")
 
         command = request_to_region_get_command(request=request)
-        regions: list[RegionDto | RegionAllLangDto] = gateway.region_app_service.get(command=command)
+        regions: list[RegionDto] = gateway.region_app_service.get(command=command)
         return Response(map(asdict, regions))

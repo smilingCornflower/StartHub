@@ -2,6 +2,7 @@ from datetime import date
 from typing import cast
 
 from django.http import QueryDict
+from domain.enums.language import LangCodeEnum
 from domain.exceptions.validation import DateIsNotIsoFormatException, MissingRequiredFieldException
 from domain.value_objects.common import OffsetPagination, Pagination
 from domain.value_objects.country import CountryCode
@@ -56,3 +57,19 @@ def build_address_create_command(address_data: dict[str, str]) -> AddressCreateC
         postal_code=address_data.get("postal_code"),
         raw_address=address_data.get("raw_address"),
     )
+
+
+def parse_languages(request: Request) -> list[LangCodeEnum]:
+    lang_param: str | None = request.query_params.get("lang")
+    if lang_param:
+        print(1)
+        languages = lang_param.split(",")
+        language_codes: list[LangCodeEnum] = list()
+        for lang in languages:
+            try:
+                language_codes.append(LangCodeEnum(lang))
+            except ValueError:
+                logger.debug(f"Unsupported lang='{lang}'.")
+        return language_codes
+    else:
+        return [LangCodeEnum.get_default()]

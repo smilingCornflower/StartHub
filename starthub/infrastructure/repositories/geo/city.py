@@ -1,3 +1,5 @@
+from django.db.models import Q
+from domain.enums.language import LangCodeEnum
 from domain.exceptions.geo.city import CityNotFoundException
 from domain.models.geo.city import City
 from domain.repositories.geo.city import CityReadRepository
@@ -19,9 +21,12 @@ class DjCityReadRepository(CityReadRepository):
         queryset = City.objects.all()
 
         if filter_.region_name is not None:
-            queryset = queryset.filter(region__name=filter_.region_name.value)
+            q_objects = Q()
+            for lang_code in LangCodeEnum:
+                field = f"region__name_{lang_code}"
+                q_objects |= Q(**{field: filter_.region_name.value})
 
         if pagination:
             return apply_pagination(queryset, pagination=pagination)
 
-        return list(queryset)
+        return list(queryset.distinct())

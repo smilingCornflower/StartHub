@@ -1,3 +1,4 @@
+from domain.enums.language import LangCodeEnum
 from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
@@ -68,9 +69,9 @@ class AddressUpdatePayload(AbstractUpdatePayload):
 
 
 class RegionGetCommand(BaseCommand):
-    all_languages: bool = False
+    languages: list[LangCodeEnum]
 
 
 class CityGetCommand(BaseCommand):
-    all_languages: bool = False
+    languages: list[LangCodeEnum]
     region_name: RegionName | None
