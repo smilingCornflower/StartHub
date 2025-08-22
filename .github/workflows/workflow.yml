@@ -138,6 +138,9 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Pull current latest image
+        run: docker pull smilekundev/starthub-api:latest || true
+
       - name: Remove old image (if exists)
         run: docker rmi smilekundev/starthub-api:old || true
 
