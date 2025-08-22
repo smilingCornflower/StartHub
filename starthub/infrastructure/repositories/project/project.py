@@ -120,6 +120,9 @@ class DjProjectWriteRepository(ProjectWriteRepository):
         if data.conversion_rate is not None:
             project.conversion_rate = data.conversion_rate.value
 
+        if data.status is not None:
+            project.status = data.status.value
+
         project.save()
         return project
 

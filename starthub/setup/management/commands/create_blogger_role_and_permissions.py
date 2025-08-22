@@ -12,17 +12,26 @@ from loguru import logger
 
 
 class Command(BaseCommand):
+    """
+    Django management command to create blogger role and assign news permissions.
+
+    Creates the BLOGGER role and assigns ADD, CHANGE, and DELETE permissions
+    for the News model with ANY scope. This allows bloggers to manage
+    all news articles in the system.
+    """
+
     help = "Ensure 'blogger' role and permissions exist"
 
     def handle(self, *args: Any, **options: Any) -> None:
-        logger.warning("Started command: create_blogger_role_and_permissions")
+        logger.warning("Started.")
+
+        role, _ = Role.objects.get_or_create(name=RoleEnum.BLOGGER)
+
         for action in [ActionEnum.ADD, ActionEnum.CHANGE, ActionEnum.DELETE]:
             manage_news_permission: PermissionVo = PermissionService.create_permission_vo(
                 model=News, action=action, scope=ScopeEnum.ANY
             )
-
             permission, _ = Permission.objects.get_or_create(name=manage_news_permission.value)
-            role, _ = Role.objects.get_or_create(name=RoleEnum.BLOGGER)
             role.permissions.add(permission)
 
         logger.info("Blogger permissions initialized")

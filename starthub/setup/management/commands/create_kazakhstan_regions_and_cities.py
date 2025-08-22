@@ -13,7 +13,8 @@ class Command(BaseCommand):
     help = "Ensure all cities and regions of Kazakhstan exist."
 
     def handle(self, *args: Any, **options: Any) -> None:
-        logger.warning("Started command: create_blogger_role_and_permissions")
+        logger.warning("Started.")
+
         file_path = BASE_DIR / "../fixtures/kazakhstan_cities_by_region.json"
 
         with file_path.open(encoding="utf-8") as f:

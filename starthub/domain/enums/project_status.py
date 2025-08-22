@@ -9,3 +9,5 @@ class ProjectStatusEnum(StrEnum):
     FUNDRAISING = "fundraising"
     SUSPENDED = "suspended"
     CANCELLED = "cancelled"
+    REJECTED = "rejected"
+    DEACTIVATED = "deactivated"

@@ -104,7 +104,7 @@ jobs:
         working-directory: starthub
 
   deploy:
-    runs-on: starthub-vps
+    runs-on: starthub-backend
     needs: [ tests ]
     if: github.ref == 'refs/heads/master' && success()
     steps:

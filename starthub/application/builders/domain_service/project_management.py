@@ -2,6 +2,7 @@ from application.builders.domain_service.permission import PermissionServiceBuil
 from application.ports.domain_service_builder import AbstractDomainServiceBuilder
 from domain.services.company import CompanyFounderService, CompanyService
 from domain.services.project_management.accelerator import ProjectAcceleratorService
+from domain.services.project_management.admin import ProjectAdminService
 from domain.services.project_management.bank_loan import ProjectBankLoanService
 from domain.services.project_management.bootsrtap import ProjectBootstrapService
 from domain.services.project_management.crowdfunding import ProjectCrowdfundingService
@@ -245,4 +246,13 @@ class ProjectUsefulLinkServiceBuilder(AbstractDomainServiceBuilder[ProjectUseful
             permission_service=PermissionServiceBuilder.create_service(),
             write_repository=DjProjectUsefulLinkWriteRepository(),
             read_repository=DjProjectUsefulLinkReadRepository(),
+        )
+
+
+class ProjectAdminServiceBuilder(AbstractDomainServiceBuilder[ProjectAdminService]):
+    @staticmethod
+    def create_service() -> ProjectAdminService:
+        return ProjectAdminService(
+            permisison_service=PermissionServiceBuilder.create_service(),
+            project_write_repository=DjProjectWriteRepository(),
         )
