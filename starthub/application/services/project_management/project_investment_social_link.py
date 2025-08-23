@@ -1,3 +1,5 @@
+from loguru import logger
+
 from application.ports.service import AbstractAppService
 from domain.models.project_management.investment import ProjectInvestment
 from domain.models.project_management.project import Project
@@ -15,7 +17,6 @@ from domain.value_objects.project.project_investment_social_link import (
     ProjectInvestmentSocialLinkCreatePayload,
     ProjectInvestmentSocialLinkId,
 )
-from loguru import logger
 
 
 class ProjectInvestmentSocialLinkAppService(AbstractAppService):

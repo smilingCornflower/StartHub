@@ -5,10 +5,11 @@ from typing import Any
 from unittest.mock import MagicMock
 
 import pydantic
-from config.settings import BASE_DIR
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase
 from django.utils.datastructures import MultiValueDict
+
+from config.settings import BASE_DIR
 from domain.exceptions.project_management import InvalidProjectStageException, NegativeProjectGoalSumException
 from domain.exceptions.validation import (
     DateInFutureException,

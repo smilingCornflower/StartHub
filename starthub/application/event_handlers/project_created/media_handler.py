@@ -1,8 +1,9 @@
+from loguru import logger
+
 from application.services.project_management.project_media import ProjectMediaAppService
 from domain.events.project import ProjectCreatedEvent
 from domain.ports.event import AbstractEventHandler
 from domain.value_objects.project.media import ProjectMediaCreateCommand
-from loguru import logger
 
 
 class ProjectCreatedProjectMediaHandler(AbstractEventHandler[ProjectCreatedEvent]):

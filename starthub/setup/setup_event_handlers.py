@@ -1,3 +1,5 @@
+from loguru import logger
+
 from application.builders.event_handler.project import (
     ProjectCreatedAcceleratorHandlerBuilder,
     ProjectCreatedBankLoanHandlerBuilder,
@@ -18,7 +20,6 @@ from application.builders.event_handler.project import (
 from application.builders.event_handler.project_investment import ProjectInvestmentCreatedEventHandlerBuilder
 from domain.enums.event import EventType
 from infrastructure.event_bus import EventBus
-from loguru import logger
 
 
 def setup_project_created_handlers() -> None:

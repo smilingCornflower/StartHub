@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import Manager
+
 from domain.constants import CHAR_FIELD_MEDIUM_LENGTH
 from domain.models.base import BaseModel
 from domain.models.geo.country import Country

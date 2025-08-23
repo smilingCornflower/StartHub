@@ -1,3 +1,5 @@
+from loguru import logger
+
 from application.ports.service import AbstractAppService
 from domain.models.project_management.bootstrap import ProjectBootstrap
 from domain.models.project_management.project import Project
@@ -14,7 +16,6 @@ from domain.value_objects.project.bootstrap import (
     ProjectBootstrapUpdateCommand,
     ProjectBootstrapUpdatePayload,
 )
-from loguru import logger
 
 
 class ProjectBootstrapAppService(AbstractAppService):

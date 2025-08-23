@@ -1,6 +1,7 @@
 import re
 
 from django.test import SimpleTestCase
+
 from domain.enums.social_links import SocialPlatform
 
 

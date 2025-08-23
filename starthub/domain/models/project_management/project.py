@@ -1,5 +1,6 @@
 from autoslug import AutoSlugField
 from django.db import models
+
 from domain.constants import CHAR_FIELD_MAX_LENGTH, CHAR_FIELD_SHORT_LENGTH, FUNDING_GOAL_MAX_DIGITS
 from domain.enums.project_stage import ProjectStageEnum
 from domain.enums.project_status import ProjectStatusEnum
@@ -48,3 +49,6 @@ class Project(BaseModel):
         return "project"
 
     STATUS_FIELD = "status"
+    STATUS_UNDER_MODERATION_FIELD = f"status.{ProjectStatusEnum.UNDER_MODERATION}"
+    STATUS_REJECTED_FIELD = f"status.{ProjectStatusEnum.REJECTED}"
+    STATUS_CANCELLED_FIELD = f"status.{ProjectStatusEnum.CANCELLED}"

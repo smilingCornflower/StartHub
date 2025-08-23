@@ -1,3 +1,5 @@
+from loguru import logger
+
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.permissions import (
     AddDeniedPermissionException,
@@ -11,7 +13,6 @@ from domain.ports.service import AbstractDomainService
 from domain.repositories.project.accelerator import ProjectAcceleratorWriteRepository
 from domain.services.permission import PermissionService
 from domain.value_objects.project.accelerator import ProjectAcceleratorCreatePayload, ProjectAcceleratorUpdatePayload
-from loguru import logger
 
 
 class ProjectAcceleratorService(AbstractDomainService):

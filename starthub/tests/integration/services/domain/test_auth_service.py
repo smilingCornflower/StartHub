@@ -1,6 +1,8 @@
 from datetime import UTC, datetime, timedelta
 
 from django.test import TestCase
+from loguru import logger
+
 from domain.exceptions.auth import InvalidCredentialsException, TokenExpiredException
 from domain.models.user import User
 from domain.services.auth import AuthService, TokenService
@@ -9,7 +11,6 @@ from domain.value_objects.token import AccessTokenVo, RefreshTokenVo, TokenPairV
 from domain.value_objects.user import Email, RawPassword
 from infrastructure.repositories.role import DjRoleReadRepository
 from infrastructure.repositories.user import DjUserReadRepository, DjUserWriteRepository
-from loguru import logger
 
 
 class TestAuthService(TestCase):

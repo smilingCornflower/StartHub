@@ -1,3 +1,5 @@
+from loguru import logger
+
 from domain.events.project import ProjectInvestmentCreatedEvent
 from domain.models.project_management.project import Project
 from domain.models.user import User
@@ -6,7 +8,6 @@ from domain.services.project_management.investment import ProjectInvestmentSocia
 from domain.value_objects.common import SocialLink
 from domain.value_objects.project.investment import ProjectInvestmentId
 from domain.value_objects.project.project_investment_social_link import ProjectInvestmentSocialLinkCreatePayload
-from loguru import logger
 
 
 class ProjectInvestmentCreatedEventHandler(AbstractEventHandler[ProjectInvestmentCreatedEvent]):

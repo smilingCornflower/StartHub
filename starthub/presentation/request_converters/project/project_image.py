@@ -1,8 +1,9 @@
 from django.core.files.uploadedfile import UploadedFile
+from loguru import logger
+
 from domain.value_objects.common import Id
 from domain.value_objects.file import ImageFile
 from domain.value_objects.project.image import ProjectImageCreateCommand
-from loguru import logger
 from presentation.request_converters.common import get_required_field
 
 

@@ -1,9 +1,10 @@
 from typing import cast
 
-from application.dto.auth import AccessPayloadDto, AnonymousPayloadDto
-from application.services.gateway import gateway
 from django.http import HttpHeaders
 from loguru import logger
+
+from application.dto.auth import AccessPayloadDto, AnonymousPayloadDto
+from application.services.gateway import gateway
 
 
 def get_access_payload_dto_from_headers(headers: HttpHeaders) -> AccessPayloadDto:

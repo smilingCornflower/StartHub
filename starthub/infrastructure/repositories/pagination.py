@@ -1,6 +1,7 @@
 from typing import TypeVar
 
 from django.db.models.query import QuerySet
+
 from domain.models.base import BaseModel
 from domain.value_objects.common import Pagination
 

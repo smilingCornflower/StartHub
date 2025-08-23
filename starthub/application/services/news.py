@@ -3,6 +3,8 @@ from pathlib import Path
 from pprint import pformat
 from typing import cast
 
+from loguru import logger
+
 from application.converters.resposne_converters.news import news_to_full_dto, news_to_short_dto
 from application.dto.news import NewsFullDto, NewsImageDto, NewsShortDto
 from application.ports.service import AbstractAppService
@@ -45,7 +47,6 @@ from domain.value_objects.news import (
     NewsUpdatePayload,
 )
 from domain.value_objects.user import PermissionVo
-from loguru import logger
 
 
 class NewsPermissionAppService(AbstractAppService):

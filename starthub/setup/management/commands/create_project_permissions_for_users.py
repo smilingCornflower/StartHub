@@ -1,6 +1,8 @@
 from typing import Any, List, Type
 
 from django.core.management.base import BaseCommand
+from loguru import logger
+
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.enums.role import RoleEnum
 from domain.models import ProjectBankLoan, ProjectBootstrap, ProjectFile, ProjectIncubator
@@ -16,7 +18,6 @@ from domain.models.project_management.useful_link import ProjectUsefulLink
 from domain.models.role import Role
 from domain.services.permission import PermissionService
 from domain.value_objects.user import PermissionVo
-from loguru import logger
 
 
 class Command(BaseCommand):

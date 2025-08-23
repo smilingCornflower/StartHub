@@ -1,3 +1,5 @@
+from loguru import logger
+
 from domain.exceptions.geo.geo import GeographicalInconsistencyException
 from domain.models import City
 from domain.models.geo.address import Address
@@ -10,7 +12,6 @@ from domain.services.permission import PermissionService
 from domain.value_objects.country import CountryId
 from domain.value_objects.filter import AddressFilter
 from domain.value_objects.geo import AddressCreateCommand, AddressCreatePayload, CityId, RegionId
-from loguru import logger
 
 
 class AddressService(AbstractDomainService):

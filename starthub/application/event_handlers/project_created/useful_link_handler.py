@@ -1,7 +1,8 @@
+from loguru import logger
+
 from application.services.project_management.useful_link import ProjectUsefulLinkAppService
 from domain.events.project import ProjectCreatedEvent
 from domain.ports.event import AbstractEventHandler
-from loguru import logger
 
 
 class ProjectCreatedUsefulLinkHandler(AbstractEventHandler[ProjectCreatedEvent]):

@@ -31,6 +31,7 @@ from application.services.geo.city import CityAppService
 from application.services.geo.region import RegionAppService
 from application.services.news import NewsAppService
 from application.services.project_management.accelerator import AcceleratorAppService
+from application.services.project_management.admin import ProjectAdminAppService
 from application.services.project_management.bank_loan import ProjectBankLoanAppService
 from application.services.project_management.bootsrtap import ProjectBootstrapAppService
 from application.services.project_management.crowdfunding import CrowdfundingAppService
@@ -47,7 +48,6 @@ from application.services.project_management.project_image import ProjectImageAp
 from application.services.project_management.project_investment_phone import ProjectInvestmentPhoneAppService
 from application.services.project_management.project_investment_social_link import ProjectInvestmentSocialLinkAppService
 from application.services.project_management.project_media import ProjectMediaAppService
-from application.services.project_management.submission import ProjectAdminAppService
 from application.services.project_management.useful_link import ProjectUsefulLinkAppService
 from application.services.user import UserAppService
 from application.services.user_favorite import UserFavoriteAppService

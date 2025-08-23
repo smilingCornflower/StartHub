@@ -2,6 +2,11 @@ from datetime import timedelta
 from io import BytesIO
 from typing import cast
 
+from google.cloud.exceptions import GoogleCloudError, NotFound
+from google.cloud.storage import Bucket, Client
+from google.cloud.storage.blob import Blob
+from loguru import logger
+
 from config import settings
 from domain.exceptions.cloud_storage import FileNotFoundCloudStorageException
 from domain.ports.cloud_storage import AbstractCloudStorage
@@ -10,10 +15,6 @@ from domain.value_objects.cloud_storage import (
     CloudStorageDeletePayload,
     CloudStorageUploadPayload,
 )
-from google.cloud.exceptions import GoogleCloudError, NotFound
-from google.cloud.storage import Bucket, Client
-from google.cloud.storage.blob import Blob
-from loguru import logger
 
 
 # TODO: write tests for CloudStorage

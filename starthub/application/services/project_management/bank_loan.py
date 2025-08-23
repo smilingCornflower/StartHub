@@ -1,3 +1,5 @@
+from loguru import logger
+
 from application.ports.service import AbstractAppService
 from domain.constants import PROJECT_BANK_LOAN_MAX_AMOUNT
 from domain.exceptions.project_management import ProjectBankLoanMaxAmountException
@@ -17,7 +19,6 @@ from domain.value_objects.project.bank_loan import (
     ProjectBankLoanUpdateCommand,
     ProjectBankLoanUpdatePayload,
 )
-from loguru import logger
 
 
 class ProjectBankLoanAppService(AbstractAppService):

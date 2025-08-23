@@ -2,6 +2,8 @@ import re
 
 from django.core.exceptions import ValidationError as DjValidationError
 from django.core.validators import EmailValidator
+from pydantic import field_validator
+
 from domain.constants import PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_PATTERN
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.auth import PasswordValidationException
@@ -10,7 +12,6 @@ from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
 from domain.value_objects.common import Description, FirstName, Id, LastName, PhoneNumber
-from pydantic import field_validator
 
 
 class RawPassword(BaseVo):
@@ -105,15 +106,24 @@ class PermissionVo(BaseVo):
     def validate_permission(cls, value: str) -> str:
         """
         Validation format of permission string:
-        - action.scope.model.field
         - action.scope.model
+        - action.scope.model.field
+        - action.scope.model.field.value
         """
         parts: list[str] = value.split(".")
 
-        if len(parts) not in (3, 4):
-            raise ValueError("Permission must be in format 'action.scope.model' or 'action.scope.model.field'")
-
-        action, scope, model, *field = parts
+        if len(parts) not in (3, 4, 5):
+            raise ValueError(
+                "Permission must be in format 'action.scope.model', "
+                "'action.scope.model.field', or 'action.scope.model.field.value'"
+            )
+        field, field_value = None, None
+        if len(parts) == 3:
+            action, scope, model = parts
+        elif len(parts) == 4:
+            action, scope, model, field = parts
+        else:
+            action, scope, model, field, fiel_value = parts
 
         try:
             ActionEnum(action)
@@ -129,8 +139,7 @@ class PermissionVo(BaseVo):
             raise ValueError("Model name must be lowercase and valid Python identifier")
 
         if field:
-            field_name = field[0]
-            if not field_name.isidentifier() or not field_name.islower():
+            if not field.isidentifier() or not field.islower():
                 raise ValueError("Field name must be lowercase and valid Python identifier")
 
         return value

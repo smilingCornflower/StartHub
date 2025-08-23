@@ -2,8 +2,9 @@
 
 import autoslug.fields
 import django.db.models.deletion
-import domain.ports.model
 from django.db import migrations, models
+
+import domain.ports.model
 
 
 class Migration(migrations.Migration):

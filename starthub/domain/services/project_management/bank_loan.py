@@ -1,3 +1,5 @@
+from loguru import logger
+
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.permissions import (
     AddDeniedPermissionException,
@@ -11,7 +13,6 @@ from domain.ports.service import AbstractDomainService
 from domain.repositories.project.bank_loan import ProjectBankLoanWriteRepository
 from domain.services.permission import PermissionService
 from domain.value_objects.project.bank_loan import ProjectBankLoanCreatePaylod, ProjectBankLoanUpdatePayload
-from loguru import logger
 
 
 class ProjectBankLoanPermissionService(AbstractDomainService):

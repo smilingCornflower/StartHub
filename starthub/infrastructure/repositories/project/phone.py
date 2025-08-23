@@ -1,4 +1,5 @@
 from django.db.models import Q, QuerySet
+
 from domain.exceptions.project_management import ProjectPhoneAlreadyExistsException, ProjectPhoneNotFoundException
 from domain.models.project_management.phone import ProjectPhone
 from domain.repositories.project.phone import ProjectPhoneReadRepository, ProjectPhoneWriteRepository

@@ -1,3 +1,5 @@
+from loguru import logger
+
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.enums.project_status import ProjectStatusEnum
 from domain.exceptions.permissions import UpdateDeniedPermissionException
@@ -12,7 +14,6 @@ from domain.repositories.project.project import ProjectWriteRepository
 from domain.services.permission import PermissionService
 from domain.value_objects.common import Id
 from domain.value_objects.project.project import ProjectUpdatePayload
-from loguru import logger
 
 
 class ProjectSubmissionPermissionService(AbstractDomainService):
@@ -22,7 +23,7 @@ class ProjectSubmissionPermissionService(AbstractDomainService):
     ):
         self._permission_service = permisison_service
 
-    def _check_permission_to_change_project_status(self, user: User) -> None:
+    def _check_permission_to_change_project_submission(self, user: User) -> None:
         """
         Check if user has permission to change project status.
         :raises UpdateDeniedPermissionException:
@@ -38,7 +39,7 @@ class ProjectSubmissionPermissionService(AbstractDomainService):
             logger.debug("User has enough permissions to change project status.")
             return None
 
-        logger.error(f"User(id={user.id}) doesn't have enough permissions to change a project status.")
+        logger.error(f"User {user.email} doesn't have enough permissions to change a project status.")
         raise UpdateDeniedPermissionException("You don't have enough permissions to change project status.")
 
 
@@ -56,7 +57,7 @@ class ProjectAdminService(ProjectSubmissionPermissionService):
         Approve a project submission and set status to ACTIVE.
         """
         self._check_submission_not_processed(project=project)
-        self._check_permission_to_change_project_status(user=user)
+        self._check_permission_to_change_project_submission(user=user)
 
         approve_payload = ProjectUpdatePayload(id_=Id(value=project.id), status=ProjectStatusEnum.ACTIVE)
         self._project_write_repository.update(data=approve_payload)
@@ -67,7 +68,7 @@ class ProjectAdminService(ProjectSubmissionPermissionService):
         Reject a project submission and set status to REJECTED.
         """
         self._check_submission_not_processed(project=project)
-        self._check_permission_to_change_project_status(user=user)
+        self._check_permission_to_change_project_submission(user=user)
 
         reject_payload = ProjectUpdatePayload(id_=Id(value=project.id), status=ProjectStatusEnum.REJECTED)
         self._project_write_repository.update(data=reject_payload)
@@ -78,7 +79,7 @@ class ProjectAdminService(ProjectSubmissionPermissionService):
         Deactivate a project by setting status to DEACTIVATED.
         :raises ProjectAlreadyDeactivatedException:
         """
-        self._check_permission_to_change_project_status(user=user)
+        self._check_permission_to_change_project_submission(user=user)
 
         if project.status == ProjectStatusEnum.DEACTIVATED:
             raise ProjectAlreadyDeactivatedException("This project already deactivated.")

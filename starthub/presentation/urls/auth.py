@@ -1,4 +1,5 @@
 from django.urls import path
+
 from presentation.views.auth import (
     AccessVerifyView,
     GenerateAnonymousView,

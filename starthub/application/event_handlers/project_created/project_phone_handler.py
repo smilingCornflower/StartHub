@@ -1,9 +1,10 @@
+from loguru import logger
+
 from domain.events.project import ProjectCreatedEvent
 from domain.models import ProjectPhone
 from domain.ports.event import AbstractEventHandler
 from domain.services.project_management.project_phone import ProjectPhoneService
 from domain.value_objects.project.phone import ProjectPhoneCreatePayload
-from loguru import logger
 
 
 class ProjectCreatedPhoneHandler(AbstractEventHandler[ProjectCreatedEvent]):

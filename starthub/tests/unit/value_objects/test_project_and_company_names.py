@@ -1,5 +1,6 @@
 import pydantic
 from django.test import SimpleTestCase
+
 from domain.exceptions.company import CompanyNameIsTooLongException
 from domain.exceptions.project_management import ProjectNameIsTooLongException
 from domain.exceptions.validation import EmptyStringException

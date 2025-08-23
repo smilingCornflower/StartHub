@@ -1,3 +1,5 @@
+from loguru import logger
+
 from domain.constants import USEFUL_LINKS_MAX_AMOUNT
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.permissions import (
@@ -15,7 +17,6 @@ from domain.services.permission import PermissionService
 from domain.value_objects.common import Id
 from domain.value_objects.filter import ProjectUsefulLinkFilter
 from domain.value_objects.project.useful_link import UsefulLinkCreatePayload, UsefulLinkUpdatePayload
-from loguru import logger
 
 
 class UsefulLinkPermissionService(AbstractDomainService):

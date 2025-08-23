@@ -1,3 +1,5 @@
+from loguru import logger
+
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyFounderAlreadyExistsException
 from domain.exceptions.geo.country import CountryNotFoundException
@@ -24,7 +26,6 @@ from domain.value_objects.company import (
 )
 from domain.value_objects.filter import CompanyFilter, CompanyFounderFilter, CountryFilter
 from domain.value_objects.user import PermissionVo
-from loguru import logger
 
 
 class CompanyService(AbstractDomainService):

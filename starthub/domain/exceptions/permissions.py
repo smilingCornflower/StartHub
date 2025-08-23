@@ -6,6 +6,10 @@ class PermissionException(CustomException):
     pass
 
 
+class ViewDeniedPermissionException(PermissionException):
+    pass
+
+
 class AddDeniedPermissionException(PermissionException):
     pass
 

@@ -2,8 +2,9 @@ from contextlib import AbstractContextManager
 from types import TracebackType
 from typing import Any, Self
 
-from application.ports.uow import AbstractUnitOfWork
 from django.db import transaction
+
+from application.ports.uow import AbstractUnitOfWork
 
 
 class DjangoUnitOfWork(AbstractUnitOfWork):

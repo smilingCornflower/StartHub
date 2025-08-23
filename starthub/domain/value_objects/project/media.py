@@ -1,3 +1,7 @@
+from filetype import guess
+from loguru import logger
+from pydantic import field_validator
+
 from domain import constants
 from domain.constants import IMAGE_MAX_SIZE_IN_BYTES, MEDIA_SUPPORTED_FILES_FORMATS, MEGABYTE, VIDEO_MAX_SIZE_IN_BYTES
 from domain.exceptions.file import (
@@ -9,9 +13,6 @@ from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects.common import Id, Order
 from domain.value_objects.file import FileVo
-from filetype import guess
-from loguru import logger
-from pydantic import field_validator
 
 
 class MediaFile(FileVo):

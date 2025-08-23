@@ -1,3 +1,5 @@
+from loguru import logger
+
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.permissions import (
     AddDeniedPermissionException,
@@ -14,7 +16,6 @@ from domain.value_objects.project.government_grant import (
     ProjectGovernmentGrantUpdatePayload,
     ProjectGoverntmentGrantCreatePayload,
 )
-from loguru import logger
 
 
 class ProjectGovernmentGrantService(AbstractDomainService):

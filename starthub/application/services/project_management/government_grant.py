@@ -1,3 +1,5 @@
+from loguru import logger
+
 from application.ports.service import AbstractAppService
 from domain.constants import PROJECT_GOVERNMENT_GRANT_MAX_AMOUNT
 from domain.exceptions.project_management import ProjectGovernmentGrantMaxAmountException
@@ -17,7 +19,6 @@ from domain.value_objects.project.government_grant import (
     ProjectGoverntmentGrantCreatePayload,
     ProjectGoverntmentGrantUpdateCommand,
 )
-from loguru import logger
 
 
 class GovernmentGrantAppService(AbstractAppService):

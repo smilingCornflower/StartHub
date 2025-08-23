@@ -1,6 +1,7 @@
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Manager
+
 from domain.constants import COUNTRY_CODE_LENGTH
 from domain.models.base import BaseModel
 

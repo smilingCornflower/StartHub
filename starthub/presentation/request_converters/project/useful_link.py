@@ -1,7 +1,8 @@
-from domain.value_objects.project.useful_link import UsefulLinkCreateCommand, UsefulLinkName, UsefulLinkUpdateCommand
 from loguru import logger
-from presentation.request_converters.common import get_required_field
 from rest_framework.request import Request
+
+from domain.value_objects.project.useful_link import UsefulLinkCreateCommand, UsefulLinkName, UsefulLinkUpdateCommand
+from presentation.request_converters.common import get_required_field
 
 
 def request_to_useful_link_create_command(request: Request) -> UsefulLinkCreateCommand:

@@ -1,10 +1,11 @@
 from typing import cast
 
 from django.http import QueryDict
-from domain.value_objects.geo import CityGetCommand, RegionGetCommand, RegionName
 from loguru import logger
-from presentation.request_converters.common import parse_languages
 from rest_framework.request import Request
+
+from domain.value_objects.geo import CityGetCommand, RegionGetCommand, RegionName
+from presentation.request_converters.common import parse_languages
 
 
 def request_to_region_get_command(request: Request) -> RegionGetCommand:

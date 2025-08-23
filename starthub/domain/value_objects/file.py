@@ -1,5 +1,9 @@
 from io import BytesIO
 
+from filetype import guess
+from loguru import logger
+from pydantic import field_validator
+
 from domain.constants import IMAGE_MAX_SIZE_IN_BYTES, MEGABYTE, PDF_MAX_SIZE_IN_BYTES
 from domain.enums.image_kind import ImageKindEnum
 from domain.exceptions.file import (
@@ -9,9 +13,6 @@ from domain.exceptions.file import (
 )
 from domain.services.file import ImageService, PdfService
 from domain.value_objects import BaseVo
-from filetype import guess
-from loguru import logger
-from pydantic import field_validator
 
 
 class FileVo(BaseVo):

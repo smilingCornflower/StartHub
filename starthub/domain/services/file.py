@@ -6,12 +6,13 @@ from io import BytesIO
 from typing import BinaryIO
 
 import filetype
-from domain.constants import IMAGE_COMPRESSION_QUALITY, TEMP_FILE_PATH, VIDEO_COMPRESSION_BITRATE
-from domain.exceptions.file import NotPdfFileException, NotSupportedImageFormatException
-from domain.ports.service import AbstractDomainService
 from loguru import logger
 from moviepy import VideoFileClip
 from wand.image import Image
+
+from domain.constants import IMAGE_COMPRESSION_QUALITY, TEMP_FILE_PATH, VIDEO_COMPRESSION_BITRATE
+from domain.exceptions.file import NotPdfFileException, NotSupportedImageFormatException
+from domain.ports.service import AbstractDomainService
 
 
 class ImageService(AbstractDomainService):

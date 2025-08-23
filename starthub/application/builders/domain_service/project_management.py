@@ -14,7 +14,7 @@ from domain.services.project_management.investment import (
     ProjectInvestmentSocialLinkService,
 )
 from domain.services.project_management.media import ProjectMediaService
-from domain.services.project_management.project import ProjectService
+from domain.services.project_management.project import ProjectGetService, ProjectService
 from domain.services.project_management.project_file import ProjectFileService
 from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
@@ -66,6 +66,12 @@ class ProjectServiceBuilder(AbstractDomainServiceBuilder[ProjectService]):
         return ProjectService(
             write_repository=DjProjectWriteRepository(), permission_service=PermissionServiceBuilder.create_service()
         )
+
+
+class ProjectGetServiceBuilder(AbstractDomainServiceBuilder[ProjectGetService]):
+    @staticmethod
+    def create_service() -> ProjectGetService:
+        return ProjectGetService(permission_service=PermissionServiceBuilder.create_service())
 
 
 class TeamMemberServiceBuilder(AbstractDomainServiceBuilder[TamMemberService]):

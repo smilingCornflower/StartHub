@@ -1,3 +1,5 @@
+from loguru import logger
+
 from application.ports.service import AbstractAppService
 from domain.exceptions.project_management import ProjectAcceleratorAlreadyExists, ProjectAcceleratorNotFoundException
 from domain.models.project_management.accelerator import ProjectAccelerator
@@ -15,7 +17,6 @@ from domain.value_objects.project.accelerator import (
     ProjectAcceleratorUpdateCommand,
     ProjectAcceleratorUpdatePayload,
 )
-from loguru import logger
 
 
 class AcceleratorAppService(AbstractAppService):

@@ -2,12 +2,18 @@ from dataclasses import asdict
 from typing import cast
 
 import pydantic
+from loguru import logger
+from rest_framework import status
+from rest_framework.parsers import JSONParser
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from application.dto.auth import AccessPayloadDto, AccessTokenDto, AnonymousPayloadDto, AnonymousTokenDto, TokenPairDto
 from application.ports.cookie_service import CookiesResponseProtocol
 from application.services.gateway import gateway
 from domain.enums.token import TokenNameEnum
 from domain.exceptions import CustomException
-from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import (
     CommonErrorResponseFactory,
@@ -15,11 +21,6 @@ from presentation.response_factories.common import (
     RegistrationErrorResponseFactory,
     ReissueAccessErrorResponseFactory,
 )
-from rest_framework import status
-from rest_framework.parsers import JSONParser
-from rest_framework.request import Request
-from rest_framework.response import Response
-from rest_framework.views import APIView
 
 
 class LoginView(APIView):

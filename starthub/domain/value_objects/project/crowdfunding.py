@@ -1,10 +1,11 @@
+from pydantic import field_validator
+
 from domain.constants import PROJECT_CROWDFUNDING_AMOUNT_MAX_DIGITS
 from domain.exceptions.project_management import ProjectCrowdfundingMaxAmountException
 from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload
 from domain.value_objects.common import Id, LongString, PositiveNumber
 from domain.value_objects.geo import AddressUpdatePayload
-from pydantic import field_validator
 
 
 class ProjectCrowdfundingId(Id):

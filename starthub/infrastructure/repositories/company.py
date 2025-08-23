@@ -1,4 +1,5 @@
 from django.db.models import QuerySet
+
 from domain.exceptions.company import CompanyFounderNotFoundException, CompanyNotFoundException
 from domain.models.company import Company, CompanyFounder
 from domain.repositories.company import (

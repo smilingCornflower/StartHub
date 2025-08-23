@@ -1,5 +1,8 @@
 import io
 
+from filetype import guess
+from loguru import logger
+
 from domain.enums.file_extension import FileExtensionEnum
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.file import UnsupportedFileExtensionException
@@ -15,8 +18,6 @@ from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageDeletePayload, CloudStorageUploadPayload
 from domain.value_objects.common import Id
 from domain.value_objects.project.project_file import ProjectFileCreateCommand, ProjectFileCreatePayload
-from filetype import guess
-from loguru import logger
 
 
 class ProjectFilePermissionService(AbstractDomainService):

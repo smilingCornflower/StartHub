@@ -1,7 +1,8 @@
+from pydantic import field_validator
+
 from domain.exceptions.geo.country import InvalidCountryCodeException
 from domain.value_objects import BaseVo
 from domain.value_objects.common import Id
-from pydantic import field_validator
 
 
 class CountryId(Id):

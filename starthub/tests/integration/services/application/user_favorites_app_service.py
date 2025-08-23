@@ -1,8 +1,10 @@
+from application.service_factories.app_service.user_favorite import UserFavoriteAppAppServiceBuilder
+from django.test import TestCase
+from tests.factories.project import create_project_instance
+
 from application.dto.project import ProjectDto
 from application.dto.user import UserFavoriteDto
-from application.service_factories.app_service.user_favorite import UserFavoriteAppAppServiceBuilder
 from application.services.user_favorite import UserFavoriteAppService
-from django.test import TestCase
 from domain.exceptions.project_management import ProjectNotFoundException
 from domain.exceptions.user import UserNotFoundException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException, UserFavoriteNotFoundException
@@ -10,7 +12,6 @@ from domain.models.project_management.project import Project
 from domain.models.user import User
 from domain.models.user_favorite import UserFavorite
 from domain.value_objects.common import Id
-from tests.factories.project import create_project_instance
 from tests.utils import check_raises
 
 
