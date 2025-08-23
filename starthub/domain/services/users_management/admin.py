@@ -1,5 +1,5 @@
 from domain.enums.permission import ActionEnum, ScopeEnum
-from domain.exceptions.permissions import AddDeniedPermissionException
+from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
 from domain.models.role import Role
 from domain.models.user import User
 from domain.ports.service import AbstractDomainService
@@ -34,6 +34,17 @@ class UserAdminPermissionService(AbstractDomainService):
             logger.error(f"User {user.email} has no permission to add role '{role}'.")
             raise AddDeniedPermissionException(f"You don't have enough permissions to add role '{role}'.")
 
+    def _check_permission_to_change_is_active_field(self, user: User) -> None:
+        if self._permission_service.is_allowed_for_user(
+            user=user, model=User, action=ActionEnum.CHANGE, scope=ScopeEnum.ANY, field=User.IS_ACTIVE_FIELD
+        ):
+            return None
+        else:
+            logger.error(f"User {user.email} has no permission to change is_active field for users.")
+            raise UpdateDeniedPermissionException(
+                "You don't have enough permissions to change is_active field for users."
+            )
+
 
 class UserAdminService(UserAdminPermissionService):
     def __init__(self, permission_service: PermissionService, user_write_repository: UserWriteRepository):
@@ -51,3 +62,15 @@ class UserAdminService(UserAdminPermissionService):
         update_payload = UserUpdatePayload(id_=Id(value=target_user.id), role_to_remove=role)
         self._user_write_repository.update(data=update_payload)
         logger.info("User role removed successfully.")
+
+    def activate(self, caller_user: User, target_user: User) -> None:
+        self._check_permission_to_change_is_active_field(user=caller_user)
+        update_payload = UserUpdatePayload(id_=Id(value=target_user.id), is_active=True)
+        self._user_write_repository.update(data=update_payload)
+        logger.info("User activated successfully.")
+
+    def deactivate(self, caller_user: User, target_user: User) -> None:
+        self._check_permission_to_change_is_active_field(user=caller_user)
+        update_payload = UserUpdatePayload(id_=Id(value=target_user.id), is_active=False)
+        self._user_write_repository.update(data=update_payload)
+        logger.info("User deactivated successfully.")

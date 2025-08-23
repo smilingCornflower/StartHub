@@ -70,6 +70,7 @@ class UserUpdatePayload(AbstractUpdatePayload):
     password: RawPassword | None = None
     picture: str | None = None
 
+    is_active: bool | None = None
     role_to_add: Role | None = None
     role_to_remove: Role | None = None
 

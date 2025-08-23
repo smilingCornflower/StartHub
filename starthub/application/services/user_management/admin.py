@@ -39,3 +39,13 @@ class UserAdminAppService(AbstractAppService):
         role = self._role_read_repository.get_by_name(name=role_name)
 
         self._user_admin_service.remove_role_form_user(caller_user=call_user, target_user=target_user, role=role)
+
+    def activate_user(self, call_user_id: Id, target_user_id: Id) -> None:
+        call_user = self._user_read_repository.get_by_id(id_=call_user_id)
+        target_user = self._user_read_repository.get_by_id(id_=target_user_id)
+        self._user_admin_service.activate(caller_user=call_user, target_user=target_user)
+
+    def deactivate_user(self, call_user_id: Id, target_user_id: Id) -> None:
+        call_user = self._user_read_repository.get_by_id(id_=call_user_id)
+        target_user = self._user_read_repository.get_by_id(id_=target_user_id)
+        self._user_admin_service.deactivate(caller_user=call_user, target_user=target_user)
