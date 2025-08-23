@@ -43,6 +43,7 @@ class NewsUpdatePayload(AbstractUpdatePayload):
     subtitle: NewsSubtitle | None = None
     content: NewsContent | None = None
     cover_path: str | None = None
+    is_active: bool | None = None
 
 
 class NewsCreateCommand(BaseCommand):

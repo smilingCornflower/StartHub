@@ -18,6 +18,9 @@ class News(BaseModel):
     published_at = models.DateTimeField(default=get_default_datetime_now)
     updated_at = models.DateTimeField(default=get_default_datetime_now)
     cover = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+
+    IS_ACTIVE_FIELD = "is_active"
 
     class Meta:
         db_table = "news"

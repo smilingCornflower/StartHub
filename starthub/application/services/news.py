@@ -21,7 +21,9 @@ from domain.exceptions.permissions import (
     UpdateDeniedPermissionException,
 )
 from domain.models.news import News, NewsImage
+from domain.models.user import User
 from domain.repositories.news import NewsReadRepository
+from domain.repositories.user import UserReadRepository
 from domain.services.cloud_storage import StorageService
 from domain.services.file import ImageService
 from domain.services.news import NewsImageService, NewsService
@@ -48,6 +50,7 @@ from domain.value_objects.user_management.user import PermissionVo
 from loguru import logger
 
 
+# TODO: Move this permission class to domain service
 class NewsPermissionAppService(AbstractAppService):
     def __init__(self, permission_service: PermissionService):
         self._permission_service = permission_service
@@ -61,7 +64,7 @@ class NewsPermissionAppService(AbstractAppService):
             user_id=user_id, permission_vo=add_news_permission
         )
         if not has_permission:
-            logger.exception("User does not have permission to add news")
+            logger.error("User does not have permission to add news")
             raise AddDeniedPermissionException("User does not have permission to add news")
         logger.debug(f"User(id={user_id.value}) has permissions to add news.")
         return None
@@ -76,7 +79,7 @@ class NewsPermissionAppService(AbstractAppService):
         )
         logger.debug(f"user_id = {user_id}; has_permission = {has_permission}")
         if not has_permission:
-            logger.exception("User does not have permission to delete news")
+            logger.error("User does not have permission to delete news")
             raise DeleteDeniedPermissionException("User does not have permission to delete news")
 
     def _check_permission_to_update_news(self, user_id: Id) -> None:
@@ -89,8 +92,18 @@ class NewsPermissionAppService(AbstractAppService):
             user_id=user_id, permission_vo=change_any_news_permission
         )
         if not has_permission:
-            logger.exception("User does not have permission to change news.")
+            logger.error("User does not have permission to change news.")
             raise UpdateDeniedPermissionException("User does not have permission to change news.")
+
+    def _check_permission_to_change_any_is_active_field(self, user: User) -> None:
+        """:raises UpdateDeniedPermissionException:"""
+        if self._permission_service.is_allowed_for_user(
+            user=user, model=News, action=ActionEnum.CHANGE, scope=ScopeEnum.ANY, field=News.IS_ACTIVE_FIELD
+        ):
+            return None
+        else:
+            logger.error(f"User {user.email} doesn't have enough permission to change news is_active field.")
+            raise UpdateDeniedPermissionException("User does not have permission to change news.is_active field.")
 
 
 class NewsAppService(NewsPermissionAppService):
@@ -102,6 +115,7 @@ class NewsAppService(NewsPermissionAppService):
         image_service: ImageService,
         storage_service: StorageService,
         news_read_repository: NewsReadRepository,
+        user_read_repository: UserReadRepository,
         unit_of_work: AbstractUnitOfWork,
     ):
         super().__init__(permission_service=permission_service)
@@ -110,6 +124,7 @@ class NewsAppService(NewsPermissionAppService):
         self._image_service = image_service
         self._storage_service = storage_service
         self._news_read_repository = news_read_repository
+        self._user_read_repository = user_read_repository
         self._uow = unit_of_work
 
     def get(self, news_id: int | None = None, pagination: Pagination | None = None) -> NewsFullDto | list[NewsShortDto]:
@@ -405,3 +420,13 @@ class NewsAppService(NewsPermissionAppService):
         self._news_service.delete_by_id(Id(value=news_id))
 
         logger.debug("News deleted.")
+
+    def activate(self, news_id: Id, user_id: Id) -> None:
+        user = self._user_read_repository.get_by_id(id_=user_id)
+        self._check_permission_to_change_any_is_active_field(user=user)
+        self._news_service.activate(news_id=news_id)
+
+    def deactivate(self, news_id: Id, user_id: Id) -> None:
+        user = self._user_read_repository.get_by_id(id_=user_id)
+        self._check_permission_to_change_any_is_active_field(user=user)
+        self._news_service.deactivate(news_id=news_id)

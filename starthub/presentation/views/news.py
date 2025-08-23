@@ -76,3 +76,32 @@ class NewsView(APIView):
             return Response({"detail": "News deleted.", "code": SUCCESS}, status=status.HTTP_200_OK)
         except CustomException as e:
             return NewsErrorResponseFactory.create_response(e)
+
+
+class NewsActivateView(APIView):
+    @staticmethod
+    def patch(request: Request, news_id: int) -> Response:
+        print()
+        logger.info(f"PATCH /news/{news_id}/activate/")
+
+        try:
+            user_id = get_user_id_or_raises(request=request)
+            gateway.news_app_service.activate(user_id=user_id, news_id=Id(value=news_id))
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+        except CustomException as e:
+            return NewsErrorResponseFactory.create_response(e)
+
+
+class NewsDeactivateView(APIView):
+    @staticmethod
+    def patch(request: Request, news_id: int) -> Response:
+        print()
+        logger.info(f"PATCH /news/{news_id}/deactivate/")
+
+        try:
+            user_id = get_user_id_or_raises(request=request)
+            gateway.news_app_service.deactivate(user_id=user_id, news_id=Id(value=news_id))
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+
+        except CustomException as e:
+            return NewsErrorResponseFactory.create_response(e)
