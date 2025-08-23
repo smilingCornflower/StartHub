@@ -18,6 +18,8 @@ def access_payload_to_dto(access_payload: AccessPayload) -> AccessPayloadDto:
         sub=access_payload.sub,
         roles=access_payload.roles,
         email=access_payload.email,
+        first_name=access_payload.first_name,
+        last_name=access_payload.last_name,
         iat=access_payload.iat,
         exp=access_payload.exp,
     )

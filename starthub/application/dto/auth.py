@@ -34,6 +34,8 @@ class AccessPayloadDto(PayloadDto):
     sub: str
     roles: list[str]
     email: str
+    first_name: str
+    last_name: str
     iat: int
     exp: int
     type: str = field(default=TokenTypeEnum.ACCESS, init=False)

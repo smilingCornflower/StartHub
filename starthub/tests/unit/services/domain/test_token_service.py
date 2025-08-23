@@ -235,6 +235,8 @@ class TokenServiceTestCase(SimpleTestCase):
             "sub": str(self.user.id),
             "email": self.user.email,
             "roles": ["user"],
+            "first_name": self.user.first_name,
+            "last_name": self.user.last_name,
             "iat": iat,
             "exp": exp,
             "type": "invalid",
