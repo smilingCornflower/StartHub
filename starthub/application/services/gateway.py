@@ -23,7 +23,7 @@ from application.builders.app_service.project_management.project_file import Pro
 from application.builders.app_service.project_management.project_image import ProjectImageAppServiceBuilder
 from application.builders.app_service.project_management.project_media import ProjectMediaAppServiceBuilder
 from application.builders.app_service.project_management.useful_link import ProjectUsefulLinkAppServiceBuilder
-from application.builders.app_service.user import UserAppServiceBuilder
+from application.builders.app_service.user import UserAdminAppServiceBuilder, UserAppServiceBuilder
 from application.builders.app_service.user_favorite import UserFavoriteAppAppServiceBuilder
 from application.services.auth import AuthAppService, RegistrationAppService
 from application.services.company import CompanyAppService
@@ -49,8 +49,9 @@ from application.services.project_management.project_investment_phone import Pro
 from application.services.project_management.project_investment_social_link import ProjectInvestmentSocialLinkAppService
 from application.services.project_management.project_media import ProjectMediaAppService
 from application.services.project_management.useful_link import ProjectUsefulLinkAppService
-from application.services.user import UserAppService
-from application.services.user_favorite import UserFavoriteAppService
+from application.services.user_management.admin import UserAdminAppService
+from application.services.user_management.user import UserAppService
+from application.services.user_management.user_favorite import UserFavoriteAppService
 from infrastructure.services.cookie import CookieService, cookie_service
 
 
@@ -80,7 +81,8 @@ class Gateway:
     _project_file_app_service: ProjectFileAppService | None = None
     _project_media_app_service: ProjectMediaAppService | None = None
     _project_useful_link_app_service: ProjectUsefulLinkAppService | None = None
-    _project_submission_app_service: ProjectAdminAppService | None = None
+    _project_admin_app_service: ProjectAdminAppService | None = None
+    _user_admin_app_service: UserAdminAppService | None = None
 
     _region_app_service: RegionAppService | None = None
     _city_app_service: CityAppService | None = None
@@ -234,10 +236,16 @@ class Gateway:
         return self._project_useful_link_app_service
 
     @property
-    def project_submission_app_service(self) -> ProjectAdminAppService:
-        if self._project_submission_app_service is None:
-            self._project_submission_app_service = ProjectAdminAppServiceBuilder.create_service()
-        return self._project_submission_app_service
+    def projects_admin_app_service(self) -> ProjectAdminAppService:
+        if self._project_admin_app_service is None:
+            self._project_admin_app_service = ProjectAdminAppServiceBuilder.create_service()
+        return self._project_admin_app_service
+
+    @property
+    def user_admin_app_service(self) -> UserAdminAppService:
+        if self._user_admin_app_service is None:
+            self._user_admin_app_service = UserAdminAppServiceBuilder.create_service()
+        return self._user_admin_app_service
 
     @property
     def cookie_service(self) -> CookieService:

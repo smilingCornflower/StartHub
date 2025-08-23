@@ -1,5 +1,5 @@
 from application.dto.auth import AccessPayloadDto, AccessTokenDto, AnonymousPayloadDto, TokenPairDto
-from domain.value_objects.token import AccessPayload, AccessTokenVo, AnonymousPayload, TokenPairVo
+from domain.value_objects.auth_management.token import AccessPayload, AccessTokenVo, AnonymousPayload, TokenPairVo
 
 
 def token_pair_to_dto(token_pair: TokenPairVo) -> TokenPairDto:

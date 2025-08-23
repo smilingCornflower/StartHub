@@ -10,7 +10,7 @@ from domain.repositories.user import (
 )
 from domain.value_objects.common import Id, Pagination, PhoneNumber
 from domain.value_objects.filter import UserFilter, UserPhoneFilter
-from domain.value_objects.user import (
+from domain.value_objects.user_management.user import (
     Email,
     UserCreatePayload,
     UserPhoneCreatePayload,
@@ -72,6 +72,11 @@ class DjUserWriteRepository(UserWriteRepository):
             user.set_password(data.password.value)
         if data.picture:
             user.picture = data.picture
+        if data.role_to_add:
+            user.roles.add(data.role_to_add)
+        if data.role_to_remove:
+            user.roles.remove(data.role_to_remove)
+
         user.save()
         return user
 

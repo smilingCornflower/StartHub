@@ -19,10 +19,8 @@ from domain.models.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.role import RoleReadRepository
 from domain.repositories.user import UserReadRepository, UserWriteRepository
-from domain.value_objects.auth import LoginCredentials
-from domain.value_objects.common import Id
-from domain.value_objects.filter import RoleFilter, UserFilter
-from domain.value_objects.token import (
+from domain.value_objects.auth_management.auth import LoginCredentials
+from domain.value_objects.auth_management.token import (
     AccessPayload,
     AccessTokenVo,
     AnonymousPayload,
@@ -31,15 +29,17 @@ from domain.value_objects.token import (
     RefreshTokenVo,
     TokenPairVo,
 )
-from domain.value_objects.user import Email, UserCreatePayload
+from domain.value_objects.common import Id
+from domain.value_objects.filter import RoleFilter, UserFilter
+from domain.value_objects.user_management.user import Email, UserCreatePayload
 from loguru import logger
 
 
 class TokenService(AbstractDomainService):
     def __init__(
         self,
-        secret_key: str,
         role_read_repository: RoleReadRepository,
+        secret_key: str,
         access_token_lifetime: int = ACCESS_TOKEN_LIFETIME,
         refresh_token_lifetime: int = REFRESH_TOKEN_LIFETIME,
         anonymous_token_lifetime: int = ANONYMOUS_TOKEN_LIFETIME,

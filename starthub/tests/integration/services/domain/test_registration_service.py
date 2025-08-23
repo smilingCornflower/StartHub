@@ -2,7 +2,7 @@ from django.test import TestCase
 from domain.exceptions.user import EmailAlreadyExistsException
 from domain.models.user import User
 from domain.services.auth import RegistrationService
-from domain.value_objects.user import Email, RawPassword, UserCreatePayload
+from domain.value_objects.user_management.user import Email, RawPassword, UserCreatePayload
 from infrastructure.repositories.user import DjUserReadRepository, DjUserWriteRepository
 
 

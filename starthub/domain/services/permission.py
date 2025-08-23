@@ -7,7 +7,7 @@ from domain.repositories.permission import PermissionReadRepository
 from domain.repositories.user import UserReadRepository
 from domain.value_objects.common import Id
 from domain.value_objects.filter import PermissionFilter
-from domain.value_objects.user import PermissionVo
+from domain.value_objects.user_management.user import PermissionVo
 
 
 class PermissionService(AbstractDomainService):
@@ -18,6 +18,18 @@ class PermissionService(AbstractDomainService):
     ):
         self._user_read_repository = user_read_repository
         self._permission_read_repository = permission_read_repository
+
+    def is_allowed_for_user(
+        self,
+        user: User,
+        model: type[BaseModel],
+        action: ActionEnum,
+        scope: ScopeEnum,
+        field: str | None = None,
+        value: str | None = None,
+    ) -> bool:
+        permission = self.create_permission_vo(model=model, action=action, scope=scope, field=field, value=value)
+        return self.has_user_permission(user=user, permission_vo=permission)
 
     def has_user_permission(self, user: User, permission_vo: PermissionVo) -> bool:
         """Checks whether the user's roles has the specified permission."""

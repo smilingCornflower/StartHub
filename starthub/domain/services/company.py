@@ -23,7 +23,7 @@ from domain.value_objects.company import (
     CompanyUpdatePayload,
 )
 from domain.value_objects.filter import CompanyFilter, CompanyFounderFilter, CountryFilter
-from domain.value_objects.user import PermissionVo
+from domain.value_objects.user_management.user import PermissionVo
 from loguru import logger
 
 

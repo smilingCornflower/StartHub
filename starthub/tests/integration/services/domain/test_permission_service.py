@@ -6,7 +6,7 @@ from domain.models.permission import Permission
 from domain.models.role import Role
 from domain.models.user import User
 from domain.value_objects.common import Id
-from domain.value_objects.user import PermissionVo
+from domain.value_objects.user_management.user import PermissionVo
 from loguru import logger
 
 
