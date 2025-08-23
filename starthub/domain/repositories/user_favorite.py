@@ -4,7 +4,7 @@ from domain.models.user_favorite import UserFavorite
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
 from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import UserFavoriteFilter
-from domain.value_objects.user_favorite import UserFavoriteCreatePayload, UserFavoriteUpdatePayload
+from domain.value_objects.user_management.user_favorite import UserFavoriteCreatePayload, UserFavoriteUpdatePayload
 
 
 class UserFavoriteReadRepository(AbstractReadRepository[UserFavorite, UserFavoriteFilter, Id], ABC):

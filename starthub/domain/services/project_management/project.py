@@ -15,7 +15,7 @@ from domain.services.permission import PermissionService
 from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project.common import ProjectStatus
 from domain.value_objects.project.project import ProjectCreatePayload, ProjectUpdatePayload
-from domain.value_objects.user import PermissionVo
+from domain.value_objects.user_management.user import PermissionVo
 from loguru import logger
 
 

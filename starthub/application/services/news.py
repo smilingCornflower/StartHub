@@ -44,7 +44,7 @@ from domain.value_objects.news import (
     NewsUpdateCommand,
     NewsUpdatePayload,
 )
-from domain.value_objects.user import PermissionVo
+from domain.value_objects.user_management.user import PermissionVo
 from loguru import logger
 
 

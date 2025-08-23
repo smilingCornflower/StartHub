@@ -4,7 +4,7 @@ from domain.models.user import User, UserPhone
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
 from domain.value_objects.common import Id, Pagination, PhoneNumber
 from domain.value_objects.filter import UserFilter, UserPhoneFilter
-from domain.value_objects.user import (
+from domain.value_objects.user_management.user import (
     Email,
     UserCreatePayload,
     UserPhoneCreatePayload,

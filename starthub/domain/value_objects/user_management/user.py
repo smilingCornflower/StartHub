@@ -6,6 +6,7 @@ from domain.constants import PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.auth import PasswordValidationException
 from domain.exceptions.validation import EmptyStringException, InvalidEmailException
+from domain.models.role import Role
 from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
@@ -68,6 +69,9 @@ class UserUpdatePayload(AbstractUpdatePayload):
     description: Description | None = None
     password: RawPassword | None = None
     picture: str | None = None
+
+    role_to_add: Role | None = None
+    role_to_remove: Role | None = None
 
 
 class ProfilePictureUploadCommand(BaseCommand):

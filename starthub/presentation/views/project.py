@@ -3,7 +3,6 @@ from json.decoder import JSONDecodeError
 from pprint import pformat
 
 import pydantic
-from application.converters.request_converters.search import request_data_to_project_search_params
 from application.dto.auth import AccessPayloadDto, AnonymousPayloadDto
 from application.dto.project import ProjectDto
 from application.services.gateway import gateway
@@ -32,6 +31,7 @@ from presentation.request_converters.project.project_images_update_command impor
     request_project_data_to_project_images_update_command,
 )
 from presentation.request_converters.project.project_update_command import request_to_the_project_update_command
+from presentation.request_converters.search import request_data_to_project_search_params
 from presentation.response_factories.common import ProjectErrorResponseFactory
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser

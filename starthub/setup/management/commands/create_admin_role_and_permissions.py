@@ -7,8 +7,9 @@ from domain.enums.role import RoleEnum
 from domain.models.permission import Permission
 from domain.models.project_management.project import Project
 from domain.models.role import Role
+from domain.models.user import User
 from domain.services.permission import PermissionService
-from domain.value_objects.user import PermissionVo
+from domain.value_objects.user_management.user import PermissionVo
 from loguru import logger
 
 
@@ -30,6 +31,7 @@ class Command(BaseCommand):
 
         self._setup_project_permissions(admin_role)
         self._setup_permissions_for_special_status_projects(admin_role)
+        self._setup_permissions_for_user_roles(admin_role)
 
         logger.info("Admin role and permissions initialization completed")
 
@@ -48,6 +50,24 @@ class Command(BaseCommand):
 
         self._add_permission_to_role(admin_role, change_any_project_status)
         logger.info("Project permissions configured")
+
+    def _setup_permissions_for_user_roles(self, admin_role: Role) -> None:
+        add_moderator_to_any_user = PermissionService.create_permission_vo(
+            model=User, action=ActionEnum.ADD, scope=ScopeEnum.ANY, field=User.ROLES_FIELD, value=RoleEnum.MODERATOR
+        )
+        add_blogger_to_any_user = PermissionService.create_permission_vo(
+            model=User, action=ActionEnum.ADD, scope=ScopeEnum.ANY, field=User.ROLES_FIELD, value=RoleEnum.BLOGGER
+        )
+        remove_moderator_from_any_user = PermissionService.create_permission_vo(
+            model=User, action=ActionEnum.DELETE, scope=ScopeEnum.ANY, field=User.ROLES_FIELD, value=RoleEnum.MODERATOR
+        )
+        remove_blogger_from_any_user = PermissionService.create_permission_vo(
+            model=User, action=ActionEnum.DELETE, scope=ScopeEnum.ANY, field=User.ROLES_FIELD, value=RoleEnum.BLOGGER
+        )
+        self._add_permission_to_role(role=admin_role, permission_vo=add_moderator_to_any_user)
+        self._add_permission_to_role(role=admin_role, permission_vo=add_blogger_to_any_user)
+        self._add_permission_to_role(role=admin_role, permission_vo=remove_moderator_from_any_user)
+        self._add_permission_to_role(role=admin_role, permission_vo=remove_blogger_from_any_user)
 
     def _setup_permissions_for_special_status_projects(self, admin_role: Role) -> None:
         """Setup project submission permissions for admin role."""

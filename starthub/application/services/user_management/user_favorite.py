@@ -9,10 +9,10 @@ from domain.models.user_favorite import UserFavorite
 from domain.repositories.project.category import ProjectCategoryReadRepository
 from domain.repositories.project.project import ProjectReadRepository
 from domain.services.project_management.project import ProjectService
-from domain.services.user_management import UserFavoriteService
+from domain.services.users_management.user_favorite import UserFavoriteService
 from domain.value_objects.common import Id
 from domain.value_objects.filter import ProjectCategoryFilter, ProjectFilter
-from domain.value_objects.user_favorite import UserFavoriteCreatePayload
+from domain.value_objects.user_management.user_favorite import UserFavoriteCreatePayload
 from loguru import logger
 
 
