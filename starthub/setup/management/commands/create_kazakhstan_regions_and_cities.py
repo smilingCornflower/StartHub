@@ -1,13 +1,12 @@
 import json
 from typing import Any
 
-from django.core.management.base import BaseCommand
-from loguru import logger
-
 from config.settings import BASE_DIR
+from django.core.management.base import BaseCommand
 from domain.models.geo.city import City
 from domain.models.geo.country import Country
 from domain.models.geo.region import Region
+from loguru import logger
 
 
 class Command(BaseCommand):

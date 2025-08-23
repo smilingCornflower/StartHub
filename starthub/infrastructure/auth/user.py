@@ -1,6 +1,3 @@
-from loguru import logger
-from rest_framework.request import Request
-
 from application.dto.auth import AccessPayloadDto, AnonymousPayloadDto
 from domain.enums.token import TokenTypeEnum
 from domain.value_objects.common import Id
@@ -8,6 +5,8 @@ from infrastructure.auth.token import (
     get_access_or_anonymous_payload_dto_from_headers,
     get_access_payload_dto_from_headers,
 )
+from loguru import logger
+from rest_framework.request import Request
 
 
 def get_user_id_or_none(request: Request) -> Id | None:

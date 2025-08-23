@@ -1,5 +1,3 @@
-from loguru import logger
-
 from domain.events.project import ProjectCreatedEvent
 from domain.models.company import Company, CompanyFounder
 from domain.models.geo.address import Address
@@ -9,6 +7,7 @@ from domain.services.company import CompanyFounderService, CompanyService
 from domain.value_objects.common import Id
 from domain.value_objects.company import CompanyCreateCommand, CompanyFounderCreateCommand, CompanyFounderCreatePayload
 from domain.value_objects.project.project import ProjectCreateCommand
+from loguru import logger
 
 
 class ProjectCreatedCompanyHandler(AbstractEventHandler[ProjectCreatedEvent]):

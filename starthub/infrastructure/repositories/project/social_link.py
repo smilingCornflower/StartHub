@@ -1,5 +1,4 @@
 from django.db.models import Q, QuerySet
-
 from domain.exceptions.project_management import ProjectSocialLinkNotFoundException
 from domain.models.project_management.social_link import ProjectSocialLink
 from domain.repositories.project.social_link import ProjectSocialLinkReadRepository, ProjectSocialLinkWriteRepository

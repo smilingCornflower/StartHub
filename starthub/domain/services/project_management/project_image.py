@@ -1,5 +1,3 @@
-from loguru import logger
-
 from domain.constants import PROJECT_IMAGES_MAX_AMOUNT
 from domain.exceptions.cloud_storage import FileNotFoundCloudStorageException
 from domain.exceptions.permissions import DeleteDeniedPermissionException, UpdateDeniedPermissionException
@@ -26,6 +24,7 @@ from domain.value_objects.project.image import (
     ProjectImageUpdateCommand,
     ProjectImageUpdatePayload,
 )
+from loguru import logger
 
 
 class ProjectImageService(AbstractDomainService):

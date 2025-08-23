@@ -1,10 +1,9 @@
 from typing import Any
 
-from rest_framework.request import Request
-
 from domain.value_objects.common import Description, Id
 from domain.value_objects.company import CompanyName, CompanyUpdateCommand, EstablishedDate, PatentNumber
 from presentation.request_converters.common import build_address_create_command, parse_date
+from rest_framework.request import Request
 
 
 def _extract_established_date_or_none(data: dict[str, str]) -> EstablishedDate | None:

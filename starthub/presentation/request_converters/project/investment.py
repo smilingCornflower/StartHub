@@ -1,9 +1,6 @@
 from pprint import pformat
 from typing import Any
 
-from loguru import logger
-from rest_framework.request import Request
-
 from domain.value_objects.common import PhoneNumber, SocialLink
 from domain.value_objects.project.investment import (
     ProjectInvestmentAmount,
@@ -11,7 +8,9 @@ from domain.value_objects.project.investment import (
     ProjectInvestmentOrganizationName,
     ProjectInvestmentUpdateCommand,
 )
+from loguru import logger
 from presentation.request_converters.common import get_required_field
+from rest_framework.request import Request
 
 
 def request_to_project_investment_create_command(request: Request) -> ProjectInvestmentCreateCommand:

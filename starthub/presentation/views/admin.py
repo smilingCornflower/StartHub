@@ -1,26 +1,25 @@
 from dataclasses import asdict
 
 import pydantic
-from loguru import logger
-from rest_framework import status
-from rest_framework.request import Request
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id
 from infrastructure.auth.user import get_user_id_or_raises
+from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.request_converters.common import request_to_pagination
 from presentation.response_factories.admin import ProjectSubmissionErrorResponseFactory
+from rest_framework import status
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 class ProjectSubmissionGetView(APIView):
     @staticmethod
     def get(request: Request) -> Response:
         print()
-        logger.info(f"GET /admin/projects/submissions")
+        logger.info("GET /admin/projects/submissions")
 
         try:
             user_id = get_user_id_or_raises(request=request)

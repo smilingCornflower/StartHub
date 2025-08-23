@@ -1,9 +1,7 @@
 from pprint import pformat
 
-from django.db import transaction
-from loguru import logger
-
 from application.ports.service import AbstractAppService
+from django.db import transaction
 from domain.events.project import ProjectInvestmentCreatedEvent
 from domain.models.project_management.project import Project
 from domain.models.user import User
@@ -19,6 +17,7 @@ from domain.value_objects.project.investment import (
     ProjectInvestmentUpdatePayload,
 )
 from infrastructure.event_bus import EventBus
+from loguru import logger
 
 
 class ProjectInvestmentAppService(AbstractAppService):

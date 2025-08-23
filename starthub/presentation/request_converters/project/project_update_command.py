@@ -2,9 +2,6 @@ import json
 from typing import Any
 
 from django.core.files.uploadedfile import UploadedFile
-from loguru import logger
-from rest_framework.request import Request
-
 from domain.value_objects.common import DeadlineDate, Description, Id
 from domain.value_objects.file import PdfFile
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
@@ -22,8 +19,10 @@ from domain.value_objects.project.metric import (
     Roi,
 )
 from domain.value_objects.project.project import ProjectUpdateCommand
+from loguru import logger
 from presentation.request_converters.common import get_required_field, parse_date
 from presentation.request_converters.project.common import extract_steps
+from rest_framework.request import Request
 
 
 def request_to_the_project_update_command(request: Request, project_id: int, user_id: int) -> ProjectUpdateCommand:

@@ -1,9 +1,8 @@
 from typing import Any
 
-from loguru import logger
-
 from domain.value_objects.common import Id, Order
 from domain.value_objects.project.image import ProjectImageUpdateCommand
+from loguru import logger
 from presentation.request_converters.common import get_required_field
 
 

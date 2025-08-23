@@ -1,7 +1,5 @@
 from typing import cast
 
-from loguru import logger
-
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.enums.project_status import ProjectStatusEnum
 from domain.exceptions.permissions import (
@@ -18,6 +16,7 @@ from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project.common import ProjectStatus
 from domain.value_objects.project.project import ProjectCreatePayload, ProjectUpdatePayload
 from domain.value_objects.user import PermissionVo
+from loguru import logger
 
 
 class ProjectGetService(AbstractDomainService):

@@ -1,15 +1,10 @@
-from loguru import logger
-from rest_framework import status
-from rest_framework.request import Request
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id, PhoneNumber
 from domain.value_objects.project.investment import ProjectInvestmentId
 from domain.value_objects.project.project_investment_social_link import ProjectInvestmentSocialLinkId
 from infrastructure.auth.user import get_user_id_or_raises
+from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.request_converters.project.investment import (
     request_to_phone,
@@ -18,6 +13,10 @@ from presentation.request_converters.project.investment import (
     request_to_social_link,
 )
 from presentation.response_factories.common import ProjectInvestmentErrorResponseFactory
+from rest_framework import status
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 class ProjectInvestmentView(APIView):

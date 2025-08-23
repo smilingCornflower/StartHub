@@ -2,9 +2,6 @@ from json import JSONDecodeError
 from typing import cast
 
 import pydantic
-from loguru import logger
-from rest_framework.response import Response
-
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
 from domain.exceptions.company import BusinessNumberAlreadyExistsException, CompanyNameIsTooLongException
 from domain.exceptions.file import (
@@ -77,8 +74,10 @@ from domain.exceptions.validation import (
     StringIsTooLongException,
     ValidationException,
 )
+from loguru import logger
 from presentation.constants import APPLICATION_ERROR_CODES, SUCCESS
 from presentation.ports import ErrorResponseFactory
+from rest_framework.response import Response
 
 
 class CommonErrorResponseFactory(ErrorResponseFactory):

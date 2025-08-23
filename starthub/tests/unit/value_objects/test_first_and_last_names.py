@@ -1,9 +1,8 @@
 from django.test import SimpleTestCase
-from pydantic import ValidationError
-
 from domain.constants import CHAR_FIELD_SHORT_LENGTH
 from domain.exceptions.validation import EmptyStringException, FirstNameIsTooLongException, LastNameIsTooLongException
 from domain.value_objects.common import FirstName, LastName
+from pydantic import ValidationError
 
 
 class NameValidationTests(SimpleTestCase):

@@ -1,9 +1,8 @@
-from loguru import logger
-
 from domain.events.project import ProjectCreatedEvent
 from domain.ports.event import AbstractEventHandler
 from domain.services.project_management.incubator import IncubatorService
 from domain.value_objects.project.incubator import IncubatorCreatePayload
+from loguru import logger
 
 
 class ProjectCreatedIncubatorHandler(AbstractEventHandler[ProjectCreatedEvent]):

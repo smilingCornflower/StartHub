@@ -1,5 +1,4 @@
 from django.urls import path
-
 from presentation.views.accelerator import AcceleratorView
 from presentation.views.bank_loan import ProjectBankLoanView
 from presentation.views.bootstrap import ProjectBootstrapView

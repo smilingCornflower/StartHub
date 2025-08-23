@@ -1,5 +1,3 @@
-from loguru import logger
-
 from application.converters.resposne_converters.company import company_to_dto
 from application.dto.project import CompanyFullDto
 from application.ports.service import AbstractAppService
@@ -15,6 +13,7 @@ from domain.value_objects.common import Id, Pagination
 from domain.value_objects.company import CompanyUpdateCommand, CompanyUpdatePayload
 from domain.value_objects.filter import CompanyFilter
 from domain.value_objects.geo import AddressId
+from loguru import logger
 
 
 class CompanyAppService(AbstractAppService):

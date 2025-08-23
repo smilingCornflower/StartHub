@@ -1,5 +1,3 @@
-from loguru import logger
-
 from application.ports.service import AbstractAppService
 from domain.repositories.project.media import ProjectMediaReadRepository
 from domain.repositories.project.project import ProjectReadRepository
@@ -7,6 +5,7 @@ from domain.repositories.user import UserReadRepository
 from domain.services.project_management.media import ProjectMediaService
 from domain.value_objects.common import Id
 from domain.value_objects.project.media import ProjectMediaCreateCommand, ProjectMediaId, ProjectMediaUpdateCommand
+from loguru import logger
 
 
 class ProjectMediaAppService(AbstractAppService):

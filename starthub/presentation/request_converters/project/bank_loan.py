@@ -1,5 +1,3 @@
-from rest_framework.request import Request
-
 from domain.value_objects.project.bank_loan import (
     BankLoanOrganizationName,
     LoanAmount,
@@ -8,6 +6,7 @@ from domain.value_objects.project.bank_loan import (
     ProjectBankLoanUpdateCommand,
 )
 from presentation.request_converters.common import get_required_field
+from rest_framework.request import Request
 
 
 def request_to_bank_loan_create_command(request: Request) -> ProjectBankLoanCreateCommand:

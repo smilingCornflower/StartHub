@@ -1,5 +1,3 @@
-from loguru import logger
-
 from application.ports.service import AbstractAppService
 from domain.services.project_management.project_image import ProjectImageService
 from domain.value_objects.common import Id
@@ -8,6 +6,7 @@ from domain.value_objects.project.image import (
     ProjectImageDeleteCommand,
     ProjectImageUpdateCommand,
 )
+from loguru import logger
 
 
 class ProjectImageAppService(AbstractAppService):

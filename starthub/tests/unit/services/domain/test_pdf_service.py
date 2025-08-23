@@ -1,8 +1,7 @@
 from pathlib import Path
 
-from django.test import SimpleTestCase
-
 from config.settings import BASE_DIR
+from django.test import SimpleTestCase
 from domain.exceptions.file import NotPdfFileException
 from domain.services.file import PdfService
 

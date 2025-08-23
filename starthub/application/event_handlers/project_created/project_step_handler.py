@@ -1,10 +1,9 @@
-from loguru import logger
-
 from domain.events.project import ProjectCreatedEvent
 from domain.models.project_management.step import ProjectStep
 from domain.ports.event import AbstractEventHandler
 from domain.services.project_management.step import ProjectStepService
 from domain.value_objects.project.step import ProjectStepCreatePaylaod
+from loguru import logger
 
 
 class ProjectCreatedProjectStepsHandler(AbstractEventHandler[ProjectCreatedEvent]):

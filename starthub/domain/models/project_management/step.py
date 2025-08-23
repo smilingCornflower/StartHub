@@ -1,5 +1,4 @@
 from django.db import models
-
 from domain.constants import CHAR_FIELD_MEDIUM_LENGTH
 from domain.models.base import BaseModel
 

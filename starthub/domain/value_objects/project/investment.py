@@ -1,11 +1,10 @@
-from pydantic import field_validator
-
 from domain.constants import PROJECT_INVESTMENTS_PHONE_MAX_AMOUNT
 from domain.exceptions.project_management import ProjectInvestmentPhoneMaxAmountException
 from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload
 from domain.value_objects.common import Id, LongString, PhoneNumber, PositiveNumber, SocialLink
 from domain.value_objects.geo import AddressUpdatePayload
+from pydantic import field_validator
 
 
 class ProjectInvestmentId(Id):

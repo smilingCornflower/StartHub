@@ -1,9 +1,8 @@
-from loguru import logger
-
 from domain.events.project import ProjectDeletedEvent
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.ports.event import AbstractEventHandler
 from domain.value_objects.cloud_storage import CloudStorageDeletePayload
+from loguru import logger
 
 
 class ProjectDeletedEventHandler(AbstractEventHandler[ProjectDeletedEvent]):

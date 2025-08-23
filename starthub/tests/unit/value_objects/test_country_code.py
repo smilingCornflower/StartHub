@@ -1,5 +1,4 @@
 from django.test import SimpleTestCase
-
 from domain.exceptions.geo.country import InvalidCountryCodeException
 from domain.value_objects.country import CountryCode
 

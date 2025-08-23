@@ -1,8 +1,5 @@
 from dataclasses import asdict
 
-from django.db import transaction
-from loguru import logger
-
 from application.converters.resposne_converters.project import project_to_dto
 from application.dto.project import (
     AcceleratorDto,
@@ -19,6 +16,7 @@ from application.dto.project import (
     UsefulLinkDto,
 )
 from application.ports.service import AbstractAppService
+from django.db import transaction
 from domain.enums.project_status import ProjectStatusEnum
 from domain.events.project import ProjectCreatedEvent, ProjectDeletedEvent
 from domain.exceptions.company import BusinessNumberAlreadyExistsException
@@ -115,6 +113,7 @@ from domain.value_objects.project.step import ProjectStepCreateCommand, ProjectS
 from domain.value_objects.search import ProjectSearchParams
 from infrastructure.event_bus import EventBus
 from infrastructure.services.project_search import ProjectSearchService
+from loguru import logger
 
 
 class ProjectCreateAppService(AbstractAppService):

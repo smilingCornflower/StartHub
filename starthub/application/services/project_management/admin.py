@@ -1,5 +1,3 @@
-from loguru import logger
-
 from application.dto.project import ProjectDto
 from application.ports.service import AbstractAppService
 from application.services.project_management.project import ProjectGetAppService
@@ -7,6 +5,7 @@ from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.user import UserReadRepository
 from domain.services.project_management.admin import ProjectAdminService
 from domain.value_objects.common import Id, Pagination
+from loguru import logger
 
 
 class ProjectAdminAppService(AbstractAppService):

@@ -1,5 +1,3 @@
-from loguru import logger
-
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.permissions import (
     AddDeniedPermissionException,
@@ -13,6 +11,7 @@ from domain.ports.service import AbstractDomainService
 from domain.repositories.project.crowdfunding import ProjectCrowdfundingWriteRepository
 from domain.services.permission import PermissionService
 from domain.value_objects.project.crowdfunding import ProjectCrowdfundingCreatePayload, ProjectCrowdfundingUpdatePayload
+from loguru import logger
 
 
 class ProjectCrowdfundingService(AbstractDomainService):

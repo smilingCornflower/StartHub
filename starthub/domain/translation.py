@@ -1,7 +1,6 @@
-from modeltranslation.translator import TranslationOptions, register
-
 from domain.models.geo.city import City
 from domain.models.geo.region import Region
+from modeltranslation.translator import TranslationOptions, register
 
 
 @register(City)

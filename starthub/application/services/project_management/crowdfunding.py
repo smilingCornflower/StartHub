@@ -1,5 +1,3 @@
-from loguru import logger
-
 from application.ports.service import AbstractAppService
 from domain.exceptions.project_management import (
     ProjectCrowdfundingAlreadyExistsException,
@@ -20,6 +18,7 @@ from domain.value_objects.project.crowdfunding import (
     ProjectCrowdfundingUpdateCommand,
     ProjectCrowdfundingUpdatePayload,
 )
+from loguru import logger
 
 
 class CrowdfundingAppService(AbstractAppService):

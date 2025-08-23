@@ -4,8 +4,6 @@ from datetime import date
 from typing import ClassVar
 
 import phonenumbers
-from pydantic import Field, ValidationInfo, field_validator
-
 from domain.constants import (
     CHAR_FIELD_MAX_LENGTH,
     CHAR_FIELD_MEDIUM_LENGTH,
@@ -28,6 +26,7 @@ from domain.exceptions.validation import (
     StringIsTooLongException,
 )
 from domain.value_objects import BaseVo
+from pydantic import Field, ValidationInfo, field_validator
 
 
 class Id(BaseVo):

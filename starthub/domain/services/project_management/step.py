@@ -1,5 +1,3 @@
-from loguru import logger
-
 from domain.constants import PROJECT_STEPS_MAX_AMOUNT
 from domain.exceptions.project_management import ProjectStepMaxAmountException
 from domain.models.project_management.project import Project
@@ -9,6 +7,7 @@ from domain.repositories.project.step import ProjectStepReadRepository, ProjectS
 from domain.value_objects.common import Id
 from domain.value_objects.filter import ProjectStepFilter
 from domain.value_objects.project.step import ProjectStepCreateCommand, ProjectStepCreatePaylaod, ProjectStepId
+from loguru import logger
 
 
 class ProjectStepService(AbstractDomainService):

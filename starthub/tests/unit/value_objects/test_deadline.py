@@ -1,7 +1,6 @@
 from datetime import date, timedelta
 
 from django.test import SimpleTestCase
-
 from domain.exceptions.validation import DeadlineInPastException
 from domain.value_objects.common import DeadlineDate
 

@@ -1,5 +1,3 @@
-from loguru import logger
-
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.permissions import UpdateDeniedPermissionException
 from domain.models.project_management.incubator import ProjectIncubator
@@ -9,6 +7,7 @@ from domain.ports.service import AbstractDomainService
 from domain.repositories.project.incubator import ProjectIncubatorWriteRepository
 from domain.services.permission import PermissionService
 from domain.value_objects.project.incubator import IncubatorCreatePayload, IncubatorUpdatePayload
+from loguru import logger
 
 
 class IncubatorService(AbstractDomainService):

@@ -1,5 +1,3 @@
-from loguru import logger
-
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.enums.project_status import ProjectStatusEnum
 from domain.exceptions.permissions import UpdateDeniedPermissionException
@@ -14,6 +12,7 @@ from domain.repositories.project.project import ProjectWriteRepository
 from domain.services.permission import PermissionService
 from domain.value_objects.common import Id
 from domain.value_objects.project.project import ProjectUpdatePayload
+from loguru import logger
 
 
 class ProjectSubmissionPermissionService(AbstractDomainService):

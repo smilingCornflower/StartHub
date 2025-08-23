@@ -1,5 +1,4 @@
 from django.db.models import Q
-
 from domain.enums.language import LangCodeEnum
 from domain.exceptions.geo.city import CityNotFoundException
 from domain.models.geo.city import City

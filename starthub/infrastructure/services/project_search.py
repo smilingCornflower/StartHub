@@ -1,5 +1,4 @@
 from django.contrib.postgres.search import TrigramWordSimilarity
-
 from domain.models.project_management.project import Project
 from domain.ports.search import Search
 from domain.value_objects.common import OffsetPagination

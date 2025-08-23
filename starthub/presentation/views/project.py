@@ -3,13 +3,6 @@ from json.decoder import JSONDecodeError
 from pprint import pformat
 
 import pydantic
-from loguru import logger
-from rest_framework import status
-from rest_framework.parsers import MultiPartParser
-from rest_framework.request import Request
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from application.converters.request_converters.search import request_data_to_project_search_params
 from application.dto.auth import AccessPayloadDto, AnonymousPayloadDto
 from application.dto.project import ProjectDto
@@ -29,6 +22,7 @@ from domain.value_objects.project.project import ProjectCreateCommand, ProjectUp
 from domain.value_objects.search import ProjectSearchParams
 from infrastructure.auth.token import get_access_or_anonymous_payload_dto_from_headers
 from infrastructure.auth.user import get_user_id_or_none, get_user_id_or_raises
+from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.request_converters.common import request_to_offset_pagination, request_to_pagination
 from presentation.request_converters.project.project_create_command import request_to_project_create_command
@@ -39,6 +33,11 @@ from presentation.request_converters.project.project_images_update_command impor
 )
 from presentation.request_converters.project.project_update_command import request_to_the_project_update_command
 from presentation.response_factories.common import ProjectErrorResponseFactory
+from rest_framework import status
+from rest_framework.parsers import MultiPartParser
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 class ProjectView(APIView):

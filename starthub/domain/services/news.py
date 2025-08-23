@@ -3,8 +3,6 @@ import uuid
 from pathlib import Path
 from typing import Iterable
 
-from loguru import logger
-
 from domain.models.news import News, NewsImage
 from domain.ports.service import AbstractDomainService
 from domain.repositories.news import (
@@ -22,6 +20,7 @@ from domain.value_objects.news import (
     NewsImageDeletePayload,
     NewsUpdatePayload,
 )
+from loguru import logger
 
 
 class NewsService(AbstractDomainService):

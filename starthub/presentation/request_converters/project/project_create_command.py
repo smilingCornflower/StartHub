@@ -4,9 +4,6 @@ from typing import Any
 
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.datastructures import MultiValueDict
-from loguru import logger
-from rest_framework.request import Request
-
 from domain.value_objects.common import DeadlineDate, Description, FirstName, Id, LastName, PhoneNumber, SocialLink
 from domain.value_objects.company import (
     BusinessNumber,
@@ -59,8 +56,10 @@ from domain.value_objects.project.metric import (
 from domain.value_objects.project.project import ProjectCreateCommand
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
 from domain.value_objects.project.useful_link import UsefulLinkCreateCommand, UsefulLinkName
+from loguru import logger
 from presentation.request_converters.common import build_address_create_command, get_required_field, parse_date
 from presentation.request_converters.project.common import extract_steps
+from rest_framework.request import Request
 
 
 def request_to_project_create_command(request: Request, user_id: int) -> ProjectCreateCommand:

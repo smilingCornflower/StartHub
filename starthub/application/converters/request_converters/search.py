@@ -1,7 +1,6 @@
 from typing import cast
 
 from django.http import QueryDict
-
 from domain.value_objects.project.common import ProjectName
 from domain.value_objects.search import ProjectSearchParams
 

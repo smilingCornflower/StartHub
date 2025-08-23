@@ -1,6 +1,5 @@
 from autoslug import AutoSlugField
 from django.db import models
-
 from domain.constants import CHAR_FIELD_MAX_LENGTH, CHAR_FIELD_SHORT_LENGTH, FUNDING_GOAL_MAX_DIGITS
 from domain.enums.project_stage import ProjectStageEnum
 from domain.enums.project_status import ProjectStatusEnum

@@ -1,9 +1,8 @@
-from loguru import logger
-
 from domain.events.project import ProjectCreatedEvent
 from domain.ports.event import AbstractEventHandler
 from domain.services.project_management.project_social_link import ProjectSocialLinkService
 from domain.value_objects.project.social_link import ProjectSocialLinkCreatePayload
+from loguru import logger
 
 
 class ProjectCreatedSocialLinkHandler(AbstractEventHandler[ProjectCreatedEvent]):

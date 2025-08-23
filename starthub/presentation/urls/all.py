@@ -1,5 +1,4 @@
 from django.urls import include, path
-
 from presentation.views.geo import CityView, RegionView
 
 urlpatterns = [

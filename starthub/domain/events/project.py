@@ -1,5 +1,3 @@
-from pydantic import Field
-
 from domain.enums.event import EventType
 from domain.events.base import DomainEvent
 from domain.models.project_management.investment import ProjectInvestment
@@ -7,6 +5,7 @@ from domain.models.project_management.project import Project
 from domain.models.user import User
 from domain.value_objects.common import Id, SocialLink
 from domain.value_objects.project.project import ProjectCreateCommand
+from pydantic import Field
 
 
 # ==== Project =====

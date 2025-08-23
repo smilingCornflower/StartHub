@@ -1,8 +1,6 @@
 from typing import Any
 
 from django.core.management.base import BaseCommand
-from loguru import logger
-
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.enums.role import RoleEnum
 from domain.models.news import News
@@ -10,6 +8,7 @@ from domain.models.permission import Permission
 from domain.models.role import Role
 from domain.services.permission import PermissionService
 from domain.value_objects.user import PermissionVo
+from loguru import logger
 
 
 class Command(BaseCommand):

@@ -1,7 +1,5 @@
 from io import BytesIO
 
-from loguru import logger
-
 from domain.exceptions.user import ProfilePictureNotFoundException, UserPhoneAlreadyExistException
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException, UserFavoriteNotFoundException
 from domain.models.user import User, UserPhone
@@ -30,6 +28,7 @@ from domain.value_objects.user import (
     UserUpdatePayload,
 )
 from domain.value_objects.user_favorite import UserFavoriteCreatePayload
+from loguru import logger
 
 
 class UserService(AbstractDomainService):

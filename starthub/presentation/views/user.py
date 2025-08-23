@@ -2,12 +2,6 @@ from dataclasses import asdict
 from venv import logger
 
 import pydantic
-from rest_framework import status
-from rest_framework.parsers import MultiPartParser
-from rest_framework.request import Request
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from application.dto.auth import AccessPayloadDto
 from application.dto.project import ProjectDto
 from application.dto.user import UserProfileDto
@@ -16,6 +10,11 @@ from domain.exceptions import CustomException
 from infrastructure.auth.token import get_access_payload_dto_from_headers
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import UserErrorResponseFactory, UserFavoriteErrorResponseFactory
+from rest_framework import status
+from rest_framework.parsers import MultiPartParser
+from rest_framework.request import Request
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 class UserView(APIView):

@@ -1,5 +1,4 @@
 from django.db import models
-
 from domain.constants import CHAR_FIELD_SHORT_LENGTH
 from domain.enums.role import RoleEnum
 from domain.models.base import BaseModel

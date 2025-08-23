@@ -1,7 +1,5 @@
 from io import BytesIO
 
-from loguru import logger
-
 from domain.constants import IMAGE_FILE_FORMATS, PROJECT_MEDIA_MAX_AMOUNT, VIDEO_FILE_FORMATS
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions import CustomException
@@ -31,6 +29,7 @@ from domain.value_objects.project.media import (
     ProjectMediaUpdateCommand,
     ProjectMediaUpdatePayload,
 )
+from loguru import logger
 
 
 class ProjectMediaPermissionService(AbstractDomainService):

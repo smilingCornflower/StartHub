@@ -2,12 +2,11 @@ from pprint import pformat
 from typing import cast
 
 from django.http import QueryDict
-from loguru import logger
-from rest_framework.request import Request
-
 from domain.value_objects.common import Id, Slug
 from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project.common import ProjectStage, ProjectStatus
+from loguru import logger
+from rest_framework.request import Request
 
 
 def request_to_project_filter(request: Request) -> ProjectFilter:

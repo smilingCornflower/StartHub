@@ -1,9 +1,8 @@
 from django.core.files.uploadedfile import UploadedFile
-from rest_framework.request import Request
-
 from domain.value_objects.common import Order
 from domain.value_objects.project.media import MediaFile, ProjectMediaCreateCommand, ProjectMediaUpdateCommand
 from presentation.request_converters.common import get_required_field
+from rest_framework.request import Request
 
 
 def request_to_project_media_create_command(request: Request) -> ProjectMediaCreateCommand:

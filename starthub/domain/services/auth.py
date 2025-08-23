@@ -3,8 +3,6 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 import jwt
-from loguru import logger
-
 from domain.constants import (
     ACCESS_DECODE_OPTIONS,
     ACCESS_TOKEN_LIFETIME,
@@ -34,6 +32,7 @@ from domain.value_objects.token import (
     TokenPairVo,
 )
 from domain.value_objects.user import Email, UserCreatePayload
+from loguru import logger
 
 
 class TokenService(AbstractDomainService):

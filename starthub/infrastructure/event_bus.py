@@ -1,10 +1,9 @@
 from typing import Any
 
-from loguru import logger
-
 from domain.enums.event import AnyEventType
 from domain.ports.event import AbstractEvent, AbstractEventBus, AbstractEventHandler
 from infrastructure.utils.singleton import singleton
+from loguru import logger
 
 
 @singleton

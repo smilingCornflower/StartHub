@@ -1,5 +1,4 @@
 import pydantic
-
 from domain.exceptions.auth import InvalidTokenException, TokenExpiredException
 from domain.exceptions.permissions import (
     AddDeniedPermissionException,

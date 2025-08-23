@@ -1,5 +1,3 @@
-from loguru import logger
-
 from domain.constants import PROJECT_INVESTMENTS_ORGANIZATIONS_MAX_AMOUNT
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.permissions import (
@@ -28,6 +26,7 @@ from domain.value_objects.filter import ProjectInvestmentFilter
 from domain.value_objects.project.investment import ProjectInvestmentCreatePayload, ProjectInvestmentUpdatePayload
 from domain.value_objects.project.project_investment_phone import ProjectInvestmentPhoneCreatePayload
 from domain.value_objects.project.project_investment_social_link import ProjectInvestmentSocialLinkCreatePayload
+from loguru import logger
 
 
 class ProjectInvestmentService(AbstractDomainService):

@@ -1,7 +1,5 @@
 from typing import ClassVar
 
-from pydantic import field_validator
-
 from domain.constants import CHAR_FIELD_MAX_LENGTH, NEWS_CONTENT_MAX_LENGTH, NEWS_IMAGES_MAX_AMOUNT
 from domain.exceptions import CustomException
 from domain.exceptions.news import (
@@ -14,6 +12,7 @@ from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractDeletePayload, AbstractUpdatePayload
 from domain.value_objects.common import Id, StringVo
 from domain.value_objects.file import Image, ImageFile
+from pydantic import field_validator
 
 
 class NewsTitle(StringVo):
