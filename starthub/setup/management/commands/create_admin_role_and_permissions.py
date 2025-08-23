@@ -32,6 +32,7 @@ class Command(BaseCommand):
         self._setup_project_permissions(admin_role)
         self._setup_permissions_for_special_status_projects(admin_role)
         self._setup_permissions_for_user_roles(admin_role)
+        self._setup_permissions_for_user_is_active_field(admin_role)
 
         logger.info("Admin role and permissions initialization completed")
 
@@ -50,6 +51,15 @@ class Command(BaseCommand):
 
         self._add_permission_to_role(admin_role, change_any_project_status)
         logger.info("Project permissions configured")
+
+    def _setup_permissions_for_user_is_active_field(self, admin_role: Role) -> None:
+        change_any_user_is_active_field = PermissionService.create_permission_vo(
+            model=User,
+            action=ActionEnum.CHANGE,
+            scope=ScopeEnum.ANY,
+            field=User.IS_ACTIVE_FIELD,
+        )
+        self._add_permission_to_role(admin_role, change_any_user_is_active_field)
 
     def _setup_permissions_for_user_roles(self, admin_role: Role) -> None:
         add_moderator_to_any_user = PermissionService.create_permission_vo(

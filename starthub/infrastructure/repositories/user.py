@@ -62,20 +62,22 @@ class DjUserWriteRepository(UserWriteRepository):
         except User.DoesNotExist:
             raise UserNotFoundException(f"An user with id = {data.id_.value} is not found.")
 
-        if data.first_name:
+        if data.first_name is not None:
             user.first_name = data.first_name.value
-        if data.last_name:
+        if data.last_name is not None:
             user.last_name = data.last_name.value
-        if data.description:
+        if data.description is not None:
             user.description = data.description.value
-        if data.password:
+        if data.password is not None:
             user.set_password(data.password.value)
-        if data.picture:
+        if data.picture is not None:
             user.picture = data.picture
-        if data.role_to_add:
+        if data.role_to_add is not None:
             user.roles.add(data.role_to_add)
-        if data.role_to_remove:
+        if data.role_to_remove is not None:
             user.roles.remove(data.role_to_remove)
+        if data.is_active is not None:
+            user.is_active = data.is_active
 
         user.save()
         return user

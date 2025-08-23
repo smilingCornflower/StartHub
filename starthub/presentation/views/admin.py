@@ -88,3 +88,35 @@ class UsersAdminView(APIView):
 
         except (CustomException, pydantic.ValidationError) as e:
             return UsersAdminErrorResponseFactory.create_response(exception=e)
+
+
+class UserAdminDeactivateView(APIView):
+    @staticmethod
+    def patch(request: Request, target_user_id: int) -> Response:
+        print()
+        logger.warning(f"PATCH /admin/users/{target_user_id}/deactivate/")
+
+        try:
+            caller_user_id: Id = get_user_id_or_raises(request=request)
+            gateway.user_admin_app_service.deactivate_user(
+                call_user_id=caller_user_id, target_user_id=Id(value=target_user_id)
+            )
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+        except CustomException as e:
+            return UsersAdminErrorResponseFactory.create_response(exception=e)
+
+
+class UserAdminActivateView(APIView):
+    @staticmethod
+    def patch(request: Request, target_user_id: int) -> Response:
+        print()
+        logger.warning(f"PATCH /admin/users/{target_user_id}/activate/")
+
+        try:
+            caller_user_id: Id = get_user_id_or_raises(request=request)
+            gateway.user_admin_app_service.activate_user(
+                call_user_id=caller_user_id, target_user_id=Id(value=target_user_id)
+            )
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+        except CustomException as e:
+            return UsersAdminErrorResponseFactory.create_response(exception=e)
