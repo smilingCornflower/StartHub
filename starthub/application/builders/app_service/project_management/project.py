@@ -1,5 +1,6 @@
 from application.builders.domain_service.project_management import (
     ProjectAcceleratorServiceBuilder,
+    ProjectGetServiceBuilder,
     ProjectIncubatorServiceBuilder,
     ProjectServiceBuilder,
     ProjectStepServiceBuilder,
@@ -80,6 +81,7 @@ class ProjectGetAppServiceBuilder(AbstractAppServiceBuilder[ProjectGetAppService
     @staticmethod
     def create_service() -> ProjectGetAppService:
         return ProjectGetAppService(
+            project_get_service=ProjectGetServiceBuilder.create_service(),
             project_read_repository=DjProjectReadRepository(),
             project_media_read_repository=DjProjectMediaReadRepository(),
             project_file_read_repository=DjProjectFileReadRepository(),
@@ -97,6 +99,7 @@ class ProjectGetAppServiceBuilder(AbstractAppServiceBuilder[ProjectGetAppService
             project_bank_loan_read_repository=DjProjectBankLoanReadRepository(),
             project_bootstrap_read_repository=DjProjectBootstrapReadRepository(),
             project_useful_link_read_repository=DjProjectUsefulLinkReadRepository(),
+            user_read_repository=DjUserReadRepository(),
             cloud_storage=google_cloud_storage,
         )
 

@@ -38,7 +38,12 @@ class PermissionService(AbstractDomainService):
 
     @classmethod
     def create_permission_vo(
-        cls, model: type[BaseModel], action: ActionEnum, scope: ScopeEnum, field: str | None = None
+        cls,
+        model: type[BaseModel],
+        action: ActionEnum,
+        scope: ScopeEnum,
+        field: str | None = None,
+        value: str | None = None,
     ) -> PermissionVo:
         """
         :raises TypeError:
@@ -48,7 +53,10 @@ class PermissionService(AbstractDomainService):
             raise TypeError("Model must inherit from BaseModel.")
         if field:
             if hasattr(model, field):
-                permission_value = f"{action}.{scope}.{model.get_permission_key()}.{field}"
+                if value:
+                    permission_value = f"{action}.{scope}.{model.get_permission_key()}.{field}.{value}"
+                else:
+                    permission_value = f"{action}.{scope}.{model.get_permission_key()}.{field}"
             else:
                 raise ValueError(f"Field '{field}' does not exist in model '{model.__name__}'")
         else:

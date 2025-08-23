@@ -23,8 +23,10 @@ class ProjectFilter(AbstractFilter):
     user_id: Id | None = None
     category_slug: Slug | None = None
     funding_model_slug: Slug | None = None
-    status: ProjectStatus | None = None
+    statuses: list[ProjectStatus] | None = None
     stage: ProjectStage | None = None
+
+    exclude_statuses: list[ProjectStatus] | None = None
 
 
 class ProjectCategoryFilter(AbstractFilter):

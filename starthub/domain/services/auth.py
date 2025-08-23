@@ -58,7 +58,15 @@ class TokenService(AbstractDomainService):
         roles: list[Role] = self._role_read_repository.get_all(filter_=RoleFilter(user_id=Id(value=user.id)))
         role_names = [i.name for i in roles]
 
-        payload = AccessPayload(sub=str(user.id), roles=role_names, email=user.email, iat=issued_at, exp=expires_at)
+        payload = AccessPayload(
+            sub=str(user.id),
+            roles=role_names,
+            email=user.email,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            iat=issued_at,
+            exp=expires_at,
+        )
         token = jwt.encode(asdict(payload), key=self.__secret_key, algorithm=JWT_ALGORITHM)
         return AccessTokenVo(value=token)
 
@@ -103,6 +111,8 @@ class TokenService(AbstractDomainService):
             sub=payload["sub"],
             roles=payload["roles"],
             email=payload["email"],
+            first_name=payload["first_name"],
+            last_name=payload["last_name"],
             iat=payload["iat"],
             exp=payload["exp"],
             type=payload["type"],

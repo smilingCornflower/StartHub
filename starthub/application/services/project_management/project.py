@@ -71,7 +71,7 @@ from domain.repositories.user import UserReadRepository
 from domain.repositories.user_favorite import UserFavoriteReadRepository
 from domain.services.project_management.accelerator import ProjectAcceleratorService
 from domain.services.project_management.incubator import IncubatorService
-from domain.services.project_management.project import ProjectService
+from domain.services.project_management.project import ProjectGetService, ProjectService
 from domain.services.project_management.step import ProjectStepService
 from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
@@ -247,6 +247,7 @@ class ProjectCreateAppService(AbstractAppService):
 class ProjectGetAppService(AbstractAppService):
     def __init__(
         self,
+        project_get_service: ProjectGetService,
         project_read_repository: ProjectReadRepository,
         project_media_read_repository: ProjectMediaReadRepository,
         project_file_read_repository: ProjectFileReadRepository,
@@ -264,8 +265,10 @@ class ProjectGetAppService(AbstractAppService):
         project_bank_loan_read_repository: ProjectBankLoanReadRepository,
         project_useful_link_read_repository: ProjectUsefulLinkReadRepository,
         project_search_service: ProjectSearchService,
+        user_read_repository: UserReadRepository,
         cloud_storage: AbstractCloudStorage,
     ):
+        self._project_get_service = project_get_service
         self._project_read_repository = project_read_repository
         self._project_media_read_repository = project_media_read_repository
         self._project_file_read_repository = project_file_read_repository
@@ -283,10 +286,17 @@ class ProjectGetAppService(AbstractAppService):
         self._project_bank_loan_read_repository = project_bank_loan_read_repository
         self._project_useful_link_read_repository = project_useful_link_read_repository
         self._project_search_service = project_search_service
+        self._user_read_repository = user_read_repository
         self._cloud_storage = cloud_storage
 
-    def get(self, filter_: ProjectFilter, pagination: Pagination, user_id: Id | None = None) -> list[ProjectDto]:
-        projects: list[Project] = self._project_read_repository.get_all(filter_=filter_, pagination=pagination)
+    def get_all(self, filter_: ProjectFilter, pagination: Pagination, user_id: Id | None = None) -> list[ProjectDto]:
+        user: User | None = None
+        if user_id:
+            user = self._user_read_repository.get_by_id(id_=user_id)
+
+        project_filter = self._project_get_service.prepare_filter_for_user(user=user, filter_=filter_)
+        logger.debug(f"project_filter: {project_filter}")
+        projects: list[Project] = self._project_read_repository.get_all(filter_=project_filter, pagination=pagination)
         logger.debug(f"Found {len(projects)} projectes.")
 
         return [self._create_dto(project=project, user_id=user_id) for project in projects]
@@ -501,7 +511,6 @@ class ProjectGetAppService(AbstractAppService):
             self._user_favorite_read_repository.get_by_association_ids(user_id=user_id, project_id=project_id)
             return True
         except UserFavoriteNotFoundException:
-            logger.debug(f"UserFavorite not found for user_id={user_id}, project_id={project_id}")
             return False
 
     def _get_categories(self, project_id: Id) -> list[ProjectCategory]:

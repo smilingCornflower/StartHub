@@ -60,11 +60,9 @@ class ProjectView(APIView):
             else:
                 pagination: Pagination = request_to_pagination(request=request)
                 project_filter: ProjectFilter = request_to_project_filter(request=request)
-
                 logger.debug(f"pagination = {pagination}")
-                logger.debug(f"project_filter: \n{pformat(project_filter.__dict__)}")
 
-                projects: list[ProjectDto] = gateway.project_get_app_service.get(
+                projects: list[ProjectDto] = gateway.project_get_app_service.get_all(
                     filter_=project_filter,
                     pagination=pagination,
                     user_id=user_id,
@@ -130,7 +128,7 @@ class MeProjectView(APIView):
             user_id: Id = get_user_id_or_raises(request=request)
             pagination: Pagination = request_to_pagination(request=request)
 
-            projects: list[ProjectDto] = gateway.project_get_app_service.get(
+            projects: list[ProjectDto] = gateway.project_get_app_service.get_all(
                 filter_=ProjectFilter(user_id=user_id), pagination=pagination, user_id=user_id
             )
             return Response(map(asdict, projects), status=status.HTTP_200_OK)

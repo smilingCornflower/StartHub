@@ -1,8 +1,10 @@
+from application.dto.project import ProjectDto
 from application.ports.service import AbstractAppService
+from application.services.project_management.project import ProjectGetAppService
 from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.user import UserReadRepository
 from domain.services.project_management.admin import ProjectAdminService
-from domain.value_objects.common import Id
+from domain.value_objects.common import Id, Pagination
 from loguru import logger
 
 
@@ -12,10 +14,15 @@ class ProjectAdminAppService(AbstractAppService):
         project_admin_service: ProjectAdminService,
         user_read_repository: UserReadRepository,
         project_read_repository: ProjectReadRepository,
+        project_get_app_service: ProjectGetAppService,
     ):
         self._project_admin_service = project_admin_service
         self._user_read_repository = user_read_repository
         self._project_read_repository = project_read_repository
+        self._project_get_app_service = project_get_app_service
+
+    def get_submissions(self, user_id: Id, pagination: Pagination) -> list[ProjectDto]:
+        raise NotImplementedError
 
     def approve_submission(self, user_id: Id, project_id: Id) -> None:
         logger.info(f"User(id={user_id.value}) is approving submission for the Project(id={project_id.value}).")
