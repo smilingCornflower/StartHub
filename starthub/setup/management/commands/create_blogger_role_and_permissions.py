@@ -25,13 +25,30 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:
         logger.warning("Started.")
 
-        role, _ = Role.objects.get_or_create(name=RoleEnum.BLOGGER)
+        blogger, _ = Role.objects.get_or_create(name=RoleEnum.BLOGGER)
 
+        # Base roles for blogger
         for action in [ActionEnum.ADD, ActionEnum.CHANGE, ActionEnum.DELETE]:
             manage_news_permission: PermissionVo = PermissionService.create_permission_vo(
                 model=News, action=action, scope=ScopeEnum.ANY
             )
             permission, _ = Permission.objects.get_or_create(name=manage_news_permission.value)
-            role.permissions.add(permission)
+            if permission not in blogger.permissions.all():
+                blogger.permissions.add(permission)
+                logger.debug(f"Permission {permission.name} added to blogger role.")
+
+        self._setup_permission_for_news_is_active_field(blogger_role=blogger)
+
+    def _setup_permission_for_news_is_active_field(self, blogger_role: Role) -> None:
+        change_news_is_active_field_permission = PermissionService.create_permission_vo(
+            model=News,
+            action=ActionEnum.CHANGE,
+            scope=ScopeEnum.ANY,
+            field=News.IS_ACTIVE_FIELD,
+        )
+        permission, created = Permission.objects.get_or_create(name=change_news_is_active_field_permission.value)
+        if permission not in blogger_role.permissions.all():
+            blogger_role.permissions.add(permission)
+            logger.debug(f"Permission {permission.name} added to blogger role.")
 
         logger.info("Blogger permissions initialized")

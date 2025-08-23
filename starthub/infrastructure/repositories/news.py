@@ -50,14 +50,16 @@ class DjNewsWriteRepository(NewsWriteRepository):
         if news is None:
             raise NewsNotFoundException(f"News with id = {data.news_id.value} not found.")
 
-        if data.title:
+        if data.title is not None:
             news.title = data.title.value
-        if data.subtitle:
+        if data.subtitle is not None:
             news.subtitle = data.subtitle.value
-        if data.content:
+        if data.content is not None:
             news.content = data.content.value
-        if data.cover_path:
+        if data.cover_path is not None:
             news.cover = data.cover_path
+        if data.is_active is not None:
+            news.is_active = data.is_active
 
         news.save()
         return news
