@@ -10,7 +10,7 @@ class UserMessage(BaseModel):
     email = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
     phone = models.CharField(max_length=CHAR_FIELD_SHORT_LENGTH)
     topic = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
-    message = models.TextField()
+    content = models.TextField()
 
     class Meta:
         db_table = "user_messages"
