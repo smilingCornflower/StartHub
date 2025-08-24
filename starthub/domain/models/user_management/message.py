@@ -11,6 +11,7 @@ class UserMessage(BaseModel):
     phone = models.CharField(max_length=CHAR_FIELD_SHORT_LENGTH)
     topic = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
     content = models.TextField()
+    is_read = models.BooleanField(default=False)
 
     class Meta:
         db_table = "user_messages"
