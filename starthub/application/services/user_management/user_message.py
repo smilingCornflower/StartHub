@@ -35,6 +35,12 @@ class UserMessageAppService(AbstractAppService):
 
         return [self._create_dto(message=i) for i in messages]
 
+    def get_my(self, user_id: Id, pagination: Pagination, command: UserMessageGetCommand) -> list[UserMessageDto]:
+        message_filter = UserMessageFilter(user_id=user_id, is_read=command.is_read, order_by=command.order_by)
+        messages = self._user_message_read_repository.get_all(filter_=message_filter, pagination=pagination)
+
+        return [self._create_dto(message=i) for i in messages]
+
     def _create_dto(self, message: UserMessage) -> UserMessageDto:
         return UserMessageDto(
             id=message.id,

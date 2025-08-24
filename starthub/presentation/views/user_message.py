@@ -47,3 +47,20 @@ class UserMessageView(APIView):
 
         except (CustomException, pydantic.ValidationError) as e:
             return UserMessageErrorResponseFactory.create_response(exception=e)
+
+
+class MeUserMessageView(APIView):
+    @staticmethod
+    def get(request: Request) -> Response:
+        print()
+        logger.info("GET /users/me/messages/")
+
+        try:
+            user_id = get_user_id_or_raises(request=request)
+            pagination = request_to_pagination(request=request)
+            command = request_to_user_message_get_command(request=request)
+            messages = gateway.user_message_app_service.get_my(user_id=user_id, command=command, pagination=pagination)
+            return Response(list(map(asdict, messages)), status=status.HTTP_200_OK)
+
+        except (CustomException, pydantic.ValidationError) as e:
+            return UserMessageErrorResponseFactory.create_response(exception=e)
