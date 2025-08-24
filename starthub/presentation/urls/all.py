@@ -11,4 +11,5 @@ urlpatterns = [
     path("admin/", include("presentation.urls.admin")),
     path("cities/", CityView.as_view()),
     path("regions/", RegionView.as_view()),
+    path("notifications/", include("presentation.urls.notification")),
 ]

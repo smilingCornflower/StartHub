@@ -35,6 +35,7 @@ Address = import_module("domain.models.geo.address").Address
 
 News = import_module("domain.models.news").News
 NewsImage = import_module("domain.models.news").NewsImage
+Notification = import_module("domain.models.notification").Notification
 
 __all__ = [
     "User",

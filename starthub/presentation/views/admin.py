@@ -8,7 +8,10 @@ from domain.value_objects.user_management.admin import UserAdminUpdateCommand
 from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
-from presentation.request_converters.admin import request_to_user_admin_update_command
+from presentation.request_converters.admin import (
+    request_to_project_submission_reject_command,
+    request_to_user_admin_update_command,
+)
 from presentation.request_converters.common import request_to_pagination
 from presentation.response_factories.admin import ProjectSubmissionErrorResponseFactory, UsersAdminErrorResponseFactory
 from rest_framework import status
@@ -53,7 +56,10 @@ class ProjectSubmissionRejectedView(APIView):
         logger.warning(f"PATCH /admin/projects/submissions/{project_id}/reject/")
         try:
             user_id: Id = get_user_id_or_raises(request=request)
-            gateway.projects_admin_app_service.reject_submission(user_id=user_id, project_id=Id(value=project_id))
+            command = request_to_project_submission_reject_command(request=request)
+            gateway.projects_admin_app_service.reject_submission(
+                user_id=user_id, project_id=Id(value=project_id), command=command
+            )
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
         except (CustomException, pydantic.ValidationError) as e:
             return ProjectSubmissionErrorResponseFactory.create_response(exception=e)
