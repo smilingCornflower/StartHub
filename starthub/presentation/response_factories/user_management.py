@@ -9,6 +9,7 @@ from domain.exceptions.user_message import (
     UserMessageContentIsTooLongException,
     UserMessageNotFoundException,
     UserMessageTopicIsTooLongException,
+    UserUnreadMessageMaxAmountException,
 )
 from domain.exceptions.validation import (
     EmptyStringException,
@@ -21,7 +22,6 @@ from domain.exceptions.validation import (
 )
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import CommonErrorResponseFactory
-from domain.exceptions.user_message import UserUnreadMessageMaxAmountException
 
 
 class UsersAdminErrorResponseFactory(CommonErrorResponseFactory):
