@@ -12,9 +12,10 @@ from domain.models.project_management.government_grant import ProjectGovernmentG
 from domain.models.project_management.investment import ProjectInvestment
 from domain.models.project_management.media import ProjectMedia
 from domain.models.project_management.project import Project
+from domain.models.project_management.useful_link import ProjectUsefulLink
 from domain.models.role import Role
 from domain.services.permission import PermissionService
-from domain.value_objects.user import PermissionVo
+from domain.value_objects.user_management.user import PermissionVo
 from loguru import logger
 
 
@@ -22,6 +23,8 @@ class Command(BaseCommand):
     help = "Assigns project permissions for user"
 
     def handle(self, *args: Any, **options: Any) -> None:
+        logger.warning("Started.")
+
         self.assing_project_permissions_for_users()
         self._assign_project_accelerator_permission_for_users()
         self._assign_project_incubator_permission_for_users()
@@ -32,6 +35,7 @@ class Command(BaseCommand):
         self._assign_bank_loan_permission_for_users()
         self._assign_project_file_permission_for_users()
         self._assign_project_media_permission_for_users()
+        self._assign_project_useful_link_permission_for_users()
 
     def assing_project_permissions_for_users(self) -> None:
         self._assign_permissions_for_model(
@@ -57,6 +61,14 @@ class Command(BaseCommand):
             user_role.permissions.add(permission)
 
         logger.info(log_end_message)
+
+    def _assign_project_useful_link_permission_for_users(self) -> None:
+        self._assign_permissions_for_model(
+            model=ProjectUsefulLink,
+            actions=[ActionEnum.ADD, ActionEnum.CHANGE, ActionEnum.DELETE],
+            log_start_message="Started command: _assign_project_media_permission_for_users()",
+            log_end_message="User permissions for project useful links initialized",
+        )
 
     def _assign_project_media_permission_for_users(self) -> None:
         self._assign_permissions_for_model(

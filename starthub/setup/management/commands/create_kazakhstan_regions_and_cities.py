@@ -13,7 +13,8 @@ class Command(BaseCommand):
     help = "Ensure all cities and regions of Kazakhstan exist."
 
     def handle(self, *args: Any, **options: Any) -> None:
-        logger.warning("Started command: create_blogger_role_and_permissions")
+        logger.warning("Started.")
+
         file_path = BASE_DIR / "../fixtures/kazakhstan_cities_by_region.json"
 
         with file_path.open(encoding="utf-8") as f:
@@ -21,9 +22,18 @@ class Command(BaseCommand):
 
         country, _ = Country.objects.get_or_create(code="KZ")
 
-        for region_name, city_names in data.items():
-            region, _ = Region.objects.get_or_create(name=region_name, country=country)
-            for city_name in city_names:
-                City.objects.get_or_create(name=city_name, region=region)
+        for region_kk, region_ru, region_en in zip(data["kz"], data["ru"], data["en"]):
+            region, _ = Region.objects.get_or_create(name_en=region_en, country=country)
+            if region.name_kk != region_kk or region.name_ru != region_ru:  # type: ignore[attr-defined]
+                region.name_kk = region_kk  # type: ignore[attr-defined]
+                region.name_ru = region_ru  # type: ignore[attr-defined]
+                region.save()
+
+            for city_kz, city_ru, city_en in zip(data["kz"][region_kk], data["ru"][region_ru], data["en"][region_en]):
+                city, _ = City.objects.get_or_create(name_en=city_en, region=region)
+                if city.name_kk != city_kz or city.name_ru != city_ru:  # type: ignore[attr-defined]
+                    city.name_kk = city_kz  # type: ignore[attr-defined]
+                    city.name_ru = city_ru  # type: ignore[attr-defined]
+                    city.save()
 
         logger.info("All cities and regions for Kazakhstan have been created or already existed.")

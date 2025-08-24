@@ -8,8 +8,8 @@ from domain.models.project_management.phone import ProjectPhone
 from domain.models.project_management.project import Project
 from domain.models.project_management.social_link import ProjectSocialLink
 from domain.models.project_management.team_member import TeamMember
-from domain.models.user import User
-from domain.models.user_favorite import UserFavorite
+from domain.models.user_management.user import User
+from domain.models.user_management.user_favorite import UserFavorite
 
 monkeypatch()
 

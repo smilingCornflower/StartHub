@@ -11,7 +11,7 @@ from domain.exceptions.permissions import (
 from domain.exceptions.project_management import ProjectMediaMaxAmountException
 from domain.models.project_management.media import ProjectMedia
 from domain.models.project_management.project import Project
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project.media import ProjectMediaReadRepository, ProjectMediaWriteRepository

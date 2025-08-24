@@ -3,7 +3,6 @@ from json.decoder import JSONDecodeError
 from pprint import pformat
 
 import pydantic
-from application.converters.request_converters.search import request_data_to_project_search_params
 from application.dto.auth import AccessPayloadDto, AnonymousPayloadDto
 from application.dto.project import ProjectDto
 from application.services.gateway import gateway
@@ -32,7 +31,8 @@ from presentation.request_converters.project.project_images_update_command impor
     request_project_data_to_project_images_update_command,
 )
 from presentation.request_converters.project.project_update_command import request_to_the_project_update_command
-from presentation.response_factories.common import ProjectErrorResponseFactory
+from presentation.request_converters.search import request_data_to_project_search_params
+from presentation.response_factories.project_management import ProjectErrorResponseFactory
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from rest_framework.request import Request
@@ -60,11 +60,9 @@ class ProjectView(APIView):
             else:
                 pagination: Pagination = request_to_pagination(request=request)
                 project_filter: ProjectFilter = request_to_project_filter(request=request)
-
                 logger.debug(f"pagination = {pagination}")
-                logger.debug(f"project_filter: \n{pformat(project_filter.__dict__)}")
 
-                projects: list[ProjectDto] = gateway.project_get_app_service.get(
+                projects: list[ProjectDto] = gateway.project_get_app_service.get_all(
                     filter_=project_filter,
                     pagination=pagination,
                     user_id=user_id,
@@ -130,7 +128,7 @@ class MeProjectView(APIView):
             user_id: Id = get_user_id_or_raises(request=request)
             pagination: Pagination = request_to_pagination(request=request)
 
-            projects: list[ProjectDto] = gateway.project_get_app_service.get(
+            projects: list[ProjectDto] = gateway.project_get_app_service.get_all(
                 filter_=ProjectFilter(user_id=user_id), pagination=pagination, user_id=user_id
             )
             return Response(map(asdict, projects), status=status.HTTP_200_OK)

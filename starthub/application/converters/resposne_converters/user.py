@@ -1,6 +1,6 @@
 from application.dto.user import UserFavoriteDto, UserProfileDto
-from domain.models.user_favorite import UserFavorite
-from domain.value_objects.user import UserProfile
+from domain.models.user_management.user_favorite import UserFavorite
+from domain.value_objects.user_management.user import UserProfile
 
 
 def user_profile_to_dto(profile: UserProfile) -> UserProfileDto:

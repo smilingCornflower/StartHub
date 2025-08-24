@@ -1,7 +1,7 @@
 import pydantic
 from application.dto.user import UserProfileDto
 from application.services.gateway import gateway
-from application.services.user import UserAppService
+from application.services.user_management.user import UserAppService
 from config.settings import BASE_DIR
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
@@ -9,7 +9,7 @@ from domain.exceptions.auth import PasswordValidationException
 from domain.exceptions.file import NotSupportedImageFormatException
 from domain.exceptions.user import UserNotFoundException
 from domain.exceptions.validation import EmptyStringException, FirstNameIsTooLongException, LastNameIsTooLongException
-from domain.models.user import User
+from domain.models.user_management.user import User
 from loguru import logger
 
 

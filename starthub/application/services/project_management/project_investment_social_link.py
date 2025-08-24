@@ -1,13 +1,13 @@
 from application.ports.service import AbstractAppService
 from domain.models.project_management.investment import ProjectInvestment
 from domain.models.project_management.project import Project
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.repositories.project.investment import (
     ProjectInvestmentReadRepository,
     ProjectInvestmentSocialLinkReadRepository,
 )
 from domain.repositories.project.project import ProjectReadRepository
-from domain.repositories.user import UserReadRepository
+from domain.repositories.user_management.user import UserReadRepository
 from domain.services.project_management.investment import ProjectInvestmentSocialLinkService
 from domain.value_objects.common import Id, SocialLink
 from domain.value_objects.project.investment import ProjectInvestmentId

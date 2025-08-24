@@ -1,9 +1,12 @@
 from django.db import models
+from django.db.models import Manager
 from domain.constants import CHAR_FIELD_MEDIUM_LENGTH
 from domain.models.base import BaseModel
 
 
 class City(BaseModel):
+    objects: Manager["City"]
+
     name = models.CharField(max_length=CHAR_FIELD_MEDIUM_LENGTH)
     region = models.ForeignKey("domain.Region", on_delete=models.RESTRICT, related_name="cities")
 

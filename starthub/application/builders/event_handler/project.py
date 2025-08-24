@@ -1,13 +1,14 @@
 from typing import Any
 
-from application.builders.app_service.accelerator import AcceleratorAppServiceBuilder
-from application.builders.app_service.bank_loan import ProjectBankLoanAppServiceBuilder
-from application.builders.app_service.bootstrap import ProjectBootstrapAppServiceBuilder
-from application.builders.app_service.crowdfunding import CrowdfundingAppServiceBuilder
-from application.builders.app_service.government_grant import GovernmentGrantAppServiceBuilder
-from application.builders.app_service.investment import ProjectInvestmentAppServiceBuilder
-from application.builders.app_service.project_file import ProjectFileAppServiceBuilder
-from application.builders.app_service.project_media import ProjectMediaAppServiceBuilder
+from application.builders.app_service.project_management.accelerator import AcceleratorAppServiceBuilder
+from application.builders.app_service.project_management.bank_loan import ProjectBankLoanAppServiceBuilder
+from application.builders.app_service.project_management.bootstrap import ProjectBootstrapAppServiceBuilder
+from application.builders.app_service.project_management.crowdfunding import CrowdfundingAppServiceBuilder
+from application.builders.app_service.project_management.government_grant import GovernmentGrantAppServiceBuilder
+from application.builders.app_service.project_management.investment import ProjectInvestmentAppServiceBuilder
+from application.builders.app_service.project_management.project_file import ProjectFileAppServiceBuilder
+from application.builders.app_service.project_management.project_media import ProjectMediaAppServiceBuilder
+from application.builders.app_service.project_management.useful_link import ProjectUsefulLinkAppServiceBuilder
 from application.builders.domain_service.address import AddressServiceBuilder
 from application.builders.domain_service.project_management import (
     CompanyFounderServiceBuilder,
@@ -30,6 +31,7 @@ from application.event_handlers.project_created.project_file_handler import Proj
 from application.event_handlers.project_created.project_phone_handler import ProjectCreatedPhoneHandler
 from application.event_handlers.project_created.project_step_handler import ProjectCreatedProjectStepsHandler
 from application.event_handlers.project_created.social_link_handler import ProjectCreatedSocialLinkHandler
+from application.event_handlers.project_created.useful_link_handler import ProjectCreatedUsefulLinkHandler
 from application.event_handlers.project_deleted_handler import ProjectDeletedEventHandler
 from application.ports.event_handler_builder import AbstractEventHandlerBuilder
 from domain.events.project import ProjectCreatedEvent, ProjectDeletedEvent
@@ -126,6 +128,14 @@ class ProjectCreatedProjectMediaHandlerBuilder(AbstractEventHandlerBuilder[Any])
     def create_handler() -> ProjectCreatedProjectMediaHandler:
         return ProjectCreatedProjectMediaHandler(
             project_media_app_service=ProjectMediaAppServiceBuilder.create_service()
+        )
+
+
+class ProjectCreatedUsefulLinkHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> ProjectCreatedUsefulLinkHandler:
+        return ProjectCreatedUsefulLinkHandler(
+            project_useful_link_app_service=ProjectUsefulLinkAppServiceBuilder.create_service()
         )
 
 

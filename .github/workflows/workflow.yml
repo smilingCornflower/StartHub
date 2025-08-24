@@ -104,7 +104,7 @@ jobs:
         working-directory: starthub
 
   deploy:
-    runs-on: starthub-vps
+    runs-on: starthub-backend
     needs: [ tests ]
     if: github.ref == 'refs/heads/master' && success()
     steps:
@@ -142,7 +142,7 @@ jobs:
         run: docker rmi smilekundev/starthub-api:old || true
 
       - name: Tag latest as old
-        run: docker tag smilekundev/starthub-api:latest smilekundev/starthub-api:old
+        run: docker tag smilekundev/starthub-api:latest smilekundev/starthub-api:old || true
 
       - name: Build and push
         uses: docker/build-push-action@v4

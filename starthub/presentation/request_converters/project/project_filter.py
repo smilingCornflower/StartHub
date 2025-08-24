@@ -19,7 +19,7 @@ def request_to_project_filter(request: Request) -> ProjectFilter:
     if params.get("funding_model_slug"):
         filter_.funding_model_slug = Slug(value=cast(str, params.get("funding_model_slug")))
     if params.get("status"):
-        filter_.status = ProjectStatus(value=cast(str, params.get("status")))
+        filter_.statuses = [ProjectStatus(value=status) for status in params.getlist("status")]
     if params.get("stage"):
         filter_.stage = ProjectStage(value=cast(str, params.get("stage")))
     if params.get("user_id"):

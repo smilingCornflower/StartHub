@@ -2,12 +2,13 @@ from datetime import UTC, datetime, timedelta
 
 from django.test import TestCase
 from domain.exceptions.auth import InvalidCredentialsException, TokenExpiredException
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.services.auth import AuthService, TokenService
-from domain.value_objects.auth import LoginCredentials
-from domain.value_objects.token import AccessTokenVo, RefreshTokenVo, TokenPairVo
-from domain.value_objects.user import Email, RawPassword
-from infrastructure.repositories.user import DjUserReadRepository, DjUserWriteRepository
+from domain.value_objects.auth_management.auth import LoginCredentials
+from domain.value_objects.auth_management.token import AccessTokenVo, RefreshTokenVo, TokenPairVo
+from domain.value_objects.user_management.user import Email, RawPassword
+from infrastructure.repositories.role import DjRoleReadRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository, DjUserWriteRepository
 from loguru import logger
 
 
@@ -17,7 +18,11 @@ class TestAuthService(TestCase):
 
     @classmethod
     def setUpTestData(cls) -> None:
-        cls.service = AuthService(TokenService(secret_key="secret"), DjUserReadRepository(), DjUserWriteRepository())
+        cls.service = AuthService(
+            TokenService(secret_key="secret", role_read_repository=DjRoleReadRepository()),
+            DjUserReadRepository(),
+            DjUserWriteRepository(),
+        )
         cls.user_data = {
             "first_name": "first_name",
             "last_name": "last_name",
@@ -74,7 +79,7 @@ class TestAuthService(TestCase):
 
     def test_reissue_with_expired_token(self) -> None:
         auth_service = AuthService(
-            TokenService(secret_key="secret", refresh_token_lifetime=-100),
+            TokenService(secret_key="secret", refresh_token_lifetime=-100, role_read_repository=DjRoleReadRepository()),
             DjUserReadRepository(),
             DjUserWriteRepository(),
         )

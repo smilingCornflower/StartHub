@@ -1,5 +1,6 @@
 from datetime import date
 
+from domain.enums.project_status import ProjectStatusEnum
 from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects import BaseVo
@@ -37,6 +38,7 @@ from domain.value_objects.project.metric import (
 )
 from domain.value_objects.project.step import ProjectStepCreateCommand
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
+from domain.value_objects.project.useful_link import UsefulLinkCreateCommand
 
 
 class ProjectCreateCommand(BaseCommand):
@@ -83,6 +85,7 @@ class ProjectCreateCommand(BaseCommand):
     churn_rate: ChurnRate | None = None
     retention_rate: RetentionRate | None = None
     conversion_rate: ConversionRate | None = None
+    useful_links: list[UsefulLinkCreateCommand] | None = None
 
 
 class ProjectUpdateCommand(BaseCommand):
@@ -148,6 +151,8 @@ class ProjectUpdatePayload(AbstractUpdatePayload, BaseVo):
     stage: ProjectStage | None = None
     deadline: DeadlineDate | None = None
     plan_path: str | None = None
+
+    status: ProjectStatusEnum | None = None
 
     ltv: Ltv | None = None
     arpu: Arpu | None = None

@@ -14,13 +14,13 @@ from domain.constants import (
 )
 from domain.exceptions.auth import InvalidCredentialsException, InvalidTokenException, TokenExpiredException
 from domain.exceptions.user import EmailAlreadyExistsException, UserNotFoundException
-from domain.models.user import User
+from domain.models.role import Role
+from domain.models.user_management.user import User
 from domain.ports.service import AbstractDomainService
-from domain.repositories.user import UserReadRepository, UserWriteRepository
-from domain.value_objects.auth import LoginCredentials
-from domain.value_objects.common import Id
-from domain.value_objects.filter import UserFilter
-from domain.value_objects.token import (
+from domain.repositories.role import RoleReadRepository
+from domain.repositories.user_management.user import UserReadRepository, UserWriteRepository
+from domain.value_objects.auth_management.auth import LoginCredentials
+from domain.value_objects.auth_management.token import (
     AccessPayload,
     AccessTokenVo,
     AnonymousPayload,
@@ -29,19 +29,23 @@ from domain.value_objects.token import (
     RefreshTokenVo,
     TokenPairVo,
 )
-from domain.value_objects.user import Email, UserCreatePayload
+from domain.value_objects.common import Id
+from domain.value_objects.filter import RoleFilter, UserFilter
+from domain.value_objects.user_management.user import Email, UserCreatePayload
 from loguru import logger
 
 
 class TokenService(AbstractDomainService):
     def __init__(
         self,
+        role_read_repository: RoleReadRepository,
         secret_key: str,
         access_token_lifetime: int = ACCESS_TOKEN_LIFETIME,
         refresh_token_lifetime: int = REFRESH_TOKEN_LIFETIME,
         anonymous_token_lifetime: int = ANONYMOUS_TOKEN_LIFETIME,
     ):
         self.__secret_key = secret_key
+        self._role_read_repository = role_read_repository
         self.access_token_lifetime = access_token_lifetime
         self.refresh_token_lifetime = refresh_token_lifetime
         self.anonymous_token_lifetime = anonymous_token_lifetime
@@ -51,7 +55,18 @@ class TokenService(AbstractDomainService):
         issued_at = int(datetime.now(UTC).timestamp())
         expires_at = issued_at + self.access_token_lifetime
 
-        payload = AccessPayload(sub=str(user.id), email=user.email, iat=issued_at, exp=expires_at)
+        roles: list[Role] = self._role_read_repository.get_all(filter_=RoleFilter(user_id=Id(value=user.id)))
+        role_names = [i.name for i in roles]
+
+        payload = AccessPayload(
+            sub=str(user.id),
+            roles=role_names,
+            email=user.email,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            iat=issued_at,
+            exp=expires_at,
+        )
         token = jwt.encode(asdict(payload), key=self.__secret_key, algorithm=JWT_ALGORITHM)
         return AccessTokenVo(value=token)
 
@@ -94,7 +109,10 @@ class TokenService(AbstractDomainService):
 
         return AccessPayload(
             sub=payload["sub"],
+            roles=payload["roles"],
             email=payload["email"],
+            first_name=payload["first_name"],
+            last_name=payload["last_name"],
             iat=payload["iat"],
             exp=payload["exp"],
             type=payload["type"],

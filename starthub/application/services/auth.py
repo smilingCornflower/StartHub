@@ -1,11 +1,3 @@
-from application.converters.request_converters.auth import (
-    request_cookies_to_refresh_token,
-    request_data_to_login_credentials,
-    request_data_to_user_create_payload,
-    request_headers_to_access_or_anonymous_token,
-    request_headers_to_access_token,
-    request_headers_to_anonymous_token,
-)
 from application.converters.resposne_converters.auth import (
     access_payload_to_dto,
     access_token_to_dto,
@@ -14,10 +6,10 @@ from application.converters.resposne_converters.auth import (
 )
 from application.dto.auth import AccessPayloadDto, AccessTokenDto, AnonymousPayloadDto, AnonymousTokenDto, TokenPairDto
 from application.ports.service import AbstractAppService
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.services.auth import AuthService, RegistrationService, TokenService
-from domain.value_objects.auth import LoginCredentials
-from domain.value_objects.token import (
+from domain.value_objects.auth_management.auth import LoginCredentials
+from domain.value_objects.auth_management.token import (
     AccessPayload,
     AccessTokenVo,
     AnonymousPayload,
@@ -25,8 +17,16 @@ from domain.value_objects.token import (
     RefreshTokenVo,
     TokenPairVo,
 )
-from domain.value_objects.user import UserCreatePayload
+from domain.value_objects.user_management.user import UserCreatePayload
 from loguru import logger
+from presentation.request_converters.user_management.auth import (
+    request_cookies_to_refresh_token,
+    request_data_to_login_credentials,
+    request_data_to_user_create_payload,
+    request_headers_to_access_or_anonymous_token,
+    request_headers_to_access_token,
+    request_headers_to_anonymous_token,
+)
 
 
 class RegistrationAppService(AbstractAppService):

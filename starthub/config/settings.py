@@ -113,12 +113,12 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.postgres",
+    "domain",
     "setup",
     "rest_framework",
-    "domain",
     "corsheaders",
+    "modeltranslation",
 ]
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -128,6 +128,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -180,10 +181,16 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK: dict[str, list[str]] = {
     "DEFAULT_AUTHENTICATION_CLASSES": [],
 }
-
-LANGUAGE_CODE = "en-us"
-TIME_ZONE = "UTC"
 USE_I18N = True
+LANGUAGES = (
+    ("ru", "Russian"),
+    ("kk", "Kazakh"),
+    ("en", "English"),
+)
+LANGUAGE_CODE = "en-us"
+
+
+TIME_ZONE = "UTC"
 USE_TZ = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -195,6 +202,3 @@ class CookiesPolicy:
         SAMESITE = "Lax"
         HTTPONLY = True
         SECURE = False
-
-
-# =====================================================================================================================

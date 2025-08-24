@@ -9,6 +9,7 @@ dependencies = [
     "django-autoslug>=1.9.9",
     "django-cors-headers>=4.7.0",
     "django-countries>=7.6.1",
+    "django-modeltranslation>=0.19.16",
     "djangorestframework>=3.16.0",
     "filetype>=1.2.0",
     "google-cloud-storage>=3.1.0",
@@ -55,6 +56,7 @@ warn_unreachable = true
 warn_no_return = true
 cache_dir = ".mypy_cache"
 exclude = ["^migrations/.*", "bar.py", 'foo.py', 'tests/']
+
 
 [tool.django-stubs]
 django_settings_module = "config.settings"

@@ -7,7 +7,7 @@ from domain.models.company import Company
 from domain.models.permission import Permission
 from domain.models.role import Role
 from domain.services.permission import PermissionService
-from domain.value_objects.user import PermissionVo
+from domain.value_objects.user_management.user import PermissionVo
 from loguru import logger
 
 
@@ -15,7 +15,7 @@ class Command(BaseCommand):
     help = "Create company permissions"
 
     def handle(self, *args: Any, **options: Any) -> None:
-        logger.warning("Started command: assing_company_permissions_for_users")
+        logger.warning("Started.")
 
         self._assing_company_permissions()
         self._assing_business_id_permissions()

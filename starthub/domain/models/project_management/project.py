@@ -46,3 +46,8 @@ class Project(BaseModel):
     @classmethod
     def get_permission_key(cls) -> str:
         return "project"
+
+    STATUS_FIELD = "status"
+    STATUS_UNDER_MODERATION_FIELD = f"status.{ProjectStatusEnum.UNDER_MODERATION}"
+    STATUS_REJECTED_FIELD = f"status.{ProjectStatusEnum.REJECTED}"
+    STATUS_CANCELLED_FIELD = f"status.{ProjectStatusEnum.CANCELLED}"

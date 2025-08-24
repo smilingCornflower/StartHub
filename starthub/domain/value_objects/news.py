@@ -4,7 +4,7 @@ from domain.constants import CHAR_FIELD_MAX_LENGTH, NEWS_CONTENT_MAX_LENGTH, NEW
 from domain.exceptions import CustomException
 from domain.exceptions.news import (
     NewsContentIsTooLongException,
-    NewsImagesMaxAmountException,
+    NewsImageMaxAmountException,
     NewsSubtitleIsTooLongException,
     NewsTitleIsTooLongException,
 )
@@ -43,6 +43,7 @@ class NewsUpdatePayload(AbstractUpdatePayload):
     subtitle: NewsSubtitle | None = None
     content: NewsContent | None = None
     cover_path: str | None = None
+    is_active: bool | None = None
 
 
 class NewsCreateCommand(BaseCommand):
@@ -58,7 +59,7 @@ class NewsCreateCommand(BaseCommand):
     def validate_images_amount(cls, images: list[Image]) -> list[Image]:
         """:rasies NewsImagesMaxAmountException"""
         if len(images) > NEWS_IMAGES_MAX_AMOUNT:
-            raise NewsImagesMaxAmountException(f"News images max limit is {NEWS_IMAGES_MAX_AMOUNT}.")
+            raise NewsImageMaxAmountException(f"News images max limit is {NEWS_IMAGES_MAX_AMOUNT}.")
         return images
 
 

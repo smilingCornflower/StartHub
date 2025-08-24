@@ -1,18 +1,21 @@
 from application.dto.project import CategoryDto, CompanyDto, CompanyFounderDto, FundingModelDto, ProjectDto
+from application.dto.user import UserDto
 from domain.models.project_management.category import ProjectCategory
 from domain.models.project_management.project import Project
+from domain.models.user_management.user import User
 
 
 def project_to_dto(
     project: Project, categories: list[ProjectCategory], media_links: list[str] | None = None, is_favorite: bool = False
 ) -> ProjectDto:
+    creater: User = project.creator
     return ProjectDto(
         id=project.id,
         name=project.name,
         slug=project.slug,
+        user=UserDto(id=creater.id, first_name=creater.first_name, last_name=creater.last_name, email=creater.email),
         goal_descriptioin=project.goal_description,
         description=project.description,
-        creator_id=project.creator.id,
         company=CompanyDto(
             id=project.company.id,
             name=project.company.name,

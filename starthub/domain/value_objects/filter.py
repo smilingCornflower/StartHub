@@ -1,12 +1,12 @@
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.ports.filter import AbstractFilter
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
 from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode, CountryId
-from domain.value_objects.geo import AddressId, CityId, RegionId
+from domain.value_objects.geo import AddressId, CityId, RegionId, RegionName
 from domain.value_objects.project.common import ProjectStage, ProjectStatus
 from domain.value_objects.project.investment import ProjectInvestmentId
-from domain.value_objects.user import Email
+from domain.value_objects.user_management.user import Email
 
 
 class UserFilter(AbstractFilter):
@@ -23,8 +23,10 @@ class ProjectFilter(AbstractFilter):
     user_id: Id | None = None
     category_slug: Slug | None = None
     funding_model_slug: Slug | None = None
-    status: ProjectStatus | None = None
+    statuses: list[ProjectStatus] | None = None
     stage: ProjectStage | None = None
+
+    exclude_statuses: list[ProjectStatus] | None = None
 
 
 class ProjectCategoryFilter(AbstractFilter):
@@ -78,7 +80,7 @@ class PermissionFilter(AbstractFilter):
 
 
 class RoleFilter(AbstractFilter):
-    pass
+    user_id: Id | None = None
 
 
 class NewsFilter(AbstractFilter):
@@ -107,7 +109,7 @@ class AddressFilter(AbstractFilter):
 
 
 class CityFilter(AbstractFilter):
-    pass
+    region_name: RegionName | None = None
 
 
 class RegionFilter(AbstractFilter):
@@ -161,3 +163,18 @@ class ProjectFileFilter(AbstractFilter):
 
 class ProjectMediaFilter(AbstractFilter):
     project_id: Id | None = None
+
+
+class ProjectUsefulLinkFilter(AbstractFilter):
+    project_id: Id | None = None
+    useful_link: str | None = None
+
+
+class NotificationFilter(AbstractFilter):
+    user_id: Id | None = None
+    is_read: bool | None = None
+
+
+class UserMessagaFilter(AbstractFilter):
+    user_id: Id | None = None
+    is_read: bool | None = None

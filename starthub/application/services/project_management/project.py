@@ -13,6 +13,7 @@ from application.dto.project import (
     ProjectInvestmentDto,
     ProjectStepDto,
     SocialLinkDto,
+    UsefulLinkDto,
 )
 from application.ports.service import AbstractAppService
 from django.db import transaction
@@ -40,7 +41,8 @@ from domain.models.project_management.investment import (
 from domain.models.project_management.project import Project
 from domain.models.project_management.project_file import ProjectFile
 from domain.models.project_management.step import ProjectStep
-from domain.models.user import User
+from domain.models.project_management.useful_link import ProjectUsefulLink
+from domain.models.user_management.user import User
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.repositories.company import CompanyReadRepository
 from domain.repositories.country import CountryReadRepository
@@ -64,11 +66,12 @@ from domain.repositories.project.media import ProjectMediaReadRepository
 from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.project.project_file import ProjectFileReadRepository
 from domain.repositories.project.step import ProjectStepReadRepository
-from domain.repositories.user import UserReadRepository
-from domain.repositories.user_favorite import UserFavoriteReadRepository
+from domain.repositories.project.useful_link import ProjectUsefulLinkReadRepository
+from domain.repositories.user_management.user import UserReadRepository
+from domain.repositories.user_management.user_favorite import UserFavoriteReadRepository
 from domain.services.project_management.accelerator import ProjectAcceleratorService
 from domain.services.project_management.incubator import IncubatorService
-from domain.services.project_management.project import ProjectService
+from domain.services.project_management.project import ProjectGetService, ProjectService
 from domain.services.project_management.step import ProjectStepService
 from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
@@ -94,6 +97,7 @@ from domain.value_objects.filter import (
     ProjectInvestmentSocialLinkFilter,
     ProjectMediaFilter,
     ProjectStepFilter,
+    ProjectUsefulLinkFilter,
 )
 from domain.value_objects.geo import CityId, RegionId
 from domain.value_objects.project.common import ProjectStatus
@@ -243,6 +247,7 @@ class ProjectCreateAppService(AbstractAppService):
 class ProjectGetAppService(AbstractAppService):
     def __init__(
         self,
+        project_get_service: ProjectGetService,
         project_read_repository: ProjectReadRepository,
         project_media_read_repository: ProjectMediaReadRepository,
         project_file_read_repository: ProjectFileReadRepository,
@@ -258,9 +263,12 @@ class ProjectGetAppService(AbstractAppService):
         project_government_grant_read_repository: ProjectGovernmentGrantReadRepository,
         project_bootstrap_read_repository: ProjectBootstrapReadRepository,
         project_bank_loan_read_repository: ProjectBankLoanReadRepository,
+        project_useful_link_read_repository: ProjectUsefulLinkReadRepository,
         project_search_service: ProjectSearchService,
+        user_read_repository: UserReadRepository,
         cloud_storage: AbstractCloudStorage,
     ):
+        self._project_get_service = project_get_service
         self._project_read_repository = project_read_repository
         self._project_media_read_repository = project_media_read_repository
         self._project_file_read_repository = project_file_read_repository
@@ -276,11 +284,19 @@ class ProjectGetAppService(AbstractAppService):
         self._project_government_grant_read_repository = project_government_grant_read_repository
         self._project_bootstrap_read_repository = project_bootstrap_read_repository
         self._project_bank_loan_read_repository = project_bank_loan_read_repository
+        self._project_useful_link_read_repository = project_useful_link_read_repository
         self._project_search_service = project_search_service
+        self._user_read_repository = user_read_repository
         self._cloud_storage = cloud_storage
 
-    def get(self, filter_: ProjectFilter, pagination: Pagination, user_id: Id | None = None) -> list[ProjectDto]:
-        projects: list[Project] = self._project_read_repository.get_all(filter_=filter_, pagination=pagination)
+    def get_all(self, filter_: ProjectFilter, pagination: Pagination, user_id: Id | None = None) -> list[ProjectDto]:
+        user: User | None = None
+        if user_id:
+            user = self._user_read_repository.get_by_id(id_=user_id)
+
+        project_filter = self._project_get_service.prepare_filter_for_user(user=user, filter_=filter_)
+        logger.debug(f"project_filter: {project_filter}")
+        projects: list[Project] = self._project_read_repository.get_all(filter_=project_filter, pagination=pagination)
         logger.debug(f"Found {len(projects)} projectes.")
 
         return [self._create_dto(project=project, user_id=user_id) for project in projects]
@@ -323,6 +339,8 @@ class ProjectGetAppService(AbstractAppService):
         bootstraps: list[BootstrapDto] | None = self._get_bootstrap_dtos_if_present(project_id=project_id)
         bank_loans: list[BankLoanDto] | None = self._get_bank_loan_dtos_if_present(project_id=project_id)
         project_file_urls: list[str] | None = self._get_project_file_urls(project_id=project_id)
+        useful_links: list[UsefulLinkDto] = self._get_useful_links(project_id=project_id)
+
         total_investment_amount = sum([i.amount for i in investments]) if investments is not None else 0
         return ProjectFullDto(
             **asdict(project_dto),
@@ -346,7 +364,14 @@ class ProjectGetAppService(AbstractAppService):
             churn_rate=project.churn_rate,
             retention_rate=project.retention_rate,
             conversion_rate=project.conversion_rate,
+            useful_links=useful_links,
         )
+
+    def _get_useful_links(self, project_id: Id) -> list[UsefulLinkDto]:
+        useful_links: list[ProjectUsefulLink] = self._project_useful_link_read_repository.get_all(
+            filter_=ProjectUsefulLinkFilter(project_id=project_id)
+        )
+        return [UsefulLinkDto(id=i.id, name=i.name, url=i.url) for i in useful_links]
 
     def _get_project_file_urls(self, project_id: Id) -> list[str] | None:
         project_files: list[ProjectFile] = self._project_file_read_repository.get_all(
@@ -486,7 +511,6 @@ class ProjectGetAppService(AbstractAppService):
             self._user_favorite_read_repository.get_by_association_ids(user_id=user_id, project_id=project_id)
             return True
         except UserFavoriteNotFoundException:
-            logger.debug(f"UserFavorite not found for user_id={user_id}, project_id={project_id}")
             return False
 
     def _get_categories(self, project_id: Id) -> list[ProjectCategory]:

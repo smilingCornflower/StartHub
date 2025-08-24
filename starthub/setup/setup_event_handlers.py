@@ -1,3 +1,7 @@
+from application.builders.event_handler.notification import (
+    ProjectApprovedNotificationEventHandlerBuilder,
+    ProjectRejectedNotificationEventHandlerBuilder,
+)
 from application.builders.event_handler.project import (
     ProjectCreatedAcceleratorHandlerBuilder,
     ProjectCreatedBankLoanHandlerBuilder,
@@ -12,6 +16,7 @@ from application.builders.event_handler.project import (
     ProjectCreatedProjectMediaHandlerBuilder,
     ProjectCreatedProjectStepHandlerBuilder,
     ProjectCreatedSocialLinkHandlerBuilder,
+    ProjectCreatedUsefulLinkHandlerBuilder,
     ProjectDeletedEventHandlerBuilder,
 )
 from application.builders.event_handler.project_investment import ProjectInvestmentCreatedEventHandlerBuilder
@@ -35,6 +40,7 @@ def setup_project_created_handlers() -> None:
     bank_loan_handler = ProjectCreatedBankLoanHandlerBuilder.create_handler()
     project_file_handler = ProjectCreatedProjectFileHandlerBuilder.create_handler()
     project_media_handler = ProjectCreatedProjectMediaHandlerBuilder.create_handler()
+    useful_link_hadnler = ProjectCreatedUsefulLinkHandlerBuilder.create_handler()
 
     handlers = [
         accelerator_handler,
@@ -50,6 +56,7 @@ def setup_project_created_handlers() -> None:
         bank_loan_handler,
         project_file_handler,
         project_media_handler,
+        useful_link_hadnler,
     ]
     for i in handlers:
         bus.subscribe(event_type=EventType.Project.CREATED, handler=i)
@@ -61,9 +68,12 @@ def setup_event_handlers() -> None:
 
     setup_project_created_handlers()
     project_deleted_handler = ProjectDeletedEventHandlerBuilder.create_handler()
+    project_rejected_notification_handler = ProjectRejectedNotificationEventHandlerBuilder.create_handler()
+    project_approved_notification_handler = ProjectApprovedNotificationEventHandlerBuilder.create_handler()
     project_investment_created_handler = ProjectInvestmentCreatedEventHandlerBuilder.create_handler()
 
     bus.subscribe(event_type=EventType.Project.DELETED, handler=project_deleted_handler)
+    bus.subscribe(event_type=EventType.Project.REJECTED, handler=project_rejected_notification_handler)
+    bus.subscribe(event_type=EventType.Project.APPROVED, handler=project_approved_notification_handler)
     bus.subscribe(event_type=EventType.ProjectInvestment.CREATED, handler=project_investment_created_handler)
-
     logger.info("Event handlers successfully registered.")

@@ -102,6 +102,14 @@ class NewsService(AbstractDomainService):
         self._news_write_repository.delete_by_id(id_=id_)
         logger.debug("Deleted successfully")
 
+    def activate(self, news_id: Id) -> None:
+        self._news_write_repository.update(data=NewsUpdatePayload(news_id=news_id, is_active=True))
+        logger.info(f"News(id={news_id}) activated successfully.")
+
+    def deactivate(self, news_id: Id) -> None:
+        self._news_write_repository.update(data=NewsUpdatePayload(news_id=news_id, is_active=False))
+        logger.info(f"News(id={news_id}) deactivated successfully.")
+
 
 class NewsImageService(AbstractDomainService):
     def __init__(

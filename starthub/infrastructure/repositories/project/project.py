@@ -22,12 +22,15 @@ class DjProjectReadRepository(ProjectReadRepository):
             queryset = queryset.filter(categories__slug=filter_.category_slug.value)
         if filter_.funding_model_slug:
             queryset = queryset.filter(funding_model__slug=filter_.funding_model_slug.value)
-        if filter_.status:
-            queryset = queryset.filter(status=filter_.status.value)
+        if filter_.statuses:
+            queryset = queryset.filter(status__in=[i.value for i in filter_.statuses])
         if filter_.stage:
             queryset = queryset.filter(stage=filter_.stage.value)
         if filter_.user_id:
             queryset = queryset.filter(creator_id=filter_.user_id.value)
+
+        if filter_.exclude_statuses:
+            queryset = queryset.exclude(status__in=[i.value for i in filter_.exclude_statuses])
 
         if pagination and pagination.last_id is not None:
             queryset = queryset.filter(id__lt=pagination.last_id)
@@ -119,6 +122,9 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             project.retention_rate = data.retention_rate.value
         if data.conversion_rate is not None:
             project.conversion_rate = data.conversion_rate.value
+
+        if data.status is not None:
+            project.status = data.status.value
 
         project.save()
         return project

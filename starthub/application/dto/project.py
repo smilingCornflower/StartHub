@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import date
 
 from application.dto.geo import AddressDto
+from application.dto.user import UserDto
 
 
 @dataclass
@@ -111,6 +112,13 @@ class BankLoanDto:
 
 
 @dataclass(frozen=True)
+class UsefulLinkDto:
+    id: int
+    name: str
+    url: str
+
+
+@dataclass(frozen=True)
 class ProjectDto:
     id: int
     name: str
@@ -120,7 +128,7 @@ class ProjectDto:
     media: list[str]
     categories: list[CategoryDto]
     company: CompanyDto
-    creator_id: int
+    user: UserDto
     funding_model: FundingModelDto
     goal_sum: float
     current_sum: float
@@ -151,5 +159,6 @@ class ProjectFullDto(ProjectDto):
     churn_rate: float | None = None
     retention_rate: float | None = None
     conversion_rate: float | None = None
+    useful_links: list[UsefulLinkDto] | None = None
 
     total_investment_amount: float = 0

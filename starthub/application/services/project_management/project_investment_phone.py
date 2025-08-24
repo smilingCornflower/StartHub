@@ -7,10 +7,10 @@ from domain.exceptions.project_management import (
 )
 from domain.models.project_management.investment import ProjectInvestment, ProjectInvestmentPhone
 from domain.models.project_management.project import Project
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.repositories.project.investment import ProjectInvestmentPhoneReadRepository, ProjectInvestmentReadRepository
 from domain.repositories.project.project import ProjectReadRepository
-from domain.repositories.user import UserReadRepository
+from domain.repositories.user_management.user import UserReadRepository
 from domain.services.project_management.investment import ProjectInvestmentPhoneService
 from domain.value_objects.common import Id, PhoneNumber
 from domain.value_objects.filter import ProjectInvestmentPhoneFilter

@@ -7,9 +7,10 @@ from django.test import SimpleTestCase
 from domain.constants import ACCESS_TOKEN_LIFETIME, JWT_ALGORITHM, REFRESH_TOKEN_LIFETIME
 from domain.enums.token import TokenTypeEnum
 from domain.exceptions.auth import InvalidTokenException, TokenExpiredException
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.services.auth import TokenService
-from domain.value_objects.token import AccessPayload, AccessTokenVo, RefreshPayload, RefreshTokenVo
+from domain.value_objects.auth_management.token import AccessPayload, AccessTokenVo, RefreshPayload, RefreshTokenVo
+from infrastructure.repositories.role import DjRoleReadRepository
 from loguru import logger
 
 
@@ -31,11 +32,13 @@ class TokenServiceTestCase(SimpleTestCase):
 
         cls.token_service = TokenService(
             secret_key=cls.secret_key,
+            role_read_repository=DjRoleReadRepository(),
             access_token_lifetime=cls.access_token_lifetime,
             refresh_token_lifetime=cls.refresh_token_lifetime,
         )
         cls.token_service_with_invalid_key = TokenService(
             secret_key=cls.invalid_secret,
+            role_read_repository=DjRoleReadRepository(),
             access_token_lifetime=cls.access_token_lifetime,
             refresh_token_lifetime=cls.refresh_token_lifetime,
         )
@@ -231,6 +234,9 @@ class TokenServiceTestCase(SimpleTestCase):
         payload = {
             "sub": str(self.user.id),
             "email": self.user.email,
+            "roles": ["user"],
+            "first_name": self.user.first_name,
+            "last_name": self.user.last_name,
             "iat": iat,
             "exp": exp,
             "type": "invalid",
@@ -290,7 +296,9 @@ class TokenServiceTestCase(SimpleTestCase):
             self.token_service._verify_refresh(RefreshTokenVo(value=token_str))
 
     def test_verify_token_generated_with_negative_lifetime_service(self) -> None:
-        token_service = TokenService(secret_key=self.secret_key, refresh_token_lifetime=-60)
+        token_service = TokenService(
+            secret_key=self.secret_key, refresh_token_lifetime=-60, role_read_repository=DjRoleReadRepository()
+        )
         refresh_token_vo = token_service.generate_refresh(self.user)
 
         with self.assertRaises(TokenExpiredException):

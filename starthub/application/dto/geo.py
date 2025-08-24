@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from domain.enums.language import LangCodeEnum
+
 
 @dataclass(frozen=True)
 class AddressDto:
@@ -13,3 +15,21 @@ class AddressDto:
     postal_code: str | None = None
 
     raw_address: str | None = None
+
+
+type RegionNameAlias = str
+
+
+@dataclass(frozen=True)
+class RegionDto:
+    id: int
+    names: dict[LangCodeEnum, RegionNameAlias]
+
+
+type CityNameAlias = str
+
+
+@dataclass(frozen=True)
+class CityDto:
+    id: int
+    names: dict[LangCodeEnum, CityNameAlias]

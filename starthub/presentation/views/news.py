@@ -11,7 +11,7 @@ from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.request_converters.common import request_to_pagination
 from presentation.request_converters.news import request_to_news_create_command, request_to_news_update_command
-from presentation.response_factories.common import NewsErrorResponseFactory
+from presentation.response_factories.news import NewsErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -74,5 +74,34 @@ class NewsView(APIView):
             access_dto = get_access_payload_dto_from_headers(request.headers)
             gateway.news_app_service.delete(news_id=news_id, user_id=int(access_dto.sub))
             return Response({"detail": "News deleted.", "code": SUCCESS}, status=status.HTTP_200_OK)
+        except CustomException as e:
+            return NewsErrorResponseFactory.create_response(e)
+
+
+class NewsActivateView(APIView):
+    @staticmethod
+    def patch(request: Request, news_id: int) -> Response:
+        print()
+        logger.info(f"PATCH /news/{news_id}/activate/")
+
+        try:
+            user_id = get_user_id_or_raises(request=request)
+            gateway.news_app_service.activate(user_id=user_id, news_id=Id(value=news_id))
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+        except CustomException as e:
+            return NewsErrorResponseFactory.create_response(e)
+
+
+class NewsDeactivateView(APIView):
+    @staticmethod
+    def patch(request: Request, news_id: int) -> Response:
+        print()
+        logger.info(f"PATCH /news/{news_id}/deactivate/")
+
+        try:
+            user_id = get_user_id_or_raises(request=request)
+            gateway.news_app_service.deactivate(user_id=user_id, news_id=Id(value=news_id))
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+
         except CustomException as e:
             return NewsErrorResponseFactory.create_response(e)

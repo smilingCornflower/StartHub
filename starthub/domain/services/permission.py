@@ -1,14 +1,13 @@
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.models.base import BaseModel
 from domain.models.permission import Permission
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.permission import PermissionReadRepository
-from domain.repositories.user import UserReadRepository
+from domain.repositories.user_management.user import UserReadRepository
 from domain.value_objects.common import Id
 from domain.value_objects.filter import PermissionFilter
-from domain.value_objects.user import PermissionVo
-from loguru import logger
+from domain.value_objects.user_management.user import PermissionVo
 
 
 class PermissionService(AbstractDomainService):
@@ -19,6 +18,18 @@ class PermissionService(AbstractDomainService):
     ):
         self._user_read_repository = user_read_repository
         self._permission_read_repository = permission_read_repository
+
+    def is_allowed_for_user(
+        self,
+        user: User,
+        model: type[BaseModel],
+        action: ActionEnum,
+        scope: ScopeEnum,
+        field: str | None = None,
+        value: str | None = None,
+    ) -> bool:
+        permission = self.create_permission_vo(model=model, action=action, scope=scope, field=field, value=value)
+        return self.has_user_permission(user=user, permission_vo=permission)
 
     def has_user_permission(self, user: User, permission_vo: PermissionVo) -> bool:
         """Checks whether the user's roles has the specified permission."""
@@ -39,7 +50,12 @@ class PermissionService(AbstractDomainService):
 
     @classmethod
     def create_permission_vo(
-        cls, model: type[BaseModel], action: ActionEnum, scope: ScopeEnum, field: str | None = None
+        cls,
+        model: type[BaseModel],
+        action: ActionEnum,
+        scope: ScopeEnum,
+        field: str | None = None,
+        value: str | None = None,
     ) -> PermissionVo:
         """
         :raises TypeError:
@@ -49,11 +65,13 @@ class PermissionService(AbstractDomainService):
             raise TypeError("Model must inherit from BaseModel.")
         if field:
             if hasattr(model, field):
-                permission_value = f"{action}.{scope}.{model.get_permission_key()}.{field}"
+                if value:
+                    permission_value = f"{action}.{scope}.{model.get_permission_key()}.{field}.{value}"
+                else:
+                    permission_value = f"{action}.{scope}.{model.get_permission_key()}.{field}"
             else:
                 raise ValueError(f"Field '{field}' does not exist in model '{model.__name__}'")
         else:
             permission_value = f"{action}.{scope}.{model.get_permission_key()}"
 
-        logger.debug(f"{permission_value=}")
         return PermissionVo(value=permission_value)
