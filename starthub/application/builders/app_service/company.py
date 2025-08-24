@@ -4,7 +4,7 @@ from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.company import CompanyAppService
 from infrastructure.repositories.company import DjCompanyReadRepository
 from infrastructure.repositories.geo.address import DjAddressWriteRepository
-from infrastructure.repositories.user import DjUserReadRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository
 
 
 class CompanyAppServiceBuilder(AbstractAppServiceBuilder[CompanyAppService]):

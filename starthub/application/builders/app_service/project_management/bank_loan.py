@@ -3,7 +3,7 @@ from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.project_management.bank_loan import ProjectBankLoanAppService
 from infrastructure.repositories.project.bank_loan import DjProjectBankLoanReadRepository
 from infrastructure.repositories.project.project import DjProjectReadRepository
-from infrastructure.repositories.user import DjUserReadRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository
 
 
 class ProjectBankLoanAppServiceBuilder(AbstractAppServiceBuilder[ProjectBankLoanAppService]):

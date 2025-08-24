@@ -3,23 +3,29 @@ import re
 from config.settings import BASE_DIR
 from domain.enums.file_extension import FileExtensionEnum
 
+# ==== Basic Constants ====
 DEFAULT_NOT_AVAILABLE = "N/A"
 MEGABYTE = 1024 * 1024  # in kilobytes
 
+# ==== Field Lengths ====
 CHAR_FIELD_MAX_LENGTH = 255
 CHAR_FIELD_MEDIUM_LENGTH = 100
 CHAR_FIELD_SHORT_LENGTH = 50
+DESCRIPTION_MAX_LENGTH = 2_000
 
-# String consists only of letters (uppercase and lowercase), numbers, hyphens, and underscores.
+# ==== Users and Names ====
 FIRST_NAME_MAX_LENGTH = CHAR_FIELD_SHORT_LENGTH
 LAST_NAME_MAX_LENGTH = CHAR_FIELD_SHORT_LENGTH
+# String consists only of letters (uppercase and lowercase), numbers, hyphens, and underscores.
 NAME_PATTERN = re.compile(r"^[\w_-]+$", flags=re.UNICODE)
 
+# ==== Passwords ====
 PASSWORD_MIN_LENGTH = 6
 PASSWORD_MAX_LENGTH = 64
 # Passwords contains at least one: lowercase letter, uppercase letter and digit
 PASSWORD_PATTERN = re.compile(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$")
 
+# ==== JWT Tokens ====
 ACCESS_TOKEN_LIFETIME = 15 * 60  # 15 minutes
 REFRESH_TOKEN_LIFETIME = 15 * 24 * 3600  # 15 days
 ANONYMOUS_TOKEN_LIFETIME = 30 * 24 * 3600  # 30 days
@@ -38,6 +44,21 @@ ANONYMOUS_DECODE_OPTIONS = {
     "require": ["sub", "iat", "exp", "type"],
 }
 
+# ==== Files and Media ====
+PDF_MAX_SIZE_IN_BYTES = 20 * MEGABYTE
+IMAGE_MAX_SIZE_IN_BYTES = 5 * MEGABYTE
+VIDEO_MAX_SIZE_IN_BYTES = 50 * MEGABYTE
+
+MEDIA_SUPPORTED_FILES_FORMATS = (FileExtensionEnum.JPG, FileExtensionEnum.PNG, FileExtensionEnum.MP4)
+IMAGE_FILE_FORMATS = (FileExtensionEnum.JPG, FileExtensionEnum.PNG, FileExtensionEnum.WEBP, FileExtensionEnum.AVIF)
+VIDEO_FILE_FORMATS = (FileExtensionEnum.MP4,)
+
+IMAGE_COMPRESSION_QUALITY = 70
+VIDEO_COMPRESSION_BITRATE = 1_000
+
+TEMP_FILE_PATH = BASE_DIR / "../temp_files/"
+
+# ==== Projects ====
 COUNTRY_CODE_LENGTH = 2
 FUNDING_GOAL_MAX_DIGITS = 12
 PROJECT_CROWDFUNDING_AMOUNT_MAX_DIGITS = 12
@@ -48,35 +69,23 @@ PROJECT_MEDIA_MAX_AMOUNT = 10
 PROJECT_BANK_LOAN_MAX_AMOUNT = 10
 KZ_BIN_LENGTH = 12
 
-PDF_MAX_SIZE_IN_BYTES = 20 * MEGABYTE
-IMAGE_MAX_SIZE_IN_BYTES = 5 * MEGABYTE
-VIDEO_MAX_SIZE_IN_BYTES = 50 * MEGABYTE
-
-MEDIA_SUPPORTED_FILES_FORMATS = (FileExtensionEnum.JPG, FileExtensionEnum.PNG, FileExtensionEnum.MP4)
-
-IMAGE_FILE_FORMATS = (FileExtensionEnum.JPG, FileExtensionEnum.PNG, FileExtensionEnum.WEBP, FileExtensionEnum.AVIF)
-VIDEO_FILE_FORMATS = (FileExtensionEnum.MP4,)
-
-IMAGE_COMPRESSION_QUALITY = 70
-VIDEO_COMPRESSION_BITRATE = 1_000
 PROJECT_IMAGES_MAX_AMOUNT = 7
 PROJECT_STEPS_MAX_AMOUNT = 10
 PROJECT_FILES_MAX_AMOUNT = 10
 USEFUL_LINKS_MAX_AMOUNT = 20
 
-TEMP_FILE_PATH = BASE_DIR / "../temp_files/"
-
-DESCRIPTION_MAX_LENGTH = 2_000
-
 # ==== News ====
 NEWS_CONTENT_MAX_LENGTH = 7_000
 NEWS_IMAGES_MAX_AMOUNT = 10
 
-# ==== Pagination ====
-PAGINNATION_MAX_LMIT = 50
-
-# ==== Notification ====
+# ==== Notifications ====
 NOTIFICATION_MESSAGE_MAX_LENGTH = 500
+
+# ==== User Messages ====
+USER_MESSAGE_CONTENT_MAX_LENGTH = 2_000
 
 # ==== Project Submissions ====
 PROJECT_REJECTED_REPORT_MAX_LENGTH = 500
+
+# ==== Pagination ====
+PAGINNATION_MAX_LMIT = 50

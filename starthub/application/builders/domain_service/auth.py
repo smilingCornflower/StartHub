@@ -2,7 +2,7 @@ from application.ports.domain_service_builder import AbstractDomainServiceBuilde
 from config import settings
 from domain.services.auth import AuthService, RegistrationService, TokenService
 from infrastructure.repositories.role import DjRoleReadRepository
-from infrastructure.repositories.user import DjUserReadRepository, DjUserWriteRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository, DjUserWriteRepository
 
 
 class AuthServiceBuilder(AbstractDomainServiceBuilder[AuthService]):

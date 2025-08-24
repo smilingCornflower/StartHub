@@ -3,7 +3,7 @@ from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.user_management.admin import UserAdminAppService
 from application.services.user_management.user import UserAppService
 from infrastructure.repositories.role import DjRoleReadRepository
-from infrastructure.repositories.user import DjUserReadRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository
 
 
 class UserAppServiceBuilder(AbstractAppServiceBuilder[UserAppService]):

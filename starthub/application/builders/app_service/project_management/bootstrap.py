@@ -3,7 +3,7 @@ from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.project_management.bootsrtap import ProjectBootstrapAppService
 from infrastructure.repositories.project.bootsrtap import DjProjectBootstrapReadRepository
 from infrastructure.repositories.project.project import DjProjectReadRepository
-from infrastructure.repositories.user import DjUserReadRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository
 
 
 class ProjectBootstrapAppServiceBuilder(AbstractAppServiceBuilder[ProjectBootstrapAppService]):

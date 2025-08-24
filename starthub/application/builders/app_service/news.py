@@ -6,7 +6,7 @@ from application.services.news import NewsAppService
 from domain.services.file import ImageService
 from domain.services.news import NewsImageService
 from infrastructure.repositories.news import DjNewsImageReadRepository, DjNewsImageWriteRepository, DjNewsReadRepository
-from infrastructure.repositories.user import DjUserReadRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository
 from infrastructure.uow import DjangoUnitOfWork
 
 

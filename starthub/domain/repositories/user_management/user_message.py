@@ -35,3 +35,7 @@ class UserMessageWriteRepository(
     @abstractmethod
     def delete_by_id(self, id_: UserMessageId) -> None:
         pass
+
+    @abstractmethod
+    def delete(self, message: UserMessage) -> None:
+        pass

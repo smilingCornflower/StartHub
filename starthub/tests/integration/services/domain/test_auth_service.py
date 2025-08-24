@@ -8,7 +8,7 @@ from domain.value_objects.auth_management.auth import LoginCredentials
 from domain.value_objects.auth_management.token import AccessTokenVo, RefreshTokenVo, TokenPairVo
 from domain.value_objects.user_management.user import Email, RawPassword
 from infrastructure.repositories.role import DjRoleReadRepository
-from infrastructure.repositories.user import DjUserReadRepository, DjUserWriteRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository, DjUserWriteRepository
 from loguru import logger
 
 

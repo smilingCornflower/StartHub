@@ -3,7 +3,7 @@ from application.builders.domain_service.project_management import ProjectAdminS
 from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.project_management.admin import ProjectAdminAppService
 from infrastructure.repositories.project.project import DjProjectReadRepository
-from infrastructure.repositories.user import DjUserReadRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository
 
 
 class ProjectAdminAppServiceBuilder(AbstractAppServiceBuilder[ProjectAdminAppService]):

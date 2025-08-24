@@ -2,7 +2,7 @@ from application.builders.domain_service.notification import NotificationService
 from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.notification import NotificationAppService
 from infrastructure.repositories.notification import DjNotificationReadRepository
-from infrastructure.repositories.user import DjUserReadRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository
 
 
 class NotificationAppServiceBuilder(AbstractAppServiceBuilder[NotificationAppService]):

@@ -6,13 +6,16 @@ from domain.services.users_management.user import UserService
 from domain.services.users_management.user_favorite import UserFavoriteService
 from infrastructure.cloud_storages.google import google_cloud_storage
 from infrastructure.repositories.project.project import DjProjectReadRepository
-from infrastructure.repositories.user import (
+from infrastructure.repositories.user_management.user import (
     DjUserPhoneReadRepository,
     DjUserPhoneWriteRepository,
     DjUserReadRepository,
     DjUserWriteRepository,
 )
-from infrastructure.repositories.user_favorite import DjUserFavoriteReadRepository, DjUserFavoriteWriteRepository
+from infrastructure.repositories.user_management.user_favorite import (
+    DjUserFavoriteReadRepository,
+    DjUserFavoriteWriteRepository,
+)
 
 
 class UserServiceBuilder(AbstractDomainServiceBuilder[UserService]):
