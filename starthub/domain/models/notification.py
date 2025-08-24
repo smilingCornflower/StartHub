@@ -8,7 +8,7 @@ class Notification(BaseModel):
     title = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
     message = models.TextField()
 
-    is_read = models.BooleanField(default=True)
+    is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

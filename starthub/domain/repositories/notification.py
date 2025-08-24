@@ -31,3 +31,7 @@ class NotificationWriteRepository(
     @abstractmethod
     def delete_by_id(self, id_: NotificationId) -> None:
         pass
+
+    @abstractmethod
+    def mark_as_read(self, notification: Notification) -> None:
+        pass

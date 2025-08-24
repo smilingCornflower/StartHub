@@ -2,6 +2,7 @@ from application.builders.app_service.auth import AuthAppServiceBuilder, Registr
 from application.builders.app_service.company import CompanyAppServiceBuilder
 from application.builders.app_service.geo import CityAppServiceBuilder, RegionAppServiceBuilder
 from application.builders.app_service.news import NewsAppServiceBuilder
+from application.builders.app_service.notification import NotificationAppServiceBuilder
 from application.builders.app_service.project_management.accelerator import AcceleratorAppServiceBuilder
 from application.builders.app_service.project_management.admin import ProjectAdminAppServiceBuilder
 from application.builders.app_service.project_management.bank_loan import ProjectBankLoanAppServiceBuilder
@@ -30,6 +31,7 @@ from application.services.company import CompanyAppService
 from application.services.geo.city import CityAppService
 from application.services.geo.region import RegionAppService
 from application.services.news import NewsAppService
+from application.services.notification import NotificationAppService
 from application.services.project_management.accelerator import AcceleratorAppService
 from application.services.project_management.admin import ProjectAdminAppService
 from application.services.project_management.bank_loan import ProjectBankLoanAppService
@@ -87,6 +89,7 @@ class Gateway:
     _region_app_service: RegionAppService | None = None
     _city_app_service: CityAppService | None = None
 
+    _notification_app_service: NotificationAppService | None = None
     _cookie_service: CookieService | None = None
 
     @property
@@ -246,6 +249,13 @@ class Gateway:
         if self._user_admin_app_service is None:
             self._user_admin_app_service = UserAdminAppServiceBuilder.create_service()
         return self._user_admin_app_service
+
+    @property
+    def notification_app_service(self) -> NotificationAppService:
+        if self._notification_app_service is None:
+            self._notification_app_service = NotificationAppServiceBuilder.create_service()
+
+        return self._notification_app_service
 
     @property
     def cookie_service(self) -> CookieService:

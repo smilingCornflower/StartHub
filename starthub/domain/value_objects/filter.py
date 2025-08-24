@@ -171,4 +171,5 @@ class ProjectUsefulLinkFilter(AbstractFilter):
 
 
 class NotificationFilter(AbstractFilter):
-    pass
+    user_id: Id | None = None
+    is_read: bool | None = None

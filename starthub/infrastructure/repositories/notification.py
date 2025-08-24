@@ -46,3 +46,7 @@ class DjNotificationWriteRepository(NotificationWriteRepository):
 
     def delete_by_id(self, id_: NotificationId) -> None:
         raise NotImplementedError("The method delete_by_id() is not implemented yet.")
+
+    def mark_as_read(self, notification: Notification) -> None:
+        notification.is_read = True
+        notification.save()

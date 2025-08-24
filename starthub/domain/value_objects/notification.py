@@ -1,4 +1,5 @@
 from domain.constants import NOTIFICATION_MESSAGE_MAX_LENGTH
+from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects.common import Id, LongString, StringVo
 
@@ -23,4 +24,8 @@ class NotificationCreatePayload(AbstractCreatePayload):
 
 class NotificationUpdatePayload(AbstractUpdatePayload):
     id_: NotificationId
+    is_read: bool | None = None
+
+
+class NotificationGetCommand(BaseCommand):
     is_read: bool | None = None
