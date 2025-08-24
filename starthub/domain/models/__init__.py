@@ -1,5 +1,6 @@
 from importlib import import_module
 
+
 User = import_module("domain.models.user").User
 UserFavorite = import_module("domain.models.user_favorite").UserFavorite
 Role = import_module("domain.models.role").Role
@@ -35,6 +36,7 @@ Address = import_module("domain.models.geo.address").Address
 
 News = import_module("domain.models.news").News
 NewsImage = import_module("domain.models.news").NewsImage
+Notification = import_module("domain.models.notification").Notification
 
 __all__ = [
     "User",
