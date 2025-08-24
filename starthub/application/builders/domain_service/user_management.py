@@ -1,9 +1,10 @@
 from application.builders.domain_service.permission import PermissionServiceBuilder
 from application.ports.domain_service_builder import AbstractDomainServiceBuilder
 from domain.services.file import ImageService
-from domain.services.users_management.admin import UserAdminService
 from domain.services.users_management.user import UserService
+from domain.services.users_management.user_admin import UserAdminService
 from domain.services.users_management.user_favorite import UserFavoriteService
+from domain.services.users_management.user_message import UserMessageService
 from infrastructure.cloud_storages.google import google_cloud_storage
 from infrastructure.repositories.project.project import DjProjectReadRepository
 from infrastructure.repositories.user_management.user import (
@@ -16,6 +17,7 @@ from infrastructure.repositories.user_management.user_favorite import (
     DjUserFavoriteReadRepository,
     DjUserFavoriteWriteRepository,
 )
+from infrastructure.repositories.user_management.user_message import DjUserMessageWriteRepository
 
 
 class UserServiceBuilder(AbstractDomainServiceBuilder[UserService]):
@@ -47,4 +49,13 @@ class UserAdminServiceBuilder(AbstractDomainServiceBuilder[UserAdminService]):
     def create_service() -> UserAdminService:
         return UserAdminService(
             permission_service=PermissionServiceBuilder.create_service(), user_write_repository=DjUserWriteRepository()
+        )
+
+
+class UserMessageServiceBuilder(AbstractDomainServiceBuilder[UserMessageService]):
+    @staticmethod
+    def create_service() -> UserMessageService:
+        return UserMessageService(
+            permission_service=PermissionServiceBuilder.create_service(),
+            write_repository=DjUserMessageWriteRepository(),
         )

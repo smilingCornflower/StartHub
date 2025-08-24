@@ -9,7 +9,7 @@ from domain.services.users_management.user import UserService
 from domain.value_objects.common import Id
 from domain.value_objects.user_management.user import UserProfile, UserUpdateCommand
 from loguru import logger
-from presentation.request_converters.user import request_to_user_update_command
+from presentation.request_converters.user_management.user import request_to_user_update_command
 
 
 class UserAppService(AbstractAppService):

@@ -9,8 +9,8 @@ from domain.enums.token import TokenNameEnum
 from domain.exceptions import CustomException
 from loguru import logger
 from presentation.constants import SUCCESS
-from presentation.response_factories.common import (
-    CommonErrorResponseFactory,
+from presentation.response_factories.common import CommonErrorResponseFactory
+from presentation.response_factories.user_management import (
     LoginErrorResponseFactory,
     RegistrationErrorResponseFactory,
     ReissueAccessErrorResponseFactory,

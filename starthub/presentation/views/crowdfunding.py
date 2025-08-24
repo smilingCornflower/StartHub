@@ -7,7 +7,7 @@ from presentation.request_converters.project.crowdfunding import (
     request_to_project_crowdfunding_create_command,
     request_to_project_crowdfunding_update_command,
 )
-from presentation.response_factories.common import CrowdfundingErrorResponseFactory
+from presentation.response_factories.project_management import CrowdfundingErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response

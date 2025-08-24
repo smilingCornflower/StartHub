@@ -9,7 +9,7 @@ from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from infrastructure.auth.token import get_access_payload_dto_from_headers
 from presentation.constants import SUCCESS
-from presentation.response_factories.common import UserErrorResponseFactory, UserFavoriteErrorResponseFactory
+from presentation.response_factories.user_management import UserErrorResponseFactory, UserFavoriteErrorResponseFactory
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from rest_framework.request import Request

@@ -2,7 +2,7 @@ from application.ports.service import AbstractAppService
 from domain.enums.role import RoleEnum
 from domain.repositories.role import RoleReadRepository
 from domain.repositories.user_management.user import UserReadRepository
-from domain.services.users_management.admin import UserAdminService
+from domain.services.users_management.user_admin import UserAdminService
 from domain.value_objects.common import Id
 from domain.value_objects.user_management.user_admin import UserAdminUpdateCommand
 

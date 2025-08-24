@@ -8,12 +8,11 @@ from domain.value_objects.user_management.user_admin import UserAdminUpdateComma
 from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
-from presentation.request_converters.admin import (
-    request_to_project_submission_reject_command,
-    request_to_user_admin_update_command,
-)
 from presentation.request_converters.common import request_to_pagination
-from presentation.response_factories.admin import ProjectSubmissionErrorResponseFactory, UsersAdminErrorResponseFactory
+from presentation.request_converters.project.submission import request_to_project_submission_reject_command
+from presentation.request_converters.user_management.user_admin import request_to_user_admin_update_command
+from presentation.response_factories.admin import ProjectSubmissionErrorResponseFactory
+from presentation.response_factories.user_management import UsersAdminErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response

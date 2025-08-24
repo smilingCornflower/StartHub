@@ -19,7 +19,7 @@ from domain.value_objects.auth_management.token import (
 )
 from domain.value_objects.user_management.user import UserCreatePayload
 from loguru import logger
-from presentation.request_converters.auth import (
+from presentation.request_converters.user_management.auth import (
     request_cookies_to_refresh_token,
     request_data_to_login_credentials,
     request_data_to_user_create_payload,

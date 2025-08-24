@@ -13,7 +13,7 @@ from presentation.request_converters.project.bootstrap import (
     request_to_project_bootstrap_create_command,
     request_to_project_bootstrap_update_command,
 )
-from presentation.response_factories.common import ProjectBootstrapErrorResponseFactory
+from presentation.response_factories.project_management import ProjectBootstrapErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response

@@ -6,7 +6,7 @@ from domain.exceptions.validation import InvalidEmailException, MissingRequiredF
 from domain.models.user_management.user import User
 from loguru import logger
 from presentation.constants import SUCCESS
-from presentation.response_factories.common import RegistrationErrorResponseFactory
+from presentation.response_factories.user_management import RegistrationErrorResponseFactory
 from pydantic import ValidationError
 from rest_framework.test import APIClient
 

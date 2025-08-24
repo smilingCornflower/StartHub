@@ -23,6 +23,10 @@ class DjUserMessageReadRepository(UserMessageReadRepository):
     def get_all(self, filter_: UserMessagaFilter, pagination: Pagination | None = None) -> list[UserMessage]:
         queryset = UserMessage.objects.all()
 
+        if filter_.user_id is not None:
+            queryset = queryset.filter(user_id=filter_.user_id.value)
+        if filter_.is_read is not None:
+            queryset = queryset.filter(is_read=filter_.is_read)
         if pagination is not None:
             return apply_pagination(queryset=queryset, pagination=pagination)
 

@@ -8,7 +8,7 @@ from presentation.request_converters.project.useful_link import (
     request_to_useful_link_create_command,
     request_to_useful_link_update_command,
 )
-from presentation.response_factories.common import ProjectUsefulLinkErrorResponseFactory
+from presentation.response_factories.project_management import ProjectUsefulLinkErrorResponseFactory
 from pydantic import ValidationError
 from rest_framework import status
 from rest_framework.request import Request

@@ -24,8 +24,12 @@ from application.builders.app_service.project_management.project_file import Pro
 from application.builders.app_service.project_management.project_image import ProjectImageAppServiceBuilder
 from application.builders.app_service.project_management.project_media import ProjectMediaAppServiceBuilder
 from application.builders.app_service.project_management.useful_link import ProjectUsefulLinkAppServiceBuilder
-from application.builders.app_service.user import UserAdminAppServiceBuilder, UserAppServiceBuilder
-from application.builders.app_service.user_favorite import UserFavoriteAppAppServiceBuilder
+from application.builders.app_service.user_management import (
+    UserAdminAppServiceBuilder,
+    UserAppServiceBuilder,
+    UserFavoriteAppAppServiceBuilder,
+    UserMessageAppServiceBuilder,
+)
 from application.services.auth import AuthAppService, RegistrationAppService
 from application.services.company import CompanyAppService
 from application.services.geo.city import CityAppService
@@ -51,9 +55,10 @@ from application.services.project_management.project_investment_phone import Pro
 from application.services.project_management.project_investment_social_link import ProjectInvestmentSocialLinkAppService
 from application.services.project_management.project_media import ProjectMediaAppService
 from application.services.project_management.useful_link import ProjectUsefulLinkAppService
-from application.services.user_management.admin import UserAdminAppService
 from application.services.user_management.user import UserAppService
+from application.services.user_management.user_admin import UserAdminAppService
 from application.services.user_management.user_favorite import UserFavoriteAppService
+from application.services.user_management.user_message import UserMessageAppService
 from infrastructure.services.cookie import CookieService, cookie_service
 
 
@@ -62,6 +67,9 @@ class Gateway:
     _registration_app_service: RegistrationAppService | None = None
 
     _user_app_service: UserAppService | None = None
+    _user_favorite_app_service: UserFavoriteAppService | None = None
+    _user_admin_app_service: UserAdminAppService | None = None
+    _user_message_app_service: UserMessageAppService | None = None
 
     _project_create_app_service: ProjectCreateAppService | None = None
     _project_update_app_service: ProjectUpdateAppService | None = None
@@ -69,7 +77,7 @@ class Gateway:
     _project_delete_app_service: ProjectDeleteAppService | None = None
 
     _project_image_app_service: ProjectImageAppService | None = None
-    _user_favorite_app_service: UserFavoriteAppService | None = None
+
     _news_app_service: NewsAppService | None = None
     _company_app_service: CompanyAppService | None = None
     _accelerator_app_service: AcceleratorAppService | None = None
@@ -84,7 +92,6 @@ class Gateway:
     _project_media_app_service: ProjectMediaAppService | None = None
     _project_useful_link_app_service: ProjectUsefulLinkAppService | None = None
     _project_admin_app_service: ProjectAdminAppService | None = None
-    _user_admin_app_service: UserAdminAppService | None = None
 
     _region_app_service: RegionAppService | None = None
     _city_app_service: CityAppService | None = None
@@ -109,6 +116,24 @@ class Gateway:
         if self._user_app_service is None:
             self._user_app_service = UserAppServiceBuilder.create_service()
         return self._user_app_service
+
+    @property
+    def user_admin_app_service(self) -> UserAdminAppService:
+        if self._user_admin_app_service is None:
+            self._user_admin_app_service = UserAdminAppServiceBuilder.create_service()
+        return self._user_admin_app_service
+
+    @property
+    def user_favorite_app_service(self) -> UserFavoriteAppService:
+        if self._user_favorite_app_service is None:
+            self._user_favorite_app_service = UserFavoriteAppAppServiceBuilder.create_service()
+        return self._user_favorite_app_service
+
+    @property
+    def user_message_app_service(self) -> UserMessageAppService:
+        if self._user_message_app_service is None:
+            self._user_message_app_service = UserMessageAppServiceBuilder.create_service()
+        return self._user_message_app_service
 
     @property
     def project_create_app_service(self) -> ProjectCreateAppService:
@@ -139,12 +164,6 @@ class Gateway:
         if self._project_image_app_service is None:
             self._project_image_app_service = ProjectImageAppServiceBuilder.create_service()
         return self._project_image_app_service
-
-    @property
-    def user_favorite_app_service(self) -> UserFavoriteAppService:
-        if self._user_favorite_app_service is None:
-            self._user_favorite_app_service = UserFavoriteAppAppServiceBuilder.create_service()
-        return self._user_favorite_app_service
 
     @property
     def news_app_service(self) -> NewsAppService:
@@ -243,12 +262,6 @@ class Gateway:
         if self._project_admin_app_service is None:
             self._project_admin_app_service = ProjectAdminAppServiceBuilder.create_service()
         return self._project_admin_app_service
-
-    @property
-    def user_admin_app_service(self) -> UserAdminAppService:
-        if self._user_admin_app_service is None:
-            self._user_admin_app_service = UserAdminAppServiceBuilder.create_service()
-        return self._user_admin_app_service
 
     @property
     def notification_app_service(self) -> NotificationAppService:

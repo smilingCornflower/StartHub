@@ -176,4 +176,5 @@ class NotificationFilter(AbstractFilter):
 
 
 class UserMessagaFilter(AbstractFilter):
-    pass
+    user_id: Id | None = None
+    is_read: bool | None = None

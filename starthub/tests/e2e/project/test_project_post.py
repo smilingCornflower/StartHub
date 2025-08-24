@@ -32,7 +32,7 @@ from domain.models.project_management.category import ProjectCategory
 from domain.models.project_management.funding_model import FundingModel
 from domain.models.user_management.user import User
 from loguru import logger
-from presentation.response_factories.common import ProjectErrorResponseFactory
+from presentation.response_factories.project_management import ProjectErrorResponseFactory
 from rest_framework.response import Response
 from rest_framework.test import APIClient
 

@@ -8,7 +8,7 @@ from domain.exceptions.validation import EmptyStringException, InvalidEmailExcep
 from domain.models.user_management.user import User
 from loguru import logger
 from presentation.constants import SUCCESS
-from presentation.response_factories.common import LoginErrorResponseFactory
+from presentation.response_factories.user_management import LoginErrorResponseFactory
 from pydantic import ValidationError
 from rest_framework.response import Response
 from rest_framework.test import APIClient

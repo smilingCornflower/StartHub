@@ -32,7 +32,7 @@ from presentation.request_converters.project.project_images_update_command impor
 )
 from presentation.request_converters.project.project_update_command import request_to_the_project_update_command
 from presentation.request_converters.search import request_data_to_project_search_params
-from presentation.response_factories.common import ProjectErrorResponseFactory
+from presentation.response_factories.project_management import ProjectErrorResponseFactory
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
 from rest_framework.request import Request
