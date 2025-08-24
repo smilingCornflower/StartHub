@@ -4,6 +4,7 @@ from domain.models.base import BaseModel
 
 
 class UserMessage(BaseModel):
+    user = models.ForeignKey("domain.User", on_delete=models.CASCADE, related_name="messages")
     first_name = models.CharField(max_length=CHAR_FIELD_SHORT_LENGTH)
     last_name = models.CharField(max_length=CHAR_FIELD_SHORT_LENGTH)
     email = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
