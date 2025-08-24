@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from domain.models.user_management.message import UserMessage
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
 from domain.value_objects.common import Pagination
-from domain.value_objects.filter import UserMessagaFilter
+from domain.value_objects.filter import UserMessageFilter
 from domain.value_objects.user_management.user_message import (
     UserMessageCreatePayload,
     UserMessageId,
@@ -11,13 +11,13 @@ from domain.value_objects.user_management.user_message import (
 )
 
 
-class UserMessageReadRepository(AbstractReadRepository[UserMessage, UserMessagaFilter, UserMessageId], ABC):
+class UserMessageReadRepository(AbstractReadRepository[UserMessage, UserMessageFilter, UserMessageId], ABC):
     @abstractmethod
     def get_by_id(self, id_: UserMessageId) -> UserMessage:
         pass
 
     @abstractmethod
-    def get_all(self, filter_: UserMessagaFilter, pagination: Pagination | None = None) -> list[UserMessage]:
+    def get_all(self, filter_: UserMessageFilter, pagination: Pagination | None = None) -> list[UserMessage]:
         pass
 
 
