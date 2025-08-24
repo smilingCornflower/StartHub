@@ -74,6 +74,7 @@ class UserFavoriteErrorResponseFactory(CommonErrorResponseFactory):
 
 class UserMessageErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
+        ValidationException: ("VALIDATION_EXCEPTION", 422),
         UserMessageNotFoundException: ("USER_MESSAGE_NOT_FOUND", 404),
         UserUnreadMessageMaxAmountException: ("MAX_UNREAD_MESSAGES_AMOUNT_EXCEEDED", 422),
         FirstNameIsTooLongException: ("FIRST_NAME_TOO_LONG", 422),

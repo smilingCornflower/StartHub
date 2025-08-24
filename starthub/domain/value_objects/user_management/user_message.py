@@ -1,3 +1,5 @@
+from enum import StrEnum
+
 from domain.constants import USER_MESSAGE_CONTENT_MAX_LENGTH
 from domain.exceptions.user_message import UserMessageContentIsTooLongException, UserMessageTopicIsTooLongException
 from domain.ports.command import BaseCommand
@@ -40,3 +42,13 @@ class UserMessageCreateCommand(BaseCommand):
     phone: PhoneNumber
     topic: UserMessageTopic
     content: UserMessageContent
+
+
+class UserMessageOrderByEnum(StrEnum):
+    CREATED_AT_ASC = "created_at"
+    CREATED_AT_DESC = "-created_at"
+
+
+class UserMessageGetCommand(BaseCommand):
+    is_read: bool | None = None
+    order_by: UserMessageOrderByEnum | None = None

@@ -7,6 +7,7 @@ from domain.enums.role import RoleEnum
 from domain.models.permission import Permission
 from domain.models.project_management.project import Project
 from domain.models.role import Role
+from domain.models.user_management.message import UserMessage
 from domain.models.user_management.user import User
 from domain.services.permission import PermissionService
 from domain.value_objects.user_management.user import PermissionVo
@@ -33,6 +34,7 @@ class Command(BaseCommand):
         self._setup_permissions_for_special_status_projects(admin_role)
         self._setup_permissions_for_user_roles(admin_role)
         self._setup_permissions_for_user_is_active_field(admin_role)
+        self._setup_permission_to_view_any_user_messages(admin_role)
 
         logger.info("Admin role and permissions initialization completed")
 
@@ -60,6 +62,12 @@ class Command(BaseCommand):
             field=User.IS_ACTIVE_FIELD,
         )
         self._add_permission_to_role(admin_role, change_any_user_is_active_field)
+
+    def _setup_permission_to_view_any_user_messages(self, admin_role: Role) -> None:
+        view_any_message = PermissionService.create_permission_vo(
+            model=UserMessage, action=ActionEnum.VIEW, scope=ScopeEnum.ANY
+        )
+        self._add_permission_to_role(role=admin_role, permission_vo=view_any_message)
 
     def _setup_permissions_for_user_roles(self, admin_role: Role) -> None:
         add_moderator_to_any_user = PermissionService.create_permission_vo(
