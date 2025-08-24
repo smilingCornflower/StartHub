@@ -3,7 +3,7 @@ from application.dto.project import CompanyFullDto
 from application.ports.service import AbstractAppService
 from domain.models.company import Company
 from domain.models.geo.address import Address
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.repositories.company import CompanyReadRepository
 from domain.repositories.geo.address import AddressWriteRepository
 from domain.repositories.user import UserReadRepository

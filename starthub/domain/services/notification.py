@@ -1,6 +1,6 @@
 from domain.exceptions.permissions import ViewDeniedPermissionException
 from domain.models.notification import Notification
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.notification import NotificationReadRepository, NotificationWriteRepository
 from domain.services.permission import PermissionService

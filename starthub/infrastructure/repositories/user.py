@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 
 from domain.exceptions.user import UserNotFoundException
-from domain.models.user import User, UserPhone
+from domain.models.user_management.user import User, UserPhone
 from domain.repositories.user import (
     UserPhoneReadRepository,
     UserPhoneWriteRepository,

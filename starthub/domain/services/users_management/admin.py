@@ -1,7 +1,7 @@
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
 from domain.models.role import Role
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.user import UserWriteRepository
 from domain.services.permission import PermissionService

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from domain.models.user import User, UserPhone
+from domain.models.user_management.user import User, UserPhone
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
 from domain.value_objects.common import Id, Pagination, PhoneNumber
 from domain.value_objects.filter import UserFilter, UserPhoneFilter

@@ -1,5 +1,5 @@
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException, UserFavoriteNotFoundException
-from domain.models.user_favorite import UserFavorite
+from domain.models.user_management.user_favorite import UserFavorite
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.user import UserReadRepository

@@ -5,7 +5,7 @@ from domain.constants import JWT_ALGORITHM
 from domain.enums.token import TokenTypeEnum
 from domain.exceptions.auth import InvalidCredentialsException, PasswordValidationException
 from domain.exceptions.validation import EmptyStringException, InvalidEmailException, MissingRequiredFieldException
-from domain.models.user import User
+from domain.models.user_management.user import User
 from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.response_factories.common import LoginErrorResponseFactory

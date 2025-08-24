@@ -21,7 +21,7 @@ from domain.exceptions.permissions import (
     UpdateDeniedPermissionException,
 )
 from domain.models.news import News, NewsImage
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.repositories.news import NewsReadRepository
 from domain.repositories.user import UserReadRepository
 from domain.services.cloud_storage import StorageService

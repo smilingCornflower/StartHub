@@ -1,7 +1,7 @@
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.models.base import BaseModel
 from domain.models.permission import Permission
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.permission import PermissionReadRepository
 from domain.repositories.user import UserReadRepository

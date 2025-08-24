@@ -3,7 +3,7 @@ from domain.constants import PROJECT_GOVERNMENT_GRANT_MAX_AMOUNT
 from domain.exceptions.project_management import ProjectGovernmentGrantMaxAmountException
 from domain.models.project_management.government_grant import ProjectGovernmentGrant
 from domain.models.project_management.project import Project
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.repositories.project.government_grant import ProjectGovernmentGrantReadRepository
 from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.user import UserReadRepository

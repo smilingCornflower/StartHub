@@ -12,7 +12,7 @@ from domain.models.project_management.investment import (
     ProjectInvestmentSocialLink,
 )
 from domain.models.project_management.project import Project
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project.investment import (
     ProjectInvestmentPhoneWriteRepository,

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from domain.models.user_favorite import UserFavorite
+from domain.models.user_management.user_favorite import UserFavorite
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
 from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import UserFavoriteFilter

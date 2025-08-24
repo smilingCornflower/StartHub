@@ -2,7 +2,7 @@ from application.dto.project import CategoryDto, CompanyDto, CompanyFounderDto, 
 from application.dto.user import UserDto
 from domain.models.project_management.category import ProjectCategory
 from domain.models.project_management.project import Project
-from domain.models.user import User
+from domain.models.user_management.user import User
 
 
 def project_to_dto(

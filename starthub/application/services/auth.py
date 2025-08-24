@@ -6,7 +6,7 @@ from application.converters.resposne_converters.auth import (
 )
 from application.dto.auth import AccessPayloadDto, AccessTokenDto, AnonymousPayloadDto, AnonymousTokenDto, TokenPairDto
 from application.ports.service import AbstractAppService
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.services.auth import AuthService, RegistrationService, TokenService
 from domain.value_objects.auth_management.auth import LoginCredentials
 from domain.value_objects.auth_management.token import (

@@ -1,4 +1,4 @@
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.ports.filter import AbstractFilter
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
 from domain.value_objects.company import BusinessNumber
