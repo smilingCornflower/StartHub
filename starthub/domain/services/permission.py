@@ -4,7 +4,7 @@ from domain.models.permission import Permission
 from domain.models.user_management.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.permission import PermissionReadRepository
-from domain.repositories.user import UserReadRepository
+from domain.repositories.user_management.user import UserReadRepository
 from domain.value_objects.common import Id
 from domain.value_objects.filter import PermissionFilter
 from domain.value_objects.user_management.user import PermissionVo

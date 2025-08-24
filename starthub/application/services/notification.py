@@ -2,7 +2,7 @@ from application.dto.notification import NotificationDto
 from application.ports.service import AbstractAppService
 from domain.models.notification import Notification
 from domain.repositories.notification import NotificationReadRepository
-from domain.repositories.user import UserReadRepository
+from domain.repositories.user_management.user import UserReadRepository
 from domain.services.notification import NotificationService
 from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import NotificationFilter

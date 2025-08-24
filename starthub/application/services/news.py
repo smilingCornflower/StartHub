@@ -23,7 +23,7 @@ from domain.exceptions.permissions import (
 from domain.models.news import News, NewsImage
 from domain.models.user_management.user import User
 from domain.repositories.news import NewsReadRepository
-from domain.repositories.user import UserReadRepository
+from domain.repositories.user_management.user import UserReadRepository
 from domain.services.cloud_storage import StorageService
 from domain.services.file import ImageService
 from domain.services.news import NewsImageService, NewsService

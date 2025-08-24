@@ -4,7 +4,7 @@ from domain.exceptions.user import ProfilePictureNotFoundException, UserPhoneAlr
 from domain.models.user_management.user import User, UserPhone
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.ports.service import AbstractDomainService
-from domain.repositories.user import (
+from domain.repositories.user_management.user import (
     UserPhoneReadRepository,
     UserPhoneWriteRepository,
     UserReadRepository,

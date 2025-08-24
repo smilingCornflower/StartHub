@@ -4,7 +4,7 @@ from domain.models.project_management.project import Project
 from domain.models.user_management.user import User
 from domain.repositories.project.bootstrap import ProjectBootstrapReadRepository
 from domain.repositories.project.project import ProjectReadRepository
-from domain.repositories.user import UserReadRepository
+from domain.repositories.user_management.user import UserReadRepository
 from domain.services.project_management.bootsrtap import ProjectBootstrapService
 from domain.value_objects.common import Id
 from domain.value_objects.project.bootstrap import (

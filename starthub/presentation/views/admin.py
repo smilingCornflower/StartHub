@@ -4,7 +4,7 @@ import pydantic
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id
-from domain.value_objects.user_management.admin import UserAdminUpdateCommand
+from domain.value_objects.user_management.user_admin import UserAdminUpdateCommand
 from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS

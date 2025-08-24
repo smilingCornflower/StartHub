@@ -7,7 +7,7 @@ from domain.repositories.project.investment import (
     ProjectInvestmentSocialLinkReadRepository,
 )
 from domain.repositories.project.project import ProjectReadRepository
-from domain.repositories.user import UserReadRepository
+from domain.repositories.user_management.user import UserReadRepository
 from domain.services.project_management.investment import ProjectInvestmentSocialLinkService
 from domain.value_objects.common import Id, SocialLink
 from domain.value_objects.project.investment import ProjectInvestmentId

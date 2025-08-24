@@ -173,3 +173,7 @@ class ProjectUsefulLinkFilter(AbstractFilter):
 class NotificationFilter(AbstractFilter):
     user_id: Id | None = None
     is_read: bool | None = None
+
+
+class UserMessagaFilter(AbstractFilter):
+    pass

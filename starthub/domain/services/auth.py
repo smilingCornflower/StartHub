@@ -18,7 +18,7 @@ from domain.models.role import Role
 from domain.models.user_management.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.role import RoleReadRepository
-from domain.repositories.user import UserReadRepository, UserWriteRepository
+from domain.repositories.user_management.user import UserReadRepository, UserWriteRepository
 from domain.value_objects.auth_management.auth import LoginCredentials
 from domain.value_objects.auth_management.token import (
     AccessPayload,

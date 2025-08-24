@@ -5,7 +5,7 @@ from domain.models.project_management.useful_link import ProjectUsefulLink
 from domain.models.user_management.user import User
 from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.project.useful_link import ProjectUsefulLinkReadRepository
-from domain.repositories.user import UserReadRepository
+from domain.repositories.user_management.user import UserReadRepository
 from domain.services.project_management.useful_link import ProjectUsefulLinkService
 from domain.value_objects.common import Id
 from domain.value_objects.filter import ProjectUsefulLinkFilter
