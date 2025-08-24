@@ -74,3 +74,9 @@ NEWS_IMAGES_MAX_AMOUNT = 10
 
 # ==== Pagination ====
 PAGINNATION_MAX_LMIT = 50
+
+# ==== Notification ====
+NOTIFICATION_MESSAGE_MAX_LENGTH = 500
+
+# ==== Project Submissions ====
+PROJECT_REJECTED_REPORT_MAX_LENGTH = 500

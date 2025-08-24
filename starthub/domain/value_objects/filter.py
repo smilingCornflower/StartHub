@@ -168,3 +168,7 @@ class ProjectMediaFilter(AbstractFilter):
 class ProjectUsefulLinkFilter(AbstractFilter):
     project_id: Id | None = None
     useful_link: str | None = None
+
+
+class NotificationFilter(AbstractFilter):
+    pass

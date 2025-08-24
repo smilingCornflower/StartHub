@@ -4,6 +4,7 @@ from domain.models.project_management.investment import ProjectInvestment
 from domain.models.project_management.project import Project
 from domain.models.user import User
 from domain.value_objects.common import Id, SocialLink
+from domain.value_objects.notification import NotificationMessage, NotificationTitle
 from domain.value_objects.project.project import ProjectCreateCommand
 from pydantic import Field
 
@@ -22,6 +23,22 @@ class ProjectDeletedEvent(DomainEvent):
     image_paths: list[str]
 
     event_type: EventType.Project = Field(default=EventType.Project.DELETED)
+
+
+class ProjectApprovedNotificationEvent(DomainEvent):
+    user_id: Id
+    title: NotificationTitle
+    message: NotificationMessage
+
+    event_type: EventType.Project = Field(default=EventType.Project.APPROVED)
+
+
+class ProjectRejectedNotificationEvent(DomainEvent):
+    user_id: Id
+    title: NotificationTitle
+    message: NotificationMessage
+
+    event_type: EventType.Project = Field(default=EventType.Project.REJECTED)
 
 
 # ==== ProjectInvestment ====
