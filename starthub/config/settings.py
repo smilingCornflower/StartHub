@@ -97,7 +97,7 @@ else:
     CSRF_TRUSTED_ORIGINS: list[str] = _csrf_trusted_origins.split(",")
     CORS_ALLOWED_ORIGINS: list[str] = _cors_allowed_origins.split(",")
     GOOGLE_CLOUD_BUCKET_NAME: str = _google_cloud_bucket_name
-
+    CORS_ALLOW_CREDENTIALS = True
     CORS_ALLOW_METHODS = [
         "DELETE",
         "GET",
