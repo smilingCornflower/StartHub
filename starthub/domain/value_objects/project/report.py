@@ -12,7 +12,8 @@ class ProjectReportContent(StringVo):
 
 
 class ProjectReportCreatePayload(AbstractCreatePayload):
-    pass
+    project_id: Id
+    content: ProjectReportContent
 
 
 class ProjectUpdatePayload(AbstractUpdatePayload):

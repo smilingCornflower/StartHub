@@ -1,20 +1,13 @@
-# from loguru import logger
-#
-# from domain.events.project import ProjectRejectedEvent
-# from domain.ports.event import AbstractEventHandler
-# from domain.services.notification import NotificationService
-# from domain.value_objects.notification import NotificationCreatePayload, NotificationTitle, NotificationMessage
-#
-#
-# class ProjectRejectedEventHandler(AbstractEventHandler[ProjectRejectedEvent]):
-#     def __init__(self, notification_service: NotificationService):
-#         self._notification_service = notification_service
-#
-#     def handle(self, event: ProjectRejectedEvent) -> None:
-#         create_payload = NotificationCreatePayload(
-#             user_id=event.user_id,
-#             title=NotificationTitle(value="Your project submission was rejected"),
-#             message=NotificationMessage(value=event.report.value),
-#         )
-#         self._notification_service.create(payload=create_payload)
-#         logger.info("Notfication send successfully.")
+from domain.events.project import ProjectRejectedEvent
+from domain.ports.event import AbstractEventHandler
+from domain.services.project_management.report import ProjectReportService
+from domain.value_objects.project.report import ProjectReportCreatePayload
+
+
+class ProjectRejectedReportEventHandler(AbstractEventHandler[ProjectRejectedEvent]):
+    def __init__(self, project_report_service: ProjectReportService):
+        self._project_report_service = project_report_service
+
+    def handle(self, event: ProjectRejectedEvent) -> None:
+        report_create_payload = ProjectReportCreatePayload(project_id=event.project_id, content=event.report)
+        self._project_report_service.create(payload=report_create_payload)

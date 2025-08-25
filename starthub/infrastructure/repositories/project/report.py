@@ -15,7 +15,10 @@ class DjProjectReportReadRepository(ProjectReportReadRepository):
 
 class DjProjectReportWriteRepository(ProjectReportWriteRepository):
     def create(self, data: ProjectReportCreatePayload) -> ProjectReport:
-        raise NotImplementedError("The method create() is not implemented yet.")
+        return ProjectReport.objects.create(
+            project_id=data.project_id.value,
+            content=data.content.value,
+        )
 
     def update(self, data: ProjectUpdatePayload) -> ProjectReport:
         raise NotImplementedError("The method update() is not implemented yet.")

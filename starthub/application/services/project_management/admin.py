@@ -53,6 +53,7 @@ class ProjectAdminAppService(AbstractAppService):
         self._project_admin_service.reject_submission(user=user, project=project)
 
         event = ProjectRejectedEvent(
+            project_id=project_id,
             user_id=user_id,
             report=ProjectReportContent(value=command.report.value),
         )

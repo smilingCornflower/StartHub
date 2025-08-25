@@ -36,6 +36,7 @@ class ProjectApprovedNotificationEvent(DomainEvent):
 
 class ProjectRejectedEvent(DomainEvent):
     user_id: Id
+    project_id: Id
     report: ProjectReportContent
 
     event_type: EventType.Project = Field(default=EventType.Project.REJECTED)

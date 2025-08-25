@@ -19,6 +19,7 @@ from domain.services.project_management.project_file import ProjectFileService
 from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
 from domain.services.project_management.project_social_link import ProjectSocialLinkService
+from domain.services.project_management.report import ProjectReportService
 from domain.services.project_management.step import ProjectStepService
 from domain.services.project_management.team_member import TamMemberService
 from domain.services.project_management.useful_link import ProjectUsefulLinkService
@@ -48,6 +49,7 @@ from infrastructure.repositories.project.media import DjProjectMediaReadReposito
 from infrastructure.repositories.project.phone import DjProjectPhoneReadRepository, DjProjectPhoneWriteRepository
 from infrastructure.repositories.project.project import DjProjectReadRepository, DjProjectWriteRepository
 from infrastructure.repositories.project.project_file import DjProjectFileWriteRepository
+from infrastructure.repositories.project.report import DjProjectReportWriteRepository
 from infrastructure.repositories.project.social_link import (
     DjProjectSocialLinkReadRepository,
     DjProjectSocialLinkWriteRepository,
@@ -261,4 +263,13 @@ class ProjectAdminServiceBuilder(AbstractDomainServiceBuilder[ProjectAdminServic
         return ProjectAdminService(
             permisison_service=PermissionServiceBuilder.create_service(),
             project_write_repository=DjProjectWriteRepository(),
+        )
+
+
+class ProjectReportServiceBuilder(AbstractDomainServiceBuilder[ProjectReportService]):
+    @staticmethod
+    def create_service() -> ProjectReportService:
+        return ProjectReportService(
+            permission_service=PermissionServiceBuilder.create_service(),
+            write_repository=DjProjectReportWriteRepository(),
         )
