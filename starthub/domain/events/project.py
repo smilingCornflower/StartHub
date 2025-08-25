@@ -6,6 +6,7 @@ from domain.models.user_management.user import User
 from domain.value_objects.common import Id, SocialLink
 from domain.value_objects.notification import NotificationMessage, NotificationTitle
 from domain.value_objects.project.project import ProjectCreateCommand
+from domain.value_objects.project.report import ProjectReportContent
 from pydantic import Field
 
 
@@ -33,10 +34,10 @@ class ProjectApprovedNotificationEvent(DomainEvent):
     event_type: EventType.Project = Field(default=EventType.Project.APPROVED)
 
 
-class ProjectRejectedNotificationEvent(DomainEvent):
+class ProjectRejectedEvent(DomainEvent):
     user_id: Id
-    title: NotificationTitle
-    message: NotificationMessage
+    project_id: Id
+    report: ProjectReportContent
 
     event_type: EventType.Project = Field(default=EventType.Project.REJECTED)
 

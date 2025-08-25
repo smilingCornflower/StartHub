@@ -26,6 +26,7 @@ ProjectBootstrap = import_module("domain.models.project_management.bootstrap").P
 ProjectBankLoan = import_module("domain.models.project_management.bank_loan").ProjectBankLoan
 ProjectFile = import_module("domain.models.project_management.project_file").ProjectFile
 ProjectMedia = import_module("domain.models.project_management.media").ProjectMedia
+ProjectReport = import_module("domain.models.project_management.report").ProjectReport
 
 FundingModel = import_module("domain.models.project_management.funding_model").FundingModel
 Company = import_module("domain.models.company").Company
@@ -65,6 +66,7 @@ __all__ = [
     "ProjectBankLoan",
     "ProjectFile",
     "ProjectMedia",
+    "ProjectReport",
     "FundingModel",
     "Company",
     "Country",

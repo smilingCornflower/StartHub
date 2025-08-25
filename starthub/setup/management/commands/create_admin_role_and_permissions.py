@@ -2,7 +2,6 @@ from typing import Any
 
 from django.core.management.base import BaseCommand
 from domain.enums.permission import ActionEnum, ScopeEnum
-from domain.enums.project_status import ProjectStatusEnum
 from domain.enums.role import RoleEnum
 from domain.models.permission import Permission
 from domain.models.project_management.project import Project
@@ -31,7 +30,6 @@ class Command(BaseCommand):
         admin_role = self._get_or_create_admin_role()
 
         self._setup_project_permissions(admin_role)
-        self._setup_permissions_for_special_status_projects(admin_role)
         self._setup_permissions_for_user_roles(admin_role)
         self._setup_permissions_for_user_is_active_field(admin_role)
         self._setup_permission_to_view_any_user_messages(admin_role)
@@ -44,6 +42,11 @@ class Command(BaseCommand):
         if created:
             logger.info("Created new admin role")
         return role
+
+    def _copy_all_permissions_from_moderator_role_to_admin(self, admin_role: Role) -> None:
+        moderator_role = Role.objects.get(name=RoleEnum.MODERATOR)
+        for permission in moderator_role.permissions.all():
+            self._add_permission_to_role(admin_role, PermissionVo(value=permission.name))
 
     def _setup_project_permissions(self, admin_role: Role) -> None:
         """Setup project-related permissions for admin role."""
@@ -86,28 +89,6 @@ class Command(BaseCommand):
         self._add_permission_to_role(role=admin_role, permission_vo=add_blogger_to_any_user)
         self._add_permission_to_role(role=admin_role, permission_vo=remove_moderator_from_any_user)
         self._add_permission_to_role(role=admin_role, permission_vo=remove_blogger_from_any_user)
-
-    def _setup_permissions_for_special_status_projects(self, admin_role: Role) -> None:
-        """Setup project submission permissions for admin role."""
-        view_any_project_under_moderation = PermissionService.create_permission_vo(
-            model=Project,
-            action=ActionEnum.VIEW,
-            scope=ScopeEnum.ANY,
-            field=Project.STATUS_FIELD,
-            value=ProjectStatusEnum.UNDER_MODERATION,
-        )
-        change_any_project_under_moderation = PermissionService.create_permission_vo(
-            model=Project,
-            action=ActionEnum.CHANGE,
-            scope=ScopeEnum.ANY,
-            field=Project.STATUS_FIELD,
-            value=ProjectStatusEnum.UNDER_MODERATION,
-        )
-
-        self._add_permission_to_role(admin_role, view_any_project_under_moderation)
-        self._add_permission_to_role(admin_role, change_any_project_under_moderation)
-
-        logger.info("Project permissions configured")
 
     def _add_permission_to_role(self, role: Role, permission_vo: PermissionVo) -> None:
         """Add permission to role if it doesn't already exist."""

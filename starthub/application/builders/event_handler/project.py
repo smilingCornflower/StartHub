@@ -15,6 +15,7 @@ from application.builders.domain_service.project_management import (
     CompanyServiceBuilder,
     ProjectIncubatorServiceBuilder,
     ProjectPhoneServiceBuilder,
+    ProjectReportServiceBuilder,
     ProjectSocialLinkServiceBuilder,
     ProjectStepServiceBuilder,
 )
@@ -33,6 +34,7 @@ from application.event_handlers.project_created.project_step_handler import Proj
 from application.event_handlers.project_created.social_link_handler import ProjectCreatedSocialLinkHandler
 from application.event_handlers.project_created.useful_link_handler import ProjectCreatedUsefulLinkHandler
 from application.event_handlers.project_deleted_handler import ProjectDeletedEventHandler
+from application.event_handlers.project_rejected_handler import ProjectRejectedReportEventHandler
 from application.ports.event_handler_builder import AbstractEventHandlerBuilder
 from domain.events.project import ProjectCreatedEvent, ProjectDeletedEvent
 from domain.ports.event import AbstractEventHandler
@@ -144,4 +146,12 @@ class ProjectDeletedEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):
     def create_handler() -> AbstractEventHandler[ProjectDeletedEvent]:
         return ProjectDeletedEventHandler(
             cloud_storage=google_cloud_storage,
+        )
+
+
+class ProjectRejectedReportEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):
+    @staticmethod
+    def create_handler() -> ProjectRejectedReportEventHandler:
+        return ProjectRejectedReportEventHandler(
+            project_report_service=ProjectReportServiceBuilder.create_service(),
         )
