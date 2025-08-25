@@ -46,7 +46,7 @@ class Command(BaseCommand):
             role.permissions.add(permission)
             logger.debug(f"Added permission '{permission.name}' to moderator role '{role.name}'")
 
-    def _setup_permissions_for_special_status_projects(self, moderator_role: Role) -> None:
+    def _setup_permissions_for_special_status_projects(self, role: Role) -> None:
         """Setup project submission permissions for admin role."""
         view_any_project_under_moderation = PermissionService.create_permission_vo(
             model=Project,
@@ -63,7 +63,7 @@ class Command(BaseCommand):
             value=ProjectStatusEnum.UNDER_MODERATION,
         )
 
-        self._add_permission_to_role(moderator_role, view_any_project_under_moderation)
-        self._add_permission_to_role(moderator_role, change_any_project_under_moderation)
+        self._add_permission_to_role(role, view_any_project_under_moderation)
+        self._add_permission_to_role(role, change_any_project_under_moderation)
 
         logger.info("Project permissions configured")

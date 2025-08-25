@@ -28,6 +28,7 @@ from application.builders.app_service.project_management.resubmit import Project
 from application.builders.app_service.project_management.useful_link import ProjectUsefulLinkAppServiceBuilder
 from application.builders.app_service.user_management import (
     UserAdminAppServiceBuilder,
+    UserAdminGetAppServiceBuilder,
     UserAppServiceBuilder,
     UserFavoriteAppAppServiceBuilder,
     UserMessageAppServiceBuilder,
@@ -60,7 +61,7 @@ from application.services.project_management.report import ProjectReportAppServi
 from application.services.project_management.resubmit import ProjectResubmitAppService
 from application.services.project_management.useful_link import ProjectUsefulLinkAppService
 from application.services.user_management.user import UserAppService
-from application.services.user_management.user_admin import UserAdminAppService
+from application.services.user_management.user_admin import UserAdminAppService, UserAdminGetAppService
 from application.services.user_management.user_favorite import UserFavoriteAppService
 from application.services.user_management.user_message import UserMessageAppService
 from infrastructure.services.cookie import CookieService, cookie_service
@@ -73,6 +74,7 @@ class Gateway:
     _user_app_service: UserAppService | None = None
     _user_favorite_app_service: UserFavoriteAppService | None = None
     _user_admin_app_service: UserAdminAppService | None = None
+    _user_admin_get_app_service: UserAdminGetAppService | None = None
     _user_message_app_service: UserMessageAppService | None = None
 
     _project_create_app_service: ProjectCreateAppService | None = None
@@ -128,6 +130,12 @@ class Gateway:
         if self._user_admin_app_service is None:
             self._user_admin_app_service = UserAdminAppServiceBuilder.create_service()
         return self._user_admin_app_service
+
+    @property
+    def user_admin_get_app_service(self) -> UserAdminGetAppService:
+        if self._user_admin_get_app_service is None:
+            self._user_admin_get_app_service = UserAdminGetAppServiceBuilder.create_service()
+        return self._user_admin_get_app_service
 
     @property
     def user_favorite_app_service(self) -> UserFavoriteAppService:

@@ -7,7 +7,7 @@ from application.builders.domain_service.user_management import (
 )
 from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.user_management.user import UserAppService
-from application.services.user_management.user_admin import UserAdminAppService
+from application.services.user_management.user_admin import UserAdminAppService, UserAdminGetAppService
 from application.services.user_management.user_favorite import UserFavoriteAppService
 from application.services.user_management.user_message import UserMessageAppService
 from infrastructure.repositories.project.category import DjProjectCategoryReadRepository
@@ -32,6 +32,15 @@ class UserAdminAppServiceBuilder(AbstractAppServiceBuilder[UserAdminAppService])
             user_admin_service=UserAdminServiceBuilder.create_service(),
             user_read_repository=DjUserReadRepository(),
             role_read_repository=DjRoleReadRepository(),
+        )
+
+
+class UserAdminGetAppServiceBuilder(AbstractAppServiceBuilder[UserAdminGetAppService]):
+    @staticmethod
+    def create_service() -> UserAdminGetAppService:
+        return UserAdminGetAppService(
+            user_admin_service=UserAdminServiceBuilder.create_service(),
+            user_read_repository=DjUserReadRepository(),
         )
 
 

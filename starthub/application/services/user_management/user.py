@@ -13,7 +13,10 @@ from presentation.request_converters.user_management.user import request_to_user
 
 
 class UserAppService(AbstractAppService):
-    def __init__(self, user_service: UserService):
+    def __init__(
+        self,
+        user_service: UserService,
+    ):
         self._user_service = user_service
 
     def update_user(self, request_data: dict[str, Any], request_files: dict[str, UploadedFile], user_id: int) -> None:

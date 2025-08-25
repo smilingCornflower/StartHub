@@ -27,6 +27,9 @@ from presentation.response_factories.common import CommonErrorResponseFactory
 class UsersAdminErrorResponseFactory(CommonErrorResponseFactory):
     error_codes = CommonErrorResponseFactory.error_codes | {
         RoleNotFoundException: ("ROLE_NOT_FOUND", 404),
+        InvalidEmailException: ("INVALID_EMAIL", 422),
+        StringIsTooLongException: ("STRING_TOO_LONG", 422),
+        ValidationException: ("VALIDATION_EXCEPTION", 422),
     }
 
 

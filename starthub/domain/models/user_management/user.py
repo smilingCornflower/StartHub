@@ -105,6 +105,10 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
     ROLES_FIELD = "roles"
     IS_ACTIVE_FIELD = "is_active"
 
+    # For permission service to check: View.Any.User.details
+    details = None
+    DETAILS_FIED = "details"
+
     def __str__(self) -> str:
         return self.first_name
 
@@ -122,6 +126,9 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
     @classmethod
     def get_permission_key(cls) -> str:
         return "user"
+
+    def get_roles(self) -> list[str]:
+        return [i.name for i in self.roles.all()]
 
 
 class UserPhone(BaseModel):
