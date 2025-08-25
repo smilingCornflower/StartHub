@@ -20,6 +20,7 @@ from domain.services.project_management.project_image import ProjectImageService
 from domain.services.project_management.project_phone import ProjectPhoneService
 from domain.services.project_management.project_social_link import ProjectSocialLinkService
 from domain.services.project_management.report import ProjectReportService
+from domain.services.project_management.resubmit import ProjectResubmitService
 from domain.services.project_management.step import ProjectStepService
 from domain.services.project_management.team_member import TamMemberService
 from domain.services.project_management.useful_link import ProjectUsefulLinkService
@@ -272,4 +273,13 @@ class ProjectReportServiceBuilder(AbstractDomainServiceBuilder[ProjectReportServ
         return ProjectReportService(
             permission_service=PermissionServiceBuilder.create_service(),
             write_repository=DjProjectReportWriteRepository(),
+        )
+
+
+class ProjectResubmitServiceBuilder(AbstractDomainServiceBuilder[ProjectResubmitService]):
+    @staticmethod
+    def create_service() -> ProjectResubmitService:
+        return ProjectResubmitService(
+            project_service=ProjectServiceBuilder.create_service(),
+            write_repository=DjProjectWriteRepository(),
         )
