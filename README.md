@@ -1,1 +1,1 @@
-The API for the project StartHub.kz
+The API for the project StartHub
