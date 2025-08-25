@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 
 
 @dataclass(frozen=True)
@@ -8,6 +8,13 @@ class UserDto:
     first_name: str
     last_name: str
     email: str
+
+
+@dataclass(frozen=True)
+class UserFullDto(UserDto):
+    date_joined: date
+    roles: list[str]
+    is_active: bool
 
 
 @dataclass

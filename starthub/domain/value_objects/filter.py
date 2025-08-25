@@ -1,3 +1,6 @@
+from datetime import date
+
+from domain.enums.role import RoleEnum
 from domain.models.user_management.user import User
 from domain.ports.filter import AbstractFilter
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
@@ -14,6 +17,10 @@ class UserFilter(AbstractFilter):
     first_name: FirstName | None = None
     last_name: LastName | None = None
     email: Email | None = None
+    role: RoleEnum | None = None
+    is_active: bool | None = None
+    date_joined_start: date | None = None
+    date_joined_end: date | None = None
 
 
 class ProjectFilter(AbstractFilter):

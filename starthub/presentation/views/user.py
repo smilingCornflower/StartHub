@@ -17,7 +17,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 
-class UserView(APIView):
+class UserProfileView(APIView):
     @staticmethod
     def get(request: Request, user_id: int) -> Response:
         try:

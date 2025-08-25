@@ -15,7 +15,7 @@ class Command(BaseCommand):
     help = "Create company permissions"
 
     def handle(self, *args: Any, **options: Any) -> None:
-        logger.warning("Started.")
+        logger.warning("Started ensuring company permissions to users.")
 
         self._assing_company_permissions()
         self._assing_business_id_permissions()

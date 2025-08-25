@@ -17,6 +17,7 @@ from domain.value_objects.user_management.user import (
     UserPhoneUpdatePayload,
     UserUpdatePayload,
 )
+from infrastructure.repositories.pagination import apply_pagination
 from loguru import logger
 
 
@@ -30,15 +31,29 @@ class DjUserReadRepository(UserReadRepository):
         return user
 
     def get_all(self, filter_: UserFilter, pagination: Pagination | None = None) -> list[User]:
+        queryset = User.objects.all()
+
         if filter_.id_:
-            return list(User.objects.filter(id=filter_.id_.value))
+            queryset = queryset.filter(id=filter_.id_.value)
         if filter_.email:
-            return list(User.objects.filter(email=filter_.email.value))
+            queryset = queryset.filter(email=filter_.email.value)
         if filter_.first_name:
-            return list(User.objects.filter(username=filter_.first_name.value))
+            queryset = queryset.filter(first_name__icontains=filter_.first_name.value)
         if filter_.last_name:
-            return list(User.objects.filter(username=filter_.last_name.value))
-        return list(User.objects.all())
+            queryset = queryset.filter(last_name__icontains=filter_.last_name.value)
+        if filter_.role:
+            queryset = queryset.filter(roles__name=filter_.role)
+        if filter_.is_active is not None:
+            queryset = queryset.filter(is_active=filter_.is_active)
+        if filter_.date_joined_start:
+            queryset = queryset.filter(date_joined__gte=filter_.date_joined_start)
+        if filter_.date_joined_end:
+            queryset = queryset.filter(date_joined__lte=filter_.date_joined_end)
+
+        if pagination:
+            return apply_pagination(queryset=queryset, pagination=pagination)
+
+        return list(queryset.distinct())
 
     def get_by_email(self, email: Email) -> User:
         """:raises UserNotFoundException:"""

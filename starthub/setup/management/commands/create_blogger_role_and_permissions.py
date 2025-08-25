@@ -23,7 +23,7 @@ class Command(BaseCommand):
     help = "Ensure 'blogger' role and permissions exist"
 
     def handle(self, *args: Any, **options: Any) -> None:
-        logger.warning("Started.")
+        logger.warning("Started ensuring blogger role and permissions.")
 
         blogger, _ = Role.objects.get_or_create(name=RoleEnum.BLOGGER)
 

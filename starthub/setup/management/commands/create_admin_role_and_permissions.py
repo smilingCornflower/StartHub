@@ -29,10 +29,12 @@ class Command(BaseCommand):
 
         admin_role = self._get_or_create_admin_role()
 
+        self._copy_all_permissions_from_moderator_role_to_admin()
         self._setup_project_permissions(admin_role)
         self._setup_permissions_for_user_roles(admin_role)
         self._setup_permissions_for_user_is_active_field(admin_role)
         self._setup_permission_to_view_any_user_messages(admin_role)
+        self._add_view_any_user_details_permission(admin_role)
 
         logger.info("Admin role and permissions initialization completed")
 
@@ -43,10 +45,21 @@ class Command(BaseCommand):
             logger.info("Created new admin role")
         return role
 
-    def _copy_all_permissions_from_moderator_role_to_admin(self, admin_role: Role) -> None:
+    def _copy_all_permissions_from_moderator_role_to_admin(self) -> None:
+        admin_role = self._get_or_create_admin_role()
         moderator_role = Role.objects.get(name=RoleEnum.MODERATOR)
         for permission in moderator_role.permissions.all():
             self._add_permission_to_role(admin_role, PermissionVo(value=permission.name))
+        logger.info("All permissions from moderator copied to admin.")
+
+    def _add_view_any_user_details_permission(self, role: Role) -> None:
+        view_any_user_details = PermissionService.create_permission_vo(
+            model=User,
+            action=ActionEnum.VIEW,
+            scope=ScopeEnum.ANY,
+            field=User.DETAILS_FIED,
+        )
+        self._add_permission_to_role(role, view_any_user_details)
 
     def _setup_project_permissions(self, admin_role: Role) -> None:
         """Setup project-related permissions for admin role."""
