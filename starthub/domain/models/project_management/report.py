@@ -1,5 +1,5 @@
-from domain.models.base import BaseModel
 from django.db import models
+from domain.models.base import BaseModel
 
 
 class ProjectReport(BaseModel):

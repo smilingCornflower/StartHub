@@ -1,12 +1,13 @@
 from application.dto.project import ProjectDto
 from application.ports.service import AbstractAppService
 from application.services.project_management.project import ProjectGetAppService
-from domain.events.project import ProjectApprovedNotificationEvent, ProjectRejectedNotificationEvent
+from domain.events.project import ProjectApprovedNotificationEvent, ProjectRejectedEvent
 from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.user_management.user import UserReadRepository
 from domain.services.project_management.admin import ProjectAdminService
 from domain.value_objects.common import Id, Pagination
 from domain.value_objects.notification import NotificationMessage, NotificationTitle
+from domain.value_objects.project.report import ProjectReportContent
 from domain.value_objects.project.submission import ProjectRejectCommand
 from infrastructure.event_bus import EventBus
 from loguru import logger
@@ -51,10 +52,9 @@ class ProjectAdminAppService(AbstractAppService):
 
         self._project_admin_service.reject_submission(user=user, project=project)
 
-        event = ProjectRejectedNotificationEvent(
+        event = ProjectRejectedEvent(
             user_id=user_id,
-            title=NotificationTitle(value="Your project submission was rejected"),
-            message=NotificationMessage(value=command.report.value),
+            report=ProjectReportContent(value=command.report.value),
         )
         EventBus().publish(event)
 
