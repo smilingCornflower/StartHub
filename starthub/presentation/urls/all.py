@@ -1,5 +1,6 @@
 from django.urls import include, path
 from presentation.views.geo import CityView, RegionView
+from presentation.views.permission import PermissionView
 
 urlpatterns = [
     path("auth/", include("presentation.urls.auth")),
@@ -12,4 +13,5 @@ urlpatterns = [
     path("cities/", CityView.as_view()),
     path("regions/", RegionView.as_view()),
     path("notifications/", include("presentation.urls.notification")),
+    path("permissions/", PermissionView.as_view()),
 ]

@@ -84,6 +84,7 @@ class ProjectImageFilter(AbstractFilter):
 class PermissionFilter(AbstractFilter):
     user_id: Id | None = None
     user: User | None = None
+    role_name: RoleEnum | None = None
 
 
 class RoleFilter(AbstractFilter):

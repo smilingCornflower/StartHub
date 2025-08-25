@@ -2,12 +2,11 @@ from typing import Any, cast
 
 from django.core.files.uploadedfile import UploadedFile
 from django.http import QueryDict
-from domain.enums.role import RoleEnum
 from domain.exceptions.validation import ValidationException
 from domain.value_objects.common import Description, FirstName, Id, LastName, PhoneNumber
 from domain.value_objects.user_management.user import Email, RawPassword, UserGetCommand, UserUpdateCommand
 from loguru import logger
-from presentation.request_converters.common import parse_date
+from presentation.request_converters.common import get_role_if_exists_from_params, parse_date
 from rest_framework.request import Request
 
 
@@ -58,18 +57,6 @@ def request_to_user_update_command(
 
 
 # ==== UserGetCommand ====
-def _get_role_if_exists_from_params(params: QueryDict) -> RoleEnum | None:
-    """:raises ValidationException:"""
-    if params.get("role"):
-        try:
-            return RoleEnum(value=cast(str, params["role"]))
-        except ValueError:
-            allowed = ", ".join([item for item in RoleEnum])
-            raise ValidationException(f"Invalid value for role: {params['role']}. Expected: {allowed}")
-    else:
-        return None
-
-
 def _get_is_active_if_exists_from_params(params: QueryDict) -> bool | None:
     """:raises ValidationException:"""
     if params.get("is_active"):
@@ -88,7 +75,7 @@ def _get_is_active_if_exists_from_params(params: QueryDict) -> bool | None:
 def request_to_user_get_command(request: Request) -> UserGetCommand:
     params: QueryDict = request.query_params
     command = UserGetCommand(
-        role=_get_role_if_exists_from_params(params=params),
+        role=get_role_if_exists_from_params(params=params),
         is_active=_get_is_active_if_exists_from_params(params=params),
         email=Email(value=cast(str, params["email"])) if "email" in params else None,
         first_name=FirstName(value=cast(str, params["first_name"])) if "first_name" in params else None,
