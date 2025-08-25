@@ -182,4 +182,4 @@ class UserMessageFilter(AbstractFilter):
 
 
 class ProjectReportFilter(AbstractFilter):
-    pass
+    project_id: Id | None = None

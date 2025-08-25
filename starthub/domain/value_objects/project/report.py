@@ -1,4 +1,5 @@
 from domain.constants import PROJECT_REJECTED_REPORT_MAX_LENGTH
+from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects.common import Id, StringVo
 
@@ -17,4 +18,8 @@ class ProjectReportCreatePayload(AbstractCreatePayload):
 
 
 class ProjectUpdatePayload(AbstractUpdatePayload):
+    pass
+
+
+class ProjectReportGetCommand(BaseCommand):
     pass
