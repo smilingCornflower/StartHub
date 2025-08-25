@@ -3,7 +3,8 @@ from typing import cast
 
 from django.http import QueryDict
 from domain.enums.language import LangCodeEnum
-from domain.exceptions.validation import DateIsNotIsoFormatException, MissingRequiredFieldException
+from domain.enums.role import RoleEnum
+from domain.exceptions.validation import DateIsNotIsoFormatException, MissingRequiredFieldException, ValidationException
 from domain.value_objects.common import OffsetPagination, Pagination
 from domain.value_objects.country import CountryCode
 from domain.value_objects.geo import AddressCreateCommand, CityId, RegionId
@@ -73,3 +74,15 @@ def parse_languages(request: Request) -> list[LangCodeEnum]:
         return language_codes
     else:
         return [LangCodeEnum.get_default()]
+
+
+def get_role_if_exists_from_params(params: QueryDict) -> RoleEnum | None:
+    """:raises ValidationException:"""
+    if params.get("role"):
+        try:
+            return RoleEnum(value=cast(str, params["role"]))
+        except ValueError:
+            allowed = ", ".join([item for item in RoleEnum])
+            raise ValidationException(f"Invalid value for role: {params['role']}. Expected: {allowed}")
+    else:
+        return None

@@ -3,6 +3,7 @@ from application.builders.app_service.company import CompanyAppServiceBuilder
 from application.builders.app_service.geo import CityAppServiceBuilder, RegionAppServiceBuilder
 from application.builders.app_service.news import NewsAppServiceBuilder
 from application.builders.app_service.notification import NotificationAppServiceBuilder
+from application.builders.app_service.permission import PermissionAppServiceBuilder
 from application.builders.app_service.project_management.accelerator import AcceleratorAppServiceBuilder
 from application.builders.app_service.project_management.admin import ProjectAdminAppServiceBuilder
 from application.builders.app_service.project_management.bank_loan import ProjectBankLoanAppServiceBuilder
@@ -60,6 +61,7 @@ from application.services.project_management.project_media import ProjectMediaAp
 from application.services.project_management.report import ProjectReportAppService
 from application.services.project_management.resubmit import ProjectResubmitAppService
 from application.services.project_management.useful_link import ProjectUsefulLinkAppService
+from application.services.user_management.permission import PermissionAppService
 from application.services.user_management.user import UserAppService
 from application.services.user_management.user_admin import UserAdminAppService, UserAdminGetAppService
 from application.services.user_management.user_favorite import UserFavoriteAppService
@@ -106,6 +108,7 @@ class Gateway:
 
     _notification_app_service: NotificationAppService | None = None
     _cookie_service: CookieService | None = None
+    _permission_app_service: PermissionAppService | None = None
 
     @property
     def auth_app_service(self) -> AuthAppService:
@@ -301,6 +304,12 @@ class Gateway:
         if self._cookie_service is None:
             self._cookie_service = cookie_service
         return self._cookie_service
+
+    @property
+    def permission_app_service(self) -> PermissionAppService:
+        if self._permission_app_service is None:
+            self._permission_app_service = PermissionAppServiceBuilder.create_service()
+        return self._permission_app_service
 
 
 gateway = Gateway()

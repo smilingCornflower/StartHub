@@ -35,8 +35,17 @@ class Command(BaseCommand):
         self._setup_permissions_for_user_is_active_field(admin_role)
         self._setup_permission_to_view_any_user_messages(admin_role)
         self._add_view_any_user_details_permission(admin_role)
+        self._add_view_any_permissions_permisssion(admin_role)
 
         logger.info("Admin role and permissions initialization completed")
+
+    def _add_permission_to_role(self, role: Role, permission_vo: PermissionVo) -> None:
+        """Add permission to role if it doesn't already exist."""
+        permission, _ = Permission.objects.get_or_create(name=permission_vo.value)
+
+        if not role.permissions.filter(id=permission.id).exists():
+            role.permissions.add(permission)
+            logger.debug(f"Added permission '{permission.name}' to role '{role.name}'")
 
     def _get_or_create_admin_role(self) -> Role:
         """Get or create the admin role."""
@@ -60,6 +69,14 @@ class Command(BaseCommand):
             field=User.DETAILS_FIED,
         )
         self._add_permission_to_role(role, view_any_user_details)
+
+    def _add_view_any_permissions_permisssion(self, role: Role) -> None:
+        view_any_permissions_permission = PermissionService.create_permission_vo(
+            model=Permission,
+            action=ActionEnum.VIEW,
+            scope=ScopeEnum.ANY,
+        )
+        self._add_permission_to_role(role, view_any_permissions_permission)
 
     def _setup_project_permissions(self, admin_role: Role) -> None:
         """Setup project-related permissions for admin role."""
@@ -102,11 +119,3 @@ class Command(BaseCommand):
         self._add_permission_to_role(role=admin_role, permission_vo=add_blogger_to_any_user)
         self._add_permission_to_role(role=admin_role, permission_vo=remove_moderator_from_any_user)
         self._add_permission_to_role(role=admin_role, permission_vo=remove_blogger_from_any_user)
-
-    def _add_permission_to_role(self, role: Role, permission_vo: PermissionVo) -> None:
-        """Add permission to role if it doesn't already exist."""
-        permission, _ = Permission.objects.get_or_create(name=permission_vo.value)
-
-        if not role.permissions.filter(id=permission.id).exists():
-            role.permissions.add(permission)
-            logger.debug(f"Added permission '{permission.name}' to role '{role.name}'")
