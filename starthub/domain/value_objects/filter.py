@@ -1,4 +1,5 @@
 from datetime import date
+
 from domain.enums.role import RoleEnum
 from domain.models.user_management.user import User
 from domain.ports.filter import AbstractFilter
