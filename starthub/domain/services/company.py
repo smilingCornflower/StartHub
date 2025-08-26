@@ -4,7 +4,7 @@ from domain.exceptions.geo.country import CountryNotFoundException
 from domain.exceptions.permissions import UpdateDeniedPermissionException
 from domain.models.company import Company, CompanyFounder
 from domain.models.geo.country import Country
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.company import (
     CompanyFounderReadRepository,

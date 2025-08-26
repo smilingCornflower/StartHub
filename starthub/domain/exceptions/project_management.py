@@ -288,3 +288,8 @@ class ProjectSubmissionAlreadyProcessedException(ProjectException):
 
 class ProjectAlreadyDeactivatedException(ProjectException):
     pass
+
+
+# ==== Project Resubmit Exceptions ====
+class ProjectResubmitException(ProjectException):
+    pass

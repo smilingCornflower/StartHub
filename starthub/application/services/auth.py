@@ -6,7 +6,7 @@ from application.converters.resposne_converters.auth import (
 )
 from application.dto.auth import AccessPayloadDto, AccessTokenDto, AnonymousPayloadDto, AnonymousTokenDto, TokenPairDto
 from application.ports.service import AbstractAppService
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.services.auth import AuthService, RegistrationService, TokenService
 from domain.value_objects.auth_management.auth import LoginCredentials
 from domain.value_objects.auth_management.token import (
@@ -19,7 +19,7 @@ from domain.value_objects.auth_management.token import (
 )
 from domain.value_objects.user_management.user import UserCreatePayload
 from loguru import logger
-from presentation.request_converters.auth import (
+from presentation.request_converters.user_management.auth import (
     request_cookies_to_refresh_token,
     request_data_to_login_credentials,
     request_data_to_user_create_payload,

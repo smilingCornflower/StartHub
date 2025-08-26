@@ -10,7 +10,7 @@ from presentation.request_converters.project.media import (
     request_to_project_media_create_command,
     request_to_project_media_to_update_command,
 )
-from presentation.response_factories.common import ProjectMediaErrorResponseFactory
+from presentation.response_factories.project_management import ProjectMediaErrorResponseFactory
 from pydantic import ValidationError
 from rest_framework import status
 from rest_framework.request import Request

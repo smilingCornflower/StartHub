@@ -9,7 +9,7 @@ from domain.exceptions.auth import PasswordValidationException
 from domain.exceptions.file import NotSupportedImageFormatException
 from domain.exceptions.user import UserNotFoundException
 from domain.exceptions.validation import EmptyStringException, FirstNameIsTooLongException, LastNameIsTooLongException
-from domain.models.user import User
+from domain.models.user_management.user import User
 from loguru import logger
 
 

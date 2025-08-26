@@ -1,6 +1,6 @@
 from domain.events.project import ProjectInvestmentCreatedEvent
 from domain.models.project_management.project import Project
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.ports.event import AbstractEventHandler
 from domain.services.project_management.investment import ProjectInvestmentSocialLinkService
 from domain.value_objects.common import SocialLink

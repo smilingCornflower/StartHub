@@ -15,7 +15,7 @@ from presentation.request_converters.news import (
     request_to_news_get_command,
     request_to_news_update_command,
 )
-from presentation.response_factories.common import NewsErrorResponseFactory
+from presentation.response_factories.news import NewsErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response

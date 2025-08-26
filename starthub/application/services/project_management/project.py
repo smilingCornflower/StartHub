@@ -42,7 +42,7 @@ from domain.models.project_management.project import Project
 from domain.models.project_management.project_file import ProjectFile
 from domain.models.project_management.step import ProjectStep
 from domain.models.project_management.useful_link import ProjectUsefulLink
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.repositories.company import CompanyReadRepository
 from domain.repositories.country import CountryReadRepository
@@ -67,8 +67,8 @@ from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.project.project_file import ProjectFileReadRepository
 from domain.repositories.project.step import ProjectStepReadRepository
 from domain.repositories.project.useful_link import ProjectUsefulLinkReadRepository
-from domain.repositories.user import UserReadRepository
-from domain.repositories.user_favorite import UserFavoriteReadRepository
+from domain.repositories.user_management.user import UserReadRepository
+from domain.repositories.user_management.user_favorite import UserFavoriteReadRepository
 from domain.services.project_management.accelerator import ProjectAcceleratorService
 from domain.services.project_management.incubator import IncubatorService
 from domain.services.project_management.project import ProjectGetService, ProjectService

@@ -12,7 +12,7 @@ from presentation.request_converters.project.investment import (
     request_to_project_investment_update_command,
     request_to_social_link,
 )
-from presentation.response_factories.common import ProjectInvestmentErrorResponseFactory
+from presentation.response_factories.project_management import ProjectInvestmentErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response

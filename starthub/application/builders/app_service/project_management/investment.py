@@ -13,7 +13,7 @@ from infrastructure.repositories.project.investment import (
     DjProjectInvestmentSocialLinkReadRepository,
 )
 from infrastructure.repositories.project.project import DjProjectReadRepository
-from infrastructure.repositories.user import DjUserReadRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository
 
 
 class ProjectInvestmentAppServiceBuilder(AbstractAppServiceBuilder[ProjectInvestmentAppService]):

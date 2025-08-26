@@ -1,6 +1,6 @@
 from datetime import date
-
-from domain.models.user import User
+from domain.enums.role import RoleEnum
+from domain.models.user_management.user import User
 from domain.ports.filter import AbstractFilter
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
 from domain.value_objects.company import BusinessNumber
@@ -16,6 +16,10 @@ class UserFilter(AbstractFilter):
     first_name: FirstName | None = None
     last_name: LastName | None = None
     email: Email | None = None
+    role: RoleEnum | None = None
+    is_active: bool | None = None
+    date_joined_start: date | None = None
+    date_joined_end: date | None = None
 
 
 class ProjectFilter(AbstractFilter):
@@ -79,6 +83,7 @@ class ProjectImageFilter(AbstractFilter):
 class PermissionFilter(AbstractFilter):
     user_id: Id | None = None
     user: User | None = None
+    role_name: RoleEnum | None = None
 
 
 class RoleFilter(AbstractFilter):
@@ -172,3 +177,18 @@ class ProjectMediaFilter(AbstractFilter):
 class ProjectUsefulLinkFilter(AbstractFilter):
     project_id: Id | None = None
     useful_link: str | None = None
+
+
+class NotificationFilter(AbstractFilter):
+    user_id: Id | None = None
+    is_read: bool | None = None
+
+
+class UserMessageFilter(AbstractFilter):
+    user_id: Id | None = None
+    is_read: bool | None = None
+    order_by: str | None = None
+
+
+class ProjectReportFilter(AbstractFilter):
+    project_id: Id | None = None

@@ -79,17 +79,8 @@ class MediumString(StringVo):
     max_length: ClassVar[int] = CHAR_FIELD_MEDIUM_LENGTH
 
 
-class LongString(BaseVo):
-    value: str
-
-    @field_validator("value", mode="after")
-    @classmethod
-    def validate_length(cls, value: str) -> str:
-        if not value.strip():
-            raise EmptyStringException("First name cannot be empty.")
-        if len(value) > CHAR_FIELD_MAX_LENGTH:
-            raise StringIsTooLongException(f"String must be no longer than {CHAR_FIELD_MAX_LENGTH} characters.")
-        return value
+class LongString(StringVo):
+    max_length: ClassVar[int] = CHAR_FIELD_MAX_LENGTH
 
 
 class PositiveNumber(BaseVo):

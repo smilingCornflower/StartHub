@@ -4,13 +4,16 @@ import pydantic
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id
-from domain.value_objects.user_management.admin import UserAdminUpdateCommand
+from domain.value_objects.user_management.user_admin import UserAdminUpdateCommand
 from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
-from presentation.request_converters.admin import request_to_user_admin_update_command
 from presentation.request_converters.common import request_to_pagination
-from presentation.response_factories.admin import ProjectSubmissionErrorResponseFactory, UsersAdminErrorResponseFactory
+from presentation.request_converters.project.submission import request_to_project_submission_reject_command
+from presentation.request_converters.user_management.user import request_to_user_get_command
+from presentation.request_converters.user_management.user_admin import request_to_user_admin_update_command
+from presentation.response_factories.admin import ProjectSubmissionErrorResponseFactory
+from presentation.response_factories.user_management import UsersAdminErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -53,7 +56,10 @@ class ProjectSubmissionRejectedView(APIView):
         logger.warning(f"PATCH /admin/projects/submissions/{project_id}/reject/")
         try:
             user_id: Id = get_user_id_or_raises(request=request)
-            gateway.projects_admin_app_service.reject_submission(user_id=user_id, project_id=Id(value=project_id))
+            command = request_to_project_submission_reject_command(request=request)
+            gateway.projects_admin_app_service.reject_submission(
+                user_id=user_id, project_id=Id(value=project_id), command=command
+            )
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
         except (CustomException, pydantic.ValidationError) as e:
             return ProjectSubmissionErrorResponseFactory.create_response(exception=e)
@@ -119,4 +125,20 @@ class UserAdminActivateView(APIView):
             )
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
         except CustomException as e:
+            return UsersAdminErrorResponseFactory.create_response(exception=e)
+
+
+class UserDetailView(APIView):
+    @staticmethod
+    def get(request: Request) -> Response:
+        print()
+        logger.info("GET /users/")
+        try:
+            user_id = get_user_id_or_raises(request=request)
+            pagination = request_to_pagination(request=request)
+            command = request_to_user_get_command(request=request)
+            users = gateway.user_admin_get_app_service.get_all(user_id, command, pagination)
+            return Response(list(map(asdict, users)), status=status.HTTP_200_OK)
+
+        except (CustomException, pydantic.ValidationError) as e:
             return UsersAdminErrorResponseFactory.create_response(exception=e)

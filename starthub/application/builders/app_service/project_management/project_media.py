@@ -3,7 +3,7 @@ from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.project_management.project_media import ProjectMediaAppService
 from infrastructure.repositories.project.media import DjProjectMediaReadRepository
 from infrastructure.repositories.project.project import DjProjectReadRepository
-from infrastructure.repositories.user import DjUserReadRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository
 
 
 class ProjectMediaAppServiceBuilder(AbstractAppServiceBuilder[ProjectMediaAppService]):

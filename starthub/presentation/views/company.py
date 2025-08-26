@@ -10,8 +10,8 @@ from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.request_converters.common import request_to_pagination
-from presentation.request_converters.company_to_update_command import request_to_company_update_command
-from presentation.response_factories.common import CompanyErrorResponseFactory
+from presentation.request_converters.company import request_to_company_update_command
+from presentation.response_factories.project_management import CompanyErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response

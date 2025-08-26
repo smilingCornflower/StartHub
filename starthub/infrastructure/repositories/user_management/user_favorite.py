@@ -1,6 +1,6 @@
 from domain.exceptions.user_favorite import UserFavoriteNotFoundException
-from domain.models.user_favorite import UserFavorite
-from domain.repositories.user_favorite import UserFavoriteReadRepository, UserFavoriteWriteRepository
+from domain.models.user_management.user_favorite import UserFavorite
+from domain.repositories.user_management.user_favorite import UserFavoriteReadRepository, UserFavoriteWriteRepository
 from domain.value_objects.common import Id, Pagination
 from domain.value_objects.filter import UserFavoriteFilter
 from domain.value_objects.user_management.user_favorite import UserFavoriteCreatePayload, UserFavoriteUpdatePayload

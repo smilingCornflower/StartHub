@@ -5,7 +5,7 @@ from application.builders.domain_service.user_management import UserServiceBuild
 from config.settings import BASE_DIR
 from django.test import TestCase
 from domain.exceptions.user import UserNotFoundException, UserPhoneAlreadyExistException
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.services.users_management.user import UserService
 from domain.utils.path_provider import StorageLocations
 from domain.value_objects.common import Description, FirstName, Id, LastName, PhoneNumber

@@ -8,7 +8,7 @@ from presentation.request_converters.project.accelerator import (
     request_to_project_accelerator_create_command,
     request_to_project_accelerator_update_command,
 )
-from presentation.response_factories.common import AcceleratorErrorResponseFactory
+from presentation.response_factories.project_management import AcceleratorErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response

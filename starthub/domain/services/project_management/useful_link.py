@@ -8,7 +8,7 @@ from domain.exceptions.permissions import (
 from domain.exceptions.project_management import ProjectUsefulLinkMaxAmountException
 from domain.models.project_management.project import Project
 from domain.models.project_management.useful_link import ProjectUsefulLink
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project.useful_link import ProjectUsefulLinkReadRepository, ProjectUsefulLinkWriteRepository
 from domain.services.permission import PermissionService

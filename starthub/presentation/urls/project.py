@@ -14,6 +14,8 @@ from presentation.views.project import MeProjectView, ProjectImageView, ProjectP
 from presentation.views.project_files import ProjectFileView
 from presentation.views.project_media import ProjectMediaView
 from presentation.views.project_useful_link import ProjectUsefulLinkView
+from presentation.views.report import ProjectReportView
+from presentation.views.resubmit import ProjectResubmitView
 
 urlpatterns = [
     path("", ProjectView.as_view(), name="projects"),
@@ -51,4 +53,8 @@ urlpatterns = [
     # Useful Links
     path("<int:project_id>/useful_links/", ProjectUsefulLinkView.as_view()),
     path("useful_links/<int:useful_link_id>/", ProjectUsefulLinkView.as_view()),
+    # Reports
+    path("<int:project_id>/reports/", ProjectReportView.as_view()),
+    # Resubmit
+    path("<int:project_id>/resubmit/", ProjectResubmitView.as_view()),
 ]

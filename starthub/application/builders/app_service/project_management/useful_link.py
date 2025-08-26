@@ -3,7 +3,7 @@ from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.project_management.useful_link import ProjectUsefulLinkAppService
 from infrastructure.repositories.project.project import DjProjectReadRepository
 from infrastructure.repositories.project.useful_link import DjProjectUsefulLinkReadRepository
-from infrastructure.repositories.user import DjUserReadRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository
 
 
 class ProjectUsefulLinkAppServiceBuilder(AbstractAppServiceBuilder[ProjectUsefulLinkAppService]):

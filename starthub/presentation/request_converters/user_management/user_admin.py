@@ -1,5 +1,5 @@
 from domain.enums.role import RoleEnum
-from domain.value_objects.user_management.admin import UserAdminUpdateCommand
+from domain.value_objects.user_management.user_admin import UserAdminUpdateCommand
 from loguru import logger
 from rest_framework.request import Request
 

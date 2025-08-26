@@ -1,9 +1,13 @@
 from domain.enums.permission import ActionEnum, ScopeEnum
-from domain.exceptions.permissions import AddDeniedPermissionException, UpdateDeniedPermissionException
+from domain.exceptions.permissions import (
+    AddDeniedPermissionException,
+    UpdateDeniedPermissionException,
+    ViewDeniedPermissionException,
+)
 from domain.models.role import Role
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.ports.service import AbstractDomainService
-from domain.repositories.user import UserWriteRepository
+from domain.repositories.user_management.user import UserWriteRepository
 from domain.services.permission import PermissionService
 from domain.value_objects.common import Id
 from domain.value_objects.user_management.user import UserUpdatePayload
@@ -44,6 +48,20 @@ class UserAdminPermissionService(AbstractDomainService):
             raise UpdateDeniedPermissionException(
                 "You don't have enough permissions to change is_active field for users."
             )
+
+    def check_permission_to_view_any_user_details(self, user: User) -> None:
+        """:raises ViewDeniedPermissionException:"""
+        if self._permission_service.is_allowed_for_user(
+            user=user,
+            model=User,
+            action=ActionEnum.VIEW,
+            scope=ScopeEnum.ANY,
+            field=User.DETAILS_FIED,
+        ):
+            return None
+        else:
+            logger.error(f"User {user.email} has no permission to view user details.")
+            raise ViewDeniedPermissionException("You don't have enough permissions to view user details.")
 
 
 class UserAdminService(UserAdminPermissionService):

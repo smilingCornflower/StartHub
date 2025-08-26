@@ -5,7 +5,7 @@ from django.db import transaction
 from django.db.models import QuerySet
 from domain.enums.role import RoleEnum
 from domain.models.role import Role
-from domain.models.user import User
+from domain.models.user_management.user import User
 from loguru import logger
 
 

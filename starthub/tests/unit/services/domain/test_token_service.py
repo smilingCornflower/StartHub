@@ -7,7 +7,7 @@ from django.test import SimpleTestCase
 from domain.constants import ACCESS_TOKEN_LIFETIME, JWT_ALGORITHM, REFRESH_TOKEN_LIFETIME
 from domain.enums.token import TokenTypeEnum
 from domain.exceptions.auth import InvalidTokenException, TokenExpiredException
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.services.auth import TokenService
 from domain.value_objects.auth_management.token import AccessPayload, AccessTokenVo, RefreshPayload, RefreshTokenVo
 from infrastructure.repositories.role import DjRoleReadRepository

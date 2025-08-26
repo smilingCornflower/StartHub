@@ -6,7 +6,7 @@ from domain.exceptions.permissions import (
 )
 from domain.models.project_management.accelerator import ProjectAccelerator
 from domain.models.project_management.project import Project
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project.accelerator import ProjectAcceleratorWriteRepository
 from domain.services.permission import PermissionService

@@ -12,7 +12,7 @@ from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.exceptions.cloud_storage import FileNotFoundCloudStorageException
 from domain.exceptions.news import (
     NewsImageContentAndFileMismatchException,
-    NewsImagesMaxAmountException,
+    NewsImageMaxAmountException,
     NewsNotFoundException,
 )
 from domain.exceptions.permissions import (
@@ -21,9 +21,9 @@ from domain.exceptions.permissions import (
     UpdateDeniedPermissionException,
 )
 from domain.models.news import News, NewsImage
-from domain.models.user import User
+from domain.models.user_management.user import User
 from domain.repositories.news import NewsReadRepository
-from domain.repositories.user import UserReadRepository
+from domain.repositories.user_management.user import UserReadRepository
 from domain.services.cloud_storage import StorageService
 from domain.services.file import ImageService
 from domain.services.news import NewsImageService, NewsService
@@ -235,7 +235,7 @@ class NewsAppService(NewsPermissionAppService):
         logger.debug("_validate_images_amount_in_content()")
         if self._news_service.get_images_amount_in_content(content=content) > NEWS_IMAGES_MAX_AMOUNT:
             logger.exception(f"News images max limit is {NEWS_IMAGES_MAX_AMOUNT}.")
-            raise NewsImagesMaxAmountException(f"News images max limit is {NEWS_IMAGES_MAX_AMOUNT}.")
+            raise NewsImageMaxAmountException(f"News images max limit is {NEWS_IMAGES_MAX_AMOUNT}.")
 
     def _validate_image_files_used(self, content: NewsContent, images: list[Image] | None) -> None:
         """

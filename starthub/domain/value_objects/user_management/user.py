@@ -1,9 +1,11 @@
 import re
+from datetime import date
 
 from django.core.exceptions import ValidationError as DjValidationError
 from django.core.validators import EmailValidator
 from domain.constants import PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH, PASSWORD_PATTERN
 from domain.enums.permission import ActionEnum, ScopeEnum
+from domain.enums.role import RoleEnum
 from domain.exceptions.auth import PasswordValidationException
 from domain.exceptions.validation import EmptyStringException, InvalidEmailException
 from domain.models.role import Role
@@ -156,3 +158,13 @@ class UserPhoneCreatePayload(AbstractCreatePayload):
 
 class UserPhoneUpdatePayload(AbstractUpdatePayload):
     pass
+
+
+class UserGetCommand(BaseCommand):
+    role: RoleEnum | None
+    is_active: bool | None
+    email: Email | None
+    first_name: FirstName | None
+    last_name: LastName | None
+    date_joined_start: date | None
+    date_joined_end: date | None

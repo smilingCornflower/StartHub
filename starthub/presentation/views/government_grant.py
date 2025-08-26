@@ -13,7 +13,7 @@ from presentation.request_converters.project.government_grant import (
     request_to_project_government_grant_create_command,
     request_to_project_government_grant_update_command,
 )
-from presentation.response_factories.common import ProjectGovernmentGrantErrorResponseFactory
+from presentation.response_factories.project_management import ProjectGovernmentGrantErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response

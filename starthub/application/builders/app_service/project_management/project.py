@@ -36,8 +36,8 @@ from infrastructure.repositories.project.project import DjProjectReadRepository
 from infrastructure.repositories.project.project_file import DjProjectFileReadRepository
 from infrastructure.repositories.project.step import DjProjectStepReadRepository
 from infrastructure.repositories.project.useful_link import DjProjectUsefulLinkReadRepository
-from infrastructure.repositories.user import DjUserReadRepository
-from infrastructure.repositories.user_favorite import DjUserFavoriteReadRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository
+from infrastructure.repositories.user_management.user_favorite import DjUserFavoriteReadRepository
 from infrastructure.services.project_search import ProjectSearchService
 
 

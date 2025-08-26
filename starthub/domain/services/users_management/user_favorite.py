@@ -1,9 +1,9 @@
 from domain.exceptions.user_favorite import UserFavoriteAlreadyExistsException, UserFavoriteNotFoundException
-from domain.models.user_favorite import UserFavorite
+from domain.models.user_management.user_favorite import UserFavorite
 from domain.ports.service import AbstractDomainService
 from domain.repositories.project.project import ProjectReadRepository
-from domain.repositories.user import UserReadRepository
-from domain.repositories.user_favorite import UserFavoriteReadRepository, UserFavoriteWriteRepository
+from domain.repositories.user_management.user import UserReadRepository
+from domain.repositories.user_management.user_favorite import UserFavoriteReadRepository, UserFavoriteWriteRepository
 from domain.value_objects.common import Id
 from domain.value_objects.filter import UserFavoriteFilter
 from domain.value_objects.user_management.user_favorite import UserFavoriteCreatePayload

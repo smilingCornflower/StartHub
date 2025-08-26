@@ -1,7 +1,9 @@
 from importlib import import_module
 
-User = import_module("domain.models.user").User
-UserFavorite = import_module("domain.models.user_favorite").UserFavorite
+User = import_module("domain.models.user_management.user").User
+UserFavorite = import_module("domain.models.user_management.user_favorite").UserFavorite
+UserMessage = import_module("domain.models.user_management.message").UserMessage
+
 Role = import_module("domain.models.role").Role
 Permission = import_module("domain.models.permission").Permission
 
@@ -24,11 +26,12 @@ ProjectBootstrap = import_module("domain.models.project_management.bootstrap").P
 ProjectBankLoan = import_module("domain.models.project_management.bank_loan").ProjectBankLoan
 ProjectFile = import_module("domain.models.project_management.project_file").ProjectFile
 ProjectMedia = import_module("domain.models.project_management.media").ProjectMedia
+ProjectReport = import_module("domain.models.project_management.report").ProjectReport
 
 FundingModel = import_module("domain.models.project_management.funding_model").FundingModel
 Company = import_module("domain.models.company").Company
-
 Country = import_module("domain.models.geo.country").Country
+
 City = import_module("domain.models.geo.city").City
 Region = import_module("domain.models.geo.region").Region
 Address = import_module("domain.models.geo.address").Address
@@ -36,27 +39,41 @@ Address = import_module("domain.models.geo.address").Address
 News = import_module("domain.models.news").News
 NewsImage = import_module("domain.models.news").NewsImage
 
+Notification = import_module("domain.models.notification").Notification
+
 __all__ = [
     "User",
     "UserFavorite",
+    "UserMessage",
     "Role",
     "Permission",
     "Project",
-    "Company",
     "TeamMember",
     "ProjectPhone",
     "ProjectImage",
     "ProjectSocialLink",
+    "ProjectUsefulLink",
     "ProjectCategory",
     "ProjectStep",
     "ProjectIncubator",
     "ProjectAccelerator",
     "ProjectCrowdfunding",
+    "ProjectInvestment",
+    "ProjectInvestmentSocialLink",
+    "ProjectInvestmentPhone",
+    "ProjectGovernmentGrant",
+    "ProjectBootstrap",
+    "ProjectBankLoan",
+    "ProjectFile",
+    "ProjectMedia",
+    "ProjectReport",
     "FundingModel",
+    "Company",
     "Country",
-    "Region",
     "City",
+    "Region",
     "Address",
     "News",
     "NewsImage",
+    "Notification",
 ]

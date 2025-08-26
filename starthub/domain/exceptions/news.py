@@ -23,7 +23,7 @@ class NewsNotFoundException(NotFoundException, NewsException):
     pass
 
 
-class NewsImagesMaxAmountException(NewsException):
+class NewsImageMaxAmountException(ValidationException, NewsException):
     pass
 
 

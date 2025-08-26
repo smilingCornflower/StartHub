@@ -1,7 +1,7 @@
 from application.ports.domain_service_builder import AbstractDomainServiceBuilder
 from domain.services.permission import PermissionService
 from infrastructure.repositories.permission import DjPermissionReadRepository
-from infrastructure.repositories.user import DjUserReadRepository
+from infrastructure.repositories.user_management.user import DjUserReadRepository
 
 
 class PermissionServiceBuilder(AbstractDomainServiceBuilder[PermissionService]):
