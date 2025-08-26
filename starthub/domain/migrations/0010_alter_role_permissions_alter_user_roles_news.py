@@ -6,7 +6,7 @@ import domain.models.role
 import domain.ports.model
 from django.conf import settings
 from django.db import migrations, models
-
+from django.utils import timezone
 
 class Migration(migrations.Migration):
 
@@ -34,8 +34,8 @@ class Migration(migrations.Migration):
                 ("title", models.CharField(max_length=255)),
                 ("image", models.CharField(max_length=255)),
                 ("content", models.TextField()),
-                ("published_at", models.DateTimeField(default=domain.models.news.get_default_datetime_now)),
-                ("updated_at", models.DateTimeField(default=domain.models.news.get_default_datetime_now)),
+                ("published_at", models.DateTimeField(default=timezone.now)),
+                ("updated_at", models.DateTimeField(default=timezone.now)),
                 ("author", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
             options={
