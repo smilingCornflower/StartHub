@@ -1,3 +1,4 @@
+from datetime import date
 from typing import ClassVar
 
 from domain.constants import CHAR_FIELD_MAX_LENGTH, NEWS_CONTENT_MAX_LENGTH, NEWS_IMAGES_MAX_AMOUNT
@@ -44,6 +45,11 @@ class NewsUpdatePayload(AbstractUpdatePayload):
     content: NewsContent | None = None
     cover_path: str | None = None
     is_active: bool | None = None
+
+
+class NewsGetCommand(BaseCommand):
+    published_at_start: date | None = None
+    published_at_end: date | None = None
 
 
 class NewsCreateCommand(BaseCommand):

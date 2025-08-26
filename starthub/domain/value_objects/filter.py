@@ -1,3 +1,5 @@
+from datetime import date
+
 from domain.models.user import User
 from domain.ports.filter import AbstractFilter
 from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Slug, SocialLink
@@ -84,7 +86,9 @@ class RoleFilter(AbstractFilter):
 
 
 class NewsFilter(AbstractFilter):
-    pass
+    published_at_start: date | None = None
+    published_at_end: date | None = None
+    order_by_lst: list[str] | None = None
 
 
 class UserPhoneFilter(AbstractFilter):

@@ -10,7 +10,11 @@ from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.request_converters.common import request_to_pagination
-from presentation.request_converters.news import request_to_news_create_command, request_to_news_update_command
+from presentation.request_converters.news import (
+    request_to_news_create_command,
+    request_to_news_get_command,
+    request_to_news_update_command,
+)
 from presentation.response_factories.common import NewsErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
@@ -24,13 +28,14 @@ class NewsView(APIView):
         logger.debug(f"GET /news/<news_id>/ \t news_id = {news_id}")
         try:
             if news_id:
-                news: NewsFullDto | list[NewsShortDto] = gateway.news_app_service.get(news_id=news_id)
+                news: NewsFullDto | list[NewsShortDto] = gateway.news_app_service.get_one(news_id=news_id)
             else:
+                command = request_to_news_get_command(request=request)
                 pagination: Pagination = request_to_pagination(request=request)
-                news = gateway.news_app_service.get(pagination=pagination)
-
+                news = gateway.news_app_service.get_many(pagination=pagination, command=command)
             if isinstance(news, NewsFullDto):
                 return Response(asdict(news), status=status.HTTP_200_OK)
+
             return Response(list(map(asdict, news)), status=status.HTTP_200_OK)
 
         except CustomException as e:

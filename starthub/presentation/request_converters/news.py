@@ -5,10 +5,16 @@ from django.core.files.uploadedfile import UploadedFile
 from django.utils.datastructures import MultiValueDict
 from domain.value_objects.common import Id
 from domain.value_objects.file import Image, ImageFile
-from domain.value_objects.filter import NewsFilter
-from domain.value_objects.news import NewsContent, NewsCreateCommand, NewsSubtitle, NewsTitle, NewsUpdateCommand
+from domain.value_objects.news import (
+    NewsContent,
+    NewsCreateCommand,
+    NewsGetCommand,
+    NewsSubtitle,
+    NewsTitle,
+    NewsUpdateCommand,
+)
 from loguru import logger
-from presentation.request_converters.common import get_required_field
+from presentation.request_converters.common import get_required_field, parse_date
 from rest_framework.request import Request
 
 
@@ -72,5 +78,11 @@ def request_to_news_update_command(request: Request) -> NewsUpdateCommand:
     return command
 
 
-def request_to_news_filter(request_data: dict[str, Any]) -> NewsFilter:
-    return NewsFilter()
+def request_to_news_get_command(request: Request) -> NewsGetCommand:
+    params = request.query_params
+    command = NewsGetCommand(
+        published_at_start=parse_date(params["published_at_start"]) if "published_at_start" in params else None,
+        published_at_end=parse_date(params["published_at_end"]) if "published_at_end" in params else None,
+    )
+    logger.debug(f"command = {command}")
+    return command

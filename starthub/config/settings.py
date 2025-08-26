@@ -158,6 +158,7 @@ DATABASES = {
         "PASSWORD": DB_PASSWORD,
         "HOST": DB_HOST,
         "PORT": DB_PORT,
+        "OPTIONS": {"options": "-c timezone=UTC"},
     }
 }
 STATIC_URL = "static/"
@@ -188,7 +189,6 @@ LANGUAGES = (
     ("en", "English"),
 )
 LANGUAGE_CODE = "en-us"
-
 
 TIME_ZONE = "UTC"
 USE_TZ = True

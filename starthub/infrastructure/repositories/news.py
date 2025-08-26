@@ -15,6 +15,7 @@ from domain.value_objects.news import (
     NewsImageUpdatePayload,
     NewsUpdatePayload,
 )
+from infrastructure.repositories.pagination import apply_pagination
 
 
 class DjNewsReadRepository(NewsReadRepository):
@@ -26,12 +27,21 @@ class DjNewsReadRepository(NewsReadRepository):
         return news
 
     def get_all(self, filter_: NewsFilter, pagination: Pagination | None = None) -> list[News]:
-        qs = News.objects.all().order_by("-id")
+        qs = News.objects.all()
 
-        if pagination and pagination.last_id is not None:
-            qs = qs.filter(id__lt=pagination.last_id)
+        # Order By
+        if filter_.order_by_lst:
+            for order_by in filter_.order_by_lst:
+                qs = qs.order_by(order_by)
+
+        if filter_.published_at_start:
+            qs = qs.filter(published_at__gte=filter_.published_at_start)
+        if filter_.published_at_end:
+            qs = qs.filter(published_at__lte=filter_.published_at_end)
+
         if pagination:
-            qs = qs[: pagination.limit]
+            return apply_pagination(qs, pagination=pagination)
+
         return list(qs)
 
 

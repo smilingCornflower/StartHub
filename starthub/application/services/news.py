@@ -41,6 +41,7 @@ from domain.value_objects.news import (
     NewsContent,
     NewsCreateCommand,
     NewsCreatePayload,
+    NewsGetCommand,
     NewsImageCreatePayload,
     NewsImageDeletePayload,
     NewsUpdateCommand,
@@ -127,15 +128,8 @@ class NewsAppService(NewsPermissionAppService):
         self._user_read_repository = user_read_repository
         self._uow = unit_of_work
 
-    def get(self, news_id: int | None = None, pagination: Pagination | None = None) -> NewsFullDto | list[NewsShortDto]:
-        if news_id:
-            return self._get_one(news_id=news_id)
-        if pagination:
-            return self._get_many(pagination=pagination)
-        return list()
-
-    def _get_one(self, news_id: int) -> NewsFullDto:
-        logger.debug("_get_one()")
+    def get_one(self, news_id: int) -> NewsFullDto:
+        logger.debug("get_one()")
         news: News = self._news_read_repository.get_by_id(id_=Id(value=news_id))
 
         cover_url: str = self._storage_service.create_url(
@@ -155,10 +149,17 @@ class NewsAppService(NewsPermissionAppService):
 
         return news_dto
 
-    def _get_many(self, pagination: Pagination) -> list[NewsShortDto]:
-        logger.debug("_get_many()")
+    def get_many(self, pagination: Pagination, command: NewsGetCommand) -> list[NewsShortDto]:
+        logger.debug("get_many()")
 
-        news_lst: list[News] = self._news_read_repository.get_all(filter_=NewsFilter(), pagination=pagination)
+        news_lst: list[News] = self._news_read_repository.get_all(
+            pagination=pagination,
+            filter_=NewsFilter(
+                published_at_start=command.published_at_start,
+                published_at_end=command.published_at_end,
+                order_by_lst=["-published_at"],
+            ),
+        )
         logger.debug(f"Found {len(news_lst)} news.")
 
         cover_urls: list[str] = [
