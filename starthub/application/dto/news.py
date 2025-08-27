@@ -14,6 +14,7 @@ class NewsShortDto:
     title: str
     subtitle: str | None
     cover: str
+    published_at: str
 
 
 @dataclass

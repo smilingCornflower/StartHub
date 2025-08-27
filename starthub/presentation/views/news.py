@@ -10,7 +10,12 @@ from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
 from presentation.request_converters.common import request_to_pagination
-from presentation.request_converters.news import request_to_news_create_command, request_to_news_update_command
+from presentation.request_converters.news import (
+    request_to_news_create_command,
+    request_to_news_get_command,
+    request_to_news_tag_name,
+    request_to_news_update_command,
+)
 from presentation.response_factories.news import NewsErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
@@ -21,16 +26,18 @@ from rest_framework.views import APIView
 class NewsView(APIView):
     @staticmethod
     def get(request: Request, news_id: int | None = None) -> Response:
+        print()
         logger.debug(f"GET /news/<news_id>/ \t news_id = {news_id}")
         try:
             if news_id:
-                news: NewsFullDto | list[NewsShortDto] = gateway.news_app_service.get(news_id=news_id)
+                news: NewsFullDto | list[NewsShortDto] = gateway.news_app_service.get_one(news_id=news_id)
             else:
+                command = request_to_news_get_command(request=request)
                 pagination: Pagination = request_to_pagination(request=request)
-                news = gateway.news_app_service.get(pagination=pagination)
-
+                news = gateway.news_app_service.get_many(pagination=pagination, command=command)
             if isinstance(news, NewsFullDto):
                 return Response(asdict(news), status=status.HTTP_200_OK)
+
             return Response(list(map(asdict, news)), status=status.HTTP_200_OK)
 
         except CustomException as e:
@@ -38,11 +45,11 @@ class NewsView(APIView):
 
     @staticmethod
     def post(request: Request) -> Response:
-        logger.info(f"POST /news/ \n\t request.data: {request.data}\n\t request_files: {request.FILES}")
+        print()
+        logger.info(f"POST /news/\n" f"request.data: {request.data}\n" f"request_files: {request.FILES}")
 
         try:
             user_id = get_user_id_or_raises(request=request)
-            logger.debug(f"user_id = {user_id.value}")
 
             command = request_to_news_create_command(request=request, user_id=user_id)
             news_id: int = gateway.news_app_service.create(user_id=user_id, news_create_command=command)
@@ -105,3 +112,31 @@ class NewsDeactivateView(APIView):
 
         except CustomException as e:
             return NewsErrorResponseFactory.create_response(e)
+
+
+class NewsTagView(APIView):
+    @staticmethod
+    def delete(request: Request, news_id: int, tag_name: str) -> Response:
+        print()
+        logger.info(f"DELETE /news/{news_id}/tags/{tag_name}/")
+
+        try:
+            user_id = get_user_id_or_raises(request=request)
+            gateway.news_tag_app_service.delete_tag_from_news(
+                user_id=user_id, news_id=Id(value=news_id), tag_name=tag_name
+            )
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+        except CustomException as e:
+            return NewsErrorResponseFactory.create_response(exception=e)
+
+    @staticmethod
+    def post(request: Request, news_id: int) -> Response:
+        print()
+        logger.info(f"POST /news/{news_id}/tags/")
+        try:
+            user_id = get_user_id_or_raises(request=request)
+            tag_name = request_to_news_tag_name(request=request)
+            gateway.news_tag_app_service.add_tag_to_news(user_id=user_id, news_id=Id(value=news_id), tag_name=tag_name)
+            return Response({"code": SUCCESS}, status=status.HTTP_201_CREATED)
+        except (CustomException, pydantic.ValidationError) as e:
+            return NewsErrorResponseFactory.create_response(exception=e)

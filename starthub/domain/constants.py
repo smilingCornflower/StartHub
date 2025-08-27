@@ -6,6 +6,7 @@ from domain.enums.file_extension import FileExtensionEnum
 # ==== Basic Constants ====
 DEFAULT_NOT_AVAILABLE = "N/A"
 MEGABYTE = 1024 * 1024  # in kilobytes
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M"
 
 # ==== Field Lengths ====
 CHAR_FIELD_MAX_LENGTH = 255
