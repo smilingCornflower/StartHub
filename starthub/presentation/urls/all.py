@@ -1,4 +1,5 @@
 from django.urls import include, path
+from presentation.views.funding_model import FundingModelView
 from presentation.views.geo import CityView, RegionView
 from presentation.views.permission import PermissionView
 
@@ -14,4 +15,5 @@ urlpatterns = [
     path("regions/", RegionView.as_view()),
     path("notifications/", include("presentation.urls.notification")),
     path("permissions/", PermissionView.as_view()),
+    path("funding-models/", FundingModelView.as_view()),
 ]

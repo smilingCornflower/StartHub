@@ -82,7 +82,7 @@ class UsersAdminView(APIView):
     @staticmethod
     def get(request: Request) -> Response:
         print()
-        logger.info("GET /users/")
+        logger.info("GET /admin/users/")
         try:
             user_id = get_user_id_or_raises(request=request)
             pagination = request_to_offset_pagination(request=request)
