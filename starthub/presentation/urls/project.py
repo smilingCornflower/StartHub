@@ -3,6 +3,7 @@ from presentation.views.accelerator import AcceleratorView
 from presentation.views.bank_loan import ProjectBankLoanView
 from presentation.views.bootstrap import ProjectBootstrapView
 from presentation.views.crowdfunding import CrowdfundingView
+from presentation.views.funding_model import ProjectCategoryView
 from presentation.views.government_grant import GovernmentGrantView
 from presentation.views.investment import (
     ProjectInvestmentPhoneView,
@@ -57,4 +58,6 @@ urlpatterns = [
     path("<int:project_id>/reports/", ProjectReportView.as_view()),
     # Resubmit
     path("<int:project_id>/resubmit/", ProjectResubmitView.as_view()),
+    # Categories
+    path("categories/", ProjectCategoryView.as_view()),
 ]
