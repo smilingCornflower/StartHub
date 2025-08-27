@@ -20,6 +20,7 @@ from domain.value_objects.project.bank_loan import ProjectBankLoanCreateCommand
 from domain.value_objects.project.bootstrap import ProjectBootstrapCreateCommand
 from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage, ProjectStatus
 from domain.value_objects.project.crowdfunding import ProjectCrowdfundingCreateCommand
+from domain.value_objects.project.funding_model import FundingModelId
 from domain.value_objects.project.government_grant import ProjectGovernmentGrantCreateCommand
 from domain.value_objects.project.incubator import IncubatorCreateCommand, IncubatorUpdatePayload
 from domain.value_objects.project.investment import ProjectInvestmentCreateCommand
@@ -47,7 +48,7 @@ class ProjectCreateCommand(BaseCommand):
     description: Description
     category_ids: list[Id]
     creator_id: Id
-    funding_model_id: Id
+    funding_model_id: FundingModelId
     stage: ProjectStage
     steps: list[ProjectStepCreateCommand]
     goal_sum: GoalSum
@@ -95,7 +96,7 @@ class ProjectUpdateCommand(BaseCommand):
     goal_description: Description | None = None
     description: Description | None = None
     category_ids: list[Id] | None = None
-    funding_model_id: Id | None = None
+    funding_model_id: FundingModelId | None = None
     stage: ProjectStage | None = None
     goal_sum: GoalSum | None = None
     deadline: DeadlineDate | None = None

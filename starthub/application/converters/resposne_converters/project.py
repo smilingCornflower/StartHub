@@ -42,6 +42,8 @@ def project_to_dto(
             id=project.funding_model.id,
             name=project.funding_model.name,
             slug=project.funding_model.slug,
+            recommended=project.funding_model.recommended,
+            description=project.funding_model.description,
         ),
         stage=project.stage,
         status=project.status,

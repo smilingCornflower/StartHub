@@ -101,6 +101,7 @@ from domain.value_objects.filter import (
 )
 from domain.value_objects.geo import CityId, RegionId
 from domain.value_objects.project.common import ProjectStatus
+from domain.value_objects.project.funding_model import FundingModelId
 from domain.value_objects.project.incubator import IncubatorCreatePayload, IncubatorUpdatePayload
 from domain.value_objects.project.investment import ProjectInvestmentId
 from domain.value_objects.project.project import (
@@ -197,7 +198,7 @@ class ProjectCreateAppService(AbstractAppService):
         self._user_read_repository.get_by_id(id_=user_id)
         logger.debug(f"User with id = {user_id.value} exists.")
 
-    def _check_funding_model_exists(self, funding_model_id: Id) -> None:
+    def _check_funding_model_exists(self, funding_model_id: FundingModelId) -> None:
         """:raises FundingModelNotFoundException:"""
         self._funding_model_read_repository.get_by_id(id_=funding_model_id)
         logger.debug(f"Funding model with id = {funding_model_id.value} exists.")
@@ -690,7 +691,7 @@ class ProjectUpdateAppService(AbstractAppService):
             if i not in existing_category_ids:
                 raise ProjectCategoryNotFoundException(f"Category with id {i.value} not found.")
 
-    def _check_funding_model_exists(self, funding_model_id: Id) -> None:
+    def _check_funding_model_exists(self, funding_model_id: FundingModelId) -> None:
         """:raises FundingModelNotFoundException:"""
         logger.debug("Checking: funding model exists.")
 

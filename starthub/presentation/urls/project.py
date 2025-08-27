@@ -3,7 +3,6 @@ from presentation.views.accelerator import AcceleratorView
 from presentation.views.bank_loan import ProjectBankLoanView
 from presentation.views.bootstrap import ProjectBootstrapView
 from presentation.views.crowdfunding import CrowdfundingView
-from presentation.views.funding_model import ProjectCategoryView
 from presentation.views.government_grant import GovernmentGrantView
 from presentation.views.investment import (
     ProjectInvestmentPhoneView,
@@ -12,6 +11,7 @@ from presentation.views.investment import (
 )
 from presentation.views.metric import MetricView
 from presentation.views.project import MeProjectView, ProjectImageView, ProjectPlanView, ProjectSearchView, ProjectView
+from presentation.views.project_category import ProjectCategoryView
 from presentation.views.project_files import ProjectFileView
 from presentation.views.project_media import ProjectMediaView
 from presentation.views.project_useful_link import ProjectUsefulLinkView

@@ -9,6 +9,7 @@ from application.builders.app_service.project_management.admin import ProjectAdm
 from application.builders.app_service.project_management.bank_loan import ProjectBankLoanAppServiceBuilder
 from application.builders.app_service.project_management.bootstrap import ProjectBootstrapAppServiceBuilder
 from application.builders.app_service.project_management.crowdfunding import CrowdfundingAppServiceBuilder
+from application.builders.app_service.project_management.funding_model import FundingModelAppServiceBuilder
 from application.builders.app_service.project_management.government_grant import GovernmentGrantAppServiceBuilder
 from application.builders.app_service.project_management.investment import (
     ProjectInvestmentAppServiceBuilder,
@@ -46,6 +47,7 @@ from application.services.project_management.admin import ProjectAdminAppService
 from application.services.project_management.bank_loan import ProjectBankLoanAppService
 from application.services.project_management.bootsrtap import ProjectBootstrapAppService
 from application.services.project_management.crowdfunding import CrowdfundingAppService
+from application.services.project_management.funding_model import FundingModelAppService
 from application.services.project_management.government_grant import GovernmentGrantAppService
 from application.services.project_management.investment import ProjectInvestmentAppService
 from application.services.project_management.project import (
@@ -90,6 +92,8 @@ class Gateway:
     _news_app_service: NewsAppService | None = None
     _news_tag_app_service: NewsTagAppService | None = None
     _company_app_service: CompanyAppService | None = None
+    _funding_model_app_service: FundingModelAppService | None = None
+
     _accelerator_app_service: AcceleratorAppService | None = None
     _crowdfunding_app_service: CrowdfundingAppService | None = None
     _project_investment_app_service: ProjectInvestmentAppService | None = None
@@ -201,6 +205,12 @@ class Gateway:
         if self._company_app_service is None:
             self._company_app_service = CompanyAppServiceBuilder.create_service()
         return self._company_app_service
+
+    @property
+    def funding_model_app_service(self) -> FundingModelAppService:
+        if self._funding_model_app_service is None:
+            self._funding_model_app_service = FundingModelAppServiceBuilder.create_service()
+        return self._funding_model_app_service
 
     @property
     def accelerator_app_service(self) -> AcceleratorAppService:

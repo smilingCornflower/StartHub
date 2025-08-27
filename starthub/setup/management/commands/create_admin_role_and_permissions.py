@@ -3,6 +3,7 @@ from typing import Any
 from django.core.management.base import BaseCommand
 from domain.enums.permission import ActionEnum, ScopeEnum
 from domain.enums.role import RoleEnum
+from domain.models import FundingModel
 from domain.models.permission import Permission
 from domain.models.project_management.project import Project
 from domain.models.role import Role
@@ -36,6 +37,7 @@ class Command(BaseCommand):
         self._setup_permission_to_view_any_user_messages(admin_role)
         self._add_view_any_user_details_permission(admin_role)
         self._add_view_any_permissions_permisssion(admin_role)
+        self._add_change_any_funding_model_permission(admin_role)
 
         logger.info("Admin role and permissions initialization completed")
 
@@ -70,11 +72,15 @@ class Command(BaseCommand):
         )
         self._add_permission_to_role(role, view_any_user_details)
 
+    def _add_change_any_funding_model_permission(self, role: Role) -> None:
+        change_any_funding_model_permission = PermissionService.create_permission_vo(
+            model=FundingModel, action=ActionEnum.CHANGE, scope=ScopeEnum.ANY
+        )
+        self._add_permission_to_role(role, change_any_funding_model_permission)
+
     def _add_view_any_permissions_permisssion(self, role: Role) -> None:
         view_any_permissions_permission = PermissionService.create_permission_vo(
-            model=Permission,
-            action=ActionEnum.VIEW,
-            scope=ScopeEnum.ANY,
+            model=Permission, action=ActionEnum.VIEW, scope=ScopeEnum.ANY
         )
         self._add_permission_to_role(role, view_any_permissions_permission)
 
