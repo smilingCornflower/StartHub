@@ -28,7 +28,7 @@ from domain.repositories.news_management.news import NewsReadRepository
 from domain.repositories.user_management.user import UserReadRepository
 from domain.services.cloud_storage import StorageService
 from domain.services.file import ImageService
-from domain.services.news import NewsImageService, NewsService
+from domain.services.news_management.news import NewsImageService, NewsService
 from domain.services.permission import PermissionService
 from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import (

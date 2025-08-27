@@ -13,6 +13,7 @@ from presentation.request_converters.common import request_to_pagination
 from presentation.request_converters.news import (
     request_to_news_create_command,
     request_to_news_get_command,
+    request_to_news_tag_name,
     request_to_news_update_command,
 )
 from presentation.response_factories.news import NewsErrorResponseFactory
@@ -111,3 +112,31 @@ class NewsDeactivateView(APIView):
 
         except CustomException as e:
             return NewsErrorResponseFactory.create_response(e)
+
+
+class NewsTagView(APIView):
+    @staticmethod
+    def delete(request: Request, news_id: int, tag_name: str) -> Response:
+        print()
+        logger.info(f"DELETE /news/{news_id}/tags/{tag_name}/")
+
+        try:
+            user_id = get_user_id_or_raises(request=request)
+            gateway.news_tag_app_service.delete_tag_from_news(
+                user_id=user_id, news_id=Id(value=news_id), tag_name=tag_name
+            )
+            return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
+        except CustomException as e:
+            return NewsErrorResponseFactory.create_response(exception=e)
+
+    @staticmethod
+    def post(request: Request, news_id: int) -> Response:
+        print()
+        logger.info(f"POST /news/{news_id}/tags/")
+        try:
+            user_id = get_user_id_or_raises(request=request)
+            tag_name = request_to_news_tag_name(request=request)
+            gateway.news_tag_app_service.add_tag_to_news(user_id=user_id, news_id=Id(value=news_id), tag_name=tag_name)
+            return Response({"code": SUCCESS}, status=status.HTTP_201_CREATED)
+        except (CustomException, pydantic.ValidationError) as e:
+            return NewsErrorResponseFactory.create_response(exception=e)

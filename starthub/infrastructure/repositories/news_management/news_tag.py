@@ -8,6 +8,13 @@ from infrastructure.repositories.pagination import apply_pagination
 
 
 class DjNewsTagReadRepository(NewsTagReadRepository):
+    def get_by_name(self, name: str) -> NewsTag:
+        """:raises NewsTagNotFoundException:"""
+        tag = NewsTag.objects.filter(name=name).first()
+        if tag is None:
+            raise NewsTagNotFoundException(f"News tag with name = {name} not found.")
+        return tag
+
     def get_by_id(self, id_: NewsTagId) -> NewsTag:
         """:raises NewsTagNotFoundException:"""
         tag = NewsTag.objects.filter(id=id_.value).first()

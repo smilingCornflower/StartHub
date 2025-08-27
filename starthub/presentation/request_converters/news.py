@@ -107,6 +107,8 @@ def request_to_news_update_command(request: Request) -> NewsUpdateCommand:
     return command
 
 
+# ======================================================================================================================
+# ==== NewsGetCommand ==================================================================================================
 def request_to_news_get_command(request: Request) -> NewsGetCommand:
     params = request.query_params
     command = NewsGetCommand(
@@ -115,3 +117,15 @@ def request_to_news_get_command(request: Request) -> NewsGetCommand:
     )
     logger.debug(f"command = {command}")
     return command
+
+
+# ======================================================================================================================
+# ==== NewsGetCommand ==================================================================================================
+def request_to_news_tag_name(request: Request) -> NewsTagEnum:
+    tag_name_raw = get_required_field(request.data, "tag_name")
+    if not isinstance(tag_name_raw, str):
+        raise pydantic.ValidationError("tag_name must be string.")
+    try:
+        return NewsTagEnum(tag_name_raw)
+    except ValueError:
+        raise ValidationException(f"Invalid value for tag: {tag_name_raw}.")

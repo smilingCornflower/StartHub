@@ -13,6 +13,10 @@ class NewsTagReadRepository(AbstractReadRepository[NewsTag, NewsTagFilter, NewsT
         pass
 
     @abstractmethod
+    def get_by_name(self, name: str) -> NewsTag:
+        pass
+
+    @abstractmethod
     def get_all(self, filter_: NewsTagFilter, pagination: Pagination | None = None) -> list[NewsTag]:
         pass
 

@@ -1,3 +1,5 @@
+from typing import cast
+
 from domain.enums.news_tag import NewsTagEnum
 from domain.events.news import NewsCreatedEvent
 from domain.exceptions.news import NewsTagNotFoundException
@@ -9,7 +11,7 @@ from domain.value_objects.common import Id
 from domain.value_objects.filter import NewsTagFilter
 from domain.value_objects.news_management.news_tags_link import NewsTagsLinkCreatePayload
 from loguru import logger
-from typing import cast
+
 
 class NewsCreatedEventHandler(AbstractEventHandler[NewsCreatedEvent]):
     def __init__(

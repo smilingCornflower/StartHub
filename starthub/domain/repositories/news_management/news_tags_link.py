@@ -25,9 +25,17 @@ class NewsTagsLinkWriteRepository(
         pass
 
     @abstractmethod
+    def get_or_create(self, data: NewsTagsLinkCreatePayload) -> tuple[NewsTagsLink, bool]:
+        pass
+
+    @abstractmethod
     def update(self, data: NewsTagsLinkUpdatePayload) -> NewsTagsLink:
         pass
 
     @abstractmethod
     def delete_by_id(self, id_: Id) -> None:
+        pass
+
+    @abstractmethod
+    def delete_by_association_ids(self, news_id: Id, tag_id: Id) -> None:
         pass

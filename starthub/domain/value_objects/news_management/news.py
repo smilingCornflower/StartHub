@@ -53,6 +53,10 @@ class NewsGetCommand(BaseCommand):
     published_at_end: date | None = None
 
 
+class NewsDeleteCommand(BaseCommand):
+    tag_name: NewsTagEnum
+
+
 class NewsCreateCommand(BaseCommand):
     title: NewsTitle
     subtitle: NewsSubtitle | None
