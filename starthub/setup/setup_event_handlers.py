@@ -1,3 +1,4 @@
+from application.builders.event_handler.news import NewsCreatedEventHandlerBuilder
 from application.builders.event_handler.notification import (
     ProjectApprovedNotificationEventHandlerBuilder,
     ProjectRejectedNotificationEventHandlerBuilder,
@@ -73,10 +74,12 @@ def setup_event_handlers() -> None:
     project_rejected_report_handler = ProjectRejectedReportEventHandlerBuilder.create_handler()
     project_approved_notification_handler = ProjectApprovedNotificationEventHandlerBuilder.create_handler()
     project_investment_created_handler = ProjectInvestmentCreatedEventHandlerBuilder.create_handler()
+    news_created_handler = NewsCreatedEventHandlerBuilder.create_handler()
 
     bus.subscribe(event_type=EventType.Project.DELETED, handler=project_deleted_handler)
     bus.subscribe(event_type=EventType.Project.REJECTED, handler=project_rejected_notification_handler)
     bus.subscribe(event_type=EventType.Project.REJECTED, handler=project_rejected_report_handler)
     bus.subscribe(event_type=EventType.Project.APPROVED, handler=project_approved_notification_handler)
     bus.subscribe(event_type=EventType.ProjectInvestment.CREATED, handler=project_investment_created_handler)
+    bus.subscribe(event_type=EventType.News.CREATED, handler=news_created_handler)
     logger.info("Event handlers successfully registered.")

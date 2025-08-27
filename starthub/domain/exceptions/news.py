@@ -29,3 +29,12 @@ class NewsImageMaxAmountException(ValidationException, NewsException):
 
 class NewsImageContentAndFileMismatchException(ValidationException, NewsException):
     pass
+
+
+# ===== NewsTag Exceptions ====
+class NewsTagException(CustomException):
+    pass
+
+
+class NewsTagNotFoundException(NotFoundException, NewsTagException):
+    pass

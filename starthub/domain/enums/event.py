@@ -11,5 +11,8 @@ class EventType:
     class ProjectInvestment(StrEnum):
         CREATED = "project_investment_created"
 
+    class News(StrEnum):
+        CREATED = "news_created"
 
-AnyEventType = EventType.Project | EventType.ProjectInvestment
+
+AnyEventType = EventType.Project | EventType.ProjectInvestment | EventType.News

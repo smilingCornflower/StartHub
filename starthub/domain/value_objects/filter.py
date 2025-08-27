@@ -1,5 +1,6 @@
 from datetime import date
 
+from domain.enums.news_tag import NewsTagEnum
 from domain.enums.role import RoleEnum
 from domain.models.user_management.user import User
 from domain.ports.filter import AbstractFilter
@@ -193,3 +194,11 @@ class UserMessageFilter(AbstractFilter):
 
 class ProjectReportFilter(AbstractFilter):
     project_id: Id | None = None
+
+
+class NewsTagFilter(AbstractFilter):
+    tag_names: list[NewsTagEnum]
+
+
+class NewsTagsLinkFilter(AbstractFilter):
+    pass

@@ -2,6 +2,7 @@ from datetime import date
 from typing import ClassVar
 
 from domain.constants import CHAR_FIELD_MAX_LENGTH, NEWS_CONTENT_MAX_LENGTH, NEWS_IMAGES_MAX_AMOUNT
+from domain.enums.news_tag import NewsTagEnum
 from domain.exceptions import CustomException
 from domain.exceptions.news import (
     NewsContentIsTooLongException,
@@ -10,9 +11,9 @@ from domain.exceptions.news import (
     NewsTitleIsTooLongException,
 )
 from domain.ports.command import BaseCommand
-from domain.ports.payload import AbstractCreatePayload, AbstractDeletePayload, AbstractUpdatePayload
+from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.value_objects.common import Id, StringVo
-from domain.value_objects.file import Image, ImageFile
+from domain.value_objects.file import Image
 from pydantic import field_validator
 
 
@@ -52,6 +53,10 @@ class NewsGetCommand(BaseCommand):
     published_at_end: date | None = None
 
 
+class NewsDeleteCommand(BaseCommand):
+    tag_name: NewsTagEnum
+
+
 class NewsCreateCommand(BaseCommand):
     title: NewsTitle
     subtitle: NewsSubtitle | None
@@ -59,6 +64,7 @@ class NewsCreateCommand(BaseCommand):
     author_id: Id
     cover: Image
     images: list[Image]
+    tags: list[NewsTagEnum] | None
 
     @field_validator("images", mode="after")
     @classmethod
@@ -75,20 +81,3 @@ class NewsUpdateCommand(BaseCommand):
     content: NewsContent | None = None
     cover: Image | None = None
     images: list[Image] | None = None
-
-
-class NewsImageUploadCommand(BaseCommand):
-    image: ImageFile
-
-
-class NewsImageCreatePayload(AbstractCreatePayload):
-    news_id: Id
-    image: str
-
-
-class NewsImageUpdatePayload(AbstractUpdatePayload):
-    pass
-
-
-class NewsImageDeletePayload(AbstractDeletePayload):
-    file_name: str

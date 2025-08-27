@@ -1,7 +1,7 @@
 from application.builders.app_service.auth import AuthAppServiceBuilder, RegistrationAppServiceBuilder
 from application.builders.app_service.company import CompanyAppServiceBuilder
 from application.builders.app_service.geo import CityAppServiceBuilder, RegionAppServiceBuilder
-from application.builders.app_service.news import NewsAppServiceBuilder
+from application.builders.app_service.news import NewsAppServiceBuilder, NewsTagAppServiceBuilder
 from application.builders.app_service.notification import NotificationAppServiceBuilder
 from application.builders.app_service.permission import PermissionAppServiceBuilder
 from application.builders.app_service.project_management.accelerator import AcceleratorAppServiceBuilder
@@ -38,7 +38,8 @@ from application.services.auth import AuthAppService, RegistrationAppService
 from application.services.company import CompanyAppService
 from application.services.geo.city import CityAppService
 from application.services.geo.region import RegionAppService
-from application.services.news import NewsAppService
+from application.services.news_management.news import NewsAppService
+from application.services.news_management.news_tag import NewsTagAppService
 from application.services.notification import NotificationAppService
 from application.services.project_management.accelerator import AcceleratorAppService
 from application.services.project_management.admin import ProjectAdminAppService
@@ -87,6 +88,7 @@ class Gateway:
     _project_image_app_service: ProjectImageAppService | None = None
 
     _news_app_service: NewsAppService | None = None
+    _news_tag_app_service: NewsTagAppService | None = None
     _company_app_service: CompanyAppService | None = None
     _accelerator_app_service: AcceleratorAppService | None = None
     _crowdfunding_app_service: CrowdfundingAppService | None = None
@@ -187,6 +189,12 @@ class Gateway:
         if self._news_app_service is None:
             self._news_app_service = NewsAppServiceBuilder.create_service()
         return self._news_app_service
+
+    @property
+    def news_tag_app_service(self) -> NewsTagAppService:
+        if self._news_tag_app_service is None:
+            self._news_tag_app_service = NewsTagAppServiceBuilder.create_service()
+        return self._news_tag_app_service
 
     @property
     def company_app_service(self) -> CompanyAppService:
