@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.project_management.funding_model import FundingModel
 from domain.ports.repository import AbstractReadRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import FundingModelFilter
 
 
@@ -13,5 +13,7 @@ class FundingModelReadRepository(AbstractReadRepository[FundingModel, FundingMod
         pass
 
     @abstractmethod
-    def get_all(self, filter_: FundingModelFilter, pagination: Pagination | None = None) -> list[FundingModel]:
+    def get_all(
+        self, filter_: FundingModelFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[FundingModel]:
         pass

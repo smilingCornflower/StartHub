@@ -1,7 +1,7 @@
 from domain.exceptions.project_management import ProjectBankLoanNotFoundException
 from domain.models.project_management.bank_loan import ProjectBankLoan
 from domain.repositories.project.bank_loan import ProjectBankLoanReadRepository, ProjectBankLoanWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectBankLoanFilter
 from domain.value_objects.project.bank_loan import (
     ProjectBankLoanCreatePaylod,
@@ -19,7 +19,9 @@ class DjProjectBankLoanReadRepository(ProjectBankLoanReadRepository):
             raise ProjectBankLoanNotFoundException(f"ProjectBankLoad with id = {id_.value} not found.")
         return bank_loan
 
-    def get_all(self, filter_: ProjectBankLoanFilter, pagination: Pagination | None = None) -> list[ProjectBankLoan]:
+    def get_all(
+        self, filter_: ProjectBankLoanFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectBankLoan]:
         queryset = ProjectBankLoan.objects.all()
 
         if filter_.project_id:

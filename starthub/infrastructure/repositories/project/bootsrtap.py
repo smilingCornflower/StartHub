@@ -1,7 +1,7 @@
 from domain.exceptions.project_management import ProjectBootstrapNotFoundException
 from domain.models.project_management.bootstrap import ProjectBootstrap
 from domain.repositories.project.bootstrap import ProjectBootstrapReadRepository, ProjectBootstrapWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectBootstrapFilter
 from domain.value_objects.project.bootstrap import (
     ProjectBootstrapCreatePayload,
@@ -20,7 +20,9 @@ class DjProjectBootstrapReadRepository(ProjectBootstrapReadRepository):
             raise ProjectBootstrapNotFoundException(f"ProjectBootsrtap with id = {id_.value} not found.")
         return bootsrtap
 
-    def get_all(self, filter_: ProjectBootstrapFilter, pagination: Pagination | None = None) -> list[ProjectBootstrap]:
+    def get_all(
+        self, filter_: ProjectBootstrapFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectBootstrap]:
         queryset = ProjectBootstrap.objects.all()
 
         if filter_.project_id is not None:

@@ -4,7 +4,7 @@ from domain.models.notification import Notification
 from domain.repositories.notification import NotificationReadRepository
 from domain.repositories.user_management.user import UserReadRepository
 from domain.services.notification import NotificationService
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id
 from domain.value_objects.filter import NotificationFilter
 from domain.value_objects.notification import NotificationGetCommand
 from loguru import logger
@@ -22,7 +22,7 @@ class NotificationAppService(AbstractAppService):
         self._user_read_repositroy = user_read_repositroy
 
     def get_all(
-        self, caller_user_id: Id, target_user_id: Id, command: NotificationGetCommand, pagniation: Pagination
+        self, caller_user_id: Id, target_user_id: Id, command: NotificationGetCommand, pagniation: CursorPagination
     ) -> list[NotificationDto]:
         """
         :raises ViewDeniedPermissionException:

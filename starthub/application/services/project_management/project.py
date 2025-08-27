@@ -75,7 +75,7 @@ from domain.services.project_management.project import ProjectGetService, Projec
 from domain.services.project_management.step import ProjectStepService
 from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
-from domain.value_objects.common import Id, OffsetPagination, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode
 from domain.value_objects.file import PdfFile
@@ -289,7 +289,9 @@ class ProjectGetAppService(AbstractAppService):
         self._user_read_repository = user_read_repository
         self._cloud_storage = cloud_storage
 
-    def get_all(self, filter_: ProjectFilter, pagination: Pagination, user_id: Id | None = None) -> list[ProjectDto]:
+    def get_all(
+        self, filter_: ProjectFilter, pagination: CursorPagination, user_id: Id | None = None
+    ) -> list[ProjectDto]:
         user: User | None = None
         if user_id:
             user = self._user_read_repository.get_by_id(id_=user_id)

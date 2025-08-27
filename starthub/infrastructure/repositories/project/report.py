@@ -1,6 +1,6 @@
 from domain.models.project_management.report import ProjectReport
 from domain.repositories.project.report import ProjectReportReadRepository, ProjectReportWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectReportFilter
 from domain.value_objects.project.report import ProjectReportCreatePayload, ProjectReportId, ProjectUpdatePayload
 from infrastructure.repositories.pagination import apply_pagination
@@ -10,7 +10,9 @@ class DjProjectReportReadRepository(ProjectReportReadRepository):
     def get_by_id(self, id_: ProjectReportId) -> ProjectReport:
         raise NotImplementedError("The method get_by_id() is not implemented yet.")
 
-    def get_all(self, filter_: ProjectReportFilter, pagination: Pagination | None = None) -> list[ProjectReport]:
+    def get_all(
+        self, filter_: ProjectReportFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectReport]:
         queryset = ProjectReport.objects.all()
 
         if filter_.project_id is not None:

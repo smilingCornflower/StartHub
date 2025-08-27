@@ -1,7 +1,7 @@
 from domain.exceptions.news import NewsNotFoundException
 from domain.models.news_management.news import News
 from domain.repositories.news_management.news import NewsReadRepository, NewsWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import NewsFilter
 from domain.value_objects.news_management.news import NewsCreatePayload, NewsUpdatePayload
 from infrastructure.repositories.pagination import apply_pagination
@@ -15,7 +15,7 @@ class DjNewsReadRepository(NewsReadRepository):
             raise NewsNotFoundException(f"News with id = {id_.value} not found.")
         return news
 
-    def get_all(self, filter_: NewsFilter, pagination: Pagination | None = None) -> list[News]:
+    def get_all(self, filter_: NewsFilter, pagination: CursorPagination | OffsetPagination | None = None) -> list[News]:
         qs = News.objects.all()
 
         # Order By

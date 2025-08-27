@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.project_management.report import ProjectReport
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectReportFilter
 from domain.value_objects.project.report import ProjectReportCreatePayload, ProjectReportId, ProjectUpdatePayload
 
@@ -13,7 +13,9 @@ class ProjectReportReadRepository(AbstractReadRepository[ProjectReport, ProjectR
         pass
 
     @abstractmethod
-    def get_all(self, filter_: ProjectReportFilter, pagination: Pagination | None = None) -> list[ProjectReport]:
+    def get_all(
+        self, filter_: ProjectReportFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectReport]:
         pass
 
 

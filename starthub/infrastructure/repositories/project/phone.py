@@ -2,7 +2,7 @@ from django.db.models import Q, QuerySet
 from domain.exceptions.project_management import ProjectPhoneAlreadyExistsException, ProjectPhoneNotFoundException
 from domain.models.project_management.phone import ProjectPhone
 from domain.repositories.project.phone import ProjectPhoneReadRepository, ProjectPhoneWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import ProjectPhoneFilter
 from domain.value_objects.project.phone import ProjectPhoneCreatePayload, ProjectPhoneUpdatePayload
 
@@ -15,7 +15,9 @@ class DjProjectPhoneReadRepository(ProjectPhoneReadRepository):
             raise ProjectPhoneNotFoundException(f"Project phone with id = {id_.value} not found.")
         return project_phone
 
-    def get_all(self, filter_: ProjectPhoneFilter, pagination: Pagination | None = None) -> list[ProjectPhone]:
+    def get_all(
+        self, filter_: ProjectPhoneFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectPhone]:
         queryset: QuerySet[ProjectPhone] = ProjectPhone.objects.all()
         if filter_.project_id:
             queryset = queryset.filter(project_id=filter_.project_id.value)

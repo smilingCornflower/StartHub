@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.permission import Permission
 from domain.ports.repository import AbstractReadRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import PermissionFilter
 
 
@@ -13,5 +13,7 @@ class PermissionReadRepository(AbstractReadRepository[Permission, PermissionFilt
         pass
 
     @abstractmethod
-    def get_all(self, filter_: PermissionFilter, pagination: Pagination | None = None) -> list[Permission]:
+    def get_all(
+        self, filter_: PermissionFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[Permission]:
         pass

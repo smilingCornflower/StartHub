@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.project_management.crowdfunding import ProjectCrowdfunding
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectCrowdfundingFilter
 from domain.value_objects.project.crowdfunding import (
     ProjectCrowdfundingCreatePayload,
@@ -20,7 +20,7 @@ class ProjectCrowdfundingReadRepository(
 
     @abstractmethod
     def get_all(
-        self, filter_: ProjectCrowdfundingFilter, pagination: Pagination | None = None
+        self, filter_: ProjectCrowdfundingFilter, pagination: CursorPagination | OffsetPagination | None = None
     ) -> list[ProjectCrowdfunding]:
         pass
 

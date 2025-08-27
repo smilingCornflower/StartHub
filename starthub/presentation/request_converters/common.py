@@ -5,16 +5,16 @@ from django.http import QueryDict
 from domain.enums.language import LangCodeEnum
 from domain.enums.role import RoleEnum
 from domain.exceptions.validation import DateIsNotIsoFormatException, MissingRequiredFieldException, ValidationException
-from domain.value_objects.common import OffsetPagination, Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.country import CountryCode
 from domain.value_objects.geo import AddressCreateCommand, CityId, RegionId
 from loguru import logger
 from rest_framework.request import Request
 
 
-def request_to_pagination(request: Request) -> Pagination:
+def request_to_pagination(request: Request) -> CursorPagination:
     query_params = request.query_params
-    return Pagination(
+    return CursorPagination(
         last_id=int(cast(str, query_params.get("last_id"))) if "last_id" in query_params else None,
         limit=int(get_required_field(query_params, "limit")),
     )

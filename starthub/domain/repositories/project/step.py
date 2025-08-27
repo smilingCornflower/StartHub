@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.project_management.step import ProjectStep
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import ProjectStepFilter
 from domain.value_objects.project.step import ProjectStepCreatePaylaod, ProjectStepId, ProjectStepUpdatePayload
 
@@ -13,7 +13,9 @@ class ProjectStepReadRepository(AbstractReadRepository[ProjectStep, ProjectStepF
         pass
 
     @abstractmethod
-    def get_all(self, filter_: ProjectStepFilter, pagination: Pagination | None = None) -> list[ProjectStep]:
+    def get_all(
+        self, filter_: ProjectStepFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectStep]:
         pass
 
 

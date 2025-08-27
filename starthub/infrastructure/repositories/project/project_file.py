@@ -1,7 +1,7 @@
 from domain.exceptions.project_management import ProjectFileNotFoundException
 from domain.models.project_management.project_file import ProjectFile
 from domain.repositories.project.project_file import ProjectFileReadRepository, ProjectFileWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectFileFilter
 from domain.value_objects.project.project_file import ProjectFileCreatePayload, ProjectFileId, ProjectFileUpdatePayload
 from infrastructure.repositories.pagination import apply_pagination
@@ -15,7 +15,9 @@ class DjProjectFileReadRepository(ProjectFileReadRepository):
             raise ProjectFileNotFoundException(f"Project file with id = {id_.value} not found.")
         return project_file
 
-    def get_all(self, filter_: ProjectFileFilter, pagination: Pagination | None = None) -> list[ProjectFile]:
+    def get_all(
+        self, filter_: ProjectFileFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectFile]:
         queryset = ProjectFile.objects.all()
 
         if filter_.project_id is not None:

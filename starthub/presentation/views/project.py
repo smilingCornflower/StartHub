@@ -10,7 +10,7 @@ from domain.enums.token import TokenTypeEnum
 from domain.exceptions import CustomException
 from domain.exceptions.project_management import ProjectNotFoundException
 from domain.models.project_management.project import Project
-from domain.value_objects.common import Id, OffsetPagination, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project.image import (
     ProjectImageCreateCommand,
@@ -58,7 +58,7 @@ class ProjectView(APIView):
                 return Response(asdict(project), status=status.HTTP_200_OK)
 
             else:
-                pagination: Pagination = request_to_pagination(request=request)
+                pagination: CursorPagination = request_to_pagination(request=request)
                 project_filter: ProjectFilter = request_to_project_filter(request=request)
                 logger.debug(f"pagination = {pagination}")
 
@@ -126,7 +126,7 @@ class MeProjectView(APIView):
         logger.info(f"GET /my/projects/ request.query_params: {request.query_params}")
         try:
             user_id: Id = get_user_id_or_raises(request=request)
-            pagination: Pagination = request_to_pagination(request=request)
+            pagination: CursorPagination = request_to_pagination(request=request)
 
             projects: list[ProjectDto] = gateway.project_get_app_service.get_all(
                 filter_=ProjectFilter(user_id=user_id), pagination=pagination, user_id=user_id

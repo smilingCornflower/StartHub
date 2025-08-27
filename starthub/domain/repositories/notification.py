@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.notification import Notification
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import NotificationFilter
 from domain.value_objects.notification import NotificationCreatePayload, NotificationId, NotificationUpdatePayload
 
@@ -13,7 +13,9 @@ class NotificationReadRepository(AbstractReadRepository[Notification, Notificati
         pass
 
     @abstractmethod
-    def get_all(self, filter_: NotificationFilter, pagination: Pagination | None = None) -> list[Notification]:
+    def get_all(
+        self, filter_: NotificationFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[Notification]:
         pass
 
 

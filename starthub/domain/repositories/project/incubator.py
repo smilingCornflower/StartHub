@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.project_management.incubator import ProjectIncubator
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectIncubatorFilter
 from domain.value_objects.project.incubator import IncubatorCreatePayload, IncubatorId, IncubatorUpdatePayload
 
@@ -13,7 +13,9 @@ class PojectIncubatorReadRepository(AbstractReadRepository[ProjectIncubator, Pro
         pass
 
     @abstractmethod
-    def get_all(self, filter_: ProjectIncubatorFilter, pagination: Pagination | None = None) -> list[ProjectIncubator]:
+    def get_all(
+        self, filter_: ProjectIncubatorFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectIncubator]:
         pass
 
 

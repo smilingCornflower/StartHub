@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.project_management.image import ProjectImage
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import ProjectImageFilter
 from domain.value_objects.project.image import (
     ProjectImageCreatePayload,
@@ -18,7 +18,9 @@ class ProjectImageReadRepository(AbstractReadRepository[ProjectImage, ProjectIma
         pass
 
     @abstractmethod
-    def get_all(self, filter_: ProjectImageFilter, pagination: Pagination | None = None) -> list[ProjectImage]:
+    def get_all(
+        self, filter_: ProjectImageFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectImage]:
         pass
 
 

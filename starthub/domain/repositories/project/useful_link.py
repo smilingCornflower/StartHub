@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.project_management.useful_link import ProjectUsefulLink
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectUsefulLinkFilter
 from domain.value_objects.project.useful_link import UsefulLinkCreatePayload, UsefulLinkId, UsefulLinkUpdatePayload
 
@@ -16,7 +16,7 @@ class ProjectUsefulLinkReadRepository(
 
     @abstractmethod
     def get_all(
-        self, filter_: ProjectUsefulLinkFilter, pagination: Pagination | None = None
+        self, filter_: ProjectUsefulLinkFilter, pagination: CursorPagination | OffsetPagination | None = None
     ) -> list[ProjectUsefulLink]:
         pass
 

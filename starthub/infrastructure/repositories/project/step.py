@@ -1,6 +1,6 @@
 from domain.models.project_management.step import ProjectStep
 from domain.repositories.project.step import ProjectStepReadRepository, ProjectStepWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import ProjectStepFilter
 from domain.value_objects.project.step import ProjectStepCreatePaylaod, ProjectStepId, ProjectStepUpdatePayload
 from infrastructure.repositories.pagination import apply_pagination
@@ -10,7 +10,9 @@ class DjProjectStepReadRepository(ProjectStepReadRepository):
     def get_by_id(self, id_: ProjectStepId) -> ProjectStep:
         raise NotImplementedError("The method get_by_id() is not implemented yet.")
 
-    def get_all(self, filter_: ProjectStepFilter, pagination: Pagination | None = None) -> list[ProjectStep]:
+    def get_all(
+        self, filter_: ProjectStepFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectStep]:
         queryset = ProjectStep.objects.all()
 
         if filter_.project_id is not None:

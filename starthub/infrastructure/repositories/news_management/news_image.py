@@ -1,6 +1,6 @@
 from domain.models.news_management.news_image import NewsImage
 from domain.repositories.news_management.news_image import NewsImageReadRepository, NewsImageWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import NewsImageFilter
 from domain.value_objects.news_management.news_image import (
     NewsImageCreatePayload,
@@ -13,7 +13,9 @@ class DjNewsImageReadRepository(NewsImageReadRepository):
     def get_by_id(self, id_: Id) -> NewsImage:
         raise NotImplementedError("The method get_by_id() is not implemented yet.")
 
-    def get_all(self, filter_: NewsImageFilter, pagination: Pagination | None = None) -> list[NewsImage]:
+    def get_all(
+        self, filter_: NewsImageFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[NewsImage]:
         qs = NewsImage.objects.all()
 
         if filter_.news_id is not None:

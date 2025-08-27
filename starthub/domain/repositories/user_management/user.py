@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.user_management.user import User, UserPhone
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Id, Pagination, PhoneNumber
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination, PhoneNumber
 from domain.value_objects.filter import UserFilter, UserPhoneFilter
 from domain.value_objects.user_management.user import (
     Email,
@@ -20,7 +20,7 @@ class UserReadRepository(AbstractReadRepository[User, UserFilter, Id]):
         pass
 
     @abstractmethod
-    def get_all(self, filter_: UserFilter, pagination: Pagination | None = None) -> list[User]:
+    def get_all(self, filter_: UserFilter, pagination: CursorPagination | OffsetPagination | None = None) -> list[User]:
         pass
 
     @abstractmethod
@@ -55,7 +55,9 @@ class UserPhoneReadRepository(AbstractReadRepository[UserPhone, UserPhoneFilter,
         pass
 
     @abstractmethod
-    def get_all(self, filter_: UserPhoneFilter, pagination: Pagination | None = None) -> list[UserPhone]:
+    def get_all(
+        self, filter_: UserPhoneFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[UserPhone]:
         pass
 
 

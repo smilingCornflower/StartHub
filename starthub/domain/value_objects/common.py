@@ -195,7 +195,7 @@ class Order(BaseVo):
     value: int
 
 
-class Pagination(BaseVo):
+class CursorPagination(BaseVo):
     last_id: int | None = None
     limit: int
 

@@ -12,7 +12,7 @@ from domain.repositories.project.investment import (
     ProjectInvestmentSocialLinkWriteRepository,
     ProjectInvestmentWriteRepository,
 )
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import (
     ProjectInvestmentFilter,
     ProjectInvestmentPhoneFilter,
@@ -44,7 +44,7 @@ class DjProjectInvestmentReadRepository(ProjectInvestmentReadRepository):
         return investment
 
     def get_all(
-        self, filter_: ProjectInvestmentFilter, pagination: Pagination | None = None
+        self, filter_: ProjectInvestmentFilter, pagination: CursorPagination | OffsetPagination | None = None
     ) -> list[ProjectInvestment]:
         queryset = ProjectInvestment.objects.all()
         if filter_.project_id is not None:
@@ -101,7 +101,7 @@ class DjProjectInvestmentSocialLinkReadRepository(ProjectInvestmentSocialLinkRea
         return investment
 
     def get_all(
-        self, filter_: ProjectInvestmentSocialLinkFilter, pagination: Pagination | None = None
+        self, filter_: ProjectInvestmentSocialLinkFilter, pagination: CursorPagination | OffsetPagination | None = None
     ) -> list[ProjectInvestmentSocialLink]:
         queryset = ProjectInvestmentSocialLink.objects.all()
 
@@ -138,7 +138,7 @@ class DjProjectInvestmentPhoneReadRepository(ProjectInvestmentPhoneReadRepositor
         raise NotImplementedError("The method get_by_id() is not implemented yet.")
 
     def get_all(
-        self, filter_: ProjectInvestmentPhoneFilter, pagination: Pagination | None = None
+        self, filter_: ProjectInvestmentPhoneFilter, pagination: CursorPagination | OffsetPagination | None = None
     ) -> list[ProjectInvestmentPhone]:
         queryset = ProjectInvestmentPhone.objects.all()
 

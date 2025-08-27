@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.project_management.team_member import TeamMember
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import TeamMemberFilter
 from domain.value_objects.project.team_member import TeamMemberCreatePayload, TeamMemberUpdatePayload
 
@@ -13,7 +13,9 @@ class TeamMemberReadRepository(AbstractReadRepository[TeamMember, TeamMemberFilt
         pass
 
     @abstractmethod
-    def get_all(self, filter_: TeamMemberFilter, pagination: Pagination | None = None) -> list[TeamMember]:
+    def get_all(
+        self, filter_: TeamMemberFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[TeamMember]:
         pass
 
 

@@ -5,7 +5,7 @@ from domain.events.project import ProjectApprovedNotificationEvent, ProjectRejec
 from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.user_management.user import UserReadRepository
 from domain.services.project_management.admin import ProjectAdminService
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id
 from domain.value_objects.notification import NotificationMessage, NotificationTitle
 from domain.value_objects.project.report import ProjectReportContent
 from domain.value_objects.project.submission import ProjectRejectCommand
@@ -26,7 +26,7 @@ class ProjectAdminAppService(AbstractAppService):
         self._project_read_repository = project_read_repository
         self._project_get_app_service = project_get_app_service
 
-    def get_submissions(self, user_id: Id, pagination: Pagination) -> list[ProjectDto]:
+    def get_submissions(self, user_id: Id, pagination: CursorPagination) -> list[ProjectDto]:
         raise NotImplementedError
 
     def approve_submission(self, user_id: Id, project_id: Id) -> None:

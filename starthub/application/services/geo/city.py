@@ -6,7 +6,7 @@ from domain.constants import DEFAULT_NOT_AVAILABLE
 from domain.enums.language import LangCodeEnum
 from domain.models.geo.city import City
 from domain.repositories.geo.city import CityReadRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination
 from domain.value_objects.filter import CityFilter
 from domain.value_objects.geo import CityGetCommand
 
@@ -18,7 +18,7 @@ class CityAppService(AbstractAppService):
     ):
         self._city_read_repository = city_read_repository
 
-    def get(self, command: CityGetCommand, pagination: Pagination | None = None) -> list[CityDto]:
+    def get(self, command: CityGetCommand, pagination: CursorPagination | None = None) -> list[CityDto]:
         city_filter: CityFilter = self._convert_command_to_filter(command=command)
         cities: list[City] = self._city_read_repository.get_all(filter_=city_filter, pagination=pagination)
         return [self._create_dto(languages=command.languages, city=c) for c in cities]

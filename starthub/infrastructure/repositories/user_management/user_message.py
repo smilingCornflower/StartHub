@@ -1,7 +1,7 @@
 from domain.exceptions.user_message import UserMessageNotFoundException
 from domain.models.user_management.message import UserMessage
 from domain.repositories.user_management.user_message import UserMessageReadRepository, UserMessageWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import UserMessageFilter
 from domain.value_objects.user_management.user_message import (
     UserMessageCreatePayload,
@@ -20,7 +20,9 @@ class DjUserMessageReadRepository(UserMessageReadRepository):
             raise UserMessageNotFoundException(f"User message with id = {id_.value} not found.")
         return user_message
 
-    def get_all(self, filter_: UserMessageFilter, pagination: Pagination | None = None) -> list[UserMessage]:
+    def get_all(
+        self, filter_: UserMessageFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[UserMessage]:
         queryset = UserMessage.objects.all()
 
         if filter_.user_id is not None:

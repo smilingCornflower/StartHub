@@ -4,7 +4,7 @@ from typing import Generic, TypeVar
 from domain.ports.filter import AbstractFilter
 from domain.ports.model import AbstractModel
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 
 T = TypeVar("T", bound=AbstractModel)
 F = TypeVar("F", bound=AbstractFilter)
@@ -20,7 +20,7 @@ class AbstractReadRepository(ABC, Generic[T, F, ID]):
         pass
 
     @abstractmethod
-    def get_all(self, filter_: F, pagination: Pagination | None = None) -> list[T]:
+    def get_all(self, filter_: F, pagination: CursorPagination | OffsetPagination | None = None) -> list[T]:
         pass
 
 

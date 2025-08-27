@@ -1,7 +1,7 @@
 from domain.exceptions.notification import NotificationNotFounException
 from domain.models.notification import Notification
 from domain.repositories.notification import NotificationReadRepository, NotificationWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import NotificationFilter
 from domain.value_objects.notification import NotificationCreatePayload, NotificationId, NotificationUpdatePayload
 from infrastructure.repositories.pagination import apply_pagination
@@ -15,7 +15,9 @@ class DjNotificationReadRepository(NotificationReadRepository):
             raise NotificationNotFounException(f"Notification with id = {id_.value} not found.")
         return notification
 
-    def get_all(self, filter_: NotificationFilter, pagination: Pagination | None = None) -> list[Notification]:
+    def get_all(
+        self, filter_: NotificationFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[Notification]:
         queryset = Notification.objects.all()
 
         if pagination is not None:

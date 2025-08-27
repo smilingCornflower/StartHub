@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.project_management.accelerator import ProjectAccelerator
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectAcceleratorFilter
 from domain.value_objects.project.accelerator import (
     AcceleratorId,
@@ -20,7 +20,7 @@ class ProjectAcceleratorReadRepository(
 
     @abstractmethod
     def get_all(
-        self, filter_: ProjectAcceleratorFilter, pagination: Pagination | None = None
+        self, filter_: ProjectAcceleratorFilter, pagination: CursorPagination | OffsetPagination | None = None
     ) -> list[ProjectAccelerator]:
         pass
 
