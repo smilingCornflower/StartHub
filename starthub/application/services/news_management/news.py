@@ -36,7 +36,7 @@ from domain.value_objects.cloud_storage import (
     CloudStorageDeletePayload,
     CloudStorageUploadPayload,
 )
-from domain.value_objects.common import CursorPagination, Id
+from domain.value_objects.common import Id, OffsetPagination
 from domain.value_objects.file import Image
 from domain.value_objects.filter import NewsFilter, NewsImageFilter
 from domain.value_objects.news_management.news import (
@@ -151,7 +151,7 @@ class NewsAppService(NewsPermissionAppService):
 
         return news_dto
 
-    def get_many(self, pagination: CursorPagination, command: NewsGetCommand) -> list[NewsShortDto]:
+    def get_many(self, pagination: OffsetPagination, command: NewsGetCommand) -> list[NewsShortDto]:
         logger.debug("get_many()")
 
         news_lst: list[News] = self._news_read_repository.get_all(
