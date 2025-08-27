@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.project_management.bootstrap import ProjectBootstrap
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectBootstrapFilter
 from domain.value_objects.project.bootstrap import (
     ProjectBootstrapCreatePayload,
@@ -19,7 +19,9 @@ class ProjectBootstrapReadRepository(
         pass
 
     @abstractmethod
-    def get_all(self, filter_: ProjectBootstrapFilter, pagination: Pagination | None = None) -> list[ProjectBootstrap]:
+    def get_all(
+        self, filter_: ProjectBootstrapFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectBootstrap]:
         pass
 
 

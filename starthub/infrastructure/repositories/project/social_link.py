@@ -2,7 +2,7 @@ from django.db.models import Q, QuerySet
 from domain.exceptions.project_management import ProjectSocialLinkNotFoundException
 from domain.models.project_management.social_link import ProjectSocialLink
 from domain.repositories.project.social_link import ProjectSocialLinkReadRepository, ProjectSocialLinkWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import ProjectSocialLinkFilter
 from domain.value_objects.project.social_link import ProjectSocialLinkCreatePayload, ProjectSocialLinkUpdatePayload
 
@@ -15,7 +15,7 @@ class DjProjectSocialLinkReadRepository(ProjectSocialLinkReadRepository):
         return social_link
 
     def get_all(
-        self, filter_: ProjectSocialLinkFilter, pagination: Pagination | None = None
+        self, filter_: ProjectSocialLinkFilter, pagination: CursorPagination | OffsetPagination | None = None
     ) -> list[ProjectSocialLink]:
         queryset: QuerySet[ProjectSocialLink] = ProjectSocialLink.objects.all()
         if filter_.project_id:

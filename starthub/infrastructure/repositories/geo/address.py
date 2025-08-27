@@ -1,15 +1,18 @@
 from domain.models.geo.address import Address
 from domain.repositories.geo.address import AddressReadRepository, AddressWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import AddressFilter
 from domain.value_objects.geo import AddressCreatePayload, AddressUpdatePayload
+from infrastructure.repositories.pagination import apply_pagination
 
 
 class DjAddressReadRepository(AddressReadRepository):
     def get_by_id(self, id_: Id) -> Address:
         raise NotImplementedError("The method get_by_id() is not implemented yet.")
 
-    def get_all(self, filter_: AddressFilter, pagination: Pagination | None = None) -> list[Address]:
+    def get_all(
+        self, filter_: AddressFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[Address]:
         queryset = Address.objects.all().order_by("-id")
 
         if filter_.address_id:
@@ -29,14 +32,9 @@ class DjAddressReadRepository(AddressReadRepository):
         if filter_.raw_address:
             queryset = queryset.filter(raw_address=filter_.raw_address)
 
-        if pagination and pagination.last_id is not None:
-            queryset = queryset.filter(id__lt=pagination.last_id)
-
-        if pagination and pagination.limit is not None:
-            result = list(queryset.distinct()[: pagination.limit])
-        else:
-            result = list(queryset.distinct())
-        return result
+        if pagination:
+            return apply_pagination(queryset, pagination)
+        return list(queryset.distinct())
 
 
 class DjAddressWriteRepository(AddressWriteRepository):

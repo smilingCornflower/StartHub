@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models import ProjectBankLoan
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectBankLoanFilter
 from domain.value_objects.project.bank_loan import (
     ProjectBankLoanCreatePaylod,
@@ -19,7 +19,9 @@ class ProjectBankLoanReadRepository(
         pass
 
     @abstractmethod
-    def get_all(self, filter_: ProjectBankLoanFilter, pagination: Pagination | None = None) -> list[ProjectBankLoan]:
+    def get_all(
+        self, filter_: ProjectBankLoanFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectBankLoan]:
         pass
 
 

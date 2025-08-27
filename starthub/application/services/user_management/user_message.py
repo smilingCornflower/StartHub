@@ -6,7 +6,7 @@ from domain.models.user_management.message import UserMessage
 from domain.repositories.user_management.user import UserReadRepository
 from domain.repositories.user_management.user_message import UserMessageReadRepository
 from domain.services.users_management.user_message import UserMessageService
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id
 from domain.value_objects.filter import UserMessageFilter
 from domain.value_objects.user_management.user_message import (
     UserMessageCreateCommand,
@@ -26,7 +26,7 @@ class UserMessageAppService(AbstractAppService):
         self._user_read_repository = user_read_repository
         self._user_message_read_repository = user_message_read_repository
 
-    def get(self, user_id: Id, pagination: Pagination, command: UserMessageGetCommand) -> list[UserMessageDto]:
+    def get(self, user_id: Id, pagination: CursorPagination, command: UserMessageGetCommand) -> list[UserMessageDto]:
         user = self._user_read_repository.get_by_id(id_=user_id)
         self._user_message_service.check_permission_to_view_any_messages(user=user)
 
@@ -35,7 +35,7 @@ class UserMessageAppService(AbstractAppService):
 
         return [self._create_dto(message=i) for i in messages]
 
-    def get_my(self, user_id: Id, pagination: Pagination, command: UserMessageGetCommand) -> list[UserMessageDto]:
+    def get_my(self, user_id: Id, pagination: CursorPagination, command: UserMessageGetCommand) -> list[UserMessageDto]:
         message_filter = UserMessageFilter(user_id=user_id, is_read=command.is_read, order_by=command.order_by)
         messages = self._user_message_read_repository.get_all(filter_=message_filter, pagination=pagination)
 

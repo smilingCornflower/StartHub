@@ -5,7 +5,7 @@ from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.project.report import ProjectReportReadRepository
 from domain.repositories.user_management.user import UserReadRepository
 from domain.services.project_management.report import ProjectReportService
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id
 from domain.value_objects.filter import ProjectReportFilter
 from loguru import logger
 
@@ -23,7 +23,9 @@ class ProjectReportAppService(AbstractAppService):
         self._user_read_repository = user_read_repository
         self._project_read_repository = project_read_repository
 
-    def get_reports_to_project(self, user_id: Id, project_id: Id, pagination: Pagination) -> list[ProjectReportDto]:
+    def get_reports_to_project(
+        self, user_id: Id, project_id: Id, pagination: CursorPagination
+    ) -> list[ProjectReportDto]:
         user = self._user_read_repository.get_by_id(id_=user_id)
         project = self._project_read_repository.get_by_id(id_=project_id)
         self._project_report_service.check_can_user_read_reports_for_project(user=user, project=project)

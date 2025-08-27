@@ -8,7 +8,7 @@ from domain.repositories.user_management.user import (
     UserReadRepository,
     UserWriteRepository,
 )
-from domain.value_objects.common import Id, Pagination, PhoneNumber
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination, PhoneNumber
 from domain.value_objects.filter import UserFilter, UserPhoneFilter
 from domain.value_objects.user_management.user import (
     Email,
@@ -30,7 +30,7 @@ class DjUserReadRepository(UserReadRepository):
             raise UserNotFoundException(f"An user with id = {id_.value} not found.")
         return user
 
-    def get_all(self, filter_: UserFilter, pagination: Pagination | None = None) -> list[User]:
+    def get_all(self, filter_: UserFilter, pagination: CursorPagination | OffsetPagination | None = None) -> list[User]:
         queryset = User.objects.all()
 
         if filter_.id_:
@@ -113,7 +113,9 @@ class DjUserPhoneReadRepository(UserPhoneReadRepository):
     def get_by_id(self, id_: Id) -> UserPhone:
         raise NotImplementedError("The method get_by_id() not implemented yet.")
 
-    def get_all(self, filter_: UserPhoneFilter, pagination: Pagination | None = None) -> list[UserPhone]:
+    def get_all(
+        self, filter_: UserPhoneFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[UserPhone]:
         qs = UserPhone.objects.all()
 
         if filter_.user_id is not None:

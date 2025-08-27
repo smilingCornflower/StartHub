@@ -4,7 +4,7 @@ from domain.repositories.project.crowdfunding import (
     ProjectCrowdfundingReadRepository,
     ProjectCrowdfundingWriteRepository,
 )
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectCrowdfundingFilter
 from domain.value_objects.project.crowdfunding import (
     ProjectCrowdfundingCreatePayload,
@@ -58,7 +58,7 @@ class DjProjectCrowdFundingReadRepository(ProjectCrowdfundingReadRepository):
         return crowdfunding
 
     def get_all(
-        self, filter_: ProjectCrowdfundingFilter, pagination: Pagination | None = None
+        self, filter_: ProjectCrowdfundingFilter, pagination: CursorPagination | OffsetPagination | None = None
     ) -> list[ProjectCrowdfunding]:
         queryset = ProjectCrowdfunding.objects.all()
 

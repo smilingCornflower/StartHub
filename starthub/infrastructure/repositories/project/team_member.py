@@ -1,7 +1,7 @@
 from domain.exceptions.project_management import TeamMemberNotFoundException
 from domain.models.project_management.team_member import TeamMember
 from domain.repositories.project.team_member import TeamMemberReadRepository, TeamMemberWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import TeamMemberFilter
 from domain.value_objects.project.team_member import TeamMemberCreatePayload, TeamMemberUpdatePayload
 
@@ -13,7 +13,9 @@ class DjTeamMemberReadRepository(TeamMemberReadRepository):
             raise TeamMemberNotFoundException(f"Team member with id = {id_.value} does not exist.")
         return team_member
 
-    def get_all(self, filter_: TeamMemberFilter, pagination: Pagination | None = None) -> list[TeamMember]:
+    def get_all(
+        self, filter_: TeamMemberFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[TeamMember]:
         return list(TeamMember.objects.all())
 
 

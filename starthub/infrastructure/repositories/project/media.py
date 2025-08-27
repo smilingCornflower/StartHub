@@ -1,7 +1,7 @@
 from domain.exceptions.project_management import ProjectMediaNotFoundException
 from domain.models.project_management.media import ProjectMedia
 from domain.repositories.project.media import ProjectMediaReadRepository, ProjectMediaWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectMediaFilter
 from domain.value_objects.project.media import ProjectMediaCreatePayload, ProjectMediaId, ProjectMediaUpdatePayload
 from infrastructure.repositories.pagination import apply_pagination
@@ -17,7 +17,9 @@ class DjProjectMediaReadRepository(ProjectMediaReadRepository):
 
         return project_media
 
-    def get_all(self, filter_: ProjectMediaFilter, pagination: Pagination | None = None) -> list[ProjectMedia]:
+    def get_all(
+        self, filter_: ProjectMediaFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectMedia]:
         queryset = ProjectMedia.objects.all()
 
         if filter_.project_id is not None:

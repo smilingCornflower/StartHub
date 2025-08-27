@@ -1,7 +1,7 @@
 from domain.exceptions.project_management import ProjectUsefulLinkNotFoundException
 from domain.models.project_management.useful_link import ProjectUsefulLink
 from domain.repositories.project.useful_link import ProjectUsefulLinkReadRepository, ProjectUsefulLinkWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectUsefulLinkFilter
 from domain.value_objects.project.useful_link import UsefulLinkCreatePayload, UsefulLinkId, UsefulLinkUpdatePayload
 from infrastructure.repositories.pagination import apply_pagination
@@ -18,7 +18,7 @@ class DjProjectUsefulLinkReadRepository(ProjectUsefulLinkReadRepository):
         return useful_link
 
     def get_all(
-        self, filter_: ProjectUsefulLinkFilter, pagination: Pagination | None = None
+        self, filter_: ProjectUsefulLinkFilter, pagination: CursorPagination | OffsetPagination | None = None
     ) -> list[ProjectUsefulLink]:
         queryset = ProjectUsefulLink.objects.all()
 

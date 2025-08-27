@@ -4,12 +4,12 @@ import pydantic
 from application.dto.news import NewsFullDto, NewsShortDto
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import Id, OffsetPagination
 from infrastructure.auth.token import get_access_payload_dto_from_headers
 from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
-from presentation.request_converters.common import request_to_pagination
+from presentation.request_converters.common import request_to_offset_pagination
 from presentation.request_converters.news import (
     request_to_news_create_command,
     request_to_news_get_command,
@@ -33,7 +33,7 @@ class NewsView(APIView):
                 news: NewsFullDto | list[NewsShortDto] = gateway.news_app_service.get_one(news_id=news_id)
             else:
                 command = request_to_news_get_command(request=request)
-                pagination: Pagination = request_to_pagination(request=request)
+                pagination: OffsetPagination = request_to_offset_pagination(request=request)
                 news = gateway.news_app_service.get_many(pagination=pagination, command=command)
             if isinstance(news, NewsFullDto):
                 return Response(asdict(news), status=status.HTTP_200_OK)

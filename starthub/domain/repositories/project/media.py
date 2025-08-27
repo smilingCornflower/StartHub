@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.project_management.media import ProjectMedia
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectMediaFilter
 from domain.value_objects.project.media import ProjectMediaCreatePayload, ProjectMediaId, ProjectMediaUpdatePayload
 
@@ -13,7 +13,9 @@ class ProjectMediaReadRepository(AbstractReadRepository[ProjectMedia, ProjectMed
         pass
 
     @abstractmethod
-    def get_all(self, filter_: ProjectMediaFilter, pagination: Pagination | None = None) -> list[ProjectMedia]:
+    def get_all(
+        self, filter_: ProjectMediaFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectMedia]:
         pass
 
 

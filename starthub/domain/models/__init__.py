@@ -78,6 +78,6 @@ __all__ = [
     "News",
     "NewsImage",
     "NewsTag",
-    "NewsTagLink",
+    "NewsTagsLink",
     "Notification",
 ]

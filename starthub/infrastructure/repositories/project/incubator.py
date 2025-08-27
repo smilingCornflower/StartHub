@@ -1,7 +1,7 @@
 from domain.exceptions.project_management import ProjectIncubatorNotFoundException
 from domain.models.project_management.incubator import ProjectIncubator
 from domain.repositories.project.incubator import PojectIncubatorReadRepository, ProjectIncubatorWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectIncubatorFilter
 from domain.value_objects.project.incubator import IncubatorCreatePayload, IncubatorId, IncubatorUpdatePayload
 from infrastructure.repositories.pagination import apply_pagination
@@ -11,7 +11,9 @@ class DjProjectIncubatorReadRepository(PojectIncubatorReadRepository):
     def get_by_id(self, id_: IncubatorId) -> ProjectIncubator:
         raise NotImplementedError("The method get_by_id() is not implemented yet.")
 
-    def get_all(self, filter_: ProjectIncubatorFilter, pagination: Pagination | None = None) -> list[ProjectIncubator]:
+    def get_all(
+        self, filter_: ProjectIncubatorFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectIncubator]:
         queryset = ProjectIncubator.objects.all()
         if filter_.project_id is not None:
             queryset = queryset.filter(project_id=filter_.project_id.value)

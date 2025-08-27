@@ -2,7 +2,7 @@ from abc import abstractmethod
 
 from domain.models.news_management.news_tag import NewsTagsLink
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import NewsTagsLinkFilter
 from domain.value_objects.news_management.news_tags_link import NewsTagsLinkCreatePayload, NewsTagsLinkUpdatePayload
 
@@ -13,7 +13,9 @@ class NewsTagsLinkReadRepository(AbstractReadRepository[NewsTagsLink, NewsTagsLi
         pass
 
     @abstractmethod
-    def get_all(self, filter_: NewsTagsLinkFilter, pagination: Pagination | None = None) -> list[NewsTagsLink]:
+    def get_all(
+        self, filter_: NewsTagsLinkFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[NewsTagsLink]:
         pass
 
 

@@ -1,9 +1,10 @@
 from domain.exceptions.project_management import ProjectNotFoundException
 from domain.models.project_management.project import Project
 from domain.repositories.project.project import ProjectReadRepository, ProjectWriteRepository
-from domain.value_objects.common import Id, Pagination, Slug
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination, Slug
 from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project.project import ProjectCreatePayload, ProjectUpdatePayload
+from infrastructure.repositories.pagination import apply_pagination
 
 
 class DjProjectReadRepository(ProjectReadRepository):
@@ -15,7 +16,9 @@ class DjProjectReadRepository(ProjectReadRepository):
             raise ProjectNotFoundException(f"Project with id = {id_.value} not found.")
         return project
 
-    def get_all(self, filter_: ProjectFilter, pagination: Pagination | None = None) -> list[Project]:
+    def get_all(
+        self, filter_: ProjectFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[Project]:
         queryset = Project.objects.all().order_by("-id")
 
         if filter_.category_slug:
@@ -32,14 +35,9 @@ class DjProjectReadRepository(ProjectReadRepository):
         if filter_.exclude_statuses:
             queryset = queryset.exclude(status__in=[i.value for i in filter_.exclude_statuses])
 
-        if pagination and pagination.last_id is not None:
-            queryset = queryset.filter(id__lt=pagination.last_id)
-
-        if pagination and pagination.limit is not None:
-            result = list(queryset.distinct()[: pagination.limit])
-        else:
-            result = list(queryset.distinct())
-        return result
+        if pagination:
+            return apply_pagination(queryset=queryset, pagination=pagination)
+        return list(queryset.distinct())
 
     def get_by_slug(self, slug: Slug) -> Project:
         """:raises ProjectNotFoundException:"""

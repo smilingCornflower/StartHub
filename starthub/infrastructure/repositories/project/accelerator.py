@@ -1,7 +1,7 @@
 from domain.exceptions.project_management import ProjectAcceleratorNotFoundException
 from domain.models.project_management.accelerator import ProjectAccelerator
 from domain.repositories.project.accelerator import ProjectAcceleratorReadRepository, ProjectAcceleratorWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectAcceleratorFilter
 from domain.value_objects.project.accelerator import (
     AcceleratorId,
@@ -19,7 +19,7 @@ class DjProjectAcceleratorReadRepository(ProjectAcceleratorReadRepository):
         return accelerator
 
     def get_all(
-        self, filter_: ProjectAcceleratorFilter, pagination: Pagination | None = None
+        self, filter_: ProjectAcceleratorFilter, pagination: CursorPagination | OffsetPagination | None = None
     ) -> list[ProjectAccelerator]:
         queryset = ProjectAccelerator.objects.all()
         if filter_.project_id is not None:

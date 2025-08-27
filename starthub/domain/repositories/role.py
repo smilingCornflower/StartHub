@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from domain.enums.role import RoleEnum
 from domain.models.role import Role
 from domain.ports.repository import AbstractReadRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import RoleFilter
 
 
@@ -13,7 +13,7 @@ class RoleReadRepository(AbstractReadRepository[Role, RoleFilter, Id], ABC):
         pass
 
     @abstractmethod
-    def get_all(self, filter_: RoleFilter, pagination: Pagination | None = None) -> list[Role]:
+    def get_all(self, filter_: RoleFilter, pagination: CursorPagination | OffsetPagination | None = None) -> list[Role]:
         pass
 
     @abstractmethod

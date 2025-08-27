@@ -1,7 +1,7 @@
 from domain.exceptions.project_management import ProjectCategoryNotFoundException
 from domain.models.project_management.category import ProjectCategory
 from domain.repositories.project.category import ProjectCategoryReadRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import ProjectCategoryFilter
 from infrastructure.repositories.pagination import apply_pagination
 
@@ -16,7 +16,9 @@ class DjProjectCategoryReadRepository(ProjectCategoryReadRepository):
 
         return project_category
 
-    def get_all(self, filter_: ProjectCategoryFilter, pagination: Pagination | None = None) -> list[ProjectCategory]:
+    def get_all(
+        self, filter_: ProjectCategoryFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectCategory]:
         queryset = ProjectCategory.objects.all()
 
         if filter_.project_id is not None:

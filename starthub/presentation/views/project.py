@@ -10,7 +10,7 @@ from domain.enums.token import TokenTypeEnum
 from domain.exceptions import CustomException
 from domain.exceptions.project_management import ProjectNotFoundException
 from domain.models.project_management.project import Project
-from domain.value_objects.common import Id, OffsetPagination, Pagination
+from domain.value_objects.common import Id, OffsetPagination
 from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project.image import (
     ProjectImageCreateCommand,
@@ -23,7 +23,7 @@ from infrastructure.auth.token import get_access_or_anonymous_payload_dto_from_h
 from infrastructure.auth.user import get_user_id_or_none, get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
-from presentation.request_converters.common import request_to_offset_pagination, request_to_pagination
+from presentation.request_converters.common import request_to_offset_pagination
 from presentation.request_converters.project.project_create_command import request_to_project_create_command
 from presentation.request_converters.project.project_filter import request_to_project_filter
 from presentation.request_converters.project.project_image import request_files_to_project_image_create_command
@@ -58,7 +58,7 @@ class ProjectView(APIView):
                 return Response(asdict(project), status=status.HTTP_200_OK)
 
             else:
-                pagination: Pagination = request_to_pagination(request=request)
+                pagination: OffsetPagination = request_to_offset_pagination(request=request)
                 project_filter: ProjectFilter = request_to_project_filter(request=request)
                 logger.debug(f"pagination = {pagination}")
 
@@ -126,7 +126,7 @@ class MeProjectView(APIView):
         logger.info(f"GET /my/projects/ request.query_params: {request.query_params}")
         try:
             user_id: Id = get_user_id_or_raises(request=request)
-            pagination: Pagination = request_to_pagination(request=request)
+            pagination: OffsetPagination = request_to_offset_pagination(request=request)
 
             projects: list[ProjectDto] = gateway.project_get_app_service.get_all(
                 filter_=ProjectFilter(user_id=user_id), pagination=pagination, user_id=user_id
@@ -223,7 +223,7 @@ class ProjectSearchView(APIView):
                 user_id = Id(value=int(token.sub))
 
             search_params: ProjectSearchParams = request_data_to_project_search_params(query=request.query_params)
-            offset_pagination: OffsetPagination = request_to_offset_pagination(query_params=request.query_params)
+            offset_pagination: OffsetPagination = request_to_offset_pagination(request=request)
             logger.debug(f"search_params = {search_params}")
             logger.debug(f"offset_pagination = {offset_pagination}")
 

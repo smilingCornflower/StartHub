@@ -6,7 +6,7 @@ from domain.constants import DEFAULT_NOT_AVAILABLE
 from domain.enums.language import LangCodeEnum
 from domain.models.geo.region import Region
 from domain.repositories.geo.region import RegionReadRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination
 from domain.value_objects.filter import RegionFilter
 from domain.value_objects.geo import RegionGetCommand
 
@@ -18,7 +18,7 @@ class RegionAppService(AbstractAppService):
     ):
         self._region_read_repository = region_read_repository
 
-    def get(self, command: RegionGetCommand, pagination: Pagination | None = None) -> list[RegionDto]:
+    def get(self, command: RegionGetCommand, pagination: CursorPagination | None = None) -> list[RegionDto]:
         region_filter = self._convert_command_to_filter(command=command)
         regions = self._region_read_repository.get_all(filter_=region_filter, pagination=pagination)
         return [self._create_dto(region=region, languages=command.languages) for region in regions]

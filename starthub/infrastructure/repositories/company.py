@@ -7,7 +7,7 @@ from domain.repositories.company import (
     CompanyReadRepository,
     CompanyWriteRepository,
 )
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.company import (
     CompanyCreatePayload,
     CompanyFounderCreatePayload,
@@ -25,7 +25,9 @@ class DjCompanyReadRepository(CompanyReadRepository):
             raise CompanyNotFoundException(f"Company with id = {id_.value} does not exist.")
         return company
 
-    def get_all(self, filter_: CompanyFilter, pagination: Pagination | None = None) -> list[Company]:
+    def get_all(
+        self, filter_: CompanyFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[Company]:
         queryset: QuerySet[Company] = Company.objects.all()
 
         if filter_.business_id:
@@ -89,7 +91,9 @@ class DjCompanyFounderReadRepository(CompanyFounderReadRepository):
             raise CompanyFounderNotFoundException(f"CompanyFounder with id = {id_.value} does not exist.")
         return founder
 
-    def get_all(self, filter_: CompanyFounderFilter, pagination: Pagination | None = None) -> list[CompanyFounder]:
+    def get_all(
+        self, filter_: CompanyFounderFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[CompanyFounder]:
         queryset = CompanyFounder.objects.all()
         if filter_.company_id:
             queryset = queryset.filter(company_id=filter_.company_id.value)

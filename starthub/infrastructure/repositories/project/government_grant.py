@@ -4,7 +4,7 @@ from domain.repositories.project.government_grant import (
     ProjectGovernmentGrantReadRepository,
     ProjectGovernmentGrantWriteRepository,
 )
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import ProjectGovernmentGrantFilter
 from domain.value_objects.project.government_grant import (
     ProjectGovernmentGrantId,
@@ -23,7 +23,7 @@ class DjProjectGovernmentGrantReadRepository(ProjectGovernmentGrantReadRepositor
         return grant
 
     def get_all(
-        self, filter_: ProjectGovernmentGrantFilter, pagination: Pagination | None = None
+        self, filter_: ProjectGovernmentGrantFilter, pagination: CursorPagination | OffsetPagination | None = None
     ) -> list[ProjectGovernmentGrant]:
         queryset = ProjectGovernmentGrant.objects.all()
 

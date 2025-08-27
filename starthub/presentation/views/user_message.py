@@ -6,7 +6,7 @@ from domain.exceptions import CustomException
 from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
-from presentation.request_converters.common import request_to_pagination
+from presentation.request_converters.common import request_to_cursor_pagination
 from presentation.request_converters.user_management.user_message import (
     request_to_user_message_create_command,
     request_to_user_message_get_command,
@@ -26,7 +26,7 @@ class UserMessageView(APIView):
 
         try:
             user_id = get_user_id_or_raises(request=request)
-            pagination = request_to_pagination(request=request)
+            pagination = request_to_cursor_pagination(request=request)
             command = request_to_user_message_get_command(request=request)
             messages = gateway.user_message_app_service.get(user_id=user_id, command=command, pagination=pagination)
             return Response(list(map(asdict, messages)), status=status.HTTP_200_OK)
@@ -57,7 +57,7 @@ class MeUserMessageView(APIView):
 
         try:
             user_id = get_user_id_or_raises(request=request)
-            pagination = request_to_pagination(request=request)
+            pagination = request_to_cursor_pagination(request=request)
             command = request_to_user_message_get_command(request=request)
             messages = gateway.user_message_app_service.get_my(user_id=user_id, command=command, pagination=pagination)
             return Response(list(map(asdict, messages)), status=status.HTTP_200_OK)

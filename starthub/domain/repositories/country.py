@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.geo.country import Country
 from domain.ports.repository import AbstractReadRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.country import CountryCode
 from domain.value_objects.filter import CountryFilter
 
@@ -14,7 +14,9 @@ class CountryReadRepository(AbstractReadRepository[Country, CountryFilter, Id], 
         pass
 
     @abstractmethod
-    def get_all(self, filter_: CountryFilter, pagination: Pagination | None = None) -> list[Country]:
+    def get_all(
+        self, filter_: CountryFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[Country]:
         pass
 
     @abstractmethod

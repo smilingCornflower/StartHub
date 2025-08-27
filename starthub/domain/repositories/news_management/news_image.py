@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.news_management.news_image import NewsImage
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import NewsImageFilter
 from domain.value_objects.news_management.news_image import (
     NewsImageCreatePayload,
@@ -17,7 +17,9 @@ class NewsImageReadRepository(AbstractReadRepository[NewsImage, NewsImageFilter,
         pass
 
     @abstractmethod
-    def get_all(self, filter_: NewsImageFilter, pagination: Pagination | None = None) -> list[NewsImage]:
+    def get_all(
+        self, filter_: NewsImageFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[NewsImage]:
         pass
 
 

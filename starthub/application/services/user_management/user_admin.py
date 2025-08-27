@@ -5,7 +5,7 @@ from domain.models.user_management.user import User
 from domain.repositories.role import RoleReadRepository
 from domain.repositories.user_management.user import UserReadRepository
 from domain.services.users_management.user_admin import UserAdminService
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import Id, OffsetPagination
 from domain.value_objects.filter import UserFilter
 from domain.value_objects.user_management.user import UserGetCommand
 from domain.value_objects.user_management.user_admin import UserAdminUpdateCommand
@@ -65,7 +65,7 @@ class UserAdminGetAppService(AbstractAppService):
         self._user_admin_service = user_admin_service
         self._user_read_repository = user_read_repository
 
-    def get_all(self, user_id: Id, command: UserGetCommand, pagination: Pagination) -> list[UserFullDto]:
+    def get_all(self, user_id: Id, command: UserGetCommand, pagination: OffsetPagination) -> list[UserFullDto]:
         user = self._user_read_repository.get_by_id(id_=user_id)
         self._user_admin_service.check_permission_to_view_any_user_details(user=user)
 

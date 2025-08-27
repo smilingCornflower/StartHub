@@ -9,7 +9,7 @@ from domain.repositories.geo.address import AddressWriteRepository
 from domain.repositories.user_management.user import UserReadRepository
 from domain.services.address import AddressService
 from domain.services.company import CompanyService
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id
 from domain.value_objects.company import CompanyUpdateCommand, CompanyUpdatePayload
 from domain.value_objects.filter import CompanyFilter
 from domain.value_objects.geo import AddressId
@@ -31,7 +31,7 @@ class CompanyAppService(AbstractAppService):
         self._user_read_repository = user_read_repository
         self._address_write_repository = address_write_repository
 
-    def get(self, filter_: CompanyFilter, pagination: Pagination) -> list[CompanyFullDto]:
+    def get(self, filter_: CompanyFilter, pagination: CursorPagination) -> list[CompanyFullDto]:
         compaies: list[Company] = self._company_read_repository.get_all(filter_=filter_, pagination=pagination)
         return [company_to_dto(company=i) for i in compaies]
 

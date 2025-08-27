@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.company import Company, CompanyFounder
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.company import (
     CompanyCreatePayload,
     CompanyFounderCreatePayload,
@@ -19,7 +19,9 @@ class CompanyReadRepository(AbstractReadRepository[Company, CompanyFilter, Id], 
         pass
 
     @abstractmethod
-    def get_all(self, filter_: CompanyFilter, pagination: Pagination | None = None) -> list[Company]:
+    def get_all(
+        self, filter_: CompanyFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[Company]:
         pass
 
     @abstractmethod
@@ -48,7 +50,9 @@ class CompanyFounderReadRepository(AbstractReadRepository[CompanyFounder, Compan
         pass
 
     @abstractmethod
-    def get_all(self, filter_: CompanyFounderFilter, pagination: Pagination | None = None) -> list[CompanyFounder]:
+    def get_all(
+        self, filter_: CompanyFounderFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[CompanyFounder]:
         pass
 
 

@@ -1,7 +1,7 @@
 from domain.exceptions.geo.region import RegionNotFoundException
 from domain.models.geo.region import Region
 from domain.repositories.geo.region import RegionReadRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import RegionFilter
 from infrastructure.repositories.pagination import apply_pagination
 
@@ -15,7 +15,9 @@ class DjRegionReadRepository(RegionReadRepository):
             raise RegionNotFoundException(f"Region with id = {id_.value} does not exist.")
         return city
 
-    def get_all(self, filter_: RegionFilter, pagination: Pagination | None = None) -> list[Region]:
+    def get_all(
+        self, filter_: RegionFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[Region]:
         queryset = Region.objects.all()
 
         if pagination:

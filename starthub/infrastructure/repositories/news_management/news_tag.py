@@ -1,7 +1,7 @@
 from domain.exceptions.news import NewsTagNotFoundException
 from domain.models.news_management.news_tag import NewsTag
 from domain.repositories.news_management.news_tag import NewsTagReadRepository, NewsTagWriteRepository
-from domain.value_objects.common import Pagination
+from domain.value_objects.common import CursorPagination, OffsetPagination
 from domain.value_objects.filter import NewsTagFilter
 from domain.value_objects.news_management.news_tag import NewsTagCreatePayload, NewsTagId, NewsTagUpdatePayload
 from infrastructure.repositories.pagination import apply_pagination
@@ -22,7 +22,9 @@ class DjNewsTagReadRepository(NewsTagReadRepository):
             raise NewsTagNotFoundException(f"News tag with id = {id_.value} not found.")
         return tag
 
-    def get_all(self, filter_: NewsTagFilter, pagination: Pagination | None = None) -> list[NewsTag]:
+    def get_all(
+        self, filter_: NewsTagFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[NewsTag]:
         qs = NewsTag.objects.all()
 
         if filter_.tag_names:

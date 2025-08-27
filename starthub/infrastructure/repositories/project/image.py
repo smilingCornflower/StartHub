@@ -1,7 +1,7 @@
 from domain.exceptions.project_management import ProjectImageNotFoundException
 from domain.models.project_management.image import ProjectImage
 from domain.repositories.project.image import ProjectImageReadRepository, ProjectImageWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import ProjectImageFilter
 from domain.value_objects.project.image import (
     ProjectImageCreatePayload,
@@ -14,7 +14,9 @@ class DjProjectImageReadRepository(ProjectImageReadRepository):
     def get_by_id(self, id_: Id) -> ProjectImage:
         raise NotImplementedError("The method get_by_id() not implemented yet.")
 
-    def get_all(self, filter_: ProjectImageFilter, pagination: Pagination | None = None) -> list[ProjectImage]:
+    def get_all(
+        self, filter_: ProjectImageFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectImage]:
         queryset = ProjectImage.objects.all()
 
         if filter_.project_id is not None:

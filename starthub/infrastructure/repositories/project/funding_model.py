@@ -1,7 +1,7 @@
 from domain.exceptions.project_management import FundingModelNotFoundException
 from domain.models.project_management.funding_model import FundingModel
 from domain.repositories.project.funding_model import FundingModelReadRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import FundingModelFilter
 
 
@@ -13,5 +13,7 @@ class DjFundingModelReadRepository(FundingModelReadRepository):
             raise FundingModelNotFoundException(f"Funding models with id = {id_.value} does not exist.")
         return funding_model
 
-    def get_all(self, filter_: FundingModelFilter, pagination: Pagination | None = None) -> list[FundingModel]:
+    def get_all(
+        self, filter_: FundingModelFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[FundingModel]:
         return list(FundingModel.objects.all())

@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from domain.models.project_management.phone import ProjectPhone
 from domain.ports.repository import AbstractReadRepository, AbstractWriteRepository
-from domain.value_objects.common import Id, Pagination
+from domain.value_objects.common import CursorPagination, Id, OffsetPagination
 from domain.value_objects.filter import ProjectPhoneFilter
 from domain.value_objects.project.phone import ProjectPhoneCreatePayload, ProjectPhoneUpdatePayload
 
@@ -13,7 +13,9 @@ class ProjectPhoneReadRepository(AbstractReadRepository[ProjectPhone, ProjectPho
         pass
 
     @abstractmethod
-    def get_all(self, filter_: ProjectPhoneFilter, pagination: Pagination | None = None) -> list[ProjectPhone]:
+    def get_all(
+        self, filter_: ProjectPhoneFilter, pagination: CursorPagination | OffsetPagination | None = None
+    ) -> list[ProjectPhone]:
         pass
 
 
