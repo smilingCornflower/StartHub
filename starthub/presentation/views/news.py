@@ -25,6 +25,7 @@ from rest_framework.views import APIView
 class NewsView(APIView):
     @staticmethod
     def get(request: Request, news_id: int | None = None) -> Response:
+        print()
         logger.debug(f"GET /news/<news_id>/ \t news_id = {news_id}")
         try:
             if news_id:
@@ -43,11 +44,11 @@ class NewsView(APIView):
 
     @staticmethod
     def post(request: Request) -> Response:
-        logger.info(f"POST /news/ \n\t request.data: {request.data}\n\t request_files: {request.FILES}")
+        print()
+        logger.info(f"POST /news/\n" f"request.data: {request.data}\n" f"request_files: {request.FILES}")
 
         try:
             user_id = get_user_id_or_raises(request=request)
-            logger.debug(f"user_id = {user_id.value}")
 
             command = request_to_news_create_command(request=request, user_id=user_id)
             news_id: int = gateway.news_app_service.create(user_id=user_id, news_create_command=command)

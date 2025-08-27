@@ -15,6 +15,7 @@ class News(BaseModel):
     updated_at = models.DateTimeField(auto_now_add=True)
     cover = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH, blank=True, null=True)
     is_active = models.BooleanField(default=True)
+    tags = models.ManyToManyField("domain.NewsTag", through="domain.NewsTagsLink", related_name="news")
 
     IS_ACTIVE_FIELD = "is_active"
 
@@ -31,19 +32,3 @@ class News(BaseModel):
     @classmethod
     def get_permission_key(cls) -> str:
         return "news"
-
-
-class NewsImage(BaseModel):
-    news = models.ForeignKey("domain.News", on_delete=models.CASCADE, related_name="images")
-    image = models.CharField(max_length=CHAR_FIELD_MAX_LENGTH)
-
-    class Meta:
-        db_table = "news_images"
-
-    def __str__(self) -> str:
-        return f"{self.__class__.__name__}(news={self.news}, image={self.image})"
-
-    @classmethod
-    def get_permission_key(cls) -> str:
-        return "news_images"
-

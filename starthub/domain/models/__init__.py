@@ -36,8 +36,10 @@ City = import_module("domain.models.geo.city").City
 Region = import_module("domain.models.geo.region").Region
 Address = import_module("domain.models.geo.address").Address
 
-News = import_module("domain.models.news").News
-NewsImage = import_module("domain.models.news").NewsImage
+News = import_module("domain.models.news_management.news").News
+NewsImage = import_module("domain.models.news_management.news_image").NewsImage
+NewsTag = import_module("domain.models.news_management.news_tag").NewsTag
+NewsTagsLink = import_module("domain.models.news_management.news_tag").NewsTagsLink
 
 Notification = import_module("domain.models.notification").Notification
 
@@ -75,5 +77,7 @@ __all__ = [
     "Address",
     "News",
     "NewsImage",
+    "NewsTag",
+    "NewsTagLink",
     "Notification",
 ]

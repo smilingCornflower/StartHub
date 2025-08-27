@@ -1,6 +1,6 @@
 from application.dto.news import NewsFullDto, NewsImageDto, NewsShortDto
 from domain import constants
-from domain.models.news import News
+from domain.models.news_management.news import News
 
 
 def news_to_full_dto(news: News, cover_url: str, news_image_dtos: list[NewsImageDto]) -> NewsFullDto:

@@ -9,6 +9,7 @@ from application.ports.service import AbstractAppService
 from application.ports.uow import AbstractUnitOfWork
 from domain.constants import NEWS_IMAGES_MAX_AMOUNT
 from domain.enums.permission import ActionEnum, ScopeEnum
+from domain.events.news import NewsCreatedEvent
 from domain.exceptions.cloud_storage import FileNotFoundCloudStorageException
 from domain.exceptions.news import (
     NewsImageContentAndFileMismatchException,
@@ -20,9 +21,10 @@ from domain.exceptions.permissions import (
     DeleteDeniedPermissionException,
     UpdateDeniedPermissionException,
 )
-from domain.models.news import News, NewsImage
+from domain.models.news_management.news import News
+from domain.models.news_management.news_image import NewsImage
 from domain.models.user_management.user import User
-from domain.repositories.news import NewsReadRepository
+from domain.repositories.news_management.news import NewsReadRepository
 from domain.repositories.user_management.user import UserReadRepository
 from domain.services.cloud_storage import StorageService
 from domain.services.file import ImageService
@@ -37,17 +39,17 @@ from domain.value_objects.cloud_storage import (
 from domain.value_objects.common import Id, Pagination
 from domain.value_objects.file import Image
 from domain.value_objects.filter import NewsFilter, NewsImageFilter
-from domain.value_objects.news import (
+from domain.value_objects.news_management.news import (
     NewsContent,
     NewsCreateCommand,
     NewsCreatePayload,
     NewsGetCommand,
-    NewsImageCreatePayload,
-    NewsImageDeletePayload,
     NewsUpdateCommand,
     NewsUpdatePayload,
 )
+from domain.value_objects.news_management.news_image import NewsImageCreatePayload, NewsImageDeletePayload
 from domain.value_objects.user_management.user import PermissionVo
+from infrastructure.event_bus import EventBus
 from loguru import logger
 
 
@@ -207,6 +209,8 @@ class NewsAppService(NewsPermissionAppService):
                     command=news_create_command, new_content=new_content, author_id=user_id
                 )
             )
+            event = NewsCreatedEvent(news_id=Id(value=news.id), tags=news_create_command.tags)
+            EventBus().publish(event)
 
             # upload_file cover
             self._update_cover(cover=news_create_command.cover, news_id=Id(value=news.id))

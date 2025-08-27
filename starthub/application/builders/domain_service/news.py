@@ -1,11 +1,7 @@
 from application.ports.domain_service_builder import AbstractDomainServiceBuilder
 from domain.services.news import NewsImageService, NewsService
-from infrastructure.repositories.news import (
-    DjNewsImageReadRepository,
-    DjNewsImageWriteRepository,
-    DjNewsReadRepository,
-    DjNewsWriteRepository,
-)
+from infrastructure.repositories.news_management.news import DjNewsReadRepository, DjNewsWriteRepository
+from infrastructure.repositories.news_management.news_image import DjNewsImageReadRepository, DjNewsImageWriteRepository
 
 
 class NewsServiceBuilder(AbstractDomainServiceBuilder[NewsService]):

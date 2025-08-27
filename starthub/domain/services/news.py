@@ -3,23 +3,15 @@ import uuid
 from pathlib import Path
 from typing import Iterable
 
-from domain.models.news import News, NewsImage
+from domain.models.news_management.news import News
+from domain.models.news_management.news_image import NewsImage
 from domain.ports.service import AbstractDomainService
-from domain.repositories.news import (
-    NewsImageReadRepository,
-    NewsImageWriteRepository,
-    NewsReadRepository,
-    NewsWriteRepository,
-)
+from domain.repositories.news_management.news import NewsReadRepository, NewsWriteRepository
+from domain.repositories.news_management.news_image import NewsImageReadRepository, NewsImageWriteRepository
 from domain.value_objects.common import Id
 from domain.value_objects.filter import NewsImageFilter
-from domain.value_objects.news import (
-    NewsContent,
-    NewsCreatePayload,
-    NewsImageCreatePayload,
-    NewsImageDeletePayload,
-    NewsUpdatePayload,
-)
+from domain.value_objects.news_management.news import NewsContent, NewsCreatePayload, NewsUpdatePayload
+from domain.value_objects.news_management.news_image import NewsImageCreatePayload, NewsImageDeletePayload
 from loguru import logger
 
 

@@ -5,7 +5,8 @@ from application.ports.app_service_builder import AbstractAppServiceBuilder
 from application.services.news import NewsAppService
 from domain.services.file import ImageService
 from domain.services.news import NewsImageService
-from infrastructure.repositories.news import DjNewsImageReadRepository, DjNewsImageWriteRepository, DjNewsReadRepository
+from infrastructure.repositories.news_management.news import DjNewsReadRepository
+from infrastructure.repositories.news_management.news_image import DjNewsImageReadRepository, DjNewsImageWriteRepository
 from infrastructure.repositories.user_management.user import DjUserReadRepository
 from infrastructure.uow import DjangoUnitOfWork
 
