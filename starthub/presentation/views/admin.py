@@ -8,7 +8,7 @@ from domain.value_objects.user_management.user_admin import UserAdminUpdateComma
 from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
-from presentation.request_converters.common import request_to_cursor_pagination
+from presentation.request_converters.common import request_to_cursor_pagination, request_to_offset_pagination
 from presentation.request_converters.project.submission import request_to_project_submission_reject_command
 from presentation.request_converters.user_management.user import request_to_user_get_command
 from presentation.request_converters.user_management.user_admin import request_to_user_admin_update_command
@@ -80,6 +80,20 @@ class ProjectDeactivateView(APIView):
 
 class UsersAdminView(APIView):
     @staticmethod
+    def get(request: Request) -> Response:
+        print()
+        logger.info("GET /users/")
+        try:
+            user_id = get_user_id_or_raises(request=request)
+            pagination = request_to_offset_pagination(request=request)
+            command = request_to_user_get_command(request=request)
+            users = gateway.user_admin_get_app_service.get_all(user_id, command, pagination)
+            return Response(list(map(asdict, users)), status=status.HTTP_200_OK)
+
+        except (CustomException, pydantic.ValidationError) as e:
+            return UsersAdminErrorResponseFactory.create_response(exception=e)
+
+    @staticmethod
     def patch(request: Request, target_user_id: int) -> Response:
         print()
         logger.warning(f"PATCH /admin/users/{target_user_id}/")
@@ -125,20 +139,4 @@ class UserAdminActivateView(APIView):
             )
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
         except CustomException as e:
-            return UsersAdminErrorResponseFactory.create_response(exception=e)
-
-
-class UserDetailView(APIView):
-    @staticmethod
-    def get(request: Request) -> Response:
-        print()
-        logger.info("GET /users/")
-        try:
-            user_id = get_user_id_or_raises(request=request)
-            pagination = request_to_cursor_pagination(request=request)
-            command = request_to_user_get_command(request=request)
-            users = gateway.user_admin_get_app_service.get_all(user_id, command, pagination)
-            return Response(list(map(asdict, users)), status=status.HTTP_200_OK)
-
-        except (CustomException, pydantic.ValidationError) as e:
             return UsersAdminErrorResponseFactory.create_response(exception=e)
