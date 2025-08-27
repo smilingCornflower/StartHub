@@ -8,7 +8,7 @@ from domain.value_objects.user_management.user_admin import UserAdminUpdateComma
 from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
-from presentation.request_converters.common import request_to_pagination
+from presentation.request_converters.common import request_to_cursor_pagination
 from presentation.request_converters.project.submission import request_to_project_submission_reject_command
 from presentation.request_converters.user_management.user import request_to_user_get_command
 from presentation.request_converters.user_management.user_admin import request_to_user_admin_update_command
@@ -28,7 +28,7 @@ class ProjectSubmissionGetView(APIView):
 
         try:
             user_id = get_user_id_or_raises(request=request)
-            pagination = request_to_pagination(request=request)
+            pagination = request_to_cursor_pagination(request=request)
             projects = gateway.projects_admin_app_service.get_submissions(user_id=user_id, pagination=pagination)
             return Response(list(map(asdict, projects)), status=status.HTTP_200_OK)
         except CustomException as e:
@@ -135,7 +135,7 @@ class UserDetailView(APIView):
         logger.info("GET /users/")
         try:
             user_id = get_user_id_or_raises(request=request)
-            pagination = request_to_pagination(request=request)
+            pagination = request_to_cursor_pagination(request=request)
             command = request_to_user_get_command(request=request)
             users = gateway.user_admin_get_app_service.get_all(user_id, command, pagination)
             return Response(list(map(asdict, users)), status=status.HTTP_200_OK)

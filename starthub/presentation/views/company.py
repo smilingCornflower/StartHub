@@ -9,7 +9,7 @@ from domain.value_objects.filter import CompanyFilter
 from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
-from presentation.request_converters.common import request_to_pagination
+from presentation.request_converters.common import request_to_cursor_pagination
 from presentation.request_converters.company import request_to_company_update_command
 from presentation.response_factories.project_management import CompanyErrorResponseFactory
 from rest_framework import status
@@ -25,7 +25,7 @@ class CompanyView(APIView):
                 company: CompanyFullDto = gateway.company_app_service.get_by_id(company_id=Id(value=company_id))
                 return Response(asdict(company), status=status.HTTP_200_OK)
             else:
-                pagination = request_to_pagination(request=request)
+                pagination = request_to_cursor_pagination(request=request)
                 companies: list[CompanyFullDto] = gateway.company_app_service.get(
                     filter_=CompanyFilter(), pagination=pagination
                 )

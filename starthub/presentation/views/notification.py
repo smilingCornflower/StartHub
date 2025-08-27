@@ -6,7 +6,7 @@ from domain.exceptions import CustomException
 from domain.value_objects.common import Id
 from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
-from presentation.request_converters.common import request_to_pagination
+from presentation.request_converters.common import request_to_cursor_pagination
 from presentation.request_converters.notification import request_to_notification_get_command
 from presentation.response_factories.notification import NotificationErrorResponseFactory
 from rest_framework import status
@@ -23,7 +23,7 @@ class NotificationView(APIView):
 
         try:
             caller_user_id: Id = get_user_id_or_raises(request=request)
-            pagination = request_to_pagination(request=request)
+            pagination = request_to_cursor_pagination(request=request)
             notification_get_command = request_to_notification_get_command(request=request)
 
             notifications: list[NotificationDto] = gateway.notification_app_service.get_all(

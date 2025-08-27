@@ -12,7 +12,7 @@ from loguru import logger
 from rest_framework.request import Request
 
 
-def request_to_pagination(request: Request) -> CursorPagination:
+def request_to_cursor_pagination(request: Request) -> CursorPagination:
     query_params = request.query_params
     return CursorPagination(
         last_id=int(cast(str, query_params.get("last_id"))) if "last_id" in query_params else None,
@@ -20,11 +20,12 @@ def request_to_pagination(request: Request) -> CursorPagination:
     )
 
 
-def request_to_offset_pagination(query_params: QueryDict) -> OffsetPagination:
-    return OffsetPagination(
-        offset=int(cast(str, query_params["offset"])) if "offset" in query_params else 0,
-        limit=int(get_required_field(query_params, "limit")),
-    )
+def request_to_offset_pagination(request: Request) -> OffsetPagination:
+    query_params: QueryDict = request.query_params
+    page_number = int(query_params.get("page_number", 1))
+    limit = int(get_required_field(query_params, "limit"))
+    offset = (page_number - 1) * limit
+    return OffsetPagination(offset=offset, limit=limit)
 
 
 def get_required_field[T](data: dict[str, T], field: str, field_name_in_exception: str | None = None) -> T:
