@@ -49,14 +49,6 @@ def request_cookies_to_refresh_token(cookies: dict[str, str]) -> RefreshTokenVo:
     return RefreshTokenVo(value=token)
 
 
-def request_data_to_email(data: dict[str, str]) -> Email:
-    """:raises MissingRequiredFieldException: If missing required fields."""
-    try:
-        return Email(value=data["email"])
-    except KeyError:
-        raise MissingRequiredFieldException("Missing required fields: email must be provided.")
-
-
 def extract_token_from_headers(headers: dict[str, str]) -> str:
     """
     :raises MissingRequiredFieldException:
