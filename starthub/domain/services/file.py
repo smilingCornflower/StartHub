@@ -3,7 +3,7 @@ import os
 import shutil
 import tempfile
 from io import BytesIO
-from typing import BinaryIO
+from typing import BinaryIO, cast
 
 import filetype
 from domain.constants import IMAGE_COMPRESSION_QUALITY, TEMP_FILE_PATH, VIDEO_COMPRESSION_BITRATE
@@ -17,9 +17,9 @@ from wand.image import Image
 class ImageService(AbstractDomainService):
     IMAGE_FORMATS = ("image/jpeg", "image/png", "image/gif", "image/webp", "image/avif")
 
-    def check_image_format(self, file_obj: BinaryIO) -> None:
+    def check_image_format(self, file_obj: BinaryIO) -> str:
         """
-        :raises  NotSupportedImageFormatException:
+        :raises NotSupportedImageFormatException:
         """
         kind = filetype.guess(file_obj)
 
@@ -33,6 +33,7 @@ class ImageService(AbstractDomainService):
                 f"The image format {kind.mime} is not supported. "
                 f"Supported image formats: {', '.join(self.IMAGE_FORMATS)}"
             )
+        return cast(str, kind.mime)
 
     def convert_to_jpg(self, file_obj: BinaryIO) -> BytesIO:
         """
