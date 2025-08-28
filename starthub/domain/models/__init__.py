@@ -15,6 +15,7 @@ ProjectSocialLink = import_module("domain.models.project_management.social_link"
 ProjectUsefulLink = import_module("domain.models.project_management.useful_link").ProjectUsefulLink
 ProjectCategory = import_module("domain.models.project_management.category").ProjectCategory
 ProjectStep = import_module("domain.models.project_management.step").ProjectStep
+ProjectStage = import_module("domain.models.project_management.project_stage").ProjectStage
 ProjectIncubator = import_module("domain.models.project_management.incubator").ProjectIncubator
 ProjectAccelerator = import_module("domain.models.project_management.accelerator").ProjectAccelerator
 ProjectCrowdfunding = import_module("domain.models.project_management.crowdfunding").ProjectCrowdfunding
@@ -57,6 +58,7 @@ __all__ = [
     "ProjectUsefulLink",
     "ProjectCategory",
     "ProjectStep",
+    "ProjectStage",
     "ProjectIncubator",
     "ProjectAccelerator",
     "ProjectCrowdfunding",

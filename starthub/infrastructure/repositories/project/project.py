@@ -28,7 +28,7 @@ class DjProjectReadRepository(ProjectReadRepository):
         if filter_.statuses:
             queryset = queryset.filter(status__in=[i.value for i in filter_.statuses])
         if filter_.stage:
-            queryset = queryset.filter(stage=filter_.stage.value)
+            queryset = queryset.filter(stage__name=filter_.stage.value)
         if filter_.user_id:
             queryset = queryset.filter(creator_id=filter_.user_id.value)
 
@@ -56,7 +56,7 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             description=data.description.value,
             creator_id=data.user_id.value,
             funding_model_id=data.funding_model_id.value,
-            stage=data.stage.value,
+            stage_id=data.stage_id.value,
             status=data.status.value,
             goal_sum=data.goal_sum.value,
             deadline=data.deadline,
@@ -91,8 +91,8 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             project.goal_sum = data.goal_sum.value
         if data.deadline is not None:
             project.deadline = data.deadline.value
-        if data.stage is not None:
-            project.stage = data.stage.value
+        if data.stage_id is not None:
+            project.stage_id = data.stage_id.value
         if data.category_ids is not None:
             project.categories.set([i.value for i in data.category_ids])
         if data.funding_model_id is not None:

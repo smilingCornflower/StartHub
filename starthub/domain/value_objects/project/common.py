@@ -12,7 +12,7 @@ from domain.value_objects import BaseVo
 from pydantic import field_validator
 
 
-class ProjectStage(BaseVo):
+class ProjectStageVo(BaseVo):
     value: str
 
     @field_validator("value", mode="after")

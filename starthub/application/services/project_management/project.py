@@ -65,6 +65,7 @@ from domain.repositories.project.investment import (
 from domain.repositories.project.media import ProjectMediaReadRepository
 from domain.repositories.project.project import ProjectReadRepository
 from domain.repositories.project.project_file import ProjectFileReadRepository
+from domain.repositories.project.stage import ProjectStageReadRepository
 from domain.repositories.project.step import ProjectStepReadRepository
 from domain.repositories.project.useful_link import ProjectUsefulLinkReadRepository
 from domain.repositories.user_management.user import UserReadRepository
@@ -110,6 +111,7 @@ from domain.value_objects.project.project import (
     ProjectUpdateCommand,
     ProjectUpdatePayload,
 )
+from domain.value_objects.project.stage import ProjectStageId
 from domain.value_objects.project.step import ProjectStepCreateCommand, ProjectStepCreatePaylaod
 from domain.value_objects.search import ProjectSearchParams
 from infrastructure.event_bus import EventBus
@@ -127,6 +129,7 @@ class ProjectCreateAppService(AbstractAppService):
         funding_model_read_repository: FundingModelReadRepository,
         company_read_repository: CompanyReadRepository,
         country_read_repository: CountryReadRepository,
+        project_stage_read_repository: ProjectStageReadRepository,
         project_category_read_repository: ProjectCategoryReadRepository,
         city_read_repository: CityReadRepository,
         region_read_repository: RegionReadRepository,
@@ -138,6 +141,7 @@ class ProjectCreateAppService(AbstractAppService):
         self._funding_model_read_repository = funding_model_read_repository
         self._company_read_repository = company_read_repository
         self._country_read_repository = country_read_repository
+        self._project_stage_read_repository = project_stage_read_repository
         self._project_category_read_repository = project_category_read_repository
         self._city_read_repository = city_read_repository
         self._region_read_repository = region_read_repository
@@ -161,7 +165,8 @@ class ProjectCreateAppService(AbstractAppService):
 
     def _validate_dependencies(self, command: ProjectCreateCommand) -> None:
         self._check_user_exists(user_id=command.creator_id)
-        self._check_categories_exist(command.category_ids)
+        self._check_categories_exist(category_ids=command.category_ids)
+        self._check_project_stage_exists(stage_id=command.stage_id)
         self._check_funding_model_exists(funding_model_id=command.funding_model_id)
         self._check_business_number_avaiable(business_number=command.business_id)
         self._check_city_exists(city_id=command.company_address.city_id)
@@ -171,16 +176,25 @@ class ProjectCreateAppService(AbstractAppService):
 
     def _check_region_exists(self, region_id: RegionId) -> None:
         """:raises RegionNotFoundException:"""
+        logger.debug("Checking region exists...")
         self._region_read_repository.get_by_id(id_=region_id)
         logger.debug(f"Region with id = {region_id.value} exists.")
 
     def _check_city_exists(self, city_id: CityId) -> None:
         """:raises CityNotFoundException:"""
+        logger.debug("Checking city exists...")
         self._city_read_repository.get_by_id(id_=city_id)
         logger.debug(f"City with id = {city_id.value} exists.")
 
+    def _check_project_stage_exists(self, stage_id: ProjectStageId) -> None:
+        """:raises ProjectStageNotFoundException:"""
+        logger.debug("Checking project stage exists...")
+        self._project_stage_read_repository.get_by_id(id_=stage_id)
+        logger.debug(f"Project stage with id = {stage_id.value} exists.")
+
     def _check_country_code_exists(self, country_code: CountryCode) -> None:
         """:raises CountryNotFoundException:"""
+        logger.debug("Checking country code exists...")
         countries: list[Country] = self._country_read_repository.get_all(CountryFilter(code=country_code))
         if not countries:
             raise CountryNotFoundException(f"A country with code = {country_code.value} not found.")
@@ -188,6 +202,7 @@ class ProjectCreateAppService(AbstractAppService):
 
     def _check_business_number_avaiable(self, business_number: BusinessNumber) -> None:
         """:raises BusinessNumberAlreadyExistsException:"""
+        logger.debug("Checking business number available...")
         search_result: list[Company] = self._company_read_repository.get_all(CompanyFilter(business_id=business_number))
         if search_result:
             raise BusinessNumberAlreadyExistsException("This business number already exists.")
@@ -195,16 +210,19 @@ class ProjectCreateAppService(AbstractAppService):
 
     def _check_user_exists(self, user_id: Id) -> None:
         """:raises UserNotFoundException:"""
+        logger.debug("Checking user exists...")
         self._user_read_repository.get_by_id(id_=user_id)
         logger.debug(f"User with id = {user_id.value} exists.")
 
     def _check_funding_model_exists(self, funding_model_id: FundingModelId) -> None:
         """:raises FundingModelNotFoundException:"""
+        logger.debug("Checking funding model exists...")
         self._funding_model_read_repository.get_by_id(id_=funding_model_id)
         logger.debug(f"Funding model with id = {funding_model_id.value} exists.")
 
     def _check_categories_exist(self, category_ids: list[Id]) -> None:
         """:raises ProjectCategoryNotFoundException:"""
+        logger.debug("Checking category exists...")
         for category_id in category_ids:
             self._project_category_read_repository.get_by_id(id_=category_id)
             logger.debug(f"Category with id = {category_id.value} exists.")
@@ -217,7 +235,7 @@ class ProjectCreateAppService(AbstractAppService):
             category_ids=command.category_ids,
             user_id=command.creator_id,
             funding_model_id=command.funding_model_id,
-            stage=command.stage,
+            stage_id=command.stage_id,
             status=ProjectStatus(value=ProjectStatusEnum.UNDER_MODERATION),
             goal_sum=command.goal_sum,
             deadline=command.deadline.value,
@@ -592,6 +610,7 @@ class ProjectUpdateAppService(AbstractAppService):
         project_read_repository: ProjectReadRepository,
         project_category_read_repository: ProjectCategoryReadRepository,
         funding_model_read_repository: FundingModelReadRepository,
+        project_stage_read_repository: ProjectStageReadRepository,
         cloud_storage: AbstractCloudStorage,
     ):
         self._project_service = project_service
@@ -604,6 +623,7 @@ class ProjectUpdateAppService(AbstractAppService):
         self._project_read_repository = project_read_repository
         self._project_category_read_repository = project_category_read_repository
         self._funding_model_read_repository = funding_model_read_repository
+        self._project_stage_read_repository = project_stage_read_repository
         self._cloud_storage = cloud_storage
 
     def update(self, command: ProjectUpdateCommand) -> None:
@@ -620,6 +640,8 @@ class ProjectUpdateAppService(AbstractAppService):
             self._check_category_ids(category_ids=command.category_ids)
         if command.funding_model_id:
             self._check_funding_model_exists(funding_model_id=command.funding_model_id)
+        if command.stage_id:
+            self._check_project_stage_exists(stage_id=command.stage_id)
         if command.steps:
             self._update_project_steps(project=project, steps=command.steps)
         if command.incubator:
@@ -691,6 +713,12 @@ class ProjectUpdateAppService(AbstractAppService):
             if i not in existing_category_ids:
                 raise ProjectCategoryNotFoundException(f"Category with id {i.value} not found.")
 
+    def _check_project_stage_exists(self, stage_id: ProjectStageId) -> None:
+        """:raises ProjectStageNotFoundException:"""
+        logger.debug("Checking: project stage exists.")
+
+        self._project_stage_read_repository.get_by_id(id_=stage_id)
+
     def _check_funding_model_exists(self, funding_model_id: FundingModelId) -> None:
         """:raises FundingModelNotFoundException:"""
         logger.debug("Checking: funding model exists.")
@@ -705,7 +733,7 @@ class ProjectUpdateAppService(AbstractAppService):
             goal_description=command.goal_description,
             category_ids=command.category_ids,
             funding_model_id=command.funding_model_id,
-            stage=command.stage,
+            stage_id=command.stage_id,
             goal_sum=command.goal_sum,
             deadline=command.deadline,
             plan_path=plan_path,

@@ -8,7 +8,7 @@ from domain.value_objects.common import FirstName, Id, LastName, PhoneNumber, Sl
 from domain.value_objects.company import BusinessNumber
 from domain.value_objects.country import CountryCode, CountryId
 from domain.value_objects.geo import AddressId, CityId, RegionId, RegionName
-from domain.value_objects.project.common import ProjectStage, ProjectStatus
+from domain.value_objects.project.common import ProjectStageVo, ProjectStatus
 from domain.value_objects.project.investment import ProjectInvestmentId
 from domain.value_objects.user_management.user import Email
 
@@ -32,7 +32,7 @@ class ProjectFilter(AbstractFilter):
     category_slug: Slug | None = None
     funding_model_slug: Slug | None = None
     statuses: list[ProjectStatus] | None = None
-    stage: ProjectStage | None = None
+    stage: ProjectStageVo | None = None
 
     exclude_statuses: list[ProjectStatus] | None = None
 
@@ -202,3 +202,7 @@ class NewsTagFilter(AbstractFilter):
 
 class NewsTagsLinkFilter(AbstractFilter):
     pass
+
+
+class ProjectStageFilter(AbstractFilter):
+    name: str

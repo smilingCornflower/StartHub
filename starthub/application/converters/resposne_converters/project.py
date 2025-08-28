@@ -45,7 +45,7 @@ def project_to_dto(
             recommended=project.funding_model.recommended,
             description=project.funding_model.description,
         ),
-        stage=project.stage,
+        stage=project.stage.name,
         status=project.status,
         goal_sum=float(project.goal_sum),
         current_sum=float(project.current_sum),
