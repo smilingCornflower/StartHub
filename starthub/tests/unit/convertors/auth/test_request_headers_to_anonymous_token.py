@@ -21,15 +21,20 @@ class ValidAnonymousTokenData:
 
 class TestRequestHeadersToAnonymousToken(SimpleTestCase):
     def setUp(self):
-        self.valid_dataclass = ValidAnonymousTokenData()
+        self.data = ValidAnonymousTokenData()
 
     def test_valid_data(self):
-        headers = self.valid_dataclass.to_dict()
+        headers = self.data.to_dict()
 
-        expected = AnonymousTokenVo(value=self.valid_dataclass.anonymous_token)
+        expected = AnonymousTokenVo(value=self.data.anonymous_token)
 
         result = request_headers_to_anonymous_token(headers)
         self.assertEqual(expected, result)
+
+    def test_invalid_data(self):
+        headers = {self.data.authorization_field: "Invalid headers"}
+        with self.assertRaises(MissingRequiredFieldException):  # Missing Bearer Token
+            request_headers_to_anonymous_token(headers)
 
     def test_missing_authorization_header(self):
         headers = {}

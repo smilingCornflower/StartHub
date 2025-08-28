@@ -21,15 +21,20 @@ class ValidAccessTokenData:
 
 class TestRequestHeadersToAccessToken(SimpleTestCase):
     def setUp(self):
-        self.valid_dataclass = ValidAccessTokenData()
+        self.data = ValidAccessTokenData()
 
     def test_valid_data(self):
-        headers = self.valid_dataclass.to_dict()
+        headers = self.data.to_dict()
 
-        expected = AccessTokenVo(value=self.valid_dataclass.access_token)
+        expected = AccessTokenVo(value=self.data.access_token)
 
         result = request_headers_to_access_token(headers)
         self.assertEqual(expected, result)
+
+    def test_invalid_data(self):
+        headers = {self.data.authorization_field: "Invalid headers"}
+        with self.assertRaises(MissingRequiredFieldException):  # Missing Bearer Token
+            request_headers_to_access_token(headers)
 
     def test_missing_authorization_header(self):
         headers = {}

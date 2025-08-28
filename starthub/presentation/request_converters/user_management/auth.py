@@ -49,7 +49,7 @@ def request_cookies_to_refresh_token(cookies: dict[str, str]) -> RefreshTokenVo:
     return RefreshTokenVo(value=token)
 
 
-def extract_token_from_headers(headers: dict[str, str]) -> str:
+def _extract_token_from_headers(headers: dict[str, str]) -> str:
     """
     :raises MissingRequiredFieldException:
     """
@@ -68,7 +68,7 @@ def request_headers_to_access_token(headers: dict[str, str]) -> AccessTokenVo:
     :raises MissingRequiredFieldException:
     :raises pydantic.ValidationError:
     """
-    return AccessTokenVo(value=extract_token_from_headers(headers=headers))
+    return AccessTokenVo(value=_extract_token_from_headers(headers=headers))
 
 
 def request_headers_to_anonymous_token(headers: dict[str, str]) -> AnonymousTokenVo:
@@ -76,7 +76,7 @@ def request_headers_to_anonymous_token(headers: dict[str, str]) -> AnonymousToke
     :raises MissingRequiredFieldException:
     :raises pydantic.ValidationError:
     """
-    return AnonymousTokenVo(value=extract_token_from_headers(headers=headers))
+    return AnonymousTokenVo(value=_extract_token_from_headers(headers=headers))
 
 
 def request_headers_to_access_or_anonymous_token(headers: dict[str, str]) -> AccessTokenVo | AnonymousTokenVo:
@@ -84,7 +84,7 @@ def request_headers_to_access_or_anonymous_token(headers: dict[str, str]) -> Acc
     :raises MissingRequiredFieldException:
     :raises pydantic.ValidationError:
     """
-    token: str = extract_token_from_headers(headers=headers)
+    token: str = _extract_token_from_headers(headers=headers)
     decoded: dict[str, str] = jwt.decode(token, options={"verify_signature": False})
     logger.debug(f"{decoded=}")
 
