@@ -1,7 +1,7 @@
-from django.test import SimpleTestCase
-from unittest.mock import Mock
 from dataclasses import dataclass
+from unittest.mock import Mock
 
+from django.test import SimpleTestCase
 from domain.exceptions.validation import MissingRequiredFieldException
 from domain.value_objects.project.bank_loan import (
     BankLoanOrganizationName,
@@ -45,7 +45,7 @@ class TestRequestToBankLoanCreateCommand(SimpleTestCase):
         expected = ProjectBankLoanCreateCommand(
             organization_name=BankLoanOrganizationName(value=self.valid_dataclass.organization_name),
             amount=LoanAmount(value=self.valid_dataclass.amount),
-            terms=LoanTerms(value=self.valid_dataclass.terms)
+            terms=LoanTerms(value=self.valid_dataclass.terms),
         )
         result = request_to_bank_loan_create_command(request)
         self.assertEqual(expected, result)
@@ -90,7 +90,7 @@ class TestRequestToBankLoanUpdateCommand(SimpleTestCase):
         expected = ProjectBankLoanUpdateCommand(
             organization_name=BankLoanOrganizationName(value=self.valid_dataclass.organization_name),
             amount=LoanAmount(value=self.valid_dataclass.amount),
-            terms=LoanTerms(value=self.valid_dataclass.terms)
+            terms=LoanTerms(value=self.valid_dataclass.terms),
         )
         result = request_to_bank_loan_update_command(request)
         self.assertEqual(expected, result)
@@ -102,7 +102,7 @@ class TestRequestToBankLoanUpdateCommand(SimpleTestCase):
         expected = ProjectBankLoanUpdateCommand(
             organization_name=BankLoanOrganizationName(value=self.valid_dataclass.organization_name),
             amount=None,
-            terms=None
+            terms=None,
         )
 
         result = request_to_bank_loan_update_command(request)
@@ -114,9 +114,7 @@ class TestRequestToBankLoanUpdateCommand(SimpleTestCase):
         request.data = {self.valid_dataclass.amount_field: self.valid_dataclass.amount}
 
         expected = ProjectBankLoanUpdateCommand(
-            organization_name=None,
-            amount=LoanAmount(value=self.valid_dataclass.amount),
-            terms=None
+            organization_name=None, amount=LoanAmount(value=self.valid_dataclass.amount), terms=None
         )
 
         result = request_to_bank_loan_update_command(request)
@@ -128,9 +126,7 @@ class TestRequestToBankLoanUpdateCommand(SimpleTestCase):
         request.data = {self.valid_dataclass.terms_field: self.valid_dataclass.terms}
 
         expected = ProjectBankLoanUpdateCommand(
-            organization_name=None,
-            amount=None,
-            terms=LoanTerms(value=self.valid_dataclass.terms)
+            organization_name=None, amount=None, terms=LoanTerms(value=self.valid_dataclass.terms)
         )
 
         result = request_to_bank_loan_update_command(request)
@@ -141,13 +137,8 @@ class TestRequestToBankLoanUpdateCommand(SimpleTestCase):
         request = Mock()
         request.data = {}
 
-        expected = ProjectBankLoanUpdateCommand(
-            organization_name=None,
-            amount=None,
-            terms=None
-        )
+        expected = ProjectBankLoanUpdateCommand(organization_name=None, amount=None, terms=None)
 
         result = request_to_bank_loan_update_command(request)
 
         self.assertEqual(expected, result)
-

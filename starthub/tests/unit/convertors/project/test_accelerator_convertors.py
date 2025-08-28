@@ -1,5 +1,5 @@
-from unittest.mock import Mock
 from dataclasses import dataclass
+from unittest.mock import Mock
 
 from django.test import SimpleTestCase
 from domain.exceptions.validation import MissingRequiredFieldException
@@ -40,7 +40,7 @@ class TestRequestToProjectAcceleratorCreateCommand(SimpleTestCase):
 
         expected = ProjectAcceleratorCreateCommand(
             name=AcceleratorName(value=self.valid_dataclass.name),
-            description=Description(value=self.valid_dataclass.description)
+            description=Description(value=self.valid_dataclass.description),
         )
 
         result = request_to_project_accelerator_create_command(request)
@@ -75,7 +75,7 @@ class TestRequestToProjectAcceleratorUpdateCommand(SimpleTestCase):
 
         expected = ProjectAcceleratorUpdateCommand(
             name=AcceleratorName(value=self.valid_dataclass.name),
-            description=Description(value=self.valid_dataclass.description)
+            description=Description(value=self.valid_dataclass.description),
         )
         result = request_to_project_accelerator_update_command(request)
         self.assertEqual(expected, result)
@@ -85,8 +85,7 @@ class TestRequestToProjectAcceleratorUpdateCommand(SimpleTestCase):
         request.data = {self.valid_dataclass.name_field: self.valid_dataclass.name}
 
         expected = ProjectAcceleratorUpdateCommand(
-            name=AcceleratorName(value=self.valid_dataclass.name),
-            description=None
+            name=AcceleratorName(value=self.valid_dataclass.name), description=None
         )
         result = request_to_project_accelerator_update_command(request)
         self.assertEqual(expected, result)
@@ -96,8 +95,7 @@ class TestRequestToProjectAcceleratorUpdateCommand(SimpleTestCase):
         request.data = {self.valid_dataclass.description_field: self.valid_dataclass.description}
 
         expected = ProjectAcceleratorUpdateCommand(
-            name=None,
-            description=Description(value=self.valid_dataclass.description)
+            name=None, description=Description(value=self.valid_dataclass.description)
         )
         result = request_to_project_accelerator_update_command(request)
         self.assertEqual(expected, result)
