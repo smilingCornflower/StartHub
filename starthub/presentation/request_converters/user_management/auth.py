@@ -2,7 +2,6 @@ import re
 
 import jwt
 from domain.enums.token import TokenTypeEnum
-from domain.exceptions.auth import MissingAccessTokenException
 from domain.exceptions.validation import MissingRequiredFieldException
 from domain.value_objects.auth_management.auth import LoginCredentials
 from domain.value_objects.auth_management.token import AccessTokenVo, AnonymousTokenVo, RefreshTokenVo
@@ -48,15 +47,6 @@ def request_cookies_to_refresh_token(cookies: dict[str, str]) -> RefreshTokenVo:
     """:raises MissingRequiredFieldException: If missing 'refresh_token' field."""
     token: str = get_required_field(cookies, "refresh_token")
     return RefreshTokenVo(value=token)
-
-
-def request_cookies_to_access_token(cookies: dict[str, str]) -> AccessTokenVo:
-    """:raises MissingAccessTokenException: If missing 'access_token' field."""
-    token: str | None = cookies.get("access_token")
-    if not token:
-        logger.error("Missing access_token field.")
-        raise MissingAccessTokenException("Missing required field: access_token.")
-    return AccessTokenVo(value=token)
 
 
 def request_data_to_email(data: dict[str, str]) -> Email:
