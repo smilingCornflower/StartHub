@@ -10,3 +10,4 @@ class NewsTagEnum(StrEnum):
     SPORTS = "sports"
     CULTURE = "culture"
     POLITICS = "politics"
+    ECONOMY = "economy"

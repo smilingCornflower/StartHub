@@ -22,7 +22,7 @@ from presentation.request_converters.common import get_required_field, parse_dat
 from rest_framework.request import Request
 
 
-# ==== NewsGetCommand ==================================================================================================
+# ==== NewsCreateCommand ===============================================================================================
 def _get_tags_from_request_if_exist(request: Request) -> list[NewsTagEnum] | None:
     tags_raw = request.data.get("tags")
 
