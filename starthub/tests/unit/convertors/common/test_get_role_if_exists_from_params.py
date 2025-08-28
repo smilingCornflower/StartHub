@@ -9,7 +9,7 @@ from presentation.request_converters.common import get_role_if_exists_from_param
 
 
 @dataclass
-class ValidRoleData:
+class RoleData:
     role = "admin"
     invalid_role = "invalid_role"
 
@@ -18,13 +18,13 @@ class ValidRoleData:
 
 class TestGetRoleIfExistsFromParams(SimpleTestCase):
     def setUp(self):
-        self.valid_dataclass = ValidRoleData()
+        self.data = RoleData()
 
     def test_valid_role(self):
         params = QueryDict(mutable=True)
-        params[self.valid_dataclass.role_field] = self.valid_dataclass.role
+        params[self.data.role_field] = self.data.role
 
-        expected = RoleEnum(value=self.valid_dataclass.role)
+        expected = RoleEnum(value=self.data.role)
 
         result = get_role_if_exists_from_params(params)
         self.assertEqual(expected, result)
@@ -39,7 +39,7 @@ class TestGetRoleIfExistsFromParams(SimpleTestCase):
 
     def test_invalid_role_value(self):
         params = QueryDict(mutable=True)
-        params[self.valid_dataclass.role_field] = self.valid_dataclass.invalid_role
+        params[self.data.role_field] = self.data.invalid_role
 
         with self.assertRaises(ValidationException):
             get_role_if_exists_from_params(params)

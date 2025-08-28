@@ -8,7 +8,7 @@ from presentation.request_converters.user_management.user import get_is_active_i
 
 
 @dataclass
-class ValidIsActiveData:
+class IsActiveData:
     is_active_true = "true"
     is_active_false = "false"
     invalid_is_active = "invalid_value"
@@ -18,11 +18,11 @@ class ValidIsActiveData:
 
 class TestGetIsActiveIfExistsFromParams(SimpleTestCase):
     def setUp(self):
-        self.valid_dataclass = ValidIsActiveData()
+        self.data = IsActiveData()
 
     def test_is_active_true(self):
         params = QueryDict(mutable=True)
-        params[self.valid_dataclass.is_active_field] = self.valid_dataclass.is_active_true
+        params[self.data.is_active_field] = self.data.is_active_true
 
         expected = True
 
@@ -31,7 +31,7 @@ class TestGetIsActiveIfExistsFromParams(SimpleTestCase):
 
     def test_is_active_false(self):
         params = QueryDict(mutable=True)
-        params[self.valid_dataclass.is_active_field] = self.valid_dataclass.is_active_false
+        params[self.data.is_active_field] = self.data.is_active_false
 
         expected = False
 
@@ -48,7 +48,7 @@ class TestGetIsActiveIfExistsFromParams(SimpleTestCase):
 
     def test_invalid_is_active_value(self):
         params = QueryDict(mutable=True)
-        params[self.valid_dataclass.is_active_field] = self.valid_dataclass.invalid_is_active
+        params[self.data.is_active_field] = self.data.invalid_is_active
 
         with self.assertRaises(ValidationException):
             get_is_active_if_exists_from_params(params)
