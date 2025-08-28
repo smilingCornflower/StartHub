@@ -21,7 +21,7 @@ class RawPassword(BaseVo):
 
     @field_validator("value", mode="after")
     @classmethod
-    def is_strong_password(cls, value: str) -> str:
+    def validate_password(cls, value: str) -> str:
         """
         :raises EmptyStringException:
         :raises PasswordValidationException:
@@ -44,7 +44,7 @@ class Email(BaseVo):
 
     @field_validator("value", mode="after")
     @classmethod
-    def is_valid_email(cls, value: str) -> str:
+    def validate_email(cls, value: str) -> str:
         """
         :raises EmptyStringException:
         :raises InvalidEmailException:

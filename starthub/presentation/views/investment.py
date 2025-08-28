@@ -6,11 +6,10 @@ from domain.value_objects.project.project_investment_social_link import ProjectI
 from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
+from presentation.request_converters.project.common import request_to_phone, request_to_social_link
 from presentation.request_converters.project.investment import (
-    request_to_phone,
     request_to_project_investment_create_command,
     request_to_project_investment_update_command,
-    request_to_social_link,
 )
 from presentation.response_factories.project_management import ProjectInvestmentErrorResponseFactory
 from rest_framework import status

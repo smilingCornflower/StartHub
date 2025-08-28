@@ -9,6 +9,7 @@ from application.builders.app_service.project_management.admin import ProjectAdm
 from application.builders.app_service.project_management.bank_loan import ProjectBankLoanAppServiceBuilder
 from application.builders.app_service.project_management.bootstrap import ProjectBootstrapAppServiceBuilder
 from application.builders.app_service.project_management.crowdfunding import CrowdfundingAppServiceBuilder
+from application.builders.app_service.project_management.funding_model import FundingModelAppServiceBuilder
 from application.builders.app_service.project_management.government_grant import GovernmentGrantAppServiceBuilder
 from application.builders.app_service.project_management.investment import (
     ProjectInvestmentAppServiceBuilder,
@@ -26,6 +27,7 @@ from application.builders.app_service.project_management.project_image import Pr
 from application.builders.app_service.project_management.project_media import ProjectMediaAppServiceBuilder
 from application.builders.app_service.project_management.report import ProjectReportAppServiceBuilder
 from application.builders.app_service.project_management.resubmit import ProjectResubmitAppServiceBuilder
+from application.builders.app_service.project_management.stage import ProjectStageAppServiceBuilder
 from application.builders.app_service.project_management.useful_link import ProjectUsefulLinkAppServiceBuilder
 from application.builders.app_service.user_management import (
     UserAdminAppServiceBuilder,
@@ -46,6 +48,7 @@ from application.services.project_management.admin import ProjectAdminAppService
 from application.services.project_management.bank_loan import ProjectBankLoanAppService
 from application.services.project_management.bootsrtap import ProjectBootstrapAppService
 from application.services.project_management.crowdfunding import CrowdfundingAppService
+from application.services.project_management.funding_model import FundingModelAppService
 from application.services.project_management.government_grant import GovernmentGrantAppService
 from application.services.project_management.investment import ProjectInvestmentAppService
 from application.services.project_management.project import (
@@ -61,6 +64,7 @@ from application.services.project_management.project_investment_social_link impo
 from application.services.project_management.project_media import ProjectMediaAppService
 from application.services.project_management.report import ProjectReportAppService
 from application.services.project_management.resubmit import ProjectResubmitAppService
+from application.services.project_management.stage import ProjectStageAppService
 from application.services.project_management.useful_link import ProjectUsefulLinkAppService
 from application.services.user_management.permission import PermissionAppService
 from application.services.user_management.user import UserAppService
@@ -90,6 +94,8 @@ class Gateway:
     _news_app_service: NewsAppService | None = None
     _news_tag_app_service: NewsTagAppService | None = None
     _company_app_service: CompanyAppService | None = None
+    _funding_model_app_service: FundingModelAppService | None = None
+
     _accelerator_app_service: AcceleratorAppService | None = None
     _crowdfunding_app_service: CrowdfundingAppService | None = None
     _project_investment_app_service: ProjectInvestmentAppService | None = None
@@ -104,6 +110,7 @@ class Gateway:
     _project_admin_app_service: ProjectAdminAppService | None = None
     _project_report_app_service: ProjectReportAppService | None = None
     _project_resubmit_app_service: ProjectResubmitAppService | None = None
+    _project_stage_app_service: ProjectStageAppService | None = None
 
     _region_app_service: RegionAppService | None = None
     _city_app_service: CityAppService | None = None
@@ -203,6 +210,12 @@ class Gateway:
         return self._company_app_service
 
     @property
+    def funding_model_app_service(self) -> FundingModelAppService:
+        if self._funding_model_app_service is None:
+            self._funding_model_app_service = FundingModelAppServiceBuilder.create_service()
+        return self._funding_model_app_service
+
+    @property
     def accelerator_app_service(self) -> AcceleratorAppService:
         if self._accelerator_app_service is None:
             self._accelerator_app_service = AcceleratorAppServiceBuilder.create_service()
@@ -275,6 +288,12 @@ class Gateway:
         if self._project_resubmit_app_service is None:
             self._project_resubmit_app_service = ProjectResubmitAppServiceBuilder.create_service()
         return self._project_resubmit_app_service
+
+    @property
+    def project_stage_app_service(self) -> ProjectStageAppService:
+        if self._project_stage_app_service is None:
+            self._project_stage_app_service = ProjectStageAppServiceBuilder.create_service()
+        return self._project_stage_app_service
 
     @property
     def region_app_service(self) -> RegionAppService:

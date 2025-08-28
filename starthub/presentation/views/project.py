@@ -79,7 +79,6 @@ class ProjectView(APIView):
         try:
             user_id: Id = get_user_id_or_raises(request=request)
             command: ProjectCreateCommand = request_to_project_create_command(request=request, user_id=int(user_id))
-
             project: Project = gateway.project_create_app_service.create(command=command, user_id=user_id)
         except (CustomException, pydantic.ValidationError, JSONDecodeError) as e:
             return ProjectErrorResponseFactory.create_response(e)

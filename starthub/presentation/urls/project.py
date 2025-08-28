@@ -11,11 +11,13 @@ from presentation.views.investment import (
 )
 from presentation.views.metric import MetricView
 from presentation.views.project import MeProjectView, ProjectImageView, ProjectPlanView, ProjectSearchView, ProjectView
+from presentation.views.project_category import ProjectCategoryView
 from presentation.views.project_files import ProjectFileView
 from presentation.views.project_media import ProjectMediaView
 from presentation.views.project_useful_link import ProjectUsefulLinkView
 from presentation.views.report import ProjectReportView
 from presentation.views.resubmit import ProjectResubmitView
+from presentation.views.stage import ProjectStageView
 
 urlpatterns = [
     path("", ProjectView.as_view(), name="projects"),
@@ -57,4 +59,8 @@ urlpatterns = [
     path("<int:project_id>/reports/", ProjectReportView.as_view()),
     # Resubmit
     path("<int:project_id>/resubmit/", ProjectResubmitView.as_view()),
+    # Categories
+    path("categories/", ProjectCategoryView.as_view()),
+    # Stages
+    path("stages/<int:stage_id>/", ProjectStageView.as_view()),
 ]

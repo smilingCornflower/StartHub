@@ -34,6 +34,7 @@ from infrastructure.repositories.project.investment import (
 from infrastructure.repositories.project.media import DjProjectMediaReadRepository
 from infrastructure.repositories.project.project import DjProjectReadRepository
 from infrastructure.repositories.project.project_file import DjProjectFileReadRepository
+from infrastructure.repositories.project.stage import DjProjectStageReadRepository
 from infrastructure.repositories.project.step import DjProjectStepReadRepository
 from infrastructure.repositories.project.useful_link import DjProjectUsefulLinkReadRepository
 from infrastructure.repositories.user_management.user import DjUserReadRepository
@@ -52,6 +53,7 @@ class ProjectCreateAppServiceBuilder(AbstractAppServiceBuilder[ProjectCreateAppS
             funding_model_read_repository=DjFundingModelReadRepository(),
             company_read_repository=DjCompanyReadRepository(),
             country_read_repository=DjCountryReadRepository(),
+            project_stage_read_repository=DjProjectStageReadRepository(),
             project_category_read_repository=DjProjectCategoryReadRepository(),
             city_read_repository=DjCityReadRepository(),
             region_read_repository=DjRegionReadRepository(),
@@ -73,6 +75,7 @@ class ProjectUpdateAppServiceBuilder(AbstractAppServiceBuilder[ProjectUpdateAppS
             project_read_repository=DjProjectReadRepository(),
             project_category_read_repository=DjProjectCategoryReadRepository(),
             funding_model_read_repository=DjFundingModelReadRepository(),
+            project_stage_read_repository=DjProjectStageReadRepository(),
             cloud_storage=google_cloud_storage,
         )
 

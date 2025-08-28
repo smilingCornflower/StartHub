@@ -11,7 +11,7 @@ from domain.constants import (
     DESCRIPTION_MAX_LENGTH,
     PAGINNATION_MAX_LMIT,
 )
-from domain.enums.social_links import SocialPlatform
+from domain.enums.social_links import SocialPlatformEnum
 from domain.exceptions import CustomException
 from domain.exceptions.pagination import PaginationMaxLimitException
 from domain.exceptions.validation import (
@@ -64,6 +64,11 @@ class StringVo(BaseVo):
     @field_validator("value", mode="after")
     @classmethod
     def validate_string(cls, value: str) -> str:
+        """
+        :raises EmptyStringException:
+        :raises StringIsTooLongException:
+        """
+
         if not value.strip():
             msg = cls.get_empty_string_msg()
             raise cls.empty_string_exception(msg)
@@ -95,36 +100,17 @@ class PositiveNumber(BaseVo):
         return value
 
 
-class FirstName(BaseVo):
+class FirstName(StringVo):
+    value: str
+    max_length = CHAR_FIELD_SHORT_LENGTH
+    too_long_string_exception = FirstNameIsTooLongException
+
+
+class LastName(StringVo):
     value: str
 
-    @field_validator("value", mode="after")
-    @classmethod
-    def validate_length(cls, value: str) -> str:
-        if not value.strip():
-            raise EmptyStringException("First name cannot be empty.")
-        if len(value) > CHAR_FIELD_SHORT_LENGTH:
-            raise FirstNameIsTooLongException(
-                f"First name must be no longer than {CHAR_FIELD_SHORT_LENGTH} characters."
-            )
-        return value.strip()
-
-
-class LastName(BaseVo):
-    value: str
-
-    @field_validator("value", mode="after")
-    @classmethod
-    def validate_length(cls, value: str) -> str:
-        """
-        :raises EmptyStringException:
-        :raises LastNameIsTooLongException:
-        """
-        if not value.strip():
-            raise EmptyStringException("Last name cannot be empty.")
-        if len(value) > CHAR_FIELD_SHORT_LENGTH:
-            raise LastNameIsTooLongException(f"Last name must be no longer than {CHAR_FIELD_SHORT_LENGTH} characters")
-        return value.strip()
+    max_length = CHAR_FIELD_SHORT_LENGTH
+    too_long_string_exception = LastNameIsTooLongException
 
 
 class PhoneNumber(BaseVo):
@@ -132,7 +118,7 @@ class PhoneNumber(BaseVo):
 
     @field_validator("value", mode="after")
     @classmethod
-    def is_correct_phone_number(cls, value: str) -> str:
+    def validate_phone_number(cls, value: str) -> str:
         """:raises InvalidPhoneNumberException:"""
         try:
             parsed: phonenumbers.PhoneNumber = phonenumbers.parse(value)
@@ -157,7 +143,7 @@ class SocialLink(BaseVo):
         :raises InvalidSocialLinkException:
         """
         try:
-            platform = SocialPlatform(info.data["platform"])
+            platform = SocialPlatformEnum(info.data["platform"])
         except ValueError:
             raise DisallowedSocialLinkException(f"Unknown social platform: {info.data["platform"]}")
         if not re.match(platform.pattern, value):
@@ -177,18 +163,8 @@ class DeadlineDate(BaseVo):
         return value
 
 
-class Description(BaseVo):
-    value: str
-
-    @field_validator("value", mode="after")
-    @classmethod
-    def validate_description_length(cls, value: str) -> str:
-        """:raises StringIsTooLongException:"""
-        if len(value) > DESCRIPTION_MAX_LENGTH:
-            raise StringIsTooLongException(
-                f"Description is too long. Max length is {DESCRIPTION_MAX_LENGTH} characters."
-            )
-        return value
+class Description(StringVo):
+    max_length = DESCRIPTION_MAX_LENGTH
 
 
 class Order(BaseVo):

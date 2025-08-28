@@ -22,12 +22,13 @@ from domain.value_objects.project.bank_loan import (
     ProjectBankLoanCreateCommand,
 )
 from domain.value_objects.project.bootstrap import ProjectBootstrapCreateCommand
-from domain.value_objects.project.common import GoalSum, ProjectName, ProjectStage
+from domain.value_objects.project.common import GoalSum, ProjectName
 from domain.value_objects.project.crowdfunding import (
     ProjectCrowdfundingAmount,
     ProjectCrowdfundingCreateCommand,
     ProjectCrowdfundingName,
 )
+from domain.value_objects.project.funding_model import FundingModelId
 from domain.value_objects.project.government_grant import (
     ProjectGovernmentGrantAmount,
     ProjectGovernmentGrantCreateCommand,
@@ -54,6 +55,7 @@ from domain.value_objects.project.metric import (
     Roi,
 )
 from domain.value_objects.project.project import ProjectCreateCommand
+from domain.value_objects.project.stage import ProjectStageId
 from domain.value_objects.project.team_member import TeamMemberCreateCommand
 from domain.value_objects.project.useful_link import UsefulLinkCreateCommand, UsefulLinkName
 from loguru import logger
@@ -135,8 +137,8 @@ def _extract_project_info(project_data: dict[str, Any], user_id: int) -> dict[st
         ),
         "description": Description(value=get_required_field(project_data, field="description")),
         "category_ids": [Id(value=i) for i in get_required_field(project_data, "category_ids")],
-        "funding_model_id": Id(value=get_required_field(project_data, field="funding_model_id")),
-        "stage": ProjectStage(value=get_required_field(project_data, field="stage")),
+        "funding_model_id": FundingModelId(value=get_required_field(project_data, field="funding_model_id")),
+        "stage_id": ProjectStageId(value=get_required_field(project_data, field="stage_id")),
         "goal_sum": GoalSum(value=get_required_field(project_data, field="goal_sum")),
         "deadline": DeadlineDate(value=parse_date(get_required_field(project_data, field="deadline"))),
         "social_links": [

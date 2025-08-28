@@ -1,7 +1,7 @@
 from enum import StrEnum
 
 
-class SocialPlatform(StrEnum):
+class SocialPlatformEnum(StrEnum):
     FACEBOOK = "facebook"
     INSTAGRAM = "instagram"
     TWITTER = "twitter"
@@ -16,13 +16,13 @@ class SocialPlatform(StrEnum):
         return _PLATFORM_PATTERNS[self]
 
 
-_PLATFORM_PATTERNS: dict[SocialPlatform, str] = {
-    SocialPlatform.FACEBOOK: r"^(?:https?:)?\/\/(?:www\.)?(?:facebook|fb)\.com\/.*$",
-    SocialPlatform.INSTAGRAM: r"^(?:https?:)?\/\/(?:www\.)?(?:instagram\.com|instagr\.am)\/.*$",
-    SocialPlatform.TWITTER: r"^(?:https?:)?\/\/(?:[\w\-]+\.)?twitter\.com\/.*$",
-    SocialPlatform.LINKEDIN: r"^(?:https?:)?\/\/(?:[\w\-]+\.)?linkedin\.com\/.*$",
-    SocialPlatform.VK: r"^(?:https?:)?\/\/(?:www\.)?vk\.com\/.*$",
-    SocialPlatform.TELEGRAM: r"^(?:https?:)?\/\/(?:t(?:elegram)?\.me|telegram\.org)\/.*$",
-    SocialPlatform.YOUTUBE: r"^(?:https?:)?\/\/(?:[\w\-]+\.)?youtube\.com\/.*$",
-    SocialPlatform.TIKTOK: r"^(?:https?:)?\/\/(?:www\.)?tiktok\.com\/.*$",
+_PLATFORM_PATTERNS: dict[SocialPlatformEnum, str] = {
+    SocialPlatformEnum.FACEBOOK: r"^(?:https?:)?\/\/(?:www\.)?(?:facebook|fb)\.com\/.*$",
+    SocialPlatformEnum.INSTAGRAM: r"^(?:https?:)?\/\/(?:www\.)?(?:instagram\.com|instagr\.am)\/.*$",
+    SocialPlatformEnum.TWITTER: r"^(?:https?:)?\/\/(?:[\w\-]+\.)?twitter\.com\/.*$",
+    SocialPlatformEnum.LINKEDIN: r"^(?:https?:)?\/\/(?:[\w\-]+\.)?linkedin\.com\/.*$",
+    SocialPlatformEnum.VK: r"^(?:https?:)?\/\/(?:www\.)?vk\.com\/.*$",
+    SocialPlatformEnum.TELEGRAM: r"^(?:https?:)?\/\/(?:t(?:elegram)?\.me|telegram\.org)\/.*$",
+    SocialPlatformEnum.YOUTUBE: r"^(?:https?:)?\/\/(?:[\w\-]+\.)?youtube\.com\/.*$",
+    SocialPlatformEnum.TIKTOK: r"^(?:https?:)?\/\/(?:www\.)?tiktok\.com\/.*$",
 }

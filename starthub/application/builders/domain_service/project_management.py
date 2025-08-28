@@ -6,6 +6,7 @@ from domain.services.project_management.admin import ProjectAdminService
 from domain.services.project_management.bank_loan import ProjectBankLoanService
 from domain.services.project_management.bootsrtap import ProjectBootstrapService
 from domain.services.project_management.crowdfunding import ProjectCrowdfundingService
+from domain.services.project_management.funding_model import FundingModelService
 from domain.services.project_management.government_grant import ProjectGovernmentGrantService
 from domain.services.project_management.incubator import IncubatorService
 from domain.services.project_management.investment import (
@@ -21,6 +22,7 @@ from domain.services.project_management.project_phone import ProjectPhoneService
 from domain.services.project_management.project_social_link import ProjectSocialLinkService
 from domain.services.project_management.report import ProjectReportService
 from domain.services.project_management.resubmit import ProjectResubmitService
+from domain.services.project_management.stage import ProjectStageService
 from domain.services.project_management.step import ProjectStepService
 from domain.services.project_management.team_member import TamMemberService
 from domain.services.project_management.useful_link import ProjectUsefulLinkService
@@ -37,6 +39,7 @@ from infrastructure.repositories.project.accelerator import DjProjectAccelerator
 from infrastructure.repositories.project.bank_loan import DjProjectBankLoanWriteRepository
 from infrastructure.repositories.project.bootsrtap import DjProjectBootstrapWriteRepository
 from infrastructure.repositories.project.crowdfunding import DjProjectCrowdfundingWriteRepository
+from infrastructure.repositories.project.funding_model import DjFundingModelWriteRepository
 from infrastructure.repositories.project.government_grant import DjProjectGovernmentGrantWriteRepository
 from infrastructure.repositories.project.image import DjProjectImageReadRepository, DjProjectImageWriteRepository
 from infrastructure.repositories.project.incubator import DjProjectIncubatorWriteRepository
@@ -55,6 +58,7 @@ from infrastructure.repositories.project.social_link import (
     DjProjectSocialLinkReadRepository,
     DjProjectSocialLinkWriteRepository,
 )
+from infrastructure.repositories.project.stage import DjProjectStageWriteRepository
 from infrastructure.repositories.project.step import DjProjectStepReadRepository, DjProjectStepWriteRepositroy
 from infrastructure.repositories.project.team_member import DjTeamMemberReadRepository, DjTeamMemberWriteRepository
 from infrastructure.repositories.project.useful_link import (
@@ -282,4 +286,22 @@ class ProjectResubmitServiceBuilder(AbstractDomainServiceBuilder[ProjectResubmit
         return ProjectResubmitService(
             project_service=ProjectServiceBuilder.create_service(),
             write_repository=DjProjectWriteRepository(),
+        )
+
+
+class FundingModelServiceBuilder(AbstractDomainServiceBuilder[FundingModelService]):
+    @staticmethod
+    def create_service() -> FundingModelService:
+        return FundingModelService(
+            permission_service=PermissionServiceBuilder.create_service(),
+            write_repository=DjFundingModelWriteRepository(),
+        )
+
+
+class ProjectStageServiceBuilder(AbstractDomainServiceBuilder[ProjectStageService]):
+    @staticmethod
+    def create_service() -> ProjectStageService:
+        return ProjectStageService(
+            permission_service=PermissionServiceBuilder.create_service(),
+            write_repository=DjProjectStageWriteRepository(),
         )

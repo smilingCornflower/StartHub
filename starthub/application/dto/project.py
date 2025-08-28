@@ -17,6 +17,8 @@ class FundingModelDto:
     id: int
     name: str
     slug: str
+    description: str | None
+    recommended: bool
 
 
 @dataclass

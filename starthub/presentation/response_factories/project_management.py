@@ -40,6 +40,7 @@ from domain.exceptions.project_management import (
     ProjectNameIsTooLongException,
     ProjectNotFoundException,
     ProjectPlanNotFoundException,
+    ProjectStageNotFoundException,
     ProjectStepMaxAmountException,
     ProjectUsefulLinkAlreadyExistsException,
     ProjectUsefulLinkMaxAmountException,
@@ -65,6 +66,7 @@ class ProjectErrorResponseFactory(CommonErrorResponseFactory):
         BusinessNumberAlreadyExistsException: ("BUSINESS_NUMBER_ALREADY_EXISTS", 409),
         ProjectCategoryNotFoundException: ("PROJECT_CATEGORY_NOT_FOUND", 404),
         FundingModelNotFoundException: ("FUNDING_MODEL_NOT_FOUND", 404),
+        ProjectStageNotFoundException: ("PROJECT_STAGE_NOT_FOUND", 404),
         ProjectPlanNotFoundException: ("PROJECT_PLAN_NOT_FOUND", 404),
         CityNotFoundException: ("CITY_NOT_FOUND", 404),
         RegionNotFoundException: ("REGION_NOT_FOUND", 404),
@@ -175,3 +177,7 @@ class ProjectUsefulLinkErrorResponseFactory(CommonErrorResponseFactory):
         ProjectUsefulLinkAlreadyExistsException: ("USEFUL_LINK_ALREADY_EXISTS", 409),
         ProjectUsefulLinkMaxAmountException: ("MAX_USEFUL_LINK_AMOUNT_EXCEEDED", 409),
     }
+
+
+class ProjectStageErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {}
