@@ -27,6 +27,7 @@ from application.builders.app_service.project_management.project_image import Pr
 from application.builders.app_service.project_management.project_media import ProjectMediaAppServiceBuilder
 from application.builders.app_service.project_management.report import ProjectReportAppServiceBuilder
 from application.builders.app_service.project_management.resubmit import ProjectResubmitAppServiceBuilder
+from application.builders.app_service.project_management.stage import ProjectStageAppServiceBuilder
 from application.builders.app_service.project_management.useful_link import ProjectUsefulLinkAppServiceBuilder
 from application.builders.app_service.user_management import (
     UserAdminAppServiceBuilder,
@@ -63,6 +64,7 @@ from application.services.project_management.project_investment_social_link impo
 from application.services.project_management.project_media import ProjectMediaAppService
 from application.services.project_management.report import ProjectReportAppService
 from application.services.project_management.resubmit import ProjectResubmitAppService
+from application.services.project_management.stage import ProjectStageAppService
 from application.services.project_management.useful_link import ProjectUsefulLinkAppService
 from application.services.user_management.permission import PermissionAppService
 from application.services.user_management.user import UserAppService
@@ -108,6 +110,7 @@ class Gateway:
     _project_admin_app_service: ProjectAdminAppService | None = None
     _project_report_app_service: ProjectReportAppService | None = None
     _project_resubmit_app_service: ProjectResubmitAppService | None = None
+    _project_stage_app_service: ProjectStageAppService | None = None
 
     _region_app_service: RegionAppService | None = None
     _city_app_service: CityAppService | None = None
@@ -285,6 +288,12 @@ class Gateway:
         if self._project_resubmit_app_service is None:
             self._project_resubmit_app_service = ProjectResubmitAppServiceBuilder.create_service()
         return self._project_resubmit_app_service
+
+    @property
+    def project_stage_app_service(self) -> ProjectStageAppService:
+        if self._project_stage_app_service is None:
+            self._project_stage_app_service = ProjectStageAppServiceBuilder.create_service()
+        return self._project_stage_app_service
 
     @property
     def region_app_service(self) -> RegionAppService:

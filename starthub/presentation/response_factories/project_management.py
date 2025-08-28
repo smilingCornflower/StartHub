@@ -177,3 +177,7 @@ class ProjectUsefulLinkErrorResponseFactory(CommonErrorResponseFactory):
         ProjectUsefulLinkAlreadyExistsException: ("USEFUL_LINK_ALREADY_EXISTS", 409),
         ProjectUsefulLinkMaxAmountException: ("MAX_USEFUL_LINK_AMOUNT_EXCEEDED", 409),
     }
+
+
+class ProjectStageErrorResponseFactory(CommonErrorResponseFactory):
+    error_codes = CommonErrorResponseFactory.error_codes | {}
