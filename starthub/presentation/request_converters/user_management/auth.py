@@ -12,13 +12,7 @@ from presentation.request_converters.common import get_required_field
 
 
 def request_data_to_user_create_payload(data: dict[str, str]) -> UserCreatePayload:
-    """
-    :raises MissingRequiredFieldException:
-    :raises EmptyStringException:
-    :raises InvalidEmailException:
-    :raises PasswordValidationException:
-    :raises pydantic.ValidationError: If fields has incorrect types
-    """
+    """:raises MissingRequiredFieldException:"""
     email: str | None = data.get("email")
     password: str | None = data.get("password")
 
@@ -36,13 +30,7 @@ def request_data_to_user_create_payload(data: dict[str, str]) -> UserCreatePaylo
 
 
 def request_data_to_login_credentials(data: dict[str, str]) -> LoginCredentials:
-    """
-    :raises MissingRequiredFieldException:
-    :raises EmptyStringException:
-    :raises InvalidEmailException:
-    :raises PasswordValidationException:
-    :raises pydantic.ValidationError: If fields has incorrect types
-    """
+    """:raises MissingRequiredFieldException:"""
     email: str | None = data.get("email")
     password: str | None = data.get("password")
 
