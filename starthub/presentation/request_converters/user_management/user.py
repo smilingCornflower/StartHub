@@ -57,7 +57,7 @@ def request_to_user_update_command(
 
 
 # ==== UserGetCommand ====
-def _get_is_active_if_exists_from_params(params: QueryDict) -> bool | None:
+def get_is_active_if_exists_from_params(params: QueryDict) -> bool | None:
     """:raises ValidationException:"""
     if params.get("is_active"):
         if params["is_active"] == "true":
@@ -76,7 +76,7 @@ def request_to_user_get_command(request: Request) -> UserGetCommand:
     params: QueryDict = request.query_params
     command = UserGetCommand(
         role=get_role_if_exists_from_params(params=params),
-        is_active=_get_is_active_if_exists_from_params(params=params),
+        is_active=get_is_active_if_exists_from_params(params=params),
         email=Email(value=cast(str, params["email"])) if "email" in params else None,
         first_name=FirstName(value=cast(str, params["first_name"])) if "first_name" in params else None,
         last_name=LastName(value=cast(str, params["last_name"])) if "last_name" in params else None,
