@@ -238,12 +238,7 @@ class AuthService(AbstractDomainService):
         :raises InvalidTokenException: If token verification fails
         """
         payload: RefreshPayload = self._token_service.verify_refresh(token=refresh_token)
-        try:
-            user: User = self._user_read_repository.get_by_id(Id(value=int(payload.sub)))
-        except UserNotFoundException:
-            logger.error(f"Failed to find a user with id: {payload.sub}.")
-            raise InvalidTokenException("Invalid access token.")
-
+        user: User = self._user_read_repository.get_by_id(Id(value=int(payload.sub)))
         return self._token_service.generate_access(user=user)
 
     def reissue_refresh(self, refresh_token: RefreshTokenVo) -> RefreshTokenVo:
@@ -252,12 +247,7 @@ class AuthService(AbstractDomainService):
         :raises InvalidTokenException: If token verification fails
         """
         payload: RefreshPayload = self._token_service.verify_refresh(token=refresh_token)
-        try:
-            user: User = self._user_read_repository.get_by_id(Id(value=int(payload.sub)))
-        except UserNotFoundException:
-            logger.error(f"Failed to find a user with id: {payload.sub}.")
-            raise InvalidTokenException("Invalid refresh token.")
-
+        user: User = self._user_read_repository.get_by_id(Id(value=int(payload.sub)))
         return self._token_service.generate_refresh(user=user)
 
     def _authenticate_user(self, credentials: LoginCredentials) -> User:

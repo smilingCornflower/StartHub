@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase
 from domain.exceptions.validation import EmptyStringException, InvalidEmailException
 from domain.value_objects.user_management.user import Email
-from tests.common.check_raises import check_raises
+from tests.common.check_raises import check_raises_in_docs
 
 
 class TestEmail(SimpleTestCase):
@@ -14,10 +14,10 @@ class TestEmail(SimpleTestCase):
         exc = EmptyStringException
         with self.assertRaises(exc):
             Email(value="")
-        check_raises(Email.validate_email, exc)
+        check_raises_in_docs(Email.validate_email, exc)
 
     def test_invalid_email(self):
         exc = InvalidEmailException
         with self.assertRaises(exc):
             Email(value="invalid-email")
-        check_raises(Email.validate_email, exc)
+        check_raises_in_docs(Email.validate_email, exc)

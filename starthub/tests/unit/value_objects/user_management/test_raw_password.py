@@ -2,7 +2,7 @@ from django.test import SimpleTestCase
 from domain.exceptions.auth import PasswordValidationException
 from domain.exceptions.validation import EmptyStringException
 from domain.value_objects.user_management.user import RawPassword
-from tests.common.check_raises import check_raises
+from tests.common.check_raises import check_raises_in_docs
 
 
 class TestRawPassword(SimpleTestCase):
@@ -15,10 +15,10 @@ class TestRawPassword(SimpleTestCase):
         exc = EmptyStringException
         with self.assertRaises(exc):
             RawPassword(value="")
-        check_raises(RawPassword.validate_password, exc)
+        check_raises_in_docs(RawPassword.validate_password, exc)
 
     def test_docstring_contains_validation_exc(self):
-        check_raises(RawPassword.validate_password, PasswordValidationException)
+        check_raises_in_docs(RawPassword.validate_password, PasswordValidationException)
 
     def test_too_short_password(self):
         with self.assertRaises(PasswordValidationException):
