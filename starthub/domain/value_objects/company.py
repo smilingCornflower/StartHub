@@ -7,7 +7,7 @@ from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.validators.business_number import KZBusinessNumberValidator
 from domain.value_objects import BaseVo
-from domain.value_objects.common import Description, FirstName, Id, LastName
+from domain.value_objects.common import Description, FirstName, Id, LastName, StringVo
 from domain.value_objects.country import CountryCode
 from domain.value_objects.geo import AddressCreateCommand, AddressId
 from pydantic import field_validator
@@ -27,23 +27,9 @@ class BusinessNumber(BaseVo):
         return value
 
 
-class CompanyName(BaseVo):
-    value: str
-
-    @field_validator("value", mode="after")
-    @classmethod
-    def is_valid_name(cls, value: str) -> str:
-        """
-        :raises CompanyNameIsTooLongException:
-        :raises EmptyStringException:
-        """
-        if not value:
-            raise EmptyStringException("Company name cannot be empty.")
-        if len(value) > CHAR_FIELD_MAX_LENGTH:
-            raise CompanyNameIsTooLongException(
-                f"Company name must be at most {CHAR_FIELD_MAX_LENGTH} characters long."
-            )
-        return value
+class CompanyName(StringVo):
+    max_length = CHAR_FIELD_MAX_LENGTH
+    too_long_string_exception = CompanyNameIsTooLongException
 
 
 class EstablishedDate(BaseVo):
