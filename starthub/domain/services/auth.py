@@ -218,11 +218,6 @@ class AuthService(AbstractDomainService):
         self._user_read_repository = user_read_repository
         self._user_write_repository = user_write_repository
 
-    def check_user_existence(self, email: Email) -> None:
-        """:raises UserNotFoundException:"""
-
-        self._user_read_repository.get_by_email(email=email)
-
     def login(self, credentials: LoginCredentials) -> TokenPairVo:
         """
         :raises InvalidCredentialsException:
