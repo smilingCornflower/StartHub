@@ -20,3 +20,7 @@ class TestCountryCode(SimpleTestCase):
     def test_not_uppercase_code(self):
         with self.assertRaises(InvalidCountryCodeException):
             CountryCode(value="us")  # contains a lowecase symbol
+
+    def test_invalid_country_code_nonexistent(self):
+        with self.assertRaises(InvalidCountryCodeException):
+            CountryCode(value="ZZ")  # right format, but there is not such country
