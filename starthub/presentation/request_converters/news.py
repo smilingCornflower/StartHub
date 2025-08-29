@@ -1,8 +1,6 @@
-import collections
 from pprint import pformat
 from typing import Any, cast
 
-import pydantic
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.datastructures import MultiValueDict
 from domain.enums.news_tag import NewsTagEnum
@@ -28,9 +26,6 @@ def _get_tags_from_request_if_exist(request: Request) -> list[NewsTagEnum] | Non
 
     if not tags_raw:
         return None
-
-    if not isinstance(tags_raw, collections.abc.Iterable):
-        raise pydantic.ValidationError("tags must be iterable.")
 
     tags: list[NewsTagEnum] = list()
     for tag in cast(str, tags_raw).split(","):
