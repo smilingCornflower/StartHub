@@ -2,10 +2,9 @@ from dataclasses import dataclass
 
 from django.test import SimpleTestCase
 from domain.exceptions.file import ImageFileTooLargeException, NotSupportedImageFormatException
-from domain.value_objects.file import IMAGE_MAX_SIZE_IN_BYTES, ImageFile
+from domain.value_objects.file import ImageFile
 from tests.common.constants import TEST_FILES_PATH
 from tests.utils import check_raises
-from win32inetcon import NORMAL_CACHE_ENTRY
 
 
 @dataclass

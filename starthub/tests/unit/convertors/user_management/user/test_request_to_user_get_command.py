@@ -3,13 +3,10 @@ from unittest.mock import Mock
 
 from django.http import QueryDict
 from django.test import SimpleTestCase
-from domain.exceptions.validation import InvalidEmailException, ValidationException
 from domain.value_objects.common import FirstName, LastName
 from domain.value_objects.user_management.user import Email, UserGetCommand
-from loguru import logger
 from presentation.request_converters.user_management.user import request_to_user_get_command
 from rest_framework.request import Request
-from tests.common.check_raises import check_raises
 
 
 @dataclass

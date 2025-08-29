@@ -9,7 +9,7 @@ from presentation.request_converters.user_management.auth import request_headers
 @dataclass
 class ValidAnonymousTokenData:
     anonymous_token = "anon:anonymous_token_123"
-    authorization_header = f"Bearer anon:anonymous_token_123"
+    authorization_header = "Bearer anon:anonymous_token_123"
 
     authorization_field = "Authorization"
 

@@ -1,6 +1,6 @@
 from django.test import SimpleTestCase
 from domain.constants import CHAR_FIELD_SHORT_LENGTH
-from domain.exceptions.validation import EmptyStringException, FirstNameIsTooLongException, LastNameIsTooLongException
+from domain.exceptions.validation import EmptyStringException, LastNameIsTooLongException
 from domain.value_objects.common import LastName
 
 

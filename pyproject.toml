@@ -77,27 +77,6 @@ exclude = '''
 )/
 '''
 
-[tool.flake8]
-max-line-length = 120
-ignore = [
-    "E203", # Whitespace before ':' (conflicts with Black's formatting)
-    "E266", # Too many leading '#' in a comment (e.g., `### Bad`)
-    "W503", # Line break before binary operator (conflicts with Black's style)
-    "E501", # Line too long (controlled by `max-line-length` instead)
-]
-exclude = [
-    ".git",
-    "__pycache__",
-    ".venv",
-    "venv",
-    "env",
-    "migrations",
-    "docs",
-    "tests",
-    "*.egg-info",
-]
-break-before-binary = true
-
 [tool.isort]
 line_length = 120
 multi_line_output = 3

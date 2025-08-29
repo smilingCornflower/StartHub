@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Any
 
 
 def check_raises(func: Any, exc: type[Exception]) -> None:

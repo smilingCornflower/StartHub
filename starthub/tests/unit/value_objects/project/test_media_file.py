@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-from io import BytesIO
 
 from django.test import SimpleTestCase
-from domain.constants import IMAGE_MAX_SIZE_IN_BYTES, MEGABYTE, VIDEO_MAX_SIZE_IN_BYTES
+from domain.constants import VIDEO_MAX_SIZE_IN_BYTES
 from domain.exceptions.file import (
     ImageFileTooLargeException,
     UnsupportedFileExtensionException,

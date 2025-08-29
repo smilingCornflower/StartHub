@@ -5,7 +5,6 @@ from domain.exceptions.company import CompanyNameIsTooLongException
 from domain.exceptions.validation import EmptyStringException
 from domain.value_objects.common import CHAR_FIELD_MAX_LENGTH
 from domain.value_objects.company import CompanyName
-from tests.utils import check_raises
 
 
 @dataclass

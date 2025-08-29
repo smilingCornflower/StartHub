@@ -1,10 +1,7 @@
-import json
 from pathlib import Path
-from unittest.mock import MagicMock
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase
-from django.utils.datastructures import MultiValueDict
 from domain.value_objects.common import DeadlineDate, Description, FirstName, Id, LastName, PhoneNumber, SocialLink
 from domain.value_objects.company import (
     BusinessNumber,

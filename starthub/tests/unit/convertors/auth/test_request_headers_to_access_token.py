@@ -9,7 +9,7 @@ from presentation.request_converters.user_management.auth import request_headers
 @dataclass
 class ValidAccessTokenData:
     access_token = "valid_access_token_123"
-    authorization_header = f"Bearer valid_access_token_123"
+    authorization_header = "Bearer valid_access_token_123"
 
     authorization_field = "Authorization"
 

@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from io import BytesIO
 
 from django.test import SimpleTestCase
 from domain.exceptions.file import NotPdfFileException, PdfFileTooLargeException

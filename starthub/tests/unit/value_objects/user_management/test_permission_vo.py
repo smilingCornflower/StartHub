@@ -5,7 +5,7 @@ from domain.value_objects.user_management.user import PermissionVo
 
 class TestPermissionVo(SimpleTestCase):
     def test_valid_3_parts(self):
-        val = f"view.own.user"
+        val = "view.own.user"
         permission = PermissionVo(value=val)
         self.assertEqual(permission.value, val)
 

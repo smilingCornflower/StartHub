@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from unittest.mock import Mock
 
-import pydantic
 from django.test import SimpleTestCase
 from domain.enums.role import RoleEnum
 from domain.exceptions.validation import ValidationException

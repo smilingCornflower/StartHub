@@ -1,7 +1,6 @@
 from dataclasses import dataclass
 from unittest.mock import Mock
 
-import pydantic
 from django.test import SimpleTestCase
 from domain.exceptions.validation import MissingRequiredFieldException, ValidationException
 from domain.value_objects.news_management.news import NewsTagEnum

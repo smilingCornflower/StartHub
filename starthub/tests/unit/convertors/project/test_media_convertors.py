@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from pathlib import Path
 from unittest.mock import Mock
 
 from django.core.files.uploadedfile import SimpleUploadedFile

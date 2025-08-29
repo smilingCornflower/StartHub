@@ -1,5 +1,3 @@
-from logging import exception
-
 from django.test import SimpleTestCase
 from domain.exceptions.validation import InvalidPhoneNumberException
 from domain.value_objects.common import PhoneNumber

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from unittest.mock import Mock
 
 from django.test import SimpleTestCase
-from domain.exceptions.validation import MissingRequiredFieldException, ValidationException
+from domain.exceptions.validation import MissingRequiredFieldException
 from domain.value_objects.common import FirstName, LastName, PhoneNumber
 from domain.value_objects.user_management.user import Email
 from domain.value_objects.user_management.user_message import (

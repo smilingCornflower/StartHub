@@ -2,7 +2,6 @@ from django.test import SimpleTestCase
 from domain.exceptions.validation import MissingRequiredFieldException
 from domain.value_objects.auth_management.token import RefreshTokenVo
 from presentation.request_converters.user_management.auth import request_cookies_to_refresh_token
-from tests.common.check_raises import check_raises
 
 
 class TestRequestCookiesToRefreshToken(SimpleTestCase):

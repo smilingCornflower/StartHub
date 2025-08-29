@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from unittest.mock import Mock
 
 from django.http import QueryDict
 from django.test import SimpleTestCase

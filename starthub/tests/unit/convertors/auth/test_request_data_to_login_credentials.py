@@ -5,7 +5,6 @@ from domain.exceptions.validation import MissingRequiredFieldException
 from domain.value_objects.auth_management.auth import LoginCredentials
 from domain.value_objects.user_management.user import Email, RawPassword
 from presentation.request_converters.user_management.auth import request_data_to_login_credentials
-from tests.common.check_raises import check_raises
 
 
 @dataclass

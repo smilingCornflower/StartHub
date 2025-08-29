@@ -82,7 +82,7 @@ class TestRequestToUserMessageGetCommand(SimpleTestCase):
         request = Mock(spec=Request)
         request.query_params = QueryDict("order_by=invalid_field")
 
-        with self.assertRaises(ValidationException) as context:
+        with self.assertRaises(ValidationException):
             request_to_user_message_get_command(request)
 
     def test_both_params_valid(self):
