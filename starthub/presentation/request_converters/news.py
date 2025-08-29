@@ -127,9 +127,13 @@ def request_to_news_get_command(request: Request) -> NewsGetCommand:
 
 
 def request_to_news_tag_name(request: Request) -> NewsTagEnum:
+    """
+    :raises TypeError:
+    :raises ValidationException:
+    """
     tag_name_raw = get_required_field(request.data, "tag_name")
     if not isinstance(tag_name_raw, str):
-        raise pydantic.ValidationError("tag_name must be string.")
+        raise TypeError("tag_name must be string.")
     try:
         return NewsTagEnum(tag_name_raw)
     except ValueError:

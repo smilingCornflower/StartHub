@@ -13,6 +13,7 @@ from domain.exceptions.validation import (
 )
 
 APPLICATION_ERROR_CODES: dict[type, tuple[str, int]] = {
+    TypeError: ("TYPE_ERROR", 400),
     MissingRequiredFieldException: ("MISSING_REQUIRED_FIELD", 400),
     pydantic.ValidationError: ("INVALID_DATA_TYPE", 400),
     EmptyStringException: ("EMPTY_VALUE_NOT_ALLOWED", 422),
