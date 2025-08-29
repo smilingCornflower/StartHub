@@ -69,8 +69,11 @@ class PdfFile(FileVo):
     # noinspection PyNestedDecorators
     @field_validator("value", mode="after")
     @classmethod
-    def is_valid_pdf(cls, value: bytes) -> bytes:
-        """:raises NotPdfFileException:"""
+    def validate_pdf(cls, value: bytes) -> bytes:
+        """
+        :raises NotPdfFileException:
+        :raises PdfFileTooLargeException:
+        """
         if len(value) > PDF_MAX_SIZE_IN_BYTES:
             raise PdfFileTooLargeException(
                 f"pdf size {round(len(value) / MEGABYTE, 1)} MB exceeds max allowed {PDF_MAX_SIZE_IN_BYTES // MEGABYTE} MB."
