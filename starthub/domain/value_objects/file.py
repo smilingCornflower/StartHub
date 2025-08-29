@@ -56,9 +56,10 @@ class JpgImage(Image):
     # noinspection PyNestedDecorators
     @field_validator("file", mode="after")
     @classmethod
-    def is_jpg_file(cls, file: ImageFile) -> ImageFile:
+    def validate_jpg(cls, file: ImageFile) -> ImageFile:
+        """:raises NotSupportedImageFormatException:"""
         kind = guess(file.value)
-        if kind != ImageKindEnum.JPEG:
+        if kind.mime != ImageKindEnum.JPEG:
             logger.exception("Not a jpeg file")
             raise NotSupportedImageFormatException("Only jpeg image allowed.")
         return file
