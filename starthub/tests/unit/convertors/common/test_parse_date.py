@@ -4,6 +4,7 @@ from datetime import date
 from django.test import SimpleTestCase
 from domain.exceptions.validation import DateIsNotIsoFormatException
 from presentation.request_converters.common import parse_date
+from tests.utils import check_raises
 
 
 @dataclass
@@ -24,9 +25,8 @@ class TestParseDate(SimpleTestCase):
         self.assertEqual(expected, result)
 
     def test_invalid_date_format(self):
-        with self.assertRaises(DateIsNotIsoFormatException):
-            parse_date(self.data.invalid_date)
+        exc = DateIsNotIsoFormatException
 
-    def test_invalid_string(self):
-        with self.assertRaises(DateIsNotIsoFormatException):
-            parse_date(self.data.invalid_format)
+        check_raises(parse_date, exc)
+        with self.assertRaises(exc):
+            parse_date(self.data.invalid_date)

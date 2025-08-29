@@ -62,9 +62,12 @@ def build_address_create_command(address_data: dict[str, str]) -> AddressCreateC
 
 
 def parse_languages(request: Request) -> list[LangCodeEnum]:
+    """
+    Parse language codes from query parameter 'lang'.
+    Returns default language if no valid languages found.
+    """
     lang_param: str | None = request.query_params.get("lang")
     if lang_param:
-        print(1)
         languages = lang_param.split(",")
         language_codes: list[LangCodeEnum] = list()
         for lang in languages:

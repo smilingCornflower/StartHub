@@ -42,6 +42,6 @@ class TestGetRoleIfExistsFromParams(SimpleTestCase):
         params = QueryDict(mutable=True)
         params[self.data.role_field] = self.data.invalid_role
 
+        check_raises(get_role_if_exists_from_params, ValidationException)
         with self.assertRaises(ValidationException):
             get_role_if_exists_from_params(params)
-        check_raises(get_role_if_exists_from_params, ValidationException)
