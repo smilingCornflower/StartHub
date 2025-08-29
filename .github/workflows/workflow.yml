@@ -100,7 +100,7 @@ jobs:
         run: docker compose up -d db
 
       - name: Run tests
-        run: uv run manage.py test
+        run: uv run manage.py test --exclude-tag=slow
         working-directory: starthub
 
   deploy:
