@@ -1,8 +1,6 @@
-import collections
 from pprint import pformat
 from typing import Any, cast
 
-import pydantic
 from django.core.files.uploadedfile import UploadedFile
 from django.utils.datastructures import MultiValueDict
 from domain.enums.news_tag import NewsTagEnum
@@ -28,9 +26,6 @@ def _get_tags_from_request_if_exist(request: Request) -> list[NewsTagEnum] | Non
 
     if not tags_raw:
         return None
-
-    if not isinstance(tags_raw, collections.abc.Iterable):
-        raise pydantic.ValidationError("tags must be iterable.")
 
     tags: list[NewsTagEnum] = list()
     for tag in cast(str, tags_raw).split(","):
@@ -77,6 +72,8 @@ def request_to_news_create_command(request: Request, user_id: Id) -> NewsCreateC
 
 
 # ======================================================================================================================
+
+
 # ==== NewsUpdateCommand ===============================================================================================
 def request_to_news_update_command(request: Request) -> NewsUpdateCommand:
     request_data: dict[str, Any] = request.data
@@ -108,6 +105,8 @@ def request_to_news_update_command(request: Request) -> NewsUpdateCommand:
 
 
 # ======================================================================================================================
+
+
 # ==== NewsGetCommand ==================================================================================================
 def request_to_news_get_command(request: Request) -> NewsGetCommand:
     params = request.query_params
@@ -120,11 +119,16 @@ def request_to_news_get_command(request: Request) -> NewsGetCommand:
 
 
 # ======================================================================================================================
-# ==== NewsGetCommand ==================================================================================================
+
+
 def request_to_news_tag_name(request: Request) -> NewsTagEnum:
+    """
+    :raises TypeError:
+    :raises ValidationException:
+    """
     tag_name_raw = get_required_field(request.data, "tag_name")
     if not isinstance(tag_name_raw, str):
-        raise pydantic.ValidationError("tag_name must be string.")
+        raise TypeError("tag_name must be string.")
     try:
         return NewsTagEnum(tag_name_raw)
     except ValueError:

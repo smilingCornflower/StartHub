@@ -90,3 +90,7 @@ class TestRequestToUsefulLinkUpdateCommand(SimpleTestCase):
 
     def test_empty_data(self):
         request = Mock()
+        request.data = {}
+        expected = UsefulLinkUpdateCommand(name=None, url=None)
+        result = request_to_useful_link_update_command(request)
+        self.assertEqual(expected, result)

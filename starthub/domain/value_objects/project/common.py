@@ -7,8 +7,8 @@ from domain.exceptions.project_management import (
     NegativeProjectGoalSumException,
     ProjectNameIsTooLongException,
 )
-from domain.exceptions.validation import EmptyStringException
 from domain.value_objects import BaseVo
+from domain.value_objects.common import StringVo
 from pydantic import field_validator
 
 
@@ -43,23 +43,17 @@ class ProjectStatus(BaseVo):
         return value.lower()
 
 
-class ProjectName(BaseVo):
-    value: str
+class ProjectName(StringVo):
+    max_length = CHAR_FIELD_MAX_LENGTH
+    too_long_string_exception = ProjectNameIsTooLongException
 
-    @field_validator("value", mode="after")
     @classmethod
-    def is_valid_name(cls, value: str) -> str:
-        """
-        :raises ProjectNameIsTooLongException:
-        :raises EmptyStringException:
-        """
-        if not value:
-            raise EmptyStringException("Project name cannot be empty.")
-        if len(value) > CHAR_FIELD_MAX_LENGTH:
-            raise ProjectNameIsTooLongException(
-                f"Project name must be at most {CHAR_FIELD_MAX_LENGTH} characters long."
-            )
-        return value
+    def get_empty_string_msg(cls) -> str:
+        return "Project name cannot be empty."
+
+    @classmethod
+    def get_too_long_string_msg(cls) -> str:
+        return f"Project name must be at most {cls.max_length} characters long."
 
 
 class GoalSum(BaseVo):

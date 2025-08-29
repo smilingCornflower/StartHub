@@ -2,7 +2,6 @@ import re
 
 import jwt
 from domain.enums.token import TokenTypeEnum
-from domain.exceptions.auth import MissingAccessTokenException
 from domain.exceptions.validation import MissingRequiredFieldException
 from domain.value_objects.auth_management.auth import LoginCredentials
 from domain.value_objects.auth_management.token import AccessTokenVo, AnonymousTokenVo, RefreshTokenVo
@@ -12,13 +11,7 @@ from presentation.request_converters.common import get_required_field
 
 
 def request_data_to_user_create_payload(data: dict[str, str]) -> UserCreatePayload:
-    """
-    :raises MissingRequiredFieldException:
-    :raises EmptyStringException:
-    :raises InvalidEmailException:
-    :raises PasswordValidationException:
-    :raises pydantic.ValidationError: If fields has incorrect types
-    """
+    """:raises MissingRequiredFieldException:"""
     email: str | None = data.get("email")
     password: str | None = data.get("password")
 
@@ -36,13 +29,7 @@ def request_data_to_user_create_payload(data: dict[str, str]) -> UserCreatePaylo
 
 
 def request_data_to_login_credentials(data: dict[str, str]) -> LoginCredentials:
-    """
-    :raises MissingRequiredFieldException:
-    :raises EmptyStringException:
-    :raises InvalidEmailException:
-    :raises PasswordValidationException:
-    :raises pydantic.ValidationError: If fields has incorrect types
-    """
+    """:raises MissingRequiredFieldException: if there is no email or password"""
     email: str | None = data.get("email")
     password: str | None = data.get("password")
 
@@ -62,24 +49,7 @@ def request_cookies_to_refresh_token(cookies: dict[str, str]) -> RefreshTokenVo:
     return RefreshTokenVo(value=token)
 
 
-def request_cookies_to_access_token(cookies: dict[str, str]) -> AccessTokenVo:
-    """:raises MissingAccessTokenException: If missing 'access_token' field."""
-    token: str | None = cookies.get("access_token")
-    if not token:
-        logger.error("Missing access_token field.")
-        raise MissingAccessTokenException("Missing required field: access_token.")
-    return AccessTokenVo(value=token)
-
-
-def request_data_to_email(data: dict[str, str]) -> Email:
-    """:raises MissingRequiredFieldException: If missing required fields."""
-    try:
-        return Email(value=data["email"])
-    except KeyError:
-        raise MissingRequiredFieldException("Missing required fields: email must be provided.")
-
-
-def extract_token_from_headers(headers: dict[str, str]) -> str:
+def _extract_token_from_headers(headers: dict[str, str]) -> str:
     """
     :raises MissingRequiredFieldException:
     """
@@ -98,7 +68,7 @@ def request_headers_to_access_token(headers: dict[str, str]) -> AccessTokenVo:
     :raises MissingRequiredFieldException:
     :raises pydantic.ValidationError:
     """
-    return AccessTokenVo(value=extract_token_from_headers(headers=headers))
+    return AccessTokenVo(value=_extract_token_from_headers(headers=headers))
 
 
 def request_headers_to_anonymous_token(headers: dict[str, str]) -> AnonymousTokenVo:
@@ -106,7 +76,7 @@ def request_headers_to_anonymous_token(headers: dict[str, str]) -> AnonymousToke
     :raises MissingRequiredFieldException:
     :raises pydantic.ValidationError:
     """
-    return AnonymousTokenVo(value=extract_token_from_headers(headers=headers))
+    return AnonymousTokenVo(value=_extract_token_from_headers(headers=headers))
 
 
 def request_headers_to_access_or_anonymous_token(headers: dict[str, str]) -> AccessTokenVo | AnonymousTokenVo:
@@ -114,7 +84,7 @@ def request_headers_to_access_or_anonymous_token(headers: dict[str, str]) -> Acc
     :raises MissingRequiredFieldException:
     :raises pydantic.ValidationError:
     """
-    token: str = extract_token_from_headers(headers=headers)
+    token: str = _extract_token_from_headers(headers=headers)
     decoded: dict[str, str] = jwt.decode(token, options={"verify_signature": False})
     logger.debug(f"{decoded=}")
 

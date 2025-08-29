@@ -1,4 +1,4 @@
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, tag
 from domain.services.file import VideoService
 from loguru import logger
 from msgpack.fallback import BytesIO
@@ -6,6 +6,7 @@ from tests.common.constants import TEST_FILES_PATH
 
 
 class TestVideoService(SimpleTestCase):
+    @tag("slow")
     def test_compress_video(self):
         with open(TEST_FILES_PATH / "video_4k.mp4", mode="rb") as video:
             video_data = video.read()

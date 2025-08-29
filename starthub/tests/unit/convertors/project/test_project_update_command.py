@@ -1,13 +1,25 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase
-from domain.value_objects.file import *
-from domain.value_objects.project.common import *
+from domain.value_objects.common import DeadlineDate, Description, Id
+from domain.value_objects.file import PdfFile
+from domain.value_objects.project.common import GoalSum, ProjectName
 from domain.value_objects.project.funding_model import FundingModelId
-from domain.value_objects.project.incubator import *
-from domain.value_objects.project.metric import *
+from domain.value_objects.project.incubator import IncubatorName, IncubatorUpdatePayload
+from domain.value_objects.project.metric import (
+    Aov,
+    Arppu,
+    Arpu,
+    Cac,
+    ChurnRate,
+    ConversionRate,
+    Ltv,
+    Nps,
+    RetentionRate,
+    Roi,
+)
 from domain.value_objects.project.project import ProjectUpdateCommand
 from domain.value_objects.project.stage import ProjectStageId
-from domain.value_objects.project.step import *
+from domain.value_objects.project.step import ProjectStepCreateCommand, ProjectStepDate, ProjectStepName
 from presentation.request_converters.common import parse_date
 from presentation.request_converters.project.project_update_command import request_to_the_project_update_command
 from tests.common.constants import TEST_FILES_PATH

@@ -18,6 +18,7 @@ dependencies = [
     "moviepy>=2.2.1",
     "phonenumbers>=9.0.6",
     "psycopg[binary]>=3.2.9",
+    "pycountry>=24.6.1",
     "pydantic>=2.11.5",
     "pyjwt>=2.10.1",
     "python-dotenv>=1.1.0",
@@ -75,27 +76,6 @@ exclude = '''
   | dist
 )/
 '''
-
-[tool.flake8]
-max-line-length = 120
-ignore = [
-    "E203", # Whitespace before ':' (conflicts with Black's formatting)
-    "E266", # Too many leading '#' in a comment (e.g., `### Bad`)
-    "W503", # Line break before binary operator (conflicts with Black's style)
-    "E501", # Line too long (controlled by `max-line-length` instead)
-]
-exclude = [
-    ".git",
-    "__pycache__",
-    ".venv",
-    "venv",
-    "env",
-    "migrations",
-    "docs",
-    "tests",
-    "*.egg-info",
-]
-break-before-binary = true
 
 [tool.isort]
 line_length = 120
