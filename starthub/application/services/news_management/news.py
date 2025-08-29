@@ -24,9 +24,9 @@ from domain.exceptions.permissions import (
 from domain.models.news_management.news import News
 from domain.models.news_management.news_image import NewsImage
 from domain.models.user_management.user import User
+from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.repositories.news_management.news import NewsReadRepository
 from domain.repositories.user_management.user import UserReadRepository
-from domain.services.cloud_storage import StorageService
 from domain.services.file import ImageService
 from domain.services.news_management.news import NewsImageService, NewsService
 from domain.services.permission import PermissionService
@@ -116,7 +116,7 @@ class NewsAppService(NewsPermissionAppService):
         news_image_service: NewsImageService,
         permission_service: PermissionService,
         image_service: ImageService,
-        storage_service: StorageService,
+        cloud_storage: AbstractCloudStorage,
         news_read_repository: NewsReadRepository,
         user_read_repository: UserReadRepository,
         unit_of_work: AbstractUnitOfWork,
@@ -125,7 +125,7 @@ class NewsAppService(NewsPermissionAppService):
         self._news_service = news_service
         self._news_image_service = news_image_service
         self._image_service = image_service
-        self._storage_service = storage_service
+        self._cloud_storage = cloud_storage
         self._news_read_repository = news_read_repository
         self._user_read_repository = user_read_repository
         self._uow = unit_of_work
@@ -134,7 +134,7 @@ class NewsAppService(NewsPermissionAppService):
         logger.debug("get_one()")
         news: News = self._news_read_repository.get_by_id(id_=Id(value=news_id))
 
-        cover_url: str = self._storage_service.create_url(
+        cover_url: str = self._cloud_storage.create_url(
             payload=CloudStorageCreateUrlPayload(file_path=cast(str, news.cover))
         )
 
@@ -144,7 +144,7 @@ class NewsAppService(NewsPermissionAppService):
             img_dtos.append(
                 NewsImageDto(
                     image_name=self._news_image_service.extract_image_name(news_image=img),
-                    image_url=self._storage_service.create_url(CloudStorageCreateUrlPayload(file_path=img.image)),
+                    image_url=self._cloud_storage.create_url(CloudStorageCreateUrlPayload(file_path=img.image)),
                 )
             )
         news_dto: NewsFullDto = news_to_full_dto(news, cover_url=cover_url, news_image_dtos=img_dtos)
@@ -165,7 +165,7 @@ class NewsAppService(NewsPermissionAppService):
         logger.debug(f"Found {len(news_lst)} news.")
 
         cover_urls: list[str] = [
-            self._storage_service.create_url(payload=CloudStorageCreateUrlPayload(file_path=cast(str, i.cover)))
+            self._cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=cast(str, i.cover)))
             for i in news_lst
         ]
 
@@ -175,7 +175,7 @@ class NewsAppService(NewsPermissionAppService):
         cover_jpg: BytesIO = self._image_service.convert_to_jpg(file_obj=BytesIO(cover.file.value))
         cover_path: str = PathProvider.get_news_cover_path(news_id=news_id)
 
-        self._storage_service.upload_file(CloudStorageUploadPayload(file_data=cover_jpg.read(), file_path=cover_path))
+        self._cloud_storage.upload_file(CloudStorageUploadPayload(file_data=cover_jpg.read(), file_path=cover_path))
         logger.debug(f"cover uploaded by the path: {cover_path}")
 
         self._news_service.update(payload=NewsUpdatePayload(news_id=news_id, cover_path=cover_path))
@@ -373,7 +373,7 @@ class NewsAppService(NewsPermissionAppService):
 
                 for img in image_names_to_remove:
                     try:
-                        self._storage_service.delete_file(payload=CloudStorageDeletePayload(file_path=img))
+                        self._cloud_storage.delete_file(payload=CloudStorageDeletePayload(file_path=img))
                     except FileNotFoundCloudStorageException:
                         logger.warning("File does not exists.")
 
@@ -400,7 +400,7 @@ class NewsAppService(NewsPermissionAppService):
         logger.debug(f"converting image = {image}")
         jpg_obj: BytesIO = self._image_service.convert_to_jpg(file_obj=BytesIO(image.file.value))
         img_path: str = PathProvider.get_news_image_path(news_id, image_name=id_map[image.name])
-        self._storage_service.upload_file(CloudStorageUploadPayload(file_data=jpg_obj.read(), file_path=img_path))
+        self._cloud_storage.upload_file(CloudStorageUploadPayload(file_data=jpg_obj.read(), file_path=img_path))
         logger.debug(f"{img_path} uploaded successfully.")
 
         news_image: NewsImage = self._news_image_service.create(NewsImageCreatePayload(news_id=news_id, image=img_path))
@@ -412,11 +412,11 @@ class NewsAppService(NewsPermissionAppService):
         try:
             news = self._news_read_repository.get_by_id(id_=Id(value=news_id))
 
-            self._storage_service.delete_file(payload=CloudStorageDeletePayload(file_path=cast(str, news.cover)))
+            self._cloud_storage.delete_file(payload=CloudStorageDeletePayload(file_path=cast(str, news.cover)))
             logger.info(f"Cover deleted: {news.cover}")
 
             for img in self._news_image_service.get(filter_=NewsImageFilter(news_id=Id(value=news_id))):
-                self._storage_service.delete_file(payload=CloudStorageDeletePayload(file_path=img.image))
+                self._cloud_storage.delete_file(payload=CloudStorageDeletePayload(file_path=img.image))
                 logger.info(f"Image deleted: {img.image}")
 
         except NewsNotFoundException:
