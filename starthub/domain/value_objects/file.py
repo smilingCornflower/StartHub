@@ -28,7 +28,7 @@ class ImageFile(FileVo):
     # noinspection PyNestedDecorators
     @field_validator("value", mode="after")
     @classmethod
-    def is_valid_image(cls, value: bytes) -> bytes:
+    def validate_image(cls, value: bytes) -> bytes:
         """
         :raises ImageFileTooLargeException:
         :raises NotSupportedImageFormatException:

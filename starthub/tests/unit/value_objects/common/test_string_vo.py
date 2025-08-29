@@ -45,3 +45,7 @@ class TestStringVo(SimpleTestCase):
 
         with self.assertRaises(CustomException):
             CustomString(value="Too long string.")
+
+    def test_get_default_too_long_string_msg(self):
+        msg = StringVo.get_too_long_string_msg()
+        self.assertEqual(msg, "String is too long.")

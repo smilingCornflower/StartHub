@@ -4,7 +4,7 @@ from domain.exceptions.validation import EmptyStringException, StringIsTooLongEx
 from domain.value_objects.common import Description
 
 
-class TestDeadline(SimpleTestCase):
+class TestDescription(SimpleTestCase):
     def test_valid_descr(self):
         val = "description"
         desc = Description(value=val)
