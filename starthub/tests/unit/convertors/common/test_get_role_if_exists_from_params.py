@@ -5,7 +5,7 @@ from django.test import SimpleTestCase
 from domain.enums.role import RoleEnum
 from domain.exceptions.validation import ValidationException
 from presentation.request_converters.common import get_role_if_exists_from_params
-from tests.common.check_raises import check_raises
+from tests.common.check_raises import check_raises_in_docs
 
 
 @dataclass
@@ -41,6 +41,6 @@ class TestGetRoleIfExistsFromParams(SimpleTestCase):
         params = QueryDict(mutable=True)
         params[self.data.role_field] = self.data.invalid_role
 
-        check_raises(get_role_if_exists_from_params, ValidationException)
+        check_raises_in_docs(get_role_if_exists_from_params, ValidationException)
         with self.assertRaises(ValidationException):
             get_role_if_exists_from_params(params)

@@ -7,7 +7,7 @@ from domain.exceptions.validation import ValidationException
 from domain.value_objects.user_management.user_admin import UserAdminUpdateCommand
 from presentation.request_converters.user_management.user_admin import request_to_user_admin_update_command
 from rest_framework.request import Request
-from tests.common.check_raises import check_raises
+from tests.common.check_raises import check_raises_in_docs
 
 
 @dataclass
@@ -93,7 +93,7 @@ class TestRequestToUserAdminUpdateCommand(SimpleTestCase):
         exc = ValidationException
         with self.assertRaises(exc):
             request_to_user_admin_update_command(request)
-        check_raises(request_to_user_admin_update_command, exc)
+        check_raises_in_docs(request_to_user_admin_update_command, exc)
 
     def test_invalid_remove_role(self):
         request = Mock(spec=Request)
@@ -102,4 +102,4 @@ class TestRequestToUserAdminUpdateCommand(SimpleTestCase):
         exc = ValidationException
         with self.assertRaises(exc):
             request_to_user_admin_update_command(request)
-        check_raises(request_to_user_admin_update_command, exc)
+        check_raises_in_docs(request_to_user_admin_update_command, exc)

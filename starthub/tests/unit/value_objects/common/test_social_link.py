@@ -2,7 +2,7 @@ from django.test import SimpleTestCase
 from domain.enums.social_links import SocialPlatformEnum
 from domain.exceptions.validation import DisallowedSocialLinkException, InvalidSocialLinkException
 from domain.value_objects.common import SocialLink
-from tests.common.check_raises import check_raises
+from tests.common.check_raises import check_raises_in_docs
 
 
 class TestSocialLink(SimpleTestCase):
@@ -18,10 +18,10 @@ class TestSocialLink(SimpleTestCase):
         exception = DisallowedSocialLinkException
         with self.assertRaises(exception):
             SocialLink(platform="unknown", link="https://example.com")
-        check_raises(SocialLink.validate_social_link, exception)
+        check_raises_in_docs(SocialLink.validate_social_link, exception)
 
     def test_invalid_link_format(self):
         exception = InvalidSocialLinkException
         with self.assertRaises(exception):
             SocialLink(platform=SocialPlatformEnum.INSTAGRAM, link="invalid-link")
-        check_raises(SocialLink.validate_social_link, exception)
+        check_raises_in_docs(SocialLink.validate_social_link, exception)

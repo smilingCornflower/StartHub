@@ -16,7 +16,7 @@ from domain.value_objects.auth_management.token import (
     RefreshPayload,
     RefreshTokenVo,
 )
-from tests.common.check_raises import check_raises
+from tests.common.check_raises import check_raises_in_docs
 
 
 class TestTokenService(SimpleTestCase):
@@ -84,7 +84,7 @@ class TestTokenService(SimpleTestCase):
         return {"sub": str(self.mock_user.id), "type": TokenTypeEnum.REFRESH}
 
     def _assert_exception_raised(self, method, token, exception_class):
-        check_raises(method, exception_class)
+        check_raises_in_docs(method, exception_class)
         with self.assertRaises(exception_class):
             method(token)
 

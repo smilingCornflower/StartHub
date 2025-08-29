@@ -2,7 +2,7 @@ from django.test import SimpleTestCase
 from domain.exceptions.file import NotPdfFileException
 from domain.services.file import PdfService
 from msgpack.fallback import BytesIO
-from tests.common.check_raises import check_raises
+from tests.common.check_raises import check_raises_in_docs
 from tests.common.constants import TEST_FILES_PATH
 
 
@@ -18,4 +18,4 @@ class TestPdfService(SimpleTestCase):
         exc = NotPdfFileException
         with self.assertRaises(exc):
             PdfService.check_is_pdf(BytesIO(file_data))
-        check_raises(PdfService.check_is_pdf, exc)
+        check_raises_in_docs(PdfService.check_is_pdf, exc)

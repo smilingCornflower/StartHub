@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase
 from domain.exceptions.validation import InvalidPhoneNumberException
 from domain.value_objects.common import PhoneNumber
-from tests.common.check_raises import check_raises
+from tests.common.check_raises import check_raises_in_docs
 
 
 class TestPhoneNumber(SimpleTestCase):
@@ -18,4 +18,4 @@ class TestPhoneNumber(SimpleTestCase):
         with self.assertRaises(exception):
             PhoneNumber(value="+71234567890")  # 123 - not a valid operator code for +7 (Russia/Kazakhstan)
 
-        check_raises(PhoneNumber.validate_phone_number, exception)
+        check_raises_in_docs(PhoneNumber.validate_phone_number, exception)

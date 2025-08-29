@@ -6,7 +6,7 @@ from domain.exceptions.validation import MissingRequiredFieldException, Validati
 from domain.value_objects.news_management.news import NewsTagEnum
 from presentation.request_converters.news import request_to_news_tag_name
 from rest_framework.request import Request
-from tests.common.check_raises import check_raises
+from tests.common.check_raises import check_raises_in_docs
 
 
 @dataclass
@@ -45,7 +45,7 @@ class TestRequestToNewsTagName(SimpleTestCase):
 
         exc = TypeError
 
-        check_raises(request_to_news_tag_name, exc)
+        check_raises_in_docs(request_to_news_tag_name, exc)
         with self.assertRaises(exc):
             self.apply_function(data)
 
@@ -54,6 +54,6 @@ class TestRequestToNewsTagName(SimpleTestCase):
 
         exc = ValidationException
 
-        check_raises(request_to_news_tag_name, exc)
+        check_raises_in_docs(request_to_news_tag_name, exc)
         with self.assertRaises(exc):
             self.apply_function(data)

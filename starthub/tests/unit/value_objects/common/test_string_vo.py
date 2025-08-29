@@ -1,7 +1,7 @@
 from django.test import SimpleTestCase
 from domain.exceptions.validation import EmptyStringException, StringIsTooLongException
 from domain.value_objects.common import StringVo
-from tests.common.check_raises import check_raises
+from tests.common.check_raises import check_raises_in_docs
 
 
 class TestStringVo(SimpleTestCase):
@@ -14,7 +14,7 @@ class TestStringVo(SimpleTestCase):
         exception = EmptyStringException
         with self.assertRaises(exception):
             StringVo(value="")
-        check_raises(StringVo.validate_string, exception)
+        check_raises_in_docs(StringVo.validate_string, exception)
 
     def test_custom_max_length(self):
         class CustomString(StringVo):
@@ -23,7 +23,7 @@ class TestStringVo(SimpleTestCase):
         exception = StringIsTooLongException
         with self.assertRaises(exception):
             CustomString(value="Too long string.")
-        check_raises(CustomString.validate_string, exception)
+        check_raises_in_docs(CustomString.validate_string, exception)
 
     def test_custom_empty_string_exception(self):
         class CustomException(Exception):

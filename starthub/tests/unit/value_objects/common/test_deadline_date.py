@@ -3,7 +3,7 @@ from datetime import date, timedelta
 from django.test import SimpleTestCase
 from domain.exceptions.validation import DeadlineInPastException
 from domain.value_objects.common import DeadlineDate
-from tests.common.check_raises import check_raises
+from tests.common.check_raises import check_raises_in_docs
 
 
 class TestDeadlineDate(SimpleTestCase):
@@ -17,4 +17,4 @@ class TestDeadlineDate(SimpleTestCase):
         with self.assertRaises(exception):
             d = date.today() - timedelta(days=1)
             DeadlineDate(value=d)
-        check_raises(DeadlineDate.validate_deadline_not_in_past, exception)
+        check_raises_in_docs(DeadlineDate.validate_deadline_not_in_past, exception)

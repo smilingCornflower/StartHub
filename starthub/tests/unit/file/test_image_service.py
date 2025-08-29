@@ -5,7 +5,7 @@ from domain.exceptions.file import NotSupportedImageFormatException
 from domain.services.file import ImageService
 from filetype import filetype
 from loguru import logger
-from tests.common.check_raises import check_raises
+from tests.common.check_raises import check_raises_in_docs
 from tests.common.constants import TEST_FILES_PATH
 
 
@@ -43,7 +43,7 @@ class TestImageServiceCheckImageFormat(SimpleTestCase):
         with self.assertRaises(exc):
             with open(TEST_FILES_PATH / "file.pdf", mode="rb") as f:
                 self.service.check_image_format(BytesIO(f.read()))
-        check_raises(self.service.check_image_format, exc)
+        check_raises_in_docs(self.service.check_image_format, exc)
 
 
 class TestImageConvertToJpg(SimpleTestCase):
