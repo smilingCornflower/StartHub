@@ -8,6 +8,7 @@ from domain.value_objects.project.investment import (
     ProjectInvestmentCreateCommand,
     ProjectInvestmentOrganizationName,
 )
+from tests.utils import check_raises
 
 
 class TestData:
@@ -30,7 +31,9 @@ class ProjectInvestmentCreateCommandTest(SimpleTestCase):
         )
 
     def test_too_many_phone_numbers(self):
-        with self.assertRaises(ProjectInvestmentPhoneMaxAmountException):
+        exc = ProjectInvestmentPhoneMaxAmountException
+        check_raises(ProjectInvestmentCreateCommand.check_max_amount, exc)
+        with self.assertRaises(exc):
             ProjectInvestmentCreateCommand(
                 organization_name=TestData.org,
                 amount=TestData.amount,

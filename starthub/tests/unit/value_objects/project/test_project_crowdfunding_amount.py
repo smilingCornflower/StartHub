@@ -2,6 +2,7 @@ from django.test import SimpleTestCase
 from domain.constants import PROJECT_CROWDFUNDING_AMOUNT_MAX_DIGITS
 from domain.exceptions.project_management import ProjectCrowdfundingMaxAmountException
 from domain.value_objects.project.crowdfunding import ProjectCrowdfundingAmount
+from tests.utils import check_raises
 
 
 class TestData:
@@ -9,13 +10,15 @@ class TestData:
     TOO_BIG_AMOUNT = 10**PROJECT_CROWDFUNDING_AMOUNT_MAX_DIGITS
 
 
-class ProjectCrowdfundingAmountTests(SimpleTestCase):
+class TestProjectCrowdfundingAmount(SimpleTestCase):
     def test_valid_amount(self):
         obj = ProjectCrowdfundingAmount(value=TestData.VALID_AMOUNT)
         self.assertEqual(obj.value, TestData.VALID_AMOUNT)
 
     def test_too_big_amount_raises_exception(self):
-        with self.assertRaises(ProjectCrowdfundingMaxAmountException):
+        exc = ProjectCrowdfundingMaxAmountException
+        check_raises(ProjectCrowdfundingAmount.validate_funding_max_amount, exc)
+        with self.assertRaises(exc):
             ProjectCrowdfundingAmount(value=TestData.TOO_BIG_AMOUNT)
 
     def test_almost_max_amount_is_ok(self):
