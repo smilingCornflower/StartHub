@@ -99,16 +99,8 @@ class ProjectGetService(AbstractDomainService):
         that excludes projects the user is not allowed to see. If user requests
         access to restricted statuses, their permissions are validated first.
 
-        Args:
-            user: The user requesting projects (None for anonymous users)
-            filter_: The original project filter with user's requirements
-
-        Returns:
-            ProjectFilter: A secure filter with appropriate exclusions applied
-
-        Raises:
-            ViewDeniedPermissionException: If user requests access to restricted
-                                         content without proper permissions
+        :returns ProjectFilter: A secure filter with appropriate exclusions applied
+        :raises ViewDeniedPermissionException: If user requests access to restricted content without proper permissions
         """
         self._validate_submissions_access(user, filter_)
         self._validate_rejected_access(user, filter_)
@@ -191,32 +183,6 @@ class ProjectGetService(AbstractDomainService):
                 self.check_can_user_read_deactivated(user=user)
             else:
                 raise ViewDeniedPermissionException("You don't have enough permissions to view deactivated projects.")
-
-    def _build_excluded_statuses(self, filter_: ProjectFilter) -> list[ProjectStatus]:
-        """
-        Build list of project statuses to exclude based on filter requirements.
-
-        This method is currently unused but provides an alternative approach
-        to building exclusion lists based on what the user doesn't want to see.
-
-        Args:
-            filter_: Project filter to analyze
-
-        Returns:
-            list[ProjectStatus]: Statuses to exclude from results
-        """
-        excluded_statuses = []
-
-        if not self._wants_to_see_submissions(filter_):
-            excluded_statuses.append(ProjectStatus(value=ProjectStatusEnum.UNDER_MODERATION))
-
-        if not self._wants_to_see_rejected(filter_):
-            excluded_statuses.append(ProjectStatus(value=ProjectStatusEnum.REJECTED))
-
-        if not self._wants_to_see_cancelled(filter_):
-            excluded_statuses.append(ProjectStatus(value=ProjectStatusEnum.CANCELLED))
-
-        return excluded_statuses
 
     def _wants_to_see_submissions(self, filter_: ProjectFilter) -> bool:
         return cast(

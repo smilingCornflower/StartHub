@@ -20,10 +20,8 @@ from django.db import transaction
 from domain.enums.project_status import ProjectStatusEnum
 from domain.events.project import ProjectCreatedEvent, ProjectDeletedEvent
 from domain.exceptions.company import BusinessNumberAlreadyExistsException
-from domain.exceptions.geo.country import CountryNotFoundException
 from domain.exceptions.project_management import ProjectCategoryNotFoundException, ProjectPlanNotFoundException
 from domain.exceptions.user_favorite import UserFavoriteNotFoundException
-from domain.models import Country
 from domain.models.company import Company
 from domain.models.project_management.accelerator import ProjectAccelerator
 from domain.models.project_management.bank_loan import ProjectBankLoan
@@ -78,11 +76,9 @@ from domain.utils.path_provider import PathProvider
 from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
 from domain.value_objects.common import Id, OffsetPagination
 from domain.value_objects.company import BusinessNumber
-from domain.value_objects.country import CountryCode
 from domain.value_objects.file import PdfFile
 from domain.value_objects.filter import (
     CompanyFilter,
-    CountryFilter,
     ProjectAcceleratorFilter,
     ProjectBankLoanFilter,
     ProjectBootstrapFilter,
@@ -147,6 +143,16 @@ class ProjectCreateAppService(AbstractAppService):
         self._region_read_repository = region_read_repository
 
     def create(self, command: ProjectCreateCommand, user_id: Id) -> Project:
+        """
+        :raises UserNotFoundException:
+        :raises ProjectCategoryNotFoundException:
+        :raises FundingModelNotFoundException:
+        :raises BusinessNumberAlreadyExistsException:
+        :raises ProjectStageNotFoundException:
+        :raises RegionNotFoundException:
+        :raises CityNotFoundException:
+        :raises ProjectStepMaxAmountException:
+        """
         logger.warning("Started creating project.")
 
         self._validate_dependencies(command=command)
@@ -169,8 +175,8 @@ class ProjectCreateAppService(AbstractAppService):
         self._check_project_stage_exists(stage_id=command.stage_id)
         self._check_funding_model_exists(funding_model_id=command.funding_model_id)
         self._check_business_number_avaiable(business_number=command.business_id)
-        self._check_city_exists(city_id=command.company_address.city_id)
         self._check_region_exists(region_id=command.company_address.region_id)
+        self._check_city_exists(city_id=command.company_address.city_id)
 
         logger.info("All dependencies validated")
 
@@ -191,14 +197,6 @@ class ProjectCreateAppService(AbstractAppService):
         logger.debug("Checking project stage exists...")
         self._project_stage_read_repository.get_by_id(id_=stage_id)
         logger.debug(f"Project stage with id = {stage_id.value} exists.")
-
-    def _check_country_code_exists(self, country_code: CountryCode) -> None:
-        """:raises CountryNotFoundException:"""
-        logger.debug("Checking country code exists...")
-        countries: list[Country] = self._country_read_repository.get_all(CountryFilter(code=country_code))
-        if not countries:
-            raise CountryNotFoundException(f"A country with code = {country_code.value} not found.")
-        logger.debug("Country code exists.")
 
     def _check_business_number_avaiable(self, business_number: BusinessNumber) -> None:
         """:raises BusinessNumberAlreadyExistsException:"""
@@ -251,16 +249,6 @@ class ProjectCreateAppService(AbstractAppService):
             conversion_rate=command.conversion_rate,
         )
         return payload
-
-    def _upload_plan(self, plan_file: PdfFile) -> str:
-        project_plan_path: str = PathProvider.get_project_plan_path()
-        uploaded_path: str = self._cloud_storage.upload_file(
-            CloudStorageUploadPayload(file_data=plan_file.value, file_path=project_plan_path)
-        )
-        logger.debug("Project pdf uploaded.")
-
-        assert project_plan_path == uploaded_path, "File uploaded in unexpected path."
-        return uploaded_path
 
 
 class ProjectGetAppService(AbstractAppService):
