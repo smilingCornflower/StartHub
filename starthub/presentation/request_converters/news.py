@@ -77,6 +77,8 @@ def request_to_news_create_command(request: Request, user_id: Id) -> NewsCreateC
 
 
 # ======================================================================================================================
+
+
 # ==== NewsUpdateCommand ===============================================================================================
 def request_to_news_update_command(request: Request) -> NewsUpdateCommand:
     request_data: dict[str, Any] = request.data
@@ -108,6 +110,8 @@ def request_to_news_update_command(request: Request) -> NewsUpdateCommand:
 
 
 # ======================================================================================================================
+
+
 # ==== NewsGetCommand ==================================================================================================
 def request_to_news_get_command(request: Request) -> NewsGetCommand:
     params = request.query_params
@@ -120,7 +124,8 @@ def request_to_news_get_command(request: Request) -> NewsGetCommand:
 
 
 # ======================================================================================================================
-# ==== NewsGetCommand ==================================================================================================
+
+
 def request_to_news_tag_name(request: Request) -> NewsTagEnum:
     tag_name_raw = get_required_field(request.data, "tag_name")
     if not isinstance(tag_name_raw, str):
