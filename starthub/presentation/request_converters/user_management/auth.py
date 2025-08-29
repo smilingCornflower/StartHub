@@ -29,7 +29,7 @@ def request_data_to_user_create_payload(data: dict[str, str]) -> UserCreatePaylo
 
 
 def request_data_to_login_credentials(data: dict[str, str]) -> LoginCredentials:
-    """:raises MissingRequiredFieldException:"""
+    """:raises MissingRequiredFieldException: if there is no email or password"""
     email: str | None = data.get("email")
     password: str | None = data.get("password")
 
