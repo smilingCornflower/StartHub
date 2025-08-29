@@ -2,7 +2,7 @@ from datetime import date
 
 from domain.constants import CHAR_FIELD_MAX_LENGTH
 from domain.exceptions.company import CompanyNameIsTooLongException
-from domain.exceptions.validation import DateInFutureException, EmptyStringException
+from domain.exceptions.validation import DateInFutureException
 from domain.ports.command import BaseCommand
 from domain.ports.payload import AbstractCreatePayload, AbstractUpdatePayload
 from domain.validators.business_number import KZBusinessNumberValidator
@@ -37,11 +37,10 @@ class EstablishedDate(BaseVo):
 
     @field_validator("value", mode="after")
     @classmethod
-    def validate_date_not_in_future(cls, value: date | None) -> date | None:
+    def validate_date_not_in_future(cls, value: date) -> date | None:
         """:raises DateInFutureException:"""
-        if value is not None:
-            if value > date.today():
-                raise DateInFutureException("company_establishment_date must not be in the future.")
+        if value > date.today():
+            raise DateInFutureException("company_establishment_date must not be in the future.")
         return value
 
 
