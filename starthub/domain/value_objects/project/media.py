@@ -25,7 +25,10 @@ class MediaFile(FileVo):
     @field_validator("value", mode="after")
     @classmethod
     def _validate_file_extesnsion(cls, value: bytes) -> bytes:
-        """Validates file type and returns file extension"""
+        """
+        Validates file type and returns file extension
+        :raises UnsupportedFileExtensionException:
+        """
         kind = guess(value)
         file_ext: str | None = kind.extension if kind else None
         logger.debug(f"MediaFile extensioin = {file_ext}")
@@ -40,6 +43,10 @@ class MediaFile(FileVo):
     @field_validator("value", mode="after")
     @classmethod
     def validate_file_size(cls, value: bytes) -> bytes:
+        """
+        :raises ImageFileTooLargeException:
+        :raises VideoFileTooLargeException:
+        """
         kind = guess(value)
         file_ext: str | None = kind.extension if kind else None
 
