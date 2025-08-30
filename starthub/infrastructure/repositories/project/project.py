@@ -97,9 +97,6 @@ class DjProjectWriteRepository(ProjectWriteRepository):
             project.categories.set([i.value for i in data.category_ids])
         if data.funding_model_id is not None:
             project.funding_model_id = data.funding_model_id.value
-        if data.plan_path is not None:
-            project.plan = data.plan_path
-
         if data.ltv is not None:
             project.ltv = data.ltv.value
         if data.arpu is not None:

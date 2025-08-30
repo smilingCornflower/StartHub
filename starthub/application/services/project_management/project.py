@@ -72,11 +72,9 @@ from domain.services.project_management.accelerator import ProjectAcceleratorSer
 from domain.services.project_management.incubator import IncubatorService
 from domain.services.project_management.project import ProjectGetService, ProjectService
 from domain.services.project_management.step import ProjectStepService
-from domain.utils.path_provider import PathProvider
-from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload, CloudStorageUploadPayload
+from domain.value_objects.cloud_storage import CloudStorageCreateUrlPayload
 from domain.value_objects.common import Id, OffsetPagination
 from domain.value_objects.company import BusinessNumber
-from domain.value_objects.file import PdfFile
 from domain.value_objects.filter import (
     CompanyFilter,
     ProjectAcceleratorFilter,
@@ -635,15 +633,7 @@ class ProjectUpdateAppService(AbstractAppService):
         if command.incubator:
             self._update_incubator(user=user, project=project, incubator_payload=command.incubator)
 
-        plan_path: str | None = None
-        if command.plan_file:
-            if project.plan is None:
-                plan_path = PathProvider.get_project_plan_path()
-                self._upload_plan_file(plan_path=plan_path, plan_file=command.plan_file)
-            else:
-                self._upload_plan_file(plan_path=project.plan, plan_file=command.plan_file)
-
-        payload: ProjectUpdatePayload = self._convert_command_to_payload(command=command, plan_path=plan_path)
+        payload: ProjectUpdatePayload = self._convert_command_to_payload(command=command)
 
         self._project_service.update(project=project, user=user, update_payload=payload)
 
@@ -685,10 +675,6 @@ class ProjectUpdateAppService(AbstractAppService):
             logger.debug(f"Step with id = {step_model.id} created successfully.")
         logger.info("All steps created successfully.")
 
-    def _upload_plan_file(self, plan_path: str, plan_file: PdfFile) -> None:
-        logger.debug("Updating: project_plan file.")
-        self._cloud_storage.upload_file(CloudStorageUploadPayload(file_data=plan_file.value, file_path=plan_path))
-
     def _check_category_ids(self, category_ids: list[Id]) -> None:
         """:raises ProjectCategoryNotFoundException:"""
         logger.debug("Checking: categories exist.")
@@ -713,7 +699,7 @@ class ProjectUpdateAppService(AbstractAppService):
 
         self._funding_model_read_repository.get_by_id(id_=funding_model_id)
 
-    def _convert_command_to_payload(self, command: ProjectUpdateCommand, plan_path: str | None) -> ProjectUpdatePayload:
+    def _convert_command_to_payload(self, command: ProjectUpdateCommand) -> ProjectUpdatePayload:
         return ProjectUpdatePayload(
             id_=command.project_id,
             name=command.name,
@@ -724,7 +710,6 @@ class ProjectUpdateAppService(AbstractAppService):
             stage_id=command.stage_id,
             goal_sum=command.goal_sum,
             deadline=command.deadline,
-            plan_path=plan_path,
             ltv=command.ltv,
             arpu=command.arpu,
             arppu=command.arppu,

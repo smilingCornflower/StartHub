@@ -1,6 +1,10 @@
+from datetime import date
+from decimal import Decimal
 from uuid import uuid4
 
 from domain.enums.permission import ActionEnum, ScopeEnum
+from domain.enums.project_status import ProjectStatusEnum
+from domain.models import FundingModel, Project, ProjectCategory, ProjectStage
 from domain.models.base import BaseModel
 from domain.models.permission import Permission
 from domain.models.role import Role
@@ -154,3 +158,39 @@ def create_user_with_multiple_permissions(
     user.roles.add(role)
 
     return user, role, permissions
+
+
+def create_minimal_project(
+    name="Test Project",
+    description="Test project description",
+    goal_sum=Decimal("100000.00"),
+    deadline=date(2077, 12, 31),
+    email="creator@example.com",
+    password="Pass1234!",
+    funding_model_name="Test Funding",
+    stage_name="Idea Stage",
+    category_name="Tech",
+    status=ProjectStatusEnum.DRAFT.value,
+) -> Project:
+    user, _ = User.objects.get_or_create(email=email, defaults={"password": password})
+    funding_model, _ = FundingModel.objects.get_or_create(name=funding_model_name)
+    stage, _ = ProjectStage.objects.get_or_create(name=stage_name)
+    category, _ = ProjectCategory.objects.get_or_create(name=category_name)
+
+    project, created = Project.objects.get_or_create(
+        name=name,
+        defaults={
+            "description": description,
+            "creator": user,
+            "funding_model": funding_model,
+            "stage": stage,
+            "status": status,
+            "goal_sum": goal_sum,
+            "deadline": deadline,
+        },
+    )
+
+    if category not in project.categories.all():
+        project.categories.add(category)
+
+    return project

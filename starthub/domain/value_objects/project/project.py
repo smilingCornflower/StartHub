@@ -13,7 +13,7 @@ from domain.value_objects.company import (
     PatentNumber,
 )
 from domain.value_objects.country import CountryCode
-from domain.value_objects.file import FileVo, PdfFile
+from domain.value_objects.file import FileVo
 from domain.value_objects.geo import AddressCreateCommand
 from domain.value_objects.project.accelerator import ProjectAcceleratorCreateCommand
 from domain.value_objects.project.bank_loan import ProjectBankLoanCreateCommand
@@ -101,9 +101,8 @@ class ProjectUpdateCommand(BaseCommand):
     stage_id: ProjectStageId | None = None
     goal_sum: GoalSum | None = None
     deadline: DeadlineDate | None = None
-    plan_file: PdfFile | None = None
-    steps: list[ProjectStepCreateCommand] | None = None
 
+    steps: list[ProjectStepCreateCommand] | None = None
     incubator: IncubatorUpdatePayload | None = None
 
     ltv: Ltv | None = None

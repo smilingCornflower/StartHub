@@ -1,9 +1,7 @@
 import json
 from typing import Any
 
-from django.core.files.uploadedfile import UploadedFile
 from domain.value_objects.common import DeadlineDate, Description, Id
-from domain.value_objects.file import PdfFile
 from domain.value_objects.project.common import GoalSum, ProjectName
 from domain.value_objects.project.funding_model import FundingModelId
 from domain.value_objects.project.incubator import IncubatorName, IncubatorUpdatePayload
@@ -29,7 +27,6 @@ from rest_framework.request import Request
 
 def request_to_the_project_update_command(request: Request, project_id: int, user_id: int) -> ProjectUpdateCommand:
     data = request.data
-    files = request.FILES
 
     logger.debug(f"{data=}")
 
@@ -42,12 +39,6 @@ def request_to_the_project_update_command(request: Request, project_id: int, use
     if "category_ids" in project_data:
         logger.debug(f"{project_data.get("category_ids")=}")
         category_ids = [Id(value=i) for i in project_data["category_ids"]]
-
-    project_plan: PdfFile | None = None
-    if "project_plan" in files:
-        project_plan_file: UploadedFile = files["project_plan"]
-        project_plan_file.seek(0)
-        project_plan = PdfFile(value=project_plan_file.read())
 
     description: Description | None = (
         Description(value=project_data["description"]) if "description" in project_data else None
@@ -80,7 +71,6 @@ def request_to_the_project_update_command(request: Request, project_id: int, use
         steps=extract_steps(project_data) if "project_steps" in project_data else None,
         goal_sum=GoalSum(value=project_data["goal_sum"]) if "goal_sum" in project_data else None,
         deadline=DeadlineDate(value=parse_date(project_data["deadline"])) if "deadline" in project_data else None,
-        plan_file=project_plan,
         incubator=incubator,
         ltv=Ltv(value=project_data["ltv"]) if "ltv" in project_data else None,
         arpu=Arpu(value=project_data["arpu"]) if "arpu" in project_data else None,
