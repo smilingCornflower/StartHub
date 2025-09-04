@@ -6,9 +6,9 @@ from domain.value_objects.project.government_grant import (
     ProjectGovernmentGrantId,
     ProjectGoverntmentGrantUpdateCommand,
 )
-from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
+from presentation.helpers.auth import get_authenticated_user_from_request
 from presentation.request_converters.project.government_grant import (
     request_to_project_government_grant_create_command,
     request_to_project_government_grant_update_command,
@@ -25,7 +25,8 @@ class GovernmentGrantView(APIView):
         print()
         logger.info(f"GovermentGrant POST, {project_id=}")
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             command: ProjectGovernmentGrantCreateCommand = request_to_project_government_grant_create_command(
                 request=request
             )
@@ -41,7 +42,8 @@ class GovernmentGrantView(APIView):
         print()
         logger.info(f"GovermentGrant PATCH, {government_grant_id=}")
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             command: ProjectGoverntmentGrantUpdateCommand = request_to_project_government_grant_update_command(
                 request=request
             )
@@ -58,7 +60,8 @@ class GovernmentGrantView(APIView):
         print()
         logger.info(f"GovernmentGrant DELETE, {government_grant_id=}")
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             gateway.project_government_grant_app_service.delete(
                 user_id=user_id, government_grant_id=ProjectGovernmentGrantId(value=government_grant_id)
             )

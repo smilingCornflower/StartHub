@@ -13,7 +13,7 @@ from domain.constants import (
     REFRESH_TOKEN_LIFETIME,
 )
 from domain.exceptions.auth import InvalidCredentialsException, InvalidTokenException, TokenExpiredException
-from domain.exceptions.user import EmailAlreadyExistsException, UserNotFoundException
+from domain.exceptions.user import EmailAlreadyExistsException, UserDeactivedException, UserNotFoundException
 from domain.models.role import Role
 from domain.models.user_management.user import User
 from domain.ports.service import AbstractDomainService
@@ -263,6 +263,14 @@ class AuthService(AbstractDomainService):
         if not user.check_password(credentials.password.value):
             logger.error(f"Incorrect password for the user {user.email}")
             raise InvalidCredentialsException("Invalid email or password.")
+
+        return user
+
+    @staticmethod
+    def verify_user_access(user: User) -> User:
+        """:raises UserDeactivedException:"""
+        if not user.is_active:
+            raise UserDeactivedException(f"User with email {user.email} has been deactivated.")
 
         return user
 

@@ -20,7 +20,14 @@ class AbstractCloudStorage(ABC):
 
     @abstractmethod
     def create_url(self, payload: CloudStorageCreateUrlPayload) -> str:
-        """:return: A url that can be used to access the file."""
+        """:return: An url that can be used to access the file."""
+        pass
+
+    @abstractmethod
+    def create_url_or_none(self, payload: CloudStorageCreateUrlPayload) -> str | None:
+        """
+        :return: URL to access the file, or None if the file cannot be accessed
+        """
         pass
 
     @abstractmethod

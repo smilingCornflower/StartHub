@@ -3,9 +3,9 @@ from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id
 from domain.value_objects.project.media import ProjectMediaCreateCommand, ProjectMediaId, ProjectMediaUpdateCommand
-from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
+from presentation.helpers.auth import get_authenticated_user_from_request
 from presentation.request_converters.project.media import (
     request_to_project_media_create_command,
     request_to_project_media_to_update_command,
@@ -24,7 +24,8 @@ class ProjectMediaView(APIView):
         logger.info("POST /projects/media/")
 
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             command: ProjectMediaCreateCommand = request_to_project_media_create_command(request=request)
             gateway.project_media_app_service.create(user_id=user_id, project_id=Id(value=project_id), command=command)
             return Response({"code": SUCCESS}, status=status.HTTP_201_CREATED)
@@ -37,7 +38,8 @@ class ProjectMediaView(APIView):
         logger.info(f"PATCH /projects/{project_id}/media/")
 
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             command: ProjectMediaUpdateCommand = request_to_project_media_to_update_command(request=request)
             gateway.project_media_app_service.update(user_id=user_id, project_id=Id(value=project_id), command=command)
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
@@ -50,7 +52,8 @@ class ProjectMediaView(APIView):
         logger.info(f"DELETE /projects/media/{project_media_id}/")
 
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             gateway.project_media_app_service.delete(
                 user_id=user_id, project_media_id=ProjectMediaId(value=project_media_id)
             )

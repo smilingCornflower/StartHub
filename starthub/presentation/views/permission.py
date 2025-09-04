@@ -3,8 +3,9 @@ from dataclasses import asdict
 from application.services.gateway import gateway
 from domain.enums.role import RoleEnum
 from domain.exceptions import CustomException
-from infrastructure.auth.user import get_user_id_or_raises
+from domain.value_objects.common import Id
 from loguru import logger
+from presentation.helpers.auth import get_authenticated_user_from_request
 from presentation.request_converters.common import get_role_if_exists_from_params
 from presentation.response_factories.permission import PermissionErrorResponseFactory
 from rest_framework import status
@@ -19,7 +20,9 @@ class PermissionView(APIView):
         print()
         logger.info("GET /permissions/")
         try:
-            user_id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
+
             role_name: RoleEnum | None = get_role_if_exists_from_params(params=request.query_params)
             logger.debug(f"role name = {role_name}")
             permissions = gateway.permission_app_service.get(user_id=user_id, role_name=role_name)

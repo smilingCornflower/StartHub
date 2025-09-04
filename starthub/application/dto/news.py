@@ -13,7 +13,7 @@ class NewsShortDto:
     author_id: int
     title: str
     subtitle: str | None
-    cover: str
+    cover: str | None
     published_at: str
 
 

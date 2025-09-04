@@ -1,9 +1,9 @@
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id
-from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
+from presentation.helpers.auth import get_authenticated_user_from_request
 from presentation.response_factories.report import ProjectReportErrorResponseFactory
 from rest_framework import status
 from rest_framework.request import Request
@@ -18,7 +18,8 @@ class ProjectResubmitView(APIView):
         logger.info(f"POST /projects/{project_id}/resubmit/")
 
         try:
-            user_id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             gateway.project_resubmit_app_service.resubmit(
                 user_id=user_id,
                 project_id=Id(value=project_id),

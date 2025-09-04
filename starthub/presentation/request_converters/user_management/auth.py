@@ -1,4 +1,5 @@
 import re
+from typing import cast
 
 import jwt
 from domain.enums.token import TokenTypeEnum
@@ -8,6 +9,7 @@ from domain.value_objects.auth_management.token import AccessTokenVo, AnonymousT
 from domain.value_objects.user_management.user import Email, RawPassword, UserCreatePayload
 from loguru import logger
 from presentation.request_converters.common import get_required_field
+from rest_framework.request import Request
 
 
 def request_data_to_user_create_payload(data: dict[str, str]) -> UserCreatePayload:
@@ -63,28 +65,30 @@ def _extract_token_from_headers(headers: dict[str, str]) -> str:
     raise MissingRequiredFieldException("Failed to get Bearer token from Authorization headers.")
 
 
-def request_headers_to_access_token(headers: dict[str, str]) -> AccessTokenVo:
+def request_to_access_token(request: Request) -> AccessTokenVo:
     """
     :raises MissingRequiredFieldException:
     :raises pydantic.ValidationError:
     """
-    return AccessTokenVo(value=_extract_token_from_headers(headers=headers))
+    token: str = _extract_token_from_headers(headers=cast(dict[str, str], request.headers))
+    return AccessTokenVo(value=token)
 
 
-def request_headers_to_anonymous_token(headers: dict[str, str]) -> AnonymousTokenVo:
+def request_to_anonymous_token(request: Request) -> AnonymousTokenVo:
     """
     :raises MissingRequiredFieldException:
     :raises pydantic.ValidationError:
     """
-    return AnonymousTokenVo(value=_extract_token_from_headers(headers=headers))
+    token: str = _extract_token_from_headers(headers=cast(dict[str, str], request.headers))
+    return AnonymousTokenVo(value=token)
 
 
-def request_headers_to_access_or_anonymous_token(headers: dict[str, str]) -> AccessTokenVo | AnonymousTokenVo:
+def request_to_access_or_anonymous_token(request: Request) -> AccessTokenVo | AnonymousTokenVo:
     """
     :raises MissingRequiredFieldException:
     :raises pydantic.ValidationError:
     """
-    token: str = _extract_token_from_headers(headers=headers)
+    token: str = _extract_token_from_headers(headers=cast(dict[str, str], request.headers))
     decoded: dict[str, str] = jwt.decode(token, options={"verify_signature": False})
     logger.debug(f"{decoded=}")
 

@@ -3,8 +3,8 @@ from dataclasses import asdict
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id
-from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
+from presentation.helpers.auth import get_authenticated_user_from_request
 from presentation.request_converters.common import request_to_cursor_pagination
 from presentation.response_factories.report import ProjectReportErrorResponseFactory
 from rest_framework import status
@@ -20,7 +20,8 @@ class ProjectReportView(APIView):
         logger.info(f"GET /projects/{project_id}/reports/")
 
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             pagination = request_to_cursor_pagination(request=request)
             reports = gateway.project_report_app_service.get_reports_to_project(
                 user_id=user_id,

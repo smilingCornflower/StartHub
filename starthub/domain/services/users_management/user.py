@@ -119,7 +119,9 @@ class UserService(AbstractDomainService):
         picture_url: str | None = None
 
         if user.picture:
-            picture_url = self._cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=user.picture))
+            picture_url = self._cloud_storage.create_url_or_none(
+                payload=CloudStorageCreateUrlPayload(file_path=user.picture)
+            )
 
         phones: list[UserPhone] = self._user_phone_read_repository.get_all(UserPhoneFilter(user_id=user_id))
         logger.debug(f"phones = {phones}")

@@ -6,8 +6,8 @@ from domain.value_objects.project.bank_loan import (
     ProjectBankLoanId,
     ProjectBankLoanUpdateCommand,
 )
-from infrastructure.auth.user import get_user_id_or_raises
 from presentation.constants import SUCCESS
+from presentation.helpers.auth import get_authenticated_user_from_request
 from presentation.request_converters.project.bank_loan import (
     request_to_bank_loan_create_command,
     request_to_bank_loan_update_command,
@@ -23,7 +23,8 @@ from rest_framework.views import APIView
 class ProjectBankLoanView(APIView):
     def post(self, request: Request, project_id: int) -> Response:
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             command: ProjectBankLoanCreateCommand = request_to_bank_loan_create_command(request=request)
             gateway.project_bank_loan_app_service.create(
                 user_id=user_id, project_id=Id(value=project_id), command=command
@@ -35,7 +36,8 @@ class ProjectBankLoanView(APIView):
 
     def patch(self, request: Request, bank_loan_id: int) -> Response:
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             command: ProjectBankLoanUpdateCommand = request_to_bank_loan_update_command(request=request)
             gateway.project_bank_loan_app_service.update(
                 user_id=user_id, bank_loan_id=ProjectBankLoanId(value=bank_loan_id), command=command
@@ -48,7 +50,8 @@ class ProjectBankLoanView(APIView):
 
     def delete(self, request: Request, bank_loan_id: int) -> Response:
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             gateway.project_bank_loan_app_service.delete(
                 user_id=user_id, bank_loan_id=ProjectBankLoanId(value=bank_loan_id)
             )

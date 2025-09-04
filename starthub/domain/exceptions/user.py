@@ -10,6 +10,10 @@ class UserNotFoundException(NotFoundException, UserException):
     pass
 
 
+class UserDeactivedException(UserException):
+    pass
+
+
 class EmailAlreadyExistsException(AlreadyExistsException, UserException):
     def __init__(self, email: str):
         super().__init__(f"Email {email} already exists.")

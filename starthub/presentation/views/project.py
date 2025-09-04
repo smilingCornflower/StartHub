@@ -3,13 +3,12 @@ from json.decoder import JSONDecodeError
 from pprint import pformat
 
 import pydantic
-from application.dto.auth import AccessPayloadDto, AnonymousPayloadDto
 from application.dto.project import ProjectDto
 from application.services.gateway import gateway
-from domain.enums.token import TokenTypeEnum
 from domain.exceptions import CustomException
 from domain.exceptions.project_management import ProjectNotFoundException
 from domain.models.project_management.project import Project
+from domain.models.user_management.user import User
 from domain.value_objects.common import Id, OffsetPagination
 from domain.value_objects.filter import ProjectFilter
 from domain.value_objects.project.image import (
@@ -19,10 +18,13 @@ from domain.value_objects.project.image import (
 )
 from domain.value_objects.project.project import ProjectCreateCommand, ProjectUpdateCommand
 from domain.value_objects.search import ProjectSearchParams
-from infrastructure.auth.token import get_access_or_anonymous_payload_dto_from_headers
-from infrastructure.auth.user import get_user_id_or_none, get_user_id_or_raises
+from domain.value_objects.user_management.anonymous import AnonymousUser
 from loguru import logger
 from presentation.constants import SUCCESS
+from presentation.helpers.auth import (
+    get_authenticated_or_anonymous_user_from_request,
+    get_authenticated_user_from_request,
+)
 from presentation.request_converters.common import request_to_offset_pagination
 from presentation.request_converters.project.project_create_command import request_to_project_create_command
 from presentation.request_converters.project.project_filter import request_to_project_filter
@@ -47,8 +49,12 @@ class ProjectView(APIView):
     def get(request: Request, project_id: int | None = None) -> Response:
         print()
         logger.info("GET project request", project_id=project_id, query_params=request.query_params)
+
         try:
-            user_id: Id | None = get_user_id_or_none(request=request)
+            user: User | AnonymousUser = get_authenticated_or_anonymous_user_from_request(request=request)
+            user_id: Id | None = None
+            if isinstance(user, User):
+                user_id = Id(value=user.id)
 
             if project_id is not None:
                 project: ProjectDto = gateway.project_get_app_service.get_by_id(
@@ -77,7 +83,9 @@ class ProjectView(APIView):
         logger.warning("POST /projects/")
 
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
+
             command: ProjectCreateCommand = request_to_project_create_command(request=request, user_id=int(user_id))
             project: Project = gateway.project_create_app_service.create(command=command, user_id=user_id)
         except (CustomException, pydantic.ValidationError, JSONDecodeError) as e:
@@ -91,7 +99,9 @@ class ProjectView(APIView):
         logger.info(f"PATCH /projects/{project_id}/")
 
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
+
             command: ProjectUpdateCommand = request_to_the_project_update_command(
                 request=request, project_id=project_id, user_id=int(user_id)
             )
@@ -109,7 +119,9 @@ class ProjectView(APIView):
         logger.info(f"DELETE /projects/{project_id}/")
 
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
+
             project_delete_service = gateway.project_delete_app_service
             project_delete_service.delete(project_id=Id(value=project_id), user_id=user_id)
 
@@ -124,7 +136,9 @@ class MeProjectView(APIView):
     def get(request: Request) -> Response:
         logger.info(f"GET /my/projects/ request.query_params: {request.query_params}")
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
+
             pagination: OffsetPagination = request_to_offset_pagination(request=request)
 
             projects: list[ProjectDto] = gateway.project_get_app_service.get_all(
@@ -155,9 +169,10 @@ class ProjectImageView(APIView):
         logger.info(f"POST project photo request.\n\t {project_id=}")
 
         try:
-            user_id: int = get_user_id_or_raises(request=request).value
+            user = get_authenticated_user_from_request(request=request)
+
             image_create_command: ProjectImageCreateCommand = request_files_to_project_image_create_command(
-                files=request.FILES, project_id=project_id, user_id=user_id
+                files=request.FILES, project_id=project_id, user_id=user.id
             )
             gateway.project_image_app_service.create(image_create_command=image_create_command)
         except self.error_classes as e:
@@ -180,7 +195,9 @@ class ProjectImageView(APIView):
         logger.info(f"GET /projects/images/ \n\t {project_id=}\n\t {image_order=}")
 
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
+
             command = ProjectImageDeleteCommand(
                 project_id=Id(value=project_id), image_order=image_order, user_id=user_id
             )
@@ -193,7 +210,9 @@ class ProjectImageView(APIView):
     def patch(self, request: Request, project_id: int) -> Response:
         logger.info(f"PATCH /projects/images/ \n\t {request.data=}")
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
+
             image_update_command: ProjectImageUpdateCommand = request_project_data_to_project_images_update_command(
                 data=request.data, project_id=project_id, user_id=user_id.value
             )
@@ -212,14 +231,11 @@ class ProjectSearchView(APIView):
         logger.info("GET /project/search/")
         logger.debug(f"query_params = {request.query_params}")
         try:
-            # TODO: Write method get_user_id() instead of get_token()
-            token: AccessPayloadDto | AnonymousPayloadDto = get_access_or_anonymous_payload_dto_from_headers(
-                headers=request.headers
-            )
-            logger.info(f"Received token type = {type(token)}")
+            user: User | AnonymousUser = get_authenticated_or_anonymous_user_from_request(request=request)
+
             user_id: Id | None = None
-            if token.type == TokenTypeEnum.ACCESS:
-                user_id = Id(value=int(token.sub))
+            if isinstance(user, User):
+                user_id = Id(value=user.id)
 
             search_params: ProjectSearchParams = request_data_to_project_search_params(query=request.query_params)
             offset_pagination: OffsetPagination = request_to_offset_pagination(request=request)

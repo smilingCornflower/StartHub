@@ -164,8 +164,8 @@ class NewsAppService(NewsPermissionAppService):
         )
         logger.debug(f"Found {len(news_lst)} news.")
 
-        cover_urls: list[str] = [
-            self._cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=cast(str, i.cover)))
+        cover_urls: list[str | None] = [
+            self._cloud_storage.create_url_or_none(payload=CloudStorageCreateUrlPayload(file_path=cast(str, i.cover)))
             for i in news_lst
         ]
 

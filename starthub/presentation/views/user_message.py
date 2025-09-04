@@ -3,9 +3,10 @@ from dataclasses import asdict
 import pydantic
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
-from infrastructure.auth.user import get_user_id_or_raises
+from domain.value_objects.common import Id
 from loguru import logger
 from presentation.constants import SUCCESS
+from presentation.helpers.auth import get_authenticated_user_from_request
 from presentation.request_converters.common import request_to_cursor_pagination
 from presentation.request_converters.user_management.user_message import (
     request_to_user_message_create_command,
@@ -25,7 +26,8 @@ class UserMessageView(APIView):
         logger.info("GET /users/messages/")
 
         try:
-            user_id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             pagination = request_to_cursor_pagination(request=request)
             command = request_to_user_message_get_command(request=request)
             messages = gateway.user_message_app_service.get(user_id=user_id, command=command, pagination=pagination)
@@ -39,7 +41,8 @@ class UserMessageView(APIView):
         logger.info("POST /users/messages/")
 
         try:
-            user_id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             command = request_to_user_message_create_command(request=request)
             gateway.user_message_app_service.create(user_id=user_id, command=command)
 
@@ -56,7 +59,8 @@ class MeUserMessageView(APIView):
         logger.info("GET /users/me/messages/")
 
         try:
-            user_id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             pagination = request_to_cursor_pagination(request=request)
             command = request_to_user_message_get_command(request=request)
             messages = gateway.user_message_app_service.get_my(user_id=user_id, command=command, pagination=pagination)

@@ -3,6 +3,7 @@ from io import BytesIO
 from typing import cast
 
 from config import settings
+from domain.constants import SIGNED_URL_EXPIRATION_MINUTES
 from domain.exceptions.cloud_storage import FileNotFoundCloudStorageException
 from domain.ports.cloud_storage import AbstractCloudStorage
 from domain.value_objects.cloud_storage import (
@@ -89,12 +90,32 @@ class GoogleCloudStorage(AbstractCloudStorage):
         :raises GoogleCloudError: If URL generation fails
         """
         blob: Blob = self.bucket.blob(blob_name=payload.file_path)
-        blob.reload()
         try:
-            return cast(str, blob.generate_signed_url(version="v4", expiration=timedelta(minutes=15)))
+            blob.reload()
+            return cast(
+                str, blob.generate_signed_url(version="v4", expiration=timedelta(minutes=SIGNED_URL_EXPIRATION_MINUTES))
+            )
         except GoogleCloudError as e:
             logger.error(f"Google Cloud error during generating url for {payload.file_path}: {e}")
             raise e
+
+    def create_url_or_none(self, payload: CloudStorageCreateUrlPayload) -> str | None:
+        """
+        Generate a signed URL for accessing a file in Google Cloud Storage.
+        Returns None if URL generation fails.
+
+        :param payload: URL creation payload containing file path
+        :return: Signed URL for temporary access to the file, or None if generation fails
+        """
+        blob: Blob = self.bucket.blob(blob_name=payload.file_path)
+        try:
+            blob.reload()
+            return cast(
+                str, blob.generate_signed_url(version="v4", expiration=timedelta(minutes=SIGNED_URL_EXPIRATION_MINUTES))
+            )
+        except GoogleCloudError as e:
+            logger.error(f"Failed to generate signed URL for {payload.file_path}: {e}")
+            return None
 
     def check_url_exists(self, url: str) -> bool:
         blob: Blob = self.bucket.blob(blob_name=url)

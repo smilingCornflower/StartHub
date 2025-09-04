@@ -5,9 +5,9 @@ from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id
 from domain.value_objects.user_management.user_admin import UserAdminUpdateCommand
-from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
+from presentation.helpers.auth import get_authenticated_user_from_request
 from presentation.request_converters.common import request_to_cursor_pagination, request_to_offset_pagination
 from presentation.request_converters.project.submission import request_to_project_submission_reject_command
 from presentation.request_converters.user_management.user import request_to_user_get_command
@@ -27,9 +27,11 @@ class ProjectSubmissionGetView(APIView):
         logger.info("GET /admin/projects/submissions")
 
         try:
-            user_id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
             pagination = request_to_cursor_pagination(request=request)
-            projects = gateway.projects_admin_app_service.get_submissions(user_id=user_id, pagination=pagination)
+            projects = gateway.projects_admin_app_service.get_submissions(
+                user_id=Id(value=user.id), pagination=pagination
+            )
             return Response(list(map(asdict, projects)), status=status.HTTP_200_OK)
         except CustomException as e:
             return ProjectSubmissionErrorResponseFactory.create_response(exception=e)
@@ -41,7 +43,8 @@ class ProjectSubmissionApproveView(APIView):
         print()
         logger.warning(f"PATCH /admin/projects/submissions/{project_id}/approve/")
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             gateway.projects_admin_app_service.approve_submission(user_id=user_id, project_id=Id(value=project_id))
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
 
@@ -55,7 +58,8 @@ class ProjectSubmissionRejectedView(APIView):
         print()
         logger.warning(f"PATCH /admin/projects/submissions/{project_id}/reject/")
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             command = request_to_project_submission_reject_command(request=request)
             gateway.projects_admin_app_service.reject_submission(
                 user_id=user_id, project_id=Id(value=project_id), command=command
@@ -71,7 +75,8 @@ class ProjectDeactivateView(APIView):
         print()
         logger.warning(f"PATCH /admin/projects/{project_id}/deactivate/")
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             gateway.projects_admin_app_service.deactivate(user_id=user_id, project_id=Id(value=project_id))
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
         except (CustomException, pydantic.ValidationError) as e:
@@ -84,7 +89,8 @@ class UsersAdminView(APIView):
         print()
         logger.info("GET /admin/users/")
         try:
-            user_id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             pagination = request_to_offset_pagination(request=request)
             command = request_to_user_get_command(request=request)
             users = gateway.user_admin_get_app_service.get_all(user_id, command, pagination)
@@ -99,7 +105,8 @@ class UsersAdminView(APIView):
         logger.warning(f"PATCH /admin/users/{target_user_id}/")
 
         try:
-            caller_user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            caller_user_id = Id(value=user.id)
             command: UserAdminUpdateCommand = request_to_user_admin_update_command(request=request)
             gateway.user_admin_app_service.change_user_role(
                 call_user_id=caller_user_id, target_user_id=Id(value=target_user_id), command=command
@@ -117,7 +124,8 @@ class UserAdminDeactivateView(APIView):
         logger.warning(f"PATCH /admin/users/{target_user_id}/deactivate/")
 
         try:
-            caller_user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            caller_user_id = Id(value=user.id)
             gateway.user_admin_app_service.deactivate_user(
                 call_user_id=caller_user_id, target_user_id=Id(value=target_user_id)
             )
@@ -133,7 +141,8 @@ class UserAdminActivateView(APIView):
         logger.warning(f"PATCH /admin/users/{target_user_id}/activate/")
 
         try:
-            caller_user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            caller_user_id = Id(value=user.id)
             gateway.user_admin_app_service.activate_user(
                 call_user_id=caller_user_id, target_user_id=Id(value=target_user_id)
             )
