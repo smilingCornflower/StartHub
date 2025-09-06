@@ -5,10 +5,9 @@ from application.dto.news import NewsFullDto, NewsShortDto
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.value_objects.common import Id, OffsetPagination
-from infrastructure.auth.token import get_access_payload_dto_from_headers
-from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
+from presentation.helpers.auth import get_authenticated_user_from_request
 from presentation.request_converters.common import request_to_offset_pagination
 from presentation.request_converters.news import (
     request_to_news_create_command,
@@ -49,7 +48,8 @@ class NewsView(APIView):
         logger.info(f"POST /news/\n" f"request.data: {request.data}\n" f"request_files: {request.FILES}")
 
         try:
-            user_id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
 
             command = request_to_news_create_command(request=request, user_id=user_id)
             news_id: int = gateway.news_app_service.create(user_id=user_id, news_create_command=command)
@@ -64,7 +64,8 @@ class NewsView(APIView):
         logger.debug("PATCH /news/{news_id}/ \n\t request.data = {request.data}")
 
         try:
-            user_id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             command = request_to_news_update_command(request=request)
             gateway.news_app_service.update(update_command=command, news_id=Id(value=news_id), user_id=user_id)
 
@@ -78,8 +79,8 @@ class NewsView(APIView):
         logger.info(f"DELETE /news/{news_id}/")
 
         try:
-            access_dto = get_access_payload_dto_from_headers(request.headers)
-            gateway.news_app_service.delete(news_id=news_id, user_id=int(access_dto.sub))
+            user = get_authenticated_user_from_request(request=request)
+            gateway.news_app_service.delete(news_id=news_id, user_id=user.id)
             return Response({"detail": "News deleted.", "code": SUCCESS}, status=status.HTTP_200_OK)
         except CustomException as e:
             return NewsErrorResponseFactory.create_response(e)
@@ -92,7 +93,8 @@ class NewsActivateView(APIView):
         logger.info(f"PATCH /news/{news_id}/activate/")
 
         try:
-            user_id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             gateway.news_app_service.activate(user_id=user_id, news_id=Id(value=news_id))
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
         except CustomException as e:
@@ -106,7 +108,8 @@ class NewsDeactivateView(APIView):
         logger.info(f"PATCH /news/{news_id}/deactivate/")
 
         try:
-            user_id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             gateway.news_app_service.deactivate(user_id=user_id, news_id=Id(value=news_id))
             return Response({"code": SUCCESS}, status=status.HTTP_200_OK)
 
@@ -121,7 +124,8 @@ class NewsTagView(APIView):
         logger.info(f"DELETE /news/{news_id}/tags/{tag_name}/")
 
         try:
-            user_id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             gateway.news_tag_app_service.delete_tag_from_news(
                 user_id=user_id, news_id=Id(value=news_id), tag_name=tag_name
             )
@@ -134,7 +138,8 @@ class NewsTagView(APIView):
         print()
         logger.info(f"POST /news/{news_id}/tags/")
         try:
-            user_id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             tag_name = request_to_news_tag_name(request=request)
             gateway.news_tag_app_service.add_tag_to_news(user_id=user_id, news_id=Id(value=news_id), tag_name=tag_name)
             return Response({"code": SUCCESS}, status=status.HTTP_201_CREATED)

@@ -38,7 +38,7 @@ from application.event_handlers.project_rejected_handler import ProjectRejectedR
 from application.ports.event_handler_builder import AbstractEventHandlerBuilder
 from domain.events.project import ProjectCreatedEvent, ProjectDeletedEvent
 from domain.ports.event import AbstractEventHandler
-from infrastructure.cloud_storages.google import google_cloud_storage
+from infrastructure.cloud_storages.google import GoogleCloudStorageFactory
 
 
 class ProjectCreatedAcceleratorHandlerBuilder(AbstractEventHandlerBuilder[Any]):
@@ -145,7 +145,7 @@ class ProjectDeletedEventHandlerBuilder(AbstractEventHandlerBuilder[Any]):
     @staticmethod
     def create_handler() -> AbstractEventHandler[ProjectDeletedEvent]:
         return ProjectDeletedEventHandler(
-            cloud_storage=google_cloud_storage,
+            cloud_storage=GoogleCloudStorageFactory.create(),
         )
 
 

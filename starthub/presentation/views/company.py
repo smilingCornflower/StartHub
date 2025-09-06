@@ -6,9 +6,9 @@ from domain.exceptions import CustomException
 from domain.value_objects.common import Id
 from domain.value_objects.company import CompanyUpdateCommand
 from domain.value_objects.filter import CompanyFilter
-from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
+from presentation.helpers.auth import get_authenticated_user_from_request
 from presentation.request_converters.common import request_to_cursor_pagination
 from presentation.request_converters.company import request_to_company_update_command
 from presentation.response_factories.project_management import CompanyErrorResponseFactory
@@ -39,7 +39,8 @@ class CompanyView(APIView):
         logger.debug(f"request.data = {request.data}")
 
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             company_update_command: CompanyUpdateCommand = request_to_company_update_command(
                 request=request, company_id=company_id
             )

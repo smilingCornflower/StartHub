@@ -7,6 +7,7 @@ from application.converters.resposne_converters.auth import (
 from application.dto.auth import AccessPayloadDto, AccessTokenDto, AnonymousPayloadDto, AnonymousTokenDto, TokenPairDto
 from application.ports.service import AbstractAppService
 from domain.models.user_management.user import User
+from domain.repositories.user_management.user import UserReadRepository
 from domain.services.auth import AuthService, RegistrationService, TokenService
 from domain.value_objects.auth_management.auth import LoginCredentials
 from domain.value_objects.auth_management.token import (
@@ -17,15 +18,14 @@ from domain.value_objects.auth_management.token import (
     RefreshTokenVo,
     TokenPairVo,
 )
+from domain.value_objects.common import Id
+from domain.value_objects.user_management.anonymous import AnonymousId, AnonymousUser
 from domain.value_objects.user_management.user import UserCreatePayload
 from loguru import logger
 from presentation.request_converters.user_management.auth import (
     request_cookies_to_refresh_token,
     request_data_to_login_credentials,
     request_data_to_user_create_payload,
-    request_headers_to_access_or_anonymous_token,
-    request_headers_to_access_token,
-    request_headers_to_anonymous_token,
 )
 
 
@@ -49,9 +49,12 @@ class RegistrationAppService(AbstractAppService):
 
 
 class AuthAppService(AbstractAppService):
-    def __init__(self, auth_service: AuthService, token_service: TokenService):
+    def __init__(
+        self, auth_service: AuthService, token_service: TokenService, user_read_repository: UserReadRepository
+    ):
         self._auth_service = auth_service
         self._token_service = token_service
+        self._user_read_repository = user_read_repository
 
     def login(self, credentials_raw: dict[str, str]) -> TokenPairDto:
         """
@@ -84,47 +87,33 @@ class AuthAppService(AbstractAppService):
         access_token_dto = access_token_to_dto(access_token)
         return access_token_dto
 
-    # TODO: Application layer shoud not know about HTTP. Move this methods to infra layer
-    def verify_access_from_headers(self, headers: dict[str, str]) -> AccessPayloadDto:
-        """
-        :raises MissingRequiredFieldException:
-        :raises pydantic.ValidationError:
-        :raises InvalidTokenException:
-        :raises TokenExpiredException:
-        """
-        access_token: AccessTokenVo = request_headers_to_access_token(headers=headers)
-        access_payload: AccessPayload = self._token_service.verify_access(token=access_token)
-        return access_payload_to_dto(access_payload)
-
     def generate_anonymous(self) -> AnonymousTokenDto:
         token: AnonymousTokenVo = self._token_service.generate_anonymous()
         return AnonymousTokenDto(anonymous_token=token.value)
 
-    def verify_anonymous_from_headers(self, headers: dict[str, str]) -> AnonymousPayloadDto:
-        """
-        :raises MissingRequiredFieldException:
-        :raises pydantic.ValidationError:
-        :raises InvalidTokenException:
-        :raises TokenExpiredException:
-        """
-        anonymous_token: AnonymousTokenVo = request_headers_to_anonymous_token(headers=headers)
-        anonymous_payload: AnonymousPayload = self._token_service.verify_anonymous(token=anonymous_token)
-        return anonymous_payload_to_dto(anonymous_payload=anonymous_payload)
+    def verify_anonymous_token(self, token: AnonymousTokenVo) -> AnonymousPayloadDto:
+        payload: AnonymousPayload = self._token_service.verify_anonymous(token=token)
+        return anonymous_payload_to_dto(anonymous_payload=payload)
 
-    def verify_access_or_anonymous_from_headers(
-        self, headers: dict[str, str]
-    ) -> AccessPayloadDto | AnonymousPayloadDto:
-        """
-        :raises MissingRequiredFieldException:
-        :raises pydantic.ValidationError:
-        :raises InvalidTokenException:
-        :raises TokenExpiredException:
-        """
-        token: AccessTokenVo | AnonymousTokenVo = request_headers_to_access_or_anonymous_token(headers=headers)
+    def verify_access_token(self, token: AccessTokenVo) -> AccessPayloadDto:
+        payload: AccessPayload = self._token_service.verify_access(token=token)
+        return access_payload_to_dto(access_payload=payload)
 
+    def get_authenticated_user(self, token: AccessTokenVo) -> User:
+        """:raises UserDeactivedException:"""
+
+        payload: AccessPayload = self._token_service.verify_access(token=token)
+        user_id = Id(value=int(payload.sub))
+        user = self._user_read_repository.get_by_id(id_=user_id)
+        return self._auth_service.verify_user_access(user=user)
+
+    def get_anonymous_user(self, token: AnonymousTokenVo) -> AnonymousUser:
+        payload: AnonymousPayload = self._token_service.verify_anonymous(token=token)
+        anonymous_id = AnonymousId(value=payload.sub)
+        return AnonymousUser(id=anonymous_id)
+
+    def get_authenticated_or_anonymous_user(self, token: AccessTokenVo | AnonymousTokenVo) -> User | AnonymousUser:
         if isinstance(token, AccessTokenVo):
-            access_payload: AccessPayload = self._token_service.verify_access(token=token)
-            return access_payload_to_dto(access_payload)
+            return self.get_authenticated_user(token=token)
         else:
-            anonymous_payload: AnonymousPayload = self._token_service.verify_anonymous(token=token)
-            return anonymous_payload_to_dto(anonymous_payload)
+            return self.get_anonymous_user(token=token)

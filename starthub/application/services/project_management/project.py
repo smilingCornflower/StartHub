@@ -328,7 +328,7 @@ class ProjectGetAppService(AbstractAppService):
         project_id: Id = Id(value=project.id)
 
         categories: list[ProjectCategory] = self._get_categories(project_id=project_id)
-        media_urls: list[str] = self._get_media_urls(project_id=project_id)
+        media_urls: list[str | None] = self._get_media_urls(project_id=project_id)
         is_favorite: bool = self._is_project_favorite(project_id=project_id, user_id=user_id)
 
         return project_to_dto(project=project, categories=categories, media_links=media_urls, is_favorite=is_favorite)
@@ -523,13 +523,15 @@ class ProjectGetAppService(AbstractAppService):
     def _get_categories(self, project_id: Id) -> list[ProjectCategory]:
         return self._project_category_read_repository.get_all(filter_=ProjectCategoryFilter(project_id=project_id))
 
-    def _get_media_urls(self, project_id: Id) -> list[str]:
-        media_urls: list[str] = list()
+    def _get_media_urls(self, project_id: Id) -> list[str | None]:
+        media_urls: list[str | None] = list()
 
         media = self._project_media_read_repository.get_all(filter_=ProjectMediaFilter(project_id=project_id))
 
         for m in media:
-            media_url: str = self._cloud_storage.create_url(payload=CloudStorageCreateUrlPayload(file_path=m.file_path))
+            media_url: str | None = self._cloud_storage.create_url_or_none(
+                payload=CloudStorageCreateUrlPayload(file_path=m.file_path)
+            )
             media_urls.append(media_url)
 
         return media_urls

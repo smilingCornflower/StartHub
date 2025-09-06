@@ -16,7 +16,7 @@ def news_to_full_dto(news: News, cover_url: str, news_image_dtos: list[NewsImage
     )
 
 
-def news_to_short_dto(news: News, cover_url: str) -> NewsShortDto:
+def news_to_short_dto(news: News, cover_url: str | None) -> NewsShortDto:
     return NewsShortDto(
         id=news.id,
         author_id=news.author_id,

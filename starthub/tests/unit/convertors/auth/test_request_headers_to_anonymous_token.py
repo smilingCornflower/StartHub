@@ -1,9 +1,10 @@
 from dataclasses import dataclass
+from unittest.mock import MagicMock
 
 from django.test import SimpleTestCase
 from domain.exceptions.validation import MissingRequiredFieldException
 from domain.value_objects.auth_management.token import AnonymousTokenVo
-from presentation.request_converters.user_management.auth import request_headers_to_anonymous_token
+from presentation.request_converters.user_management.auth import request_to_anonymous_token
 
 
 @dataclass
@@ -27,17 +28,23 @@ class TestRequestHeadersToAnonymousToken(SimpleTestCase):
         headers = self.data.to_dict()
 
         expected = AnonymousTokenVo(value=self.data.anonymous_token)
+        request = MagicMock()
+        request.headers = headers
+        result = request_to_anonymous_token(request=request)
 
-        result = request_headers_to_anonymous_token(headers)
         self.assertEqual(expected, result)
 
     def test_invalid_data(self):
         headers = {self.data.authorization_field: "Invalid headers"}
+        request = MagicMock()
+        request.headers = headers
         with self.assertRaises(MissingRequiredFieldException):  # Missing Bearer Token
-            request_headers_to_anonymous_token(headers)
+            request_to_anonymous_token(request=request)
 
     def test_missing_authorization_header(self):
         headers = {}
 
+        request = MagicMock()
+        request.headers = headers
         with self.assertRaises(MissingRequiredFieldException):
-            request_headers_to_anonymous_token(headers)
+            request_to_anonymous_token(request=request)

@@ -45,10 +45,10 @@ plugins = [
     "mypy_django_plugin.main",
     "mypy_drf_plugin.main",
 ]
+ignore_missing_imports = false
 explicit_package_bases = true
 warn_unused_ignores = true
 follow_imports_for_stubs = true
-ignore_missing_imports = true
 show_absolute_path = true
 hide_error_codes = false
 show_error_context = true
@@ -58,6 +58,18 @@ warn_no_return = true
 cache_dir = ".mypy_cache"
 exclude = ["^migrations/.*", "bar.py", 'foo.py', 'tests/']
 
+[[tool.mypy.overrides]]
+module = [
+    "filetype",
+    "autoslug",
+    "autoslug.fields",
+    "google.cloud.storage",
+    "google.cloud.storage.blob",
+    "moviepy",
+    "wand",
+    "wand.image",
+]
+ignore_missing_imports = true
 
 [tool.django-stubs]
 django_settings_module = "config.settings"

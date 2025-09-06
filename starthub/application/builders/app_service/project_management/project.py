@@ -12,7 +12,7 @@ from application.services.project_management.project import (
     ProjectGetAppService,
     ProjectUpdateAppService,
 )
-from infrastructure.cloud_storages.google import google_cloud_storage
+from infrastructure.cloud_storages.google import GoogleCloudStorageFactory
 from infrastructure.repositories.company import DjCompanyReadRepository
 from infrastructure.repositories.geo.city import DjCityReadRepository
 from infrastructure.repositories.geo.country import DjCountryReadRepository
@@ -48,7 +48,7 @@ class ProjectCreateAppServiceBuilder(AbstractAppServiceBuilder[ProjectCreateAppS
         return ProjectCreateAppService(
             project_service=ProjectServiceBuilder.create_service(),
             project_step_service=ProjectStepServiceBuilder.create_service(),
-            cloud_storage=google_cloud_storage,
+            cloud_storage=GoogleCloudStorageFactory.create(),
             user_read_repository=DjUserReadRepository(),
             funding_model_read_repository=DjFundingModelReadRepository(),
             company_read_repository=DjCompanyReadRepository(),
@@ -76,7 +76,7 @@ class ProjectUpdateAppServiceBuilder(AbstractAppServiceBuilder[ProjectUpdateAppS
             project_category_read_repository=DjProjectCategoryReadRepository(),
             funding_model_read_repository=DjFundingModelReadRepository(),
             project_stage_read_repository=DjProjectStageReadRepository(),
-            cloud_storage=google_cloud_storage,
+            cloud_storage=GoogleCloudStorageFactory.create(),
         )
 
 
@@ -103,7 +103,7 @@ class ProjectGetAppServiceBuilder(AbstractAppServiceBuilder[ProjectGetAppService
             project_bootstrap_read_repository=DjProjectBootstrapReadRepository(),
             project_useful_link_read_repository=DjProjectUsefulLinkReadRepository(),
             user_read_repository=DjUserReadRepository(),
-            cloud_storage=google_cloud_storage,
+            cloud_storage=GoogleCloudStorageFactory.create(),
         )
 
 

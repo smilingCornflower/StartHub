@@ -2,13 +2,14 @@ from dataclasses import asdict
 from typing import cast
 
 import pydantic
-from application.dto.auth import AccessPayloadDto, AccessTokenDto, AnonymousPayloadDto, AnonymousTokenDto, TokenPairDto
+from application.dto.auth import AccessTokenDto, AnonymousPayloadDto, AnonymousTokenDto, TokenPairDto
 from application.ports.cookie_service import CookiesResponseProtocol
 from application.services.gateway import gateway
 from domain.enums.token import TokenNameEnum
 from domain.exceptions import CustomException
 from loguru import logger
 from presentation.constants import SUCCESS
+from presentation.request_converters.user_management.auth import request_to_access_token, request_to_anonymous_token
 from presentation.response_factories.common import CommonErrorResponseFactory
 from presentation.response_factories.user_management import (
     LoginErrorResponseFactory,
@@ -80,9 +81,8 @@ class AccessVerifyView(APIView):
     def post(request: Request) -> Response:
         logger.debug("POST /auth/verify-access/")
         try:
-            access_payload_dto: AccessPayloadDto = gateway.auth_app_service.verify_access_from_headers(
-                headers=cast(dict[str, str], request.headers)
-            )
+            token = request_to_access_token(request=request)
+            access_payload_dto = gateway.auth_app_service.verify_access_token(token=token)
             return Response(asdict(access_payload_dto), status=status.HTTP_200_OK)
         except (CustomException, pydantic.ValidationError) as e:
             return CommonErrorResponseFactory.create_response(e)
@@ -113,10 +113,8 @@ class VerifyAnonymousView(APIView):
     def post(request: Request) -> Response:
         logger.info("POST /auth/verify-anonymous/")
         try:
-            anonymous_payload_dto: AnonymousPayloadDto = gateway.auth_app_service.verify_anonymous_from_headers(
-                headers=cast(dict[str, str], request.headers)
-            )
-            # noinspection PyTypeChecker
+            token = request_to_anonymous_token(request=request)
+            anonymous_payload_dto: AnonymousPayloadDto = gateway.auth_app_service.verify_anonymous_token(token=token)
             return Response(asdict(anonymous_payload_dto), status=status.HTTP_200_OK)
         except (CustomException, pydantic.ValidationError) as e:
             return CommonErrorResponseFactory.create_response(e)

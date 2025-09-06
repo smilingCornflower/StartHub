@@ -6,9 +6,9 @@ from domain.value_objects.project.bootstrap import (
     ProjectBootstrapId,
     ProjectBootstrapUpdateCommand,
 )
-from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
+from presentation.helpers.auth import get_authenticated_user_from_request
 from presentation.request_converters.project.bootstrap import (
     request_to_project_bootstrap_create_command,
     request_to_project_bootstrap_update_command,
@@ -25,7 +25,8 @@ class ProjectBootstrapView(APIView):
         print()
         logger.info(f"POST /projects/{project_id}/bootstraps/")
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             command: ProjectBootstrapCreateCommand = request_to_project_bootstrap_create_command(request=request)
             gateway.project_bootstrap_app_service.create(
                 user_id=user_id, project_id=Id(value=project_id), command=command
@@ -38,7 +39,8 @@ class ProjectBootstrapView(APIView):
         print()
         logger.info(f"PATCH /projects/bootstraps/{bootstrap_id}/")
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             command: ProjectBootstrapUpdateCommand = request_to_project_bootstrap_update_command(request=request)
             gateway.project_bootstrap_app_service.update(
                 user_id=user_id, bootstrap_id=ProjectBootstrapId(value=bootstrap_id), command=command
@@ -51,7 +53,8 @@ class ProjectBootstrapView(APIView):
         print()
         logger.info(f"DELETE /projects/bootstraps/{bootstrap_id}/")
         try:
-            user_id: Id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             gateway.project_bootstrap_app_service.delete(
                 user_id=user_id,
                 bootstrap_id=ProjectBootstrapId(value=bootstrap_id),

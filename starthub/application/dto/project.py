@@ -127,7 +127,7 @@ class ProjectDto:
     slug: str
     goal_descriptioin: str | None
     description: str
-    media: list[str]
+    media: list[str | None]
     categories: list[CategoryDto]
     company: CompanyDto
     user: UserDto

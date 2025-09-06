@@ -6,7 +6,10 @@ from domain.models.user_management.user import User
 
 
 def project_to_dto(
-    project: Project, categories: list[ProjectCategory], media_links: list[str] | None = None, is_favorite: bool = False
+    project: Project,
+    categories: list[ProjectCategory],
+    media_links: list[str | None] | None = None,
+    is_favorite: bool = False,
 ) -> ProjectDto:
     creater: User = project.creator
     return ProjectDto(

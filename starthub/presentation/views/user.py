@@ -2,13 +2,12 @@ from dataclasses import asdict
 from venv import logger
 
 import pydantic
-from application.dto.auth import AccessPayloadDto
 from application.dto.project import ProjectDto
 from application.dto.user import UserProfileDto
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
-from infrastructure.auth.token import get_access_payload_dto_from_headers
 from presentation.constants import SUCCESS
+from presentation.helpers.auth import get_authenticated_user_from_request
 from presentation.response_factories.user_management import UserErrorResponseFactory, UserFavoriteErrorResponseFactory
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser
@@ -36,8 +35,10 @@ class MeView(APIView):
         logger.debug(f"{request.data}")
         logger.debug(f"{request.FILES}")
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
-            gateway.user_app_service.update_user(request.data, request.FILES, int(access_dto.sub))
+            user = get_authenticated_user_from_request(request=request)
+            gateway.user_app_service.update_user(
+                request_data=request.data, request_files=request.FILES, user_id=user.id
+            )
             return Response({"detail": "success", "code": SUCCESS}, status=status.HTTP_200_OK)
         except (CustomException, pydantic.ValidationError) as e:
             return UserErrorResponseFactory.create_response(e)
@@ -45,10 +46,8 @@ class MeView(APIView):
     @staticmethod
     def get(request: Request) -> Response:
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
-            user_profile_dto: UserProfileDto = gateway.user_app_service.get_user_own_profile(
-                user_id=int(access_dto.sub)
-            )
+            user = get_authenticated_user_from_request(request=request)
+            user_profile_dto: UserProfileDto = gateway.user_app_service.get_user_own_profile(user_id=user.id)
             return Response(asdict(user_profile_dto), status=status.HTTP_200_OK)
         except CustomException as e:
             return UserErrorResponseFactory.create_response(e)
@@ -58,9 +57,9 @@ class MeFavoriteProjectsView(APIView):
     @staticmethod
     def get(request: Request) -> Response:
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
+            user = get_authenticated_user_from_request(request=request)
             user_favorite_projects: list[ProjectDto] = gateway.user_favorite_app_service.get_user_favorite_projects(
-                user_id=int(access_dto.sub)
+                user_id=user.id
             )
             return Response(map(asdict, user_favorite_projects), status=status.HTTP_200_OK)
         except (CustomException, pydantic.ValidationError) as e:
@@ -69,8 +68,8 @@ class MeFavoriteProjectsView(APIView):
     @staticmethod
     def post(request: Request, project_id: int) -> Response:
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
-            gateway.user_favorite_app_service.add_favorite(user_id=int(access_dto.sub), project_id=project_id)
+            user = get_authenticated_user_from_request(request=request)
+            gateway.user_favorite_app_service.add_favorite(user_id=user.id, project_id=project_id)
             return Response({"detail": "success", "code": SUCCESS}, status=status.HTTP_201_CREATED)
 
         except (CustomException, pydantic.ValidationError) as e:
@@ -79,8 +78,8 @@ class MeFavoriteProjectsView(APIView):
     @staticmethod
     def delete(request: Request, project_id: int) -> Response:
         try:
-            access_dto: AccessPayloadDto = get_access_payload_dto_from_headers(request.headers)
-            gateway.user_favorite_app_service.delete_by_association_ids(int(access_dto.sub), project_id)
+            user = get_authenticated_user_from_request(request=request)
+            gateway.user_favorite_app_service.delete_by_association_ids(user_id=user.id, project_id=project_id)
             return Response({"detail": "success", "code": SUCCESS}, status=status.HTTP_200_OK)
         except (CustomException, pydantic.ValidationError) as e:
             return UserFavoriteErrorResponseFactory.create_response(e)

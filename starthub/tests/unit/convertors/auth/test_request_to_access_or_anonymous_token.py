@@ -1,9 +1,10 @@
 from dataclasses import dataclass
+from unittest.mock import MagicMock
 
 from django.test import SimpleTestCase
 from domain.exceptions.validation import MissingRequiredFieldException
 from domain.value_objects.auth_management.token import AccessTokenVo, AnonymousTokenVo
-from presentation.request_converters.user_management.auth import request_headers_to_access_or_anonymous_token
+from presentation.request_converters.user_management.auth import request_to_access_or_anonymous_token
 
 
 @dataclass
@@ -24,26 +25,31 @@ class ValidTokenData:
         }
 
 
-class TestRequestHeadersToAccessOrAnonymousToken(SimpleTestCase):
+class TestRequestToAccessOrAnonymousToken(SimpleTestCase):
     def setUp(self):
         self.valid_dataclass = ValidTokenData()
 
     def test_returns_anonymous_token(self):
         headers = self.valid_dataclass.create_anonymous_headers()
-
-        result = request_headers_to_access_or_anonymous_token(headers)
+        request = MagicMock()
+        request.headers = headers
+        result = request_to_access_or_anonymous_token(request=request)
 
         self.assertIsInstance(result, AnonymousTokenVo)
 
     def test_returns_access_token(self):
         headers = self.valid_dataclass.create_access_headers()
 
-        result = request_headers_to_access_or_anonymous_token(headers)
+        request = MagicMock()
+        request.headers = headers
+        result = request_to_access_or_anonymous_token(request=request)
 
         self.assertIsInstance(result, AccessTokenVo)
 
     def test_missing_authorization_header(self):
         headers = {}
+        request = MagicMock()
+        request.headers = headers
 
         with self.assertRaises(MissingRequiredFieldException):
-            request_headers_to_access_or_anonymous_token(headers)
+            request_to_access_or_anonymous_token(request=request)

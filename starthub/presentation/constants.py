@@ -6,6 +6,7 @@ from domain.exceptions.permissions import (
     UpdateDeniedPermissionException,
     ViewDeniedPermissionException,
 )
+from domain.exceptions.user import UserDeactivedException
 from domain.exceptions.validation import (
     DateIsNotIsoFormatException,
     EmptyStringException,
@@ -24,5 +25,6 @@ APPLICATION_ERROR_CODES: dict[type, tuple[str, int]] = {
     AddDeniedPermissionException: ("ADD_PERMISSION_DENIED", 403),
     DeleteDeniedPermissionException: ("DELETE_PERMISSION_DENIED", 403),
     UpdateDeniedPermissionException: ("UPDATE_PERMISSION_DENIED", 403),
+    UserDeactivedException: ("USER_DEACTIVATED", 403),
 }
 SUCCESS = "SUCCESS"

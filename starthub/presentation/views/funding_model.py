@@ -5,10 +5,11 @@ from application.dto.project import FundingModelDto
 from application.services.gateway import gateway
 from domain.exceptions import CustomException
 from domain.models.project_management.funding_model import FundingModel
+from domain.value_objects.common import Id
 from domain.value_objects.project.funding_model import FundingModelId, FundingModelUpdateCommand
-from infrastructure.auth.user import get_user_id_or_raises
 from loguru import logger
 from presentation.constants import SUCCESS
+from presentation.helpers.auth import get_authenticated_user_from_request
 from presentation.request_converters.others import FundingModelErrorResponseFactory
 from presentation.request_converters.project.funding_model import request_to_funding_model_update_command
 from rest_framework import status
@@ -34,7 +35,8 @@ class FundingModelView(APIView):
         print()
         logger.info(f"{request.method} {request.path}")
         try:
-            user_id = get_user_id_or_raises(request=request)
+            user = get_authenticated_user_from_request(request=request)
+            user_id = Id(value=user.id)
             command: FundingModelUpdateCommand = request_to_funding_model_update_command(request=request)
             gateway.funding_model_app_service.update(
                 user_id=user_id, funding_model_id=FundingModelId(value=funding_model_id), command=command
