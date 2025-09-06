@@ -5,7 +5,7 @@ from domain.services.users_management.user import UserService
 from domain.services.users_management.user_admin import UserAdminService
 from domain.services.users_management.user_favorite import UserFavoriteService
 from domain.services.users_management.user_message import UserMessageService
-from infrastructure.cloud_storages.google import google_cloud_storage
+from infrastructure.cloud_storages.google import GoogleCloudStorageFactory
 from infrastructure.repositories.project.project import DjProjectReadRepository
 from infrastructure.repositories.user_management.user import (
     DjUserPhoneReadRepository,
@@ -24,7 +24,7 @@ class UserServiceBuilder(AbstractDomainServiceBuilder[UserService]):
     @staticmethod
     def create_service() -> UserService:
         return UserService(
-            cloud_storage=google_cloud_storage,
+            cloud_storage=GoogleCloudStorageFactory.create(),
             user_read_repository=DjUserReadRepository(),
             user_write_repository=DjUserWriteRepository(),
             user_phone_write_repository=DjUserPhoneWriteRepository(),

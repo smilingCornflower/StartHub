@@ -12,7 +12,7 @@ from domain.value_objects.cloud_storage import CloudStorageDeletePayload
 from domain.value_objects.common import Id
 from domain.value_objects.file import Image, ImageFile
 from domain.value_objects.news_management.news import NewsContent, NewsCreateCommand, NewsSubtitle, NewsTitle
-from infrastructure.cloud_storages.google import google_cloud_storage
+from infrastructure.cloud_storages.google import GoogleCloudStorage, GoogleCloudStorageFactory
 from tests.common.builders import create_user_with_permission, get_random_user, get_test_user
 from tests.common.constants import TEST_FILES_PATH
 
@@ -32,6 +32,8 @@ class TestNewsCreateAppService(TestCase):
         self.random_user_id = Id(value=self.random_user.id)
 
         self._image_content = None
+
+        self.storage = GoogleCloudStorageFactory.create()
 
     @property
     def image_content(self):
@@ -64,14 +66,14 @@ class TestNewsCreateAppService(TestCase):
         covert_path = news.cover
         image_path = news.images.all().first().image
 
-        self.assertTrue(google_cloud_storage.check_url_exists(url=covert_path))
-        self.assertTrue(google_cloud_storage.check_url_exists(url=image_path))
+        self.assertTrue(self.storage.check_url_exists(url=covert_path))
+        self.assertTrue(self.storage.check_url_exists(url=image_path))
 
         img_name = Path(image_path).name
         self.assertIn(img_name, news.content)
 
-        google_cloud_storage.delete_file(payload=CloudStorageDeletePayload(file_path=covert_path))
-        google_cloud_storage.delete_file(payload=CloudStorageDeletePayload(file_path=image_path))
+        self.storage.delete_file(payload=CloudStorageDeletePayload(file_path=covert_path))
+        self.storage.delete_file(payload=CloudStorageDeletePayload(file_path=image_path))
 
     def test_create_with_user_without_permissions(self):
         command = self.get_command()

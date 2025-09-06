@@ -6,6 +6,7 @@ from config import settings
 from domain.constants import SIGNED_URL_EXPIRATION_MINUTES
 from domain.exceptions.cloud_storage import FileNotFoundCloudStorageException
 from domain.ports.cloud_storage import AbstractCloudStorage
+from domain.ports.factory import Factory
 from domain.value_objects.cloud_storage import (
     CloudStorageCreateUrlPayload,
     CloudStorageDeletePayload,
@@ -17,7 +18,6 @@ from google.cloud.storage.blob import Blob
 from loguru import logger
 
 
-# TODO: write tests for CloudStorage
 class GoogleCloudStorage(AbstractCloudStorage):
     def __init__(self, bucket_name: str):
         self._bucket_name = bucket_name
@@ -87,7 +87,7 @@ class GoogleCloudStorage(AbstractCloudStorage):
 
         :param payload: URL creation payload containing file path
         :return: Signed URL for temporary access to the file
-        :raises GoogleCloudError: If URL generation fails
+        :raises NotFound: If the specified url does not exist in the bucket
         """
         blob: Blob = self.bucket.blob(blob_name=payload.file_path)
         try:
@@ -95,6 +95,9 @@ class GoogleCloudStorage(AbstractCloudStorage):
             return cast(
                 str, blob.generate_signed_url(version="v4", expiration=timedelta(minutes=SIGNED_URL_EXPIRATION_MINUTES))
             )
+        except NotFound as e:
+            logger.error(f"Blob {payload.file_path} not found in bucket.")
+            raise e
         except GoogleCloudError as e:
             logger.error(f"Google Cloud error during generating url for {payload.file_path}: {e}")
             raise e
@@ -123,4 +126,7 @@ class GoogleCloudStorage(AbstractCloudStorage):
         return blob_exists
 
 
-google_cloud_storage = GoogleCloudStorage(bucket_name=settings.GOOGLE_CLOUD_BUCKET_NAME)
+class GoogleCloudStorageFactory(Factory):
+    @staticmethod
+    def create() -> GoogleCloudStorage:
+        return GoogleCloudStorage(bucket_name=settings.GOOGLE_CLOUD_BUCKET_NAME)

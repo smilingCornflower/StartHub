@@ -5,7 +5,7 @@ from application.services.news_management.news import NewsAppService
 from application.services.news_management.news_tag import NewsTagAppService
 from domain.services.file import ImageService
 from domain.services.news_management.news import NewsImageService
-from infrastructure.cloud_storages.google import google_cloud_storage
+from infrastructure.cloud_storages.google import GoogleCloudStorageFactory
 from infrastructure.repositories.news_management.news import DjNewsReadRepository
 from infrastructure.repositories.news_management.news_image import DjNewsImageReadRepository, DjNewsImageWriteRepository
 from infrastructure.repositories.user_management.user import DjUserReadRepository
@@ -23,7 +23,7 @@ class NewsAppServiceBuilder(AbstractAppServiceBuilder[NewsAppService]):
             ),
             permission_service=PermissionServiceBuilder.create_service(),
             image_service=ImageService(),
-            cloud_storage=google_cloud_storage,
+            cloud_storage=GoogleCloudStorageFactory.create(),
             news_read_repository=DjNewsReadRepository(),
             user_read_repository=DjUserReadRepository(),
             unit_of_work=DjangoUnitOfWork(),

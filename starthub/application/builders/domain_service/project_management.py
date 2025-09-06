@@ -26,7 +26,7 @@ from domain.services.project_management.stage import ProjectStageService
 from domain.services.project_management.step import ProjectStepService
 from domain.services.project_management.team_member import TamMemberService
 from domain.services.project_management.useful_link import ProjectUsefulLinkService
-from infrastructure.cloud_storages.google import google_cloud_storage
+from infrastructure.cloud_storages.google import GoogleCloudStorageFactory
 from infrastructure.repositories.company import (
     DjCompanyFounderReadRepository,
     DjCompanyFounderWriteRepository,
@@ -136,7 +136,7 @@ class ProjectImageServiceBuilder(AbstractDomainServiceBuilder[ProjectImageServic
             project_image_read_repository=DjProjectImageReadRepository(),
             project_image_write_repository=DjProjectImageWriteRepository(),
             project_read_repository=DjProjectReadRepository(),
-            cloud_storage=google_cloud_storage,
+            cloud_storage=GoogleCloudStorageFactory.create(),
         )
 
 
@@ -236,7 +236,7 @@ class ProjectFileServiceBuilder(AbstractDomainServiceBuilder[ProjectFileService]
     def create_service() -> ProjectFileService:
         return ProjectFileService(
             permission_service=PermissionServiceBuilder.create_service(),
-            cloud_storage=google_cloud_storage,
+            cloud_storage=GoogleCloudStorageFactory.create(),
             write_repository=DjProjectFileWriteRepository(),
         )
 
@@ -248,7 +248,7 @@ class ProjectMediaServiceBuilder(AbstractDomainServiceBuilder[ProjectMediaServic
             write_repository=DjProjectMediaWriteRepository(),
             read_repository=DjProjectMediaReadRepository(),
             permission_service=PermissionServiceBuilder.create_service(),
-            clous_storage=google_cloud_storage,
+            clous_storage=GoogleCloudStorageFactory.create(),
         )
 
 

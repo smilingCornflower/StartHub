@@ -5,8 +5,8 @@ from msgpack.fallback import BytesIO
 from tests.common.constants import TEST_FILES_PATH
 
 
+@tag("slow")
 class TestVideoService(SimpleTestCase):
-    @tag("slow")
     def test_compress_video(self):
         with open(TEST_FILES_PATH / "video_4k.mp4", mode="rb") as video:
             video_data = video.read()
