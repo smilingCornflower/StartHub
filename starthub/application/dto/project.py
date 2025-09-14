@@ -125,7 +125,7 @@ class ProjectDto:
     id: int
     name: str
     slug: str
-    goal_descriptioin: str | None
+    goal_description: str | None
     description: str
     media: list[str | None]
     categories: list[CategoryDto]
