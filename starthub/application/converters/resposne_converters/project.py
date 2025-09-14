@@ -17,7 +17,7 @@ def project_to_dto(
         name=project.name,
         slug=project.slug,
         user=UserDto(id=creater.id, first_name=creater.first_name, last_name=creater.last_name, email=creater.email),
-        goal_descriptioin=project.goal_description,
+        goal_description=project.goal_description,
         description=project.description,
         company=CompanyDto(
             id=project.company.id,
